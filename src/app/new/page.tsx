@@ -336,7 +336,8 @@ export default function NewCardPage() {
   }, [creating, router])
 
   const handleView = (template: Template) => {
-    const url = template.previewUrl ?? "/invite/demo"
+    const base = template.previewUrl ?? "/invite/demo"
+    const url = previewName ? `${base}?name=${encodeURIComponent(previewName)}` : base
     window.open(url, "_blank", "noopener noreferrer")
   }
 

@@ -1674,3 +1674,128 @@ https://react.dev/link/hydration-mismatch
                 ...
               ...
  
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+      <LoadingBoundary name="famv7sv0/" loading={null}>
+        <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+          <RedirectBoundary>
+            <RedirectErrorBoundary router={{...}}>
+              <InnerLayoutRouter url="/invite/fa..." tree={[...]} params={{slug:"famv..."}} cacheNode={{rsc:{...}, ...}} ...>
+                <SegmentViewNode type="page" pagePath="invite/[sl...">
+                  <SegmentTrieNode>
+                  <InvitePage>
+                    <InviteClient card={{id:"cmqq9x...", ...}}>
+                      <div className="fixed inse...">
+                        <div>
+                        <button>
+                        <div>
+                        <div className="absolute i...">
+                          <div ref={function ref} className="relative w..." style={{...}}>
+                            <style>
+                            <div className="relative z-10">
+                              <TemplateRenderer>
+                              <MusicPlayer media={{...}} onAnalytic={function InviteClient.useCallback[fireAnalytic]} ...>
+                                <iframe
+                                  ref={function ref}
++                                 src={"https://www.youtube.com/embed/96jN2OCOfLs?enablejsapi=1&autoplay=1&mute=1&loo..."}
+-                                 src={"https://www.youtube.com/embed/96jN2OCOfLs?enablejsapi=1&autoplay=1&mute=1&loo..."}
+                                  allow="autoplay"
+                                  className="absolute w-0 h-0 opacity-0 pointer-events-none"
+                                  aria-hidden="true"
+                                >
+                              ...
+                ...
+              ...
+ 
+⨯ ReferenceError: Share2 is not defined
+    at module evaluation (src\app\page.tsx:17:11)
+    at module evaluation (D:\CodePersonal\kad\.next\dev\server\chunks\ssr\[root-of-the-server]__008giu1._.js:1608:47)
+  15 |   },
+  16 |   {
+> 17 |     icon: Share2,
+     |           ^
+  18 |     title: "Kongsi Mudah",
+  19 |     desc: "Jana pautan unik dan kod QR. Hantar kepada sesiapa sahaja dalam saat.",
+  20 |   },
+⨯ ReferenceError: Share2 is not defined
+    at module evaluation (src\app\page.tsx:17:11)
+    at module evaluation (D:\CodePersonal\kad\.next\dev\server\chunks\ssr\[root-of-the-server]__008giu1._.js:1608:47)
+  15 |   },
+  16 |   {
+> 17 |     icon: Share2,
+     |           ^
+  18 |     title: "Kongsi Mudah",
+  19 |     desc: "Jana pautan unik dan kod QR. Hantar kepada sesiapa sahaja dalam saat.",
+  20 |   }, {
+  page: '/'
+}
+⨯ ReferenceError: Share2 is not defined
+    at module evaluation (src\app\page.tsx:17:11)
+    at module evaluation (D:\CodePersonal\kad\.next\dev\server\chunks\ssr\[root-of-the-server]__008giu1._.js:1608:47)
+  15 |   },
+  16 |   {
+> 17 |     icon: Share2,
+     |           ^
+  18 |     title: "Kongsi Mudah",
+  19 |     desc: "Jana pautan unik dan kod QR. Hantar kepada sesiapa sahaja dalam saat.",
+  20 |   }, {
+  page: '/'
+}
+⨯ ReferenceError: Share2 is not defined
+    at module evaluation (src\app\page.tsx:17:11)
+    at module evaluation (D:\CodePersonal\kad\.next\dev\server\chunks\ssr\[root-of-the-server]__008giu1._.js:1608:47)
+  15 |   },
+  16 |   {
+> 17 |     icon: Share2,
+     |           ^
+  18 |     title: "Kongsi Mudah",
+  19 |     desc: "Jana pautan unik dan kod QR. Hantar kepada sesiapa sahaja dalam saat.",
+  20 |   }, {
+  page: '/'
+}
+⨯ ReferenceError: Share2 is not defined
+    at module evaluation (src\app\page.tsx:17:11)
+    at module evaluation (D:\CodePersonal\kad\.next\dev\server\chunks\ssr\[root-of-the-server]__008giu1._.js:1608:47)
+  15 |   },
+  16 |   {
+> 17 |     icon: Share2,
+     |           ^
+  18 |     title: "Kongsi Mudah",
+  19 |     desc: "Jana pautan unik dan kod QR. Hantar kepada sesiapa sahaja dalam saat.",
+  20 |   }, {
+  page: '/'
+}
+⨯ ReferenceError: Share2 is not defined
+    at module evaluation (src\app\page.tsx:17:11)
+    at module evaluation (D:\CodePersonal\kad\.next\dev\server\chunks\ssr\[root-of-the-server]__008giu1._.js:1608:47)
+  15 |   },
+  16 |   {
+> 17 |     icon: Share2,
+     |           ^
+  18 |     title: "Kongsi Mudah",
+  19 |     desc: "Jana pautan unik dan kod QR. Hantar kepada sesiapa sahaja dalam saat.",
+  20 |   }, {
+  page: '/'
+}
+[browser] Uncaught ReferenceError: Share2 is not defined
+    at module evaluation (src/app/page.tsx:17:11)
+    at module evaluation (src/app/page.tsx:439:1)
+  15 |   },
+  16 |   {
+> 17 |     icon: Share2,
+     |           ^
+  18 |     title: "Kongsi Mudah",
+  19 |     desc: "Jana pautan unik dan kod QR. Hantar kepada sesiapa sahaja dalam saat.",
+  20 |   },

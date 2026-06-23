@@ -8,6 +8,7 @@ import type { WizardConfig } from "@/types/config"
 
 interface Props {
   params: Promise<{ slug: string }>
+  searchParams: Promise<{ name?: string }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -27,8 +28,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function InvitePage({ params }: Props) {
+export default async function InvitePage({ params, searchParams }: Props) {
   const { slug } = await params
+  const { name: nameOverride } = await searchParams
 
   if (slug === "demo") {
     // Future event date — 60 days from now
@@ -131,17 +133,37 @@ export default async function InvitePage({ params }: Props) {
       },
     }
 
+    if (nameOverride) {
+      demoWizardConfig.displayName = nameOverride
+      const parts = nameOverride.split(/\s*&\s*/).map((s) => s.trim())
+      if (parts[0]) demoWizardConfig.fullNames = parts.length > 1
+        ? `${parts[0]}\n&\n${parts[1]}`
+        : parts[0]
+    }
+
+    // Fetch the real template images so image1/image2 render correctly in the demo
+    const demoTemplate = await prisma.template.findFirst({
+      where: { slug: "wedding-classic" },
+      select: { slug: true, name: true, category: true, image1Url: true, image2Url: true },
+    })
+
     const demoCard: InvitationCardData = {
       id: "demo",
       slug: "demo",
       templateId: "demo",
       title: "Walimatul Urus",
-      groomName: "Ahmad Faris",
-      brideName: "Nur Aisyah",
+      groomName: nameOverride ? nameOverride.split(/\s*&\s*/)[0]?.trim() : "Ahmad Faris",
+      brideName: nameOverride ? nameOverride.split(/\s*&\s*/)[1]?.trim() : "Nur Aisyah",
       isPublished: true,
       language: "ms",
       viewCount: 0,
-      template: { slug: "wedding-classic", name: "Wedding Classic", category: "WEDDING" },
+      template: {
+        slug:      demoTemplate?.slug     ?? "wedding-classic",
+        name:      demoTemplate?.name     ?? "Wedding Classic",
+        category:  (demoTemplate?.category ?? "WEDDING") as "WEDDING" | "BIRTHDAY" | "CORPORATE" | "GENERIC",
+        image1Url: demoTemplate?.image1Url ?? null,
+        image2Url: demoTemplate?.image2Url ?? null,
+      },
       theme: {
         primaryColor: "#9b4d5e",
         secondaryColor: "#faf7f4",
@@ -259,5 +281,24 @@ export default async function InvitePage({ params }: Props) {
   }
 
   if (!card) return notFound()
+
+  // Preview name override — passed from the template picker via ?name=
+  if (nameOverride) {
+    const parts = nameOverride.split(/\s*&\s*/).map((s) => s.trim())
+    const wc = (card.wizardConfig ?? {}) as import("@/types/config").WizardConfig
+    card = {
+      ...card,
+      groomName: parts[0] || card.groomName,
+      brideName: parts[1] || card.brideName,
+      wizardConfig: {
+        ...wc,
+        displayName: nameOverride,
+        ...(parts.length > 1 && wc.fullNames !== undefined
+          ? { fullNames: `${parts[0]}\n&\n${parts[1]}` }
+          : {}),
+      } as import("@/types/config").WizardConfig,
+    }
+  }
+
   return <InviteClient card={card} />
 }
