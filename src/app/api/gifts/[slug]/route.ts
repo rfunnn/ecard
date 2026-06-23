@@ -1,0 +1,79 @@
+import { NextRequest, NextResponse } from "next/server"
+import { z } from "zod"
+import { prisma } from "@/lib/prisma"
+
+const addSchema = z.object({
+  imageUrl: z.string().min(1),
+  link: z.string().url(),
+  label: z.string().optional(),
+})
+
+const deleteSchema = z.object({
+  id: z.string().min(1),
+})
+
+async function resolveCard(slug: string) {
+  return prisma.invitationCard.findUnique({ where: { slug }, select: { id: true } })
+}
+
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  const { slug } = await params
+  const card = await resolveCard(slug)
+  if (!card) return NextResponse.json({ error: "Not found" }, { status: 404 })
+
+  const items = await prisma.giftItem.findMany({
+    where: { cardId: card.id },
+    orderBy: { sortOrder: "asc" },
+  })
+  return NextResponse.json({ items })
+}
+
+export async function POST(
+  req: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  const { slug } = await params
+  try {
+    const body = await req.json()
+    const data = addSchema.parse(body)
+
+    const card = await resolveCard(slug)
+    if (!card) return NextResponse.json({ error: "Not found" }, { status: 404 })
+
+    const count = await prisma.giftItem.count({ where: { cardId: card.id } })
+    const item = await prisma.giftItem.create({
+      data: { ...data, cardId: card.id, sortOrder: count },
+    })
+    return NextResponse.json({ item }, { status: 201 })
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      return NextResponse.json({ error: err.issues }, { status: 400 })
+    }
+    return NextResponse.json({ error: "Failed to add gift item" }, { status: 500 })
+  }
+}
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  const { slug } = await params
+  try {
+    const body = await req.json()
+    const { id } = deleteSchema.parse(body)
+
+    const card = await resolveCard(slug)
+    if (!card) return NextResponse.json({ error: "Not found" }, { status: 404 })
+
+    await prisma.giftItem.delete({ where: { id, cardId: card.id } })
+    return NextResponse.json({ ok: true })
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      return NextResponse.json({ error: err.issues }, { status: 400 })
+    }
+    return NextResponse.json({ error: "Failed to delete gift item" }, { status: 500 })
+  }
+}

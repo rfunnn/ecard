@@ -1,0 +1,1676 @@
+[next-auth][error][SIGNIN_OAUTH_ERROR] 
+https://next-auth.js.org/errors#signin_oauth_error client_id is required {
+  error: {
+    message: 'client_id is required',
+    stack: 'TypeError: client_id is required\n' +
+      '    at new BaseClient (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_openid-client_0ayas6_._.js:1424:19)\n' +
+      '    at new Client (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_openid-client_0ayas6_._.js:2949:13)\n' +
+      '    at openidClient (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:410:20)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+      '    at async getAuthorizationUrl (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:1764:20)\n' +
+      '    at async Object.signin (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:1846:30)\n' +
+      '    at async AuthHandler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3294:36)\n' +
+      '    at async NextAuthRouteHandler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3501:30)\n' +
+      '    at async NextAuth._args$ (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3536:24)\n' +
+      '    at async AppRouteRouteModule.do (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:40131)\n' +
+      '    at async AppRouteRouteModule.handle (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:47411)\n' +
+      '    at async responseGenerator (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13724:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:1:228552)\n' +
+      '    at async handleResponse (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13787:32)\n' +
+      '    at async Module.handler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13841:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1462:9)\n' +
+      '    at async DevServer.renderPageComponent (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1514:24)\n' +
+      '    at async DevServer.renderToResponseImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1564:32)\n' +
+      '    at async DevServer.pipeImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1044:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\next-server.js:338:17)\n' +
+      '    at async DevServer.handleRequestImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:935:17)\n' +
+      '    at async D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:394:20\n' +
+      '    at async Span.traceAsyncFn (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\trace\\trace.js:164:20)\n' +
+      '    at async DevServer.handleRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:390:24)\n' +
+      '    at async invokeRender (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:266:21)\n' +
+      '    at async handleRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:465:24)\n' +
+      '    at async requestHandlerImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:514:13)\n' +
+      '    at async Server.requestListener (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\start-server.js:225:13)',
+    name: 'TypeError'
+  },
+  providerId: 'google',
+  message: 'client_id is required'
+}
+[next-auth][error][SIGNIN_OAUTH_ERROR] 
+https://next-auth.js.org/errors#signin_oauth_error client_id is required {
+  error: {
+    message: 'client_id is required',
+    stack: 'TypeError: client_id is required\n' +
+      '    at new BaseClient (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_openid-client_0ayas6_._.js:1424:19)\n' +
+      '    at new Client (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_openid-client_0ayas6_._.js:2949:13)\n' +
+      '    at openidClient (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:410:20)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+      '    at async getAuthorizationUrl (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:1764:20)\n' +
+      '    at async Object.signin (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:1846:30)\n' +
+      '    at async AuthHandler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3294:36)\n' +
+      '    at async NextAuthRouteHandler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3501:30)\n' +
+      '    at async NextAuth._args$ (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3536:24)\n' +
+      '    at async AppRouteRouteModule.do (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:40131)\n' +
+      '    at async AppRouteRouteModule.handle (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:47411)\n' +
+      '    at async responseGenerator (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13724:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:1:228552)\n' +
+      '    at async handleResponse (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13787:32)\n' +
+      '    at async Module.handler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13841:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1462:9)\n' +
+      '    at async DevServer.renderPageComponent (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1514:24)\n' +
+      '    at async DevServer.renderToResponseImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1564:32)\n' +
+      '    at async DevServer.pipeImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1044:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\next-server.js:338:17)\n' +
+      '    at async DevServer.handleRequestImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:935:17)\n' +
+      '    at async D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:394:20\n' +
+      '    at async Span.traceAsyncFn (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\trace\\trace.js:164:20)\n' +
+      '    at async DevServer.handleRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:390:24)\n' +
+      '    at async invokeRender (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:266:21)\n' +
+      '    at async handleRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:465:24)\n' +
+      '    at async requestHandlerImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:514:13)\n' +
+      '    at async Server.requestListener (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\start-server.js:225:13)',
+    name: 'TypeError'
+  },
+  providerId: 'google',
+  message: 'client_id is required'
+}
+[browser] The final argument passed to useEffect changed size between renders. The order and size of this array must remain constant.
+
+Previous: [x6vbaf6d, (slug)=>set((state)=>{
+                state.cardSlug = slug;
+            })]
+Incoming: [x6vbaf6d] 
+    at WizardShell (src/components/wizard/WizardShell.tsx:151:12)
+    at Set.forEach (<anonymous>)
+  149 |   // Load saved wizardConfig when opening a card for the first time or switching to a dif...
+  150 |   // Keep current in-memory state untouched when the user navigates within the same card.
+> 151 |   useEffect(() => {
+      |            ^
+  152 |     if (cardSlug !== initialCard.slug) {
+  153 |       const saved = initialCard.wizardConfig as Partial<WizardConfig> | undefined
+  154 |       loadConfig(saved ?? DEFAULT_WIZARD_CONFIG) (src/components/wizard/WizardShell.tsx:151:12)
+[next-auth][error][SIGNIN_OAUTH_ERROR] 
+https://next-auth.js.org/errors#signin_oauth_error client_id is required {
+  error: {
+    message: 'client_id is required',
+    stack: 'TypeError: client_id is required\n' +
+      '    at new BaseClient (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_openid-client_0ayas6_._.js:1424:19)\n' +
+      '    at new Client (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_openid-client_0ayas6_._.js:2949:13)\n' +
+      '    at openidClient (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:410:20)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+      '    at async getAuthorizationUrl (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:1764:20)\n' +
+      '    at async Object.signin (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:1846:30)\n' +
+      '    at async AuthHandler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3294:36)\n' +
+      '    at async NextAuthRouteHandler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3501:30)\n' +
+      '    at async NextAuth._args$ (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3536:24)\n' +
+      '    at async AppRouteRouteModule.do (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:40131)\n' +
+      '    at async AppRouteRouteModule.handle (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:47411)\n' +
+      '    at async responseGenerator (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13724:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:1:228552)\n' +
+      '    at async handleResponse (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13787:32)\n' +
+      '    at async Module.handler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13841:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1462:9)\n' +
+      '    at async DevServer.renderPageComponent (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1514:24)\n' +
+      '    at async DevServer.renderToResponseImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1564:32)\n' +
+      '    at async DevServer.pipeImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1044:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\next-server.js:338:17)\n' +
+      '    at async DevServer.handleRequestImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:935:17)\n' +
+      '    at async D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:394:20\n' +
+      '    at async Span.traceAsyncFn (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\trace\\trace.js:164:20)\n' +
+      '    at async DevServer.handleRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:390:24)\n' +
+      '    at async invokeRender (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:266:21)\n' +
+      '    at async handleRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:465:24)\n' +
+      '    at async requestHandlerImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:514:13)\n' +
+      '    at async Server.requestListener (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\start-server.js:225:13)',
+    name: 'TypeError'
+  },
+  providerId: 'google',
+  message: 'client_id is required'
+}
+[next-auth][error][SIGNIN_OAUTH_ERROR] 
+https://next-auth.js.org/errors#signin_oauth_error client_id is required {
+  error: {
+    message: 'client_id is required',
+    stack: 'TypeError: client_id is required\n' +
+      '    at new BaseClient (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_openid-client_0ayas6_._.js:1424:19)\n' +
+      '    at new Client (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_openid-client_0ayas6_._.js:2949:13)\n' +
+      '    at openidClient (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:410:20)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+      '    at async getAuthorizationUrl (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:1764:20)\n' +
+      '    at async Object.signin (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:1846:30)\n' +
+      '    at async AuthHandler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3294:36)\n' +
+      '    at async NextAuthRouteHandler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3501:30)\n' +
+      '    at async NextAuth._args$ (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3536:24)\n' +
+      '    at async AppRouteRouteModule.do (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:40131)\n' +
+      '    at async AppRouteRouteModule.handle (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:47411)\n' +
+      '    at async responseGenerator (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13724:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:1:228552)\n' +
+      '    at async handleResponse (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13787:32)\n' +
+      '    at async Module.handler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13841:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1462:9)\n' +
+      '    at async DevServer.renderPageComponent (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1514:24)\n' +
+      '    at async DevServer.renderToResponseImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1564:32)\n' +
+      '    at async DevServer.pipeImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1044:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\next-server.js:338:17)\n' +
+      '    at async DevServer.handleRequestImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:935:17)\n' +
+      '    at async D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:394:20\n' +
+      '    at async Span.traceAsyncFn (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\trace\\trace.js:164:20)\n' +
+      '    at async DevServer.handleRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:390:24)\n' +
+      '    at async invokeRender (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:266:21)\n' +
+      '    at async handleRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:465:24)\n' +
+      '    at async requestHandlerImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:514:13)\n' +
+      '    at async Server.requestListener (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\start-server.js:225:13)',
+    name: 'TypeError'
+  },
+  providerId: 'google',
+  message: 'client_id is required'
+}
+[next-auth][error][SIGNIN_OAUTH_ERROR] 
+https://next-auth.js.org/errors#signin_oauth_error client_id is required {
+  error: {
+    message: 'client_id is required',
+    stack: 'TypeError: client_id is required\n' +
+      '    at new BaseClient (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_openid-client_0ayas6_._.js:1424:19)\n' +
+      '    at new Client (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_openid-client_0ayas6_._.js:2949:13)\n' +
+      '    at openidClient (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:410:20)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+      '    at async getAuthorizationUrl (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:1764:20)\n' +
+      '    at async Object.signin (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:1846:30)\n' +
+      '    at async AuthHandler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3294:36)\n' +
+      '    at async NextAuthRouteHandler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3501:30)\n' +
+      '    at async NextAuth._args$ (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3536:24)\n' +
+      '    at async AppRouteRouteModule.do (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:40131)\n' +
+      '    at async AppRouteRouteModule.handle (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:47411)\n' +
+      '    at async responseGenerator (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13724:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:1:228552)\n' +
+      '    at async handleResponse (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13787:32)\n' +
+      '    at async Module.handler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13841:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1462:9)\n' +
+      '    at async DevServer.renderPageComponent (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1514:24)\n' +
+      '    at async DevServer.renderToResponseImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1564:32)\n' +
+      '    at async DevServer.pipeImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1044:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\next-server.js:338:17)\n' +
+      '    at async DevServer.handleRequestImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:935:17)\n' +
+      '    at async D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:394:20\n' +
+      '    at async Span.traceAsyncFn (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\trace\\trace.js:164:20)\n' +
+      '    at async DevServer.handleRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:390:24)\n' +
+      '    at async invokeRender (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:266:21)\n' +
+      '    at async handleRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:465:24)\n' +
+      '    at async requestHandlerImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:514:13)\n' +
+      '    at async Server.requestListener (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\start-server.js:225:13)',
+    name: 'TypeError'
+  },
+  providerId: 'google',
+  message: 'client_id is required'
+}
+[next-auth][error][SIGNIN_OAUTH_ERROR] 
+https://next-auth.js.org/errors#signin_oauth_error client_id is required {
+  error: {
+    message: 'client_id is required',
+    stack: 'TypeError: client_id is required\n' +
+      '    at new BaseClient (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_openid-client_0ayas6_._.js:1424:19)\n' +
+      '    at new Client (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_openid-client_0ayas6_._.js:2949:13)\n' +
+      '    at openidClient (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:410:20)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+      '    at async getAuthorizationUrl (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:1764:20)\n' +
+      '    at async Object.signin (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:1846:30)\n' +
+      '    at async AuthHandler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3294:36)\n' +
+      '    at async NextAuthRouteHandler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3501:30)\n' +
+      '    at async NextAuth._args$ (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3536:24)\n' +
+      '    at async AppRouteRouteModule.do (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:40131)\n' +
+      '    at async AppRouteRouteModule.handle (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:47411)\n' +
+      '    at async responseGenerator (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13724:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:1:228552)\n' +
+      '    at async handleResponse (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13787:32)\n' +
+      '    at async Module.handler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13841:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1462:9)\n' +
+      '    at async DevServer.renderPageComponent (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1514:24)\n' +
+      '    at async DevServer.renderToResponseImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1564:32)\n' +
+      '    at async DevServer.pipeImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1044:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\next-server.js:338:17)\n' +
+      '    at async DevServer.handleRequestImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:935:17)\n' +
+      '    at async D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:394:20\n' +
+      '    at async Span.traceAsyncFn (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\trace\\trace.js:164:20)\n' +
+      '    at async DevServer.handleRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:390:24)\n' +
+      '    at async invokeRender (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:266:21)\n' +
+      '    at async handleRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:465:24)\n' +
+      '    at async requestHandlerImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:514:13)\n' +
+      '    at async Server.requestListener (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\start-server.js:225:13)',
+    name: 'TypeError'
+  },
+  providerId: 'google',
+  message: 'client_id is required'
+}
+[next-auth][error][SIGNIN_OAUTH_ERROR] 
+https://next-auth.js.org/errors#signin_oauth_error client_id is required {
+  error: {
+    message: 'client_id is required',
+    stack: 'TypeError: client_id is required\n' +
+      '    at new BaseClient (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_openid-client_0ayas6_._.js:1424:19)\n' +
+      '    at new Client (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_openid-client_0ayas6_._.js:2949:13)\n' +
+      '    at openidClient (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:410:20)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+      '    at async getAuthorizationUrl (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:1764:20)\n' +
+      '    at async Object.signin (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:1846:30)\n' +
+      '    at async AuthHandler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3294:36)\n' +
+      '    at async NextAuthRouteHandler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3501:30)\n' +
+      '    at async NextAuth._args$ (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3536:24)\n' +
+      '    at async AppRouteRouteModule.do (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:40131)\n' +
+      '    at async AppRouteRouteModule.handle (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:47411)\n' +
+      '    at async responseGenerator (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13724:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:1:228552)\n' +
+      '    at async handleResponse (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13787:32)\n' +
+      '    at async Module.handler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13841:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1462:9)\n' +
+      '    at async DevServer.renderPageComponent (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1514:24)\n' +
+      '    at async DevServer.renderToResponseImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1564:32)\n' +
+      '    at async DevServer.pipeImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1044:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\next-server.js:338:17)\n' +
+      '    at async DevServer.handleRequestImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:935:17)\n' +
+      '    at async D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:394:20\n' +
+      '    at async Span.traceAsyncFn (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\trace\\trace.js:164:20)\n' +
+      '    at async DevServer.handleRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:390:24)\n' +
+      '    at async invokeRender (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:266:21)\n' +
+      '    at async handleRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:465:24)\n' +
+      '    at async requestHandlerImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:514:13)\n' +
+      '    at async Server.requestListener (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\start-server.js:225:13)',
+    name: 'TypeError'
+  },
+  providerId: 'google',
+  message: 'client_id is required'
+}
+[next-auth][error][SIGNIN_OAUTH_ERROR] 
+https://next-auth.js.org/errors#signin_oauth_error client_id is required {
+  error: {
+    message: 'client_id is required',
+    stack: 'TypeError: client_id is required\n' +
+      '    at new BaseClient (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_openid-client_0ayas6_._.js:1424:19)\n' +
+      '    at new Client (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_openid-client_0ayas6_._.js:2949:13)\n' +
+      '    at openidClient (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:410:20)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+      '    at async getAuthorizationUrl (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:1764:20)\n' +
+      '    at async Object.signin (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:1846:30)\n' +
+      '    at async AuthHandler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3294:36)\n' +
+      '    at async NextAuthRouteHandler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3501:30)\n' +
+      '    at async NextAuth._args$ (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3536:24)\n' +
+      '    at async AppRouteRouteModule.do (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:40131)\n' +
+      '    at async AppRouteRouteModule.handle (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:47411)\n' +
+      '    at async responseGenerator (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13724:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:1:228552)\n' +
+      '    at async handleResponse (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13787:32)\n' +
+      '    at async Module.handler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13841:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1462:9)\n' +
+      '    at async DevServer.renderPageComponent (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1514:24)\n' +
+      '    at async DevServer.renderToResponseImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1564:32)\n' +
+      '    at async DevServer.pipeImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1044:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\next-server.js:338:17)\n' +
+      '    at async DevServer.handleRequestImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:935:17)\n' +
+      '    at async D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:394:20\n' +
+      '    at async Span.traceAsyncFn (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\trace\\trace.js:164:20)\n' +
+      '    at async DevServer.handleRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:390:24)\n' +
+      '    at async invokeRender (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:266:21)\n' +
+      '    at async handleRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:465:24)\n' +
+      '    at async requestHandlerImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:514:13)\n' +
+      '    at async Server.requestListener (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\start-server.js:225:13)',
+    name: 'TypeError'
+  },
+  providerId: 'google',
+  message: 'client_id is required'
+}
+[next-auth][error][SIGNIN_OAUTH_ERROR] 
+https://next-auth.js.org/errors#signin_oauth_error client_id is required {
+  error: {
+    message: 'client_id is required',
+    stack: 'TypeError: client_id is required\n' +
+      '    at new BaseClient (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_openid-client_0ayas6_._.js:1424:19)\n' +
+      '    at new Client (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_openid-client_0ayas6_._.js:2949:13)\n' +
+      '    at openidClient (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:410:20)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+      '    at async getAuthorizationUrl (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:1764:20)\n' +
+      '    at async Object.signin (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:1846:30)\n' +
+      '    at async AuthHandler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3294:36)\n' +
+      '    at async NextAuthRouteHandler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3501:30)\n' +
+      '    at async NextAuth._args$ (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3536:24)\n' +
+      '    at async AppRouteRouteModule.do (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:40131)\n' +
+      '    at async AppRouteRouteModule.handle (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:47411)\n' +
+      '    at async responseGenerator (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13724:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:1:228552)\n' +
+      '    at async handleResponse (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13787:32)\n' +
+      '    at async Module.handler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13841:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1462:9)\n' +
+      '    at async DevServer.renderPageComponent (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1514:24)\n' +
+      '    at async DevServer.renderToResponseImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1564:32)\n' +
+      '    at async DevServer.pipeImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1044:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\next-server.js:338:17)\n' +
+      '    at async DevServer.handleRequestImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:935:17)\n' +
+      '    at async D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:394:20\n' +
+      '    at async Span.traceAsyncFn (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\trace\\trace.js:164:20)\n' +
+      '    at async DevServer.handleRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:390:24)\n' +
+      '    at async invokeRender (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:266:21)\n' +
+      '    at async handleRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:465:24)\n' +
+      '    at async requestHandlerImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:514:13)\n' +
+      '    at async Server.requestListener (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\start-server.js:225:13)',
+    name: 'TypeError'
+  },
+  providerId: 'google',
+  message: 'client_id is required'
+}
+[next-auth][error][SIGNIN_OAUTH_ERROR] 
+https://next-auth.js.org/errors#signin_oauth_error client_id is required {
+  error: {
+    message: 'client_id is required',
+    stack: 'TypeError: client_id is required\n' +
+      '    at new BaseClient (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_openid-client_0ayas6_._.js:1424:19)\n' +
+      '    at new Client (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_openid-client_0ayas6_._.js:2949:13)\n' +
+      '    at openidClient (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:410:20)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+      '    at async getAuthorizationUrl (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:1764:20)\n' +
+      '    at async Object.signin (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:1846:30)\n' +
+      '    at async AuthHandler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3294:36)\n' +
+      '    at async NextAuthRouteHandler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3501:30)\n' +
+      '    at async NextAuth._args$ (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3536:24)\n' +
+      '    at async AppRouteRouteModule.do (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:40131)\n' +
+      '    at async AppRouteRouteModule.handle (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:47411)\n' +
+      '    at async responseGenerator (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13724:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:1:228552)\n' +
+      '    at async handleResponse (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13787:32)\n' +
+      '    at async Module.handler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13841:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1462:9)\n' +
+      '    at async DevServer.renderPageComponent (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1514:24)\n' +
+      '    at async DevServer.renderToResponseImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1564:32)\n' +
+      '    at async DevServer.pipeImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1044:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\next-server.js:338:17)\n' +
+      '    at async DevServer.handleRequestImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:935:17)\n' +
+      '    at async D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:394:20\n' +
+      '    at async Span.traceAsyncFn (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\trace\\trace.js:164:20)\n' +
+      '    at async DevServer.handleRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:390:24)\n' +
+      '    at async invokeRender (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:266:21)\n' +
+      '    at async handleRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:465:24)\n' +
+      '    at async requestHandlerImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:514:13)\n' +
+      '    at async Server.requestListener (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\start-server.js:225:13)',
+    name: 'TypeError'
+  },
+  providerId: 'google',
+  message: 'client_id is required'
+}
+[next-auth][error][SIGNIN_OAUTH_ERROR] 
+https://next-auth.js.org/errors#signin_oauth_error client_id is required {
+  error: {
+    message: 'client_id is required',
+    stack: 'TypeError: client_id is required\n' +
+      '    at new BaseClient (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_openid-client_0ayas6_._.js:1424:19)\n' +
+      '    at new Client (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_openid-client_0ayas6_._.js:2949:13)\n' +
+      '    at openidClient (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:410:20)\n' +
+      '    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n' +
+      '    at async getAuthorizationUrl (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:1764:20)\n' +
+      '    at async Object.signin (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:1846:30)\n' +
+      '    at async AuthHandler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3294:36)\n' +
+      '    at async NextAuthRouteHandler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3501:30)\n' +
+      '    at async NextAuth._args$ (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next-auth_134_koo._.js:3536:24)\n' +
+      '    at async AppRouteRouteModule.do (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:40131)\n' +
+      '    at async AppRouteRouteModule.handle (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:5:47411)\n' +
+      '    at async responseGenerator (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13724:38)\n' +
+      '    at async AppRouteRouteModule.handleResponse (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\compiled\\next-server\\app-route-turbo.runtime.dev.js:1:228552)\n' +
+      '    at async handleResponse (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13787:32)\n' +
+      '    at async Module.handler (D:\\CodePersonal\\kad\\.next\\dev\\server\\chunks\\node_modules_next_14ah9l1._.js:13841:13)\n' +
+      '    at async DevServer.renderToResponseWithComponentsImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1462:9)\n' +
+      '    at async DevServer.renderPageComponent (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1514:24)\n' +
+      '    at async DevServer.renderToResponseImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1564:32)\n' +
+      '    at async DevServer.pipeImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:1044:25)\n' +
+      '    at async NextNodeServer.handleCatchallRenderRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\next-server.js:338:17)\n' +
+      '    at async DevServer.handleRequestImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\base-server.js:935:17)\n' +
+      '    at async D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:394:20\n' +
+      '    at async Span.traceAsyncFn (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\trace\\trace.js:164:20)\n' +
+      '    at async DevServer.handleRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\dev\\next-dev-server.js:390:24)\n' +
+      '    at async invokeRender (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:266:21)\n' +
+      '    at async handleRequest (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:465:24)\n' +
+      '    at async requestHandlerImpl (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\router-server.js:514:13)\n' +
+      '    at async Server.requestListener (D:\\CodePersonal\\kad\\node_modules\\next\\dist\\server\\lib\\start-server.js:225:13)',
+    name: 'TypeError'
+  },
+  providerId: 'google',
+  message: 'client_id is required'
+}
+⨯ ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  [90m63 |[0m [36mexport[0m [36mfunction[0m multiLine(text: string, cls = [32m""[0m, style: [33mReact[0m.[33mCSSProperties[0m = {}) {
+  [90m64 |[0m   [36mreturn[0m text.split([32m"\n"[0m).map((line, i) => (
+[31m[1m>[0m [90m65 |[0m     <p key={i} className={cls} style={style}>{line || [32m" "[0m}</p>
+  [90m   |[0m        [31m[1m^^^[0m
+  [90m66 |[0m   ))
+  [90m67 |[0m }
+  [90m68 |[0m
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/wizard/WizardShell.tsx [Client Component Browser]
+    ./src/components/wizard/WizardShell.tsx [Server Component]
+    ./src/app/builder/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/wizard/WizardShell.tsx [Client Component SSR]
+    ./src/components/wizard/WizardShell.tsx [Server Component]
+    ./src/app/builder/[slug]/page.tsx [Server Component]
+
+
+[browser] ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component] 
+[browser] ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component] 
+[browser] ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component] 
+[browser] ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component] 
+[browser] ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component] 
+[browser] ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component] 
+⨯ ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  [90m63 |[0m [36mexport[0m [36mfunction[0m multiLine(text: string, cls = [32m""[0m, style: [33mReact[0m.[33mCSSProperties[0m = {}) {
+  [90m64 |[0m   [36mreturn[0m text.split([32m"\n"[0m).map((line, i) => (
+[31m[1m>[0m [90m65 |[0m     <p key={i} className={cls} style={style}>{line || [32m" "[0m}</p>
+  [90m   |[0m        [31m[1m^^^[0m
+  [90m66 |[0m   ))
+  [90m67 |[0m }
+  [90m68 |[0m
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/wizard/WizardShell.tsx [Client Component Browser]
+    ./src/components/wizard/WizardShell.tsx [Server Component]
+    ./src/app/builder/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/wizard/WizardShell.tsx [Client Component SSR]
+    ./src/components/wizard/WizardShell.tsx [Server Component]
+    ./src/app/builder/[slug]/page.tsx [Server Component]
+
+
+[browser] ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component] 
+⨯ ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  [90m63 |[0m [36mexport[0m [36mfunction[0m multiLine(text: string, cls = [32m""[0m, style: [33mReact[0m.[33mCSSProperties[0m = {}) {
+  [90m64 |[0m   [36mreturn[0m text.split([32m"\n"[0m).map((line, i) => (
+[31m[1m>[0m [90m65 |[0m     <p key={i} className={cls} style={style}>{line || [32m" "[0m}</p>
+  [90m   |[0m        [31m[1m^^^[0m
+  [90m66 |[0m   ))
+  [90m67 |[0m }
+  [90m68 |[0m
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/wizard/WizardShell.tsx [Client Component Browser]
+    ./src/components/wizard/WizardShell.tsx [Server Component]
+    ./src/app/builder/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/wizard/WizardShell.tsx [Client Component SSR]
+    ./src/components/wizard/WizardShell.tsx [Server Component]
+    ./src/app/builder/[slug]/page.tsx [Server Component]
+
+
+[browser] ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component] 
+[browser] ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component] 
+⨯ ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  [90m63 |[0m [36mexport[0m [36mfunction[0m multiLine(text: string, cls = [32m""[0m, style: [33mReact[0m.[33mCSSProperties[0m = {}) {
+  [90m64 |[0m   [36mreturn[0m text.split([32m"\n"[0m).map((line, i) => (
+[31m[1m>[0m [90m65 |[0m     <p key={i} className={cls} style={style}>{line || [32m" "[0m}</p>
+  [90m   |[0m        [31m[1m^^^[0m
+  [90m66 |[0m   ))
+  [90m67 |[0m }
+  [90m68 |[0m
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/wizard/WizardShell.tsx [Client Component Browser]
+    ./src/components/wizard/WizardShell.tsx [Server Component]
+    ./src/app/builder/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/wizard/WizardShell.tsx [Client Component SSR]
+    ./src/components/wizard/WizardShell.tsx [Server Component]
+    ./src/app/builder/[slug]/page.tsx [Server Component]
+
+
+[browser] Uncaught Error: ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./src/components/templates/templateUtils.ts:65:8)
+    at <unknown> (Error: (./src/components/templates/templateUtils.ts:65:8)
+[browser] Uncaught Error: ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./src/components/templates/templateUtils.ts:65:8)
+    at <unknown> (Error: (./src/components/templates/templateUtils.ts:65:8)
+[browser] ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component] 
+[browser] ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/wizard/WizardShell.tsx [Client Component Browser]
+    ./src/components/wizard/WizardShell.tsx [Server Component]
+    ./src/app/builder/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/wizard/WizardShell.tsx [Client Component SSR]
+    ./src/components/wizard/WizardShell.tsx [Server Component]
+    ./src/app/builder/[slug]/page.tsx [Server Component] 
+[browser] ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component] 
+⨯ ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  [90m63 |[0m [36mexport[0m [36mfunction[0m multiLine(text: string, cls = [32m""[0m, style: [33mReact[0m.[33mCSSProperties[0m = {}) {
+  [90m64 |[0m   [36mreturn[0m text.split([32m"\n"[0m).map((line, i) => (
+[31m[1m>[0m [90m65 |[0m     <p key={i} className={cls} style={style}>{line || [32m" "[0m}</p>
+  [90m   |[0m        [31m[1m^^^[0m
+  [90m66 |[0m   ))
+  [90m67 |[0m }
+  [90m68 |[0m
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/wizard/WizardShell.tsx [Client Component Browser]
+    ./src/components/wizard/WizardShell.tsx [Server Component]
+    ./src/app/builder/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/wizard/WizardShell.tsx [Client Component SSR]
+    ./src/components/wizard/WizardShell.tsx [Server Component]
+    ./src/app/builder/[slug]/page.tsx [Server Component]
+
+
+⨯ ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  [90m63 |[0m [36mexport[0m [36mfunction[0m multiLine(text: string, cls = [32m""[0m, style: [33mReact[0m.[33mCSSProperties[0m = {}) {
+  [90m64 |[0m   [36mreturn[0m text.split([32m"\n"[0m).map((line, i) => (
+[31m[1m>[0m [90m65 |[0m     <p key={i} className={cls} style={style}>{line || [32m" "[0m}</p>
+  [90m   |[0m        [31m[1m^^^[0m
+  [90m66 |[0m   ))
+  [90m67 |[0m }
+  [90m68 |[0m
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/wizard/WizardShell.tsx [Client Component Browser]
+    ./src/components/wizard/WizardShell.tsx [Server Component]
+    ./src/app/builder/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/wizard/WizardShell.tsx [Client Component SSR]
+    ./src/components/wizard/WizardShell.tsx [Server Component]
+    ./src/app/builder/[slug]/page.tsx [Server Component]
+
+
+[browser] Uncaught Error: ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./src/components/templates/templateUtils.ts:65:8)
+    at <unknown> (Error: (./src/components/templates/templateUtils.ts:65:8)
+[browser] Uncaught Error: ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/WeddingTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./src/components/templates/templateUtils.ts:65:8)
+    at <unknown> (Error: (./src/components/templates/templateUtils.ts:65:8)
+⨯ ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  [90m63 |[0m [36mexport[0m [36mfunction[0m multiLine(text: string, cls = [32m""[0m, style: [33mReact[0m.[33mCSSProperties[0m = {}) {
+  [90m64 |[0m   [36mreturn[0m text.split([32m"\n"[0m).map((line, i) => (
+[31m[1m>[0m [90m65 |[0m     <p key={i} className={cls} style={style}>{line || [32m" "[0m}</p>
+  [90m   |[0m        [31m[1m^^^[0m
+  [90m66 |[0m   ))
+  [90m67 |[0m }
+  [90m68 |[0m
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/wizard/WizardShell.tsx [Client Component Browser]
+    ./src/components/wizard/WizardShell.tsx [Server Component]
+    ./src/app/builder/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/wizard/WizardShell.tsx [Client Component SSR]
+    ./src/components/wizard/WizardShell.tsx [Server Component]
+    ./src/app/builder/[slug]/page.tsx [Server Component]
+
+
+[browser] Uncaught Error: ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./src/components/templates/templateUtils.ts:65:8)
+    at <unknown> (Error: (./src/components/templates/templateUtils.ts:65:8)
+[browser] Uncaught Error: ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./src/components/templates/templateUtils.ts:65:8)
+    at <unknown> (Error: (./src/components/templates/templateUtils.ts:65:8)
+[browser] ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component] 
+[browser] ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/wizard/WizardShell.tsx [Client Component Browser]
+    ./src/components/wizard/WizardShell.tsx [Server Component]
+    ./src/app/builder/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/wizard/WizardShell.tsx [Client Component SSR]
+    ./src/components/wizard/WizardShell.tsx [Server Component]
+    ./src/app/builder/[slug]/page.tsx [Server Component] 
+[browser] ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component] 
+[browser] ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component] 
+[browser] Uncaught Error: ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./src/components/templates/templateUtils.ts:65:8)
+    at <unknown> (Error: (./src/components/templates/templateUtils.ts:65:8)
+[browser] ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component] 
+[browser] ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/wizard/WizardShell.tsx [Client Component Browser]
+    ./src/components/wizard/WizardShell.tsx [Server Component]
+    ./src/app/builder/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/wizard/WizardShell.tsx [Client Component SSR]
+    ./src/components/wizard/WizardShell.tsx [Server Component]
+    ./src/app/builder/[slug]/page.tsx [Server Component] 
+[browser] ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component] 
+[browser] ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component] 
+[browser] Uncaught Error: ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./src/components/templates/templateUtils.ts:65:8)
+    at <unknown> (Error: (./src/components/templates/templateUtils.ts:65:8)
+[browser] Uncaught Error: ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/BirthdayTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./src/components/templates/templateUtils.ts:65:8)
+    at <unknown> (Error: (./src/components/templates/templateUtils.ts:65:8)
+[browser] Uncaught Error: ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/CorporateTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/CorporateTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./src/components/templates/templateUtils.ts:65:8)
+    at <unknown> (Error: (./src/components/templates/templateUtils.ts:65:8)
+[browser] Uncaught Error: ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/CorporateTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/CorporateTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./src/components/templates/templateUtils.ts:65:8)
+    at <unknown> (Error: (./src/components/templates/templateUtils.ts:65:8)
+[browser] Uncaught Error: ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/GenericTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/GenericTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./src/components/templates/templateUtils.ts:65:8)
+    at <unknown> (Error: (./src/components/templates/templateUtils.ts:65:8)
+[browser] Uncaught Error: ./src/components/templates/templateUtils.ts:65:8
+Expected '>', got 'ident'
+  63 | export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+  64 |   return text.split("\n").map((line, i) => (
+> 65 |     <p key={i} className={cls} style={style}>{line || " "}</p>
+     |        ^^^
+  66 |   ))
+  67 | }
+  68 |
+
+Parsing ecmascript source code failed
+
+Import traces:
+  Client Component Browser:
+    ./src/components/templates/templateUtils.ts [Client Component Browser]
+    ./src/components/templates/GenericTemplate.tsx [Client Component Browser]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Client Component Browser]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./src/components/templates/templateUtils.ts [Client Component SSR]
+    ./src/components/templates/GenericTemplate.tsx [Client Component SSR]
+    ./src/components/templates/TemplateRenderer.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Client Component SSR]
+    ./src/components/invite/InviteClient.tsx [Server Component]
+    ./src/app/invite/[slug]/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./src/components/templates/templateUtils.ts:65:8)
+    at <unknown> (Error: (./src/components/templates/templateUtils.ts:65:8)
+[browser] Updating a style property during rerender (background) when a conflicting property is set (backgroundImage) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. 
+[browser] Updating a style property during rerender (background) when a conflicting property is set (backgroundPosition) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. 
+[browser] Updating a style property during rerender (background) when a conflicting property is set (backgroundSize) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. 
+[browser] Updating a style property during rerender (background) when a conflicting property is set (backgroundImage) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. 
+[browser] Updating a style property during rerender (background) when a conflicting property is set (backgroundPosition) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. 
+[browser] Updating a style property during rerender (background) when a conflicting property is set (backgroundSize) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. 
+[browser] Removing a style property during rerender (backgroundImage) when a conflicting property is set (background) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. 
+[browser] Removing a style property during rerender (backgroundSize) when a conflicting property is set (background) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. 
+[browser] Removing a style property during rerender (backgroundPosition) when a conflicting property is set (background) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. 
+[browser] Removing a style property during rerender (backgroundImage) when a conflicting property is set (background) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. 
+[browser] Removing a style property during rerender (backgroundSize) when a conflicting property is set (background) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. 
+[browser] Removing a style property during rerender (backgroundPosition) when a conflicting property is set (background) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. 
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+      <LoadingBoundary name="famv7sv0/" loading={null}>
+        <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+          <RedirectBoundary>
+            <RedirectErrorBoundary router={{...}}>
+              <InnerLayoutRouter url="/invite/fa..." tree={[...]} params={{slug:"famv..."}} cacheNode={{rsc:{...}, ...}} ...>
+                <SegmentViewNode type="page" pagePath="invite/[sl...">
+                  <SegmentTrieNode>
+                  <InvitePage>
+                    <InviteClient card={{id:"cmqq9x...", ...}}>
+                      <div className="fixed inse...">
+                        <div>
+                        <button>
+                        <div>
+                        <div className="absolute i...">
+                          <div ref={function ref} className="relative w..." style={{...}}>
+                            <style>
+                            <div className="relative z-10">
+                              <TemplateRenderer>
+                              <MusicPlayer media={{...}} onAnalytic={function InviteClient.useCallback[fireAnalytic]} ...>
+                                <iframe
+                                  ref={function ref}
++                                 src={"https://www.youtube.com/embed/96jN2OCOfLs?enablejsapi=1&autoplay=1&mute=1&loo..."}
+-                                 src={"https://www.youtube.com/embed/96jN2OCOfLs?enablejsapi=1&autoplay=1&mute=1&loo..."}
+                                  allow="autoplay"
+                                  className="absolute w-0 h-0 opacity-0 pointer-events-none"
+                                  aria-hidden="true"
+                                >
+                              ...
+                ...
+              ...
+ 

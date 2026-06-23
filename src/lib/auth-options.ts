@@ -1,0 +1,75 @@
+import type { NextAuthOptions } from "next-auth"
+import CredentialsProvider from "next-auth/providers/credentials"
+import GoogleProvider from "next-auth/providers/google"
+import bcrypt from "bcryptjs"
+import { prisma } from "@/lib/prisma"
+
+export const authOptions: NextAuthOptions = {
+  providers: [
+    GoogleProvider({
+      clientId:     process.env.GOOGLE_CLIENT_ID  ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+    }),
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email:    { label: "Email",    type: "email"    },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null
+
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email.toLowerCase().trim() },
+        })
+        if (!user || !user.passwordHash) return null
+
+        const valid = await bcrypt.compare(credentials.password, user.passwordHash)
+        if (!valid) return null
+
+        return { id: user.id, email: user.email, name: user.name, image: user.image }
+      },
+    }),
+  ],
+
+  session: { strategy: "jwt" as const },
+  secret: process.env.NEXTAUTH_SECRET ?? "kad-dev-secret-change-in-production",
+
+  callbacks: {
+    // Fires on every sign-in. For Google: upsert the user row.
+    async signIn({ user, account }) {
+      if (account?.provider === "google" && user.email) {
+        await prisma.user.upsert({
+          where:  { email: user.email },
+          create: { email: user.email, name: user.name, image: user.image },
+          update: { name: user.name, image: user.image },
+        })
+      }
+      return true
+    },
+
+    async jwt({ token, user, account }) {
+      if (user) {
+        if (account?.provider === "google") {
+          // After signIn upsert, fetch the real DB id
+          const dbUser = await prisma.user.findUnique({ where: { email: token.email! } })
+          token.id = dbUser?.id
+        } else {
+          token.id = user.id
+        }
+      }
+      return token
+    },
+
+    async session({ session, token }) {
+      if (session.user && token.id) {
+        session.user.id = token.id as string
+      }
+      return session
+    },
+  },
+
+  pages: {
+    signIn: "/login",
+  },
+}

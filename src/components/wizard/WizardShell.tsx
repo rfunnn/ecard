@@ -1,0 +1,621 @@
+"use client"
+
+import { useState, useEffect, useCallback, useRef } from "react"
+import Link from "next/link"
+import { ChevronLeft, ChevronRight, Save, Eye, X, ShoppingBag, ExternalLink, Loader2 } from "lucide-react"
+import { useWizardStore, TOTAL_PAGES } from "@/store/wizardStore"
+import type { TemplateInfo } from "@/store/wizardStore"
+import type { WizardConfig } from "@/types/config"
+import { TemplateRenderer } from "@/components/templates/TemplateRenderer"
+import type { InvitationCardData } from "@/types/invitation"
+import { DEFAULT_THEME, DEFAULT_MEDIA, DEFAULT_SCROLL } from "@/types/invitation"
+import { addToCart } from "@/lib/cart"
+import { CartDrawer } from "@/components/CartDrawer"
+import { Page1_Main } from "./pages/Page1_Main"
+import { Page2_FrontPage } from "./pages/Page2_FrontPage"
+import { Page3_InvitationText } from "./pages/Page3_InvitationText"
+import { Page4_Venue } from "./pages/Page4_Venue"
+import { Page5_Program } from "./pages/Page5_Program"
+import { Page6_Interface } from "./pages/Page6_Interface"
+import { Page7_RSVP } from "./pages/Page7_RSVP"
+import { Page8_Contact } from "./pages/Page8_Contact"
+import { Page9_Music } from "./pages/Page9_Music"
+import { Page10_Gift } from "./pages/Page10_Gift"
+import { Page11_Segments } from "./pages/Page11_Segments"
+
+interface Props {
+  initialCard: InvitationCardData
+}
+
+const PAGE_NAMES = [
+  "Utama & Pembukaan",
+  "Muka Depan",
+  "Ayat Undangan",
+  "Tempat & Navigasi",
+  "Atur Cara & Lain-lain",
+  "Antara Muka",
+  "RSVP / Ucapan",
+  "Hubungi",
+  "Lagu & Auto Skrol",
+  "Hadiah",
+  "Segmen & Tamat",
+]
+
+const PAGE_COMPONENTS = [
+  Page1_Main,
+  Page2_FrontPage,
+  Page3_InvitationText,
+  Page4_Venue,
+  Page5_Program,
+  Page6_Interface,
+  Page7_RSVP,
+  Page8_Contact,
+  Page9_Music,
+  Page10_Gift,
+  Page11_Segments,
+]
+
+const WARNING_PAGES = new Set([1, 4, 6, 7, 8, 9, 10, 11])
+
+// When a card has no saved wizardConfig (new card or failed save), bootstrap wizard fields
+// from the card's existing DB fields so the user sees their data instead of empty defaults.
+function buildInitialConfig(card: InvitationCardData): Partial<WizardConfig> {
+  const saved = card.wizardConfig as Partial<WizardConfig> | undefined | null
+  if (saved && typeof saved === "object" && Object.keys(saved).length > 0) {
+    return saved as Partial<WizardConfig>
+  }
+
+  const names = [card.groomName, card.brideName].filter(Boolean)
+  const patch: Partial<WizardConfig> = {}
+
+  if (names.length) patch.displayName = names.join(" & ")
+  else if (card.title) patch.displayName = card.title
+
+  if (card.subtitle)      patch.eventType = card.subtitle
+  if (card.venueName)     patch.venueLine = card.venueName
+  if (card.venueAddress)  patch.venueAddress = card.venueAddress
+  if (card.venueMapUrl)   patch.googleMapsUrl = card.venueMapUrl
+  if (card.description)   patch.invitationSpeech = card.description
+  if (card.language)      patch.language = card.language as "ms" | "en"
+  if (card.theme?.bgColor)   patch.backgroundColor = card.theme.bgColor
+  if (card.template?.slug)   patch.designCode = card.template.slug
+  if (card.media?.youtubeUrl) { patch.youtubeUrl = card.media.youtubeUrl; patch.showMusicPlayer = true }
+  if (card.scrollConfig?.autoScroll) {
+    patch.scrollDelay = card.scrollConfig.speed === "SLOW" ? 8 : card.scrollConfig.speed === "FAST" ? 2 : 3.5
+  }
+  if (card.whatsappNumber) {
+    patch.contacts = [
+      { name: card.contactName || "", role: "", phone: card.whatsappNumber, isWhatsApp: true },
+      { name: "", role: "", phone: "", isWhatsApp: true },
+    ]
+  }
+  if (card.eventDate) {
+    try {
+      const d = new Date(card.eventDate)
+      const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+      patch.startDateTime = local.toISOString().slice(0, 16)
+    } catch { /* skip */ }
+  }
+
+  return patch
+}
+
+function buildCardPreview(
+  initialCard: InvitationCardData,
+  config: WizardConfig,
+  templateOverride?: TemplateInfo | null
+): InvitationCardData {
+  const [groomName, brideName] = config.displayName.includes("&")
+    ? config.displayName.split("&").map((s) => s.trim())
+    : [config.displayName, ""]
+
+  const startDT = config.startDateTime ? new Date(config.startDateTime) : undefined
+
+  return {
+    ...initialCard,
+    template: templateOverride
+      ? {
+          slug: templateOverride.slug,
+          name: templateOverride.nameMs || templateOverride.name,
+          category: templateOverride.category,
+          image1Url: templateOverride.image1Url ?? null,
+          image2Url: templateOverride.image2Url ?? null,
+        }
+      : initialCard.template,
+    language: config.language,
+    groomName: groomName || initialCard.groomName,
+    brideName: brideName || initialCard.brideName,
+    title: config.displayName || initialCard.title,
+    subtitle: config.eventType,
+    eventDate: startDT?.toISOString() ?? initialCard.eventDate,
+    eventTime: startDT
+      ? startDT.toLocaleTimeString("ms-MY", { hour: "2-digit", minute: "2-digit" })
+      : initialCard.eventTime,
+    venueName: config.venueLine || initialCard.venueName,
+    venueAddress: config.venueAddress || initialCard.venueAddress,
+    venueMapUrl: config.googleMapsUrl || initialCard.venueMapUrl,
+    description: config.invitationSpeech || initialCard.description,
+    whatsappNumber: config.contacts[0]?.isWhatsApp ? config.contacts[0].phone : initialCard.whatsappNumber,
+    contactName: config.contacts[0]?.name || initialCard.contactName,
+    theme: {
+      ...initialCard.theme,
+      bgColor: config.backgroundColor,
+      bodyFont: config.generalFont,
+      titleFont: config.headingFont,
+      bodySize: config.generalSize,
+      titleSize: config.headingSize,
+      bodyColor: config.generalColor,
+    },
+    media: {
+      ...initialCard.media,
+      youtubeUrl: config.youtubeUrl || undefined,
+      youtubeVideoId: config.youtubeUrl
+        ? (config.youtubeUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?/\s]{11})/)?.[1] ?? undefined)
+        : undefined,
+      autoplay: config.autoplayMusic,
+      audioEnabled: config.showMusicPlayer,
+    },
+    scrollConfig: {
+      ...initialCard.scrollConfig,
+      autoScroll: config.scrollDelay > 0,
+    },
+  }
+}
+
+export function WizardShell({ initialCard }: Props) {
+  const {
+    config,
+    cardSlug,
+    currentPage,
+    isDirty,
+    isSaving,
+    templateOverride,
+    setPage,
+    nextPage,
+    prevPage,
+    setCardSlug,
+    setIsSaving,
+    markClean,
+    loadConfig,
+  } = useWizardStore()
+
+  const [showMobilePreview, setShowMobilePreview] = useState(false)
+  const [cartOpen, setCartOpen] = useState(false)
+  const [previewOpen, setPreviewOpen] = useState(false)
+  const [isSavingForPreview, setIsSavingForPreview] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
+
+  const desktopScrollRef = useRef<HTMLDivElement | undefined>(undefined)
+  const mobileScrollRef  = useRef<HTMLDivElement | undefined>(undefined)
+
+  // Auto-scroll both preview panes — speed driven by scrollDelay config (higher = slower)
+  useEffect(() => {
+    const intervalMs = config.scrollDelay > 0 ? Math.round(config.scrollDelay * 20) : 60
+    const id = setInterval(() => {
+      for (const ref of [desktopScrollRef, mobileScrollRef]) {
+        const el = ref.current
+        if (!el) continue
+        if (el.scrollTop + el.clientHeight >= el.scrollHeight - 10) {
+          el.scrollTop = 0
+        } else {
+          el.scrollTop += 1
+        }
+      }
+    }, intervalMs)
+    return () => clearInterval(id)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [config.scrollDelay])
+
+  // Load config when opening a card for the first time or switching cards.
+  // Keeps in-memory edits intact when navigating within the same card.
+  useEffect(() => {
+    if (cardSlug !== initialCard.slug) {
+      loadConfig(buildInitialConfig(initialCard))
+      setCardSlug(initialCard.slug)
+    }
+    addToCart(initialCard.slug)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialCard.slug])
+
+  const cardPreview = buildCardPreview(initialCard, config, templateOverride)
+
+  const save = useCallback(async () => {
+    setIsSaving(true)
+    setSaveError(null)
+    try {
+      const { theme, media, scrollConfig, ...rest } = cardPreview
+      const payload: Record<string, unknown> = { ...rest, theme, media, scrollConfig, wizardConfig: config }
+      if (templateOverride) payload.templateId = templateOverride.id
+      const res = await fetch(`/api/cards/${initialCard.slug}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+      if (!res.ok) {
+        setSaveError("Gagal menyimpan. Cuba semula.")
+        return
+      }
+      addToCart(initialCard.slug)
+      markClean()
+    } catch {
+      setSaveError("Tiada sambungan. Cuba semula.")
+    } finally {
+      setIsSaving(false)
+    }
+  }, [cardPreview, config, initialCard.slug, markClean, setIsSaving, templateOverride])
+
+  const handlePreviewOpen = useCallback(async () => {
+    if (isDirty) {
+      setIsSavingForPreview(true)
+      await save()
+      setIsSavingForPreview(false)
+    }
+    setPreviewOpen(true)
+  }, [isDirty, save])
+
+  const isLastPage = currentPage === TOTAL_PAGES
+  const CurrentPage = PAGE_COMPONENTS[currentPage - 1]
+  const pageName = PAGE_NAMES[currentPage - 1]
+  const showWarning = WARNING_PAGES.has(currentPage)
+
+  return (
+    <div className="flex h-screen bg-white overflow-hidden">
+
+      {/* ── Left: Form ── */}
+      <div className="flex flex-col w-full lg:max-w-lg xl:max-w-xl bg-white border-r border-gray-100 overflow-hidden">
+
+        {/* Header */}
+        <div className="shrink-0 border-b border-gray-100 px-4 pt-3 pb-2">
+          <div className="flex items-center justify-between mb-2">
+            <Link href="/" className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1">
+              <ChevronLeft className="w-4 h-4" />
+              Utama
+            </Link>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={handlePreviewOpen}
+                disabled={isSavingForPreview}
+                className="flex items-center gap-1.5 text-xs text-amber-600 hover:text-amber-700 font-medium transition-colors px-2 py-1 rounded-md hover:bg-amber-50 disabled:opacity-60"
+              >
+                {isSavingForPreview ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Eye className="w-3.5 h-3.5" />
+                )}
+                Lihat Kad
+              </button>
+              <button
+                type="button"
+                onClick={() => setCartOpen(true)}
+                className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-800 transition-colors px-2 py-1 rounded-md hover:bg-gray-100"
+              >
+                <ShoppingBag className="w-3.5 h-3.5" />
+                Kad Saya
+              </button>
+            </div>
+          </div>
+          <div className="text-center pb-1">
+            <h1 className="text-base font-bold tracking-wide text-gray-900">EDIT CARD</h1>
+            <p className="text-sm text-amber-600 underline decoration-amber-600/50 mt-0.5">{pageName}</p>
+          </div>
+        </div>
+
+        {/* Page content */}
+        <div className="flex-1 overflow-y-auto px-4 py-5">
+          <CurrentPage />
+        </div>
+
+        {/* Bottom nav */}
+        <div className="shrink-0 border-t border-gray-200 bg-white">
+          {/* Nav bar */}
+          <div className="flex items-center gap-2 px-3 py-2.5">
+            {/* Back arrow */}
+            <button
+              type="button"
+              onClick={prevPage}
+              disabled={currentPage === 1}
+              className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 disabled:opacity-30 hover:bg-gray-50"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+
+            {/* Page selector */}
+            <select
+              value={currentPage}
+              onChange={(e) => setPage(Number(e.target.value))}
+              className="flex-1 border border-gray-300 rounded-md px-2 py-1.5 text-sm text-gray-700 bg-white outline-none text-center"
+            >
+              {PAGE_NAMES.map((name, i) => (
+                <option key={i} value={i + 1}>
+                  {i + 1}. {name}
+                </option>
+              ))}
+            </select>
+
+            {/* Next / Save */}
+            {isLastPage ? (
+              <button
+                type="button"
+                onClick={save}
+                disabled={isSaving}
+                className="px-5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-md disabled:opacity-60 transition-colors"
+              >
+                {isSaving ? "..." : "SAVE"}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={nextPage}
+                className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-gray-50"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            )}
+
+            {/* Save icon (always visible) */}
+            <button
+              type="button"
+              onClick={save}
+              disabled={isSaving}
+              className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+              title="Simpan"
+            >
+              {isSaving ? (
+                <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Save className="w-4 h-4" />
+              )}
+            </button>
+
+            {/* Mobile preview toggle (hidden on desktop which already shows preview) */}
+            <button
+              type="button"
+              onClick={() => setShowMobilePreview(true)}
+              className="w-9 h-9 flex items-center justify-center rounded-full border border-amber-300 text-amber-600 hover:bg-amber-50 lg:hidden"
+              title="Pratonton"
+            >
+              <Eye className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Warning */}
+          {showWarning && (
+            <div className="px-4 py-2 bg-yellow-50 border-t border-yellow-100 text-center">
+              <p className="text-[11px] text-yellow-700">Pastikan browser anda bukan dalam dark mode</p>
+              <p className="text-[11px] text-yellow-600">Previu ini tidak sepenuhnya tepat seperti produk sebenar</p>
+            </div>
+          )}
+
+          {/* Save error */}
+          {saveError && !isSaving && (
+            <div className="px-4 py-1.5 bg-red-50 border-t border-red-100 text-center">
+              <p className="text-[11px] text-red-600">{saveError}</p>
+            </div>
+          )}
+
+          {/* Unsaved indicator */}
+          {isDirty && !isSaving && !saveError && (
+            <div className="px-4 py-1.5 bg-blue-50 border-t border-blue-100 text-center">
+              <p className="text-[11px] text-blue-600">Terdapat perubahan yang belum disimpan</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── Right: Live Preview (desktop only) ── */}
+      <div className="hidden lg:flex flex-1 bg-gray-100 items-center justify-center overflow-hidden relative">
+        <div className="absolute inset-0 flex items-center justify-center p-8">
+          {/* Phone frame */}
+          <div className="relative h-full max-h-[780px]" style={{ aspectRatio: "9/19.5" }}>
+            <div className="absolute inset-0 rounded-[44px] border-[8px] border-gray-800 shadow-2xl overflow-hidden z-10 pointer-events-none">
+              <div
+                className="absolute inset-0"
+                style={{
+                  background: cardPreview.theme?.bgColor ?? "#0a0a0a",
+                  ...(cardPreview.template?.image2Url
+                    ? {
+                        backgroundImage: `linear-gradient(rgba(0,0,0,${cardPreview.theme?.bgOpacity ?? 0.45}),rgba(0,0,0,${cardPreview.theme?.bgOpacity ?? 0.45})),url(${cardPreview.template.image2Url})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }
+                    : cardPreview.theme?.bgImageUrl
+                    ? {
+                        backgroundImage: `linear-gradient(rgba(0,0,0,${cardPreview.theme.bgOpacity}),rgba(0,0,0,${cardPreview.theme.bgOpacity})),url(${cardPreview.theme.bgImageUrl})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }
+                    : {}),
+                }}
+              />
+              <div
+                ref={(el) => { if (el) desktopScrollRef.current = el }}
+                className="absolute inset-0 overflow-y-auto overflow-x-hidden z-10"
+                style={{ scrollbarWidth: "none" }}
+              >
+                {cardPreview.template?.image1Url && (
+                  <div className="absolute top-0 left-0 right-0 pointer-events-none z-0" style={{ height: "100svh" }}>
+                    <img src={cardPreview.template.image1Url} alt="" className="absolute inset-0 w-full h-full object-cover" draggable={false} />
+                  </div>
+                )}
+                <div className="relative z-10">
+                  <TemplateRenderer card={cardPreview} />
+                </div>
+              </div>
+            </div>
+            {/* Notch */}
+            <div className="absolute top-1.5 left-0 right-0 flex justify-center z-20 pointer-events-none">
+              <div className="w-24 h-5 bg-gray-800 rounded-b-xl" />
+            </div>
+            {/* Home indicator */}
+            <div className="absolute bottom-2 left-0 right-0 flex justify-center z-20 pointer-events-none">
+              <div className="w-16 h-1 bg-gray-600 rounded-full opacity-60" />
+            </div>
+          </div>
+        </div>
+
+        {/* Page indicator */}
+        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5">
+          {Array.from({ length: TOTAL_PAGES }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setPage(i + 1)}
+              className={`rounded-full transition-all ${
+                currentPage === i + 1
+                  ? "w-6 h-2 bg-amber-500"
+                  : "w-2 h-2 bg-gray-400 hover:bg-gray-500"
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* Quick nav label */}
+        <div className="absolute top-4 left-4 bg-white/80 backdrop-blur-sm rounded-lg px-3 py-2 shadow-sm border border-gray-200">
+          <p className="text-xs text-gray-500">Pratonton Langsung</p>
+          <p className="text-sm font-semibold text-gray-800">{pageName}</p>
+        </div>
+
+        {/* Full preview button */}
+        <div className="absolute top-4 right-4">
+          <button
+            type="button"
+            onClick={handlePreviewOpen}
+            disabled={isSavingForPreview}
+            className="flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white text-xs font-medium px-3 py-2 rounded-lg shadow-lg transition-colors disabled:opacity-60"
+          >
+            {isSavingForPreview ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <ExternalLink className="w-3.5 h-3.5" />
+            )}
+            Lihat Kad Penuh
+          </button>
+        </div>
+      </div>
+
+      {/* ── Mobile Live Preview Overlay ── */}
+      {showMobilePreview && (
+        <div className="fixed inset-0 z-50 lg:hidden bg-gray-100 flex flex-col">
+          <div className="shrink-0 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-100 shadow-sm">
+            <div>
+              <p className="text-sm font-semibold text-gray-900">Pratonton Langsung</p>
+              <p className="text-xs text-amber-600 mt-0.5">{pageName}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowMobilePreview(false)}
+              className="w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          <div className="flex-1 flex items-center justify-center p-6 overflow-hidden">
+            <div className="relative h-full" style={{ aspectRatio: "9/19.5", maxHeight: "100%" }}>
+              <div className="absolute inset-0 rounded-[44px] border-[8px] border-gray-800 shadow-2xl overflow-hidden z-10 pointer-events-none">
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: cardPreview.theme?.bgColor ?? "#0a0a0a",
+                    ...(cardPreview.template?.image2Url
+                      ? {
+                          backgroundImage: `linear-gradient(rgba(0,0,0,${cardPreview.theme?.bgOpacity ?? 0.45}),rgba(0,0,0,${cardPreview.theme?.bgOpacity ?? 0.45})),url(${cardPreview.template.image2Url})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                        }
+                      : cardPreview.theme?.bgImageUrl
+                      ? {
+                          backgroundImage: `linear-gradient(rgba(0,0,0,${cardPreview.theme.bgOpacity}),rgba(0,0,0,${cardPreview.theme.bgOpacity})),url(${cardPreview.theme.bgImageUrl})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                        }
+                      : {}),
+                  }}
+                />
+                <div
+                  ref={(el) => { if (el) mobileScrollRef.current = el }}
+                  className="absolute inset-0 overflow-y-auto overflow-x-hidden z-10"
+                  style={{ scrollbarWidth: "none" }}
+                >
+                  {cardPreview.template?.image1Url && (
+                    <div className="absolute top-0 left-0 right-0 pointer-events-none z-0" style={{ height: "100svh" }}>
+                      <img src={cardPreview.template.image1Url} alt="" className="absolute inset-0 w-full h-full object-cover" draggable={false} />
+                    </div>
+                  )}
+                  <div className="relative z-10">
+                    <TemplateRenderer card={cardPreview} />
+                  </div>
+                </div>
+              </div>
+              <div className="absolute top-1.5 left-0 right-0 flex justify-center z-20 pointer-events-none">
+                <div className="w-24 h-5 bg-gray-800 rounded-b-xl" />
+              </div>
+              <div className="absolute bottom-2 left-0 right-0 flex justify-center z-20 pointer-events-none">
+                <div className="w-16 h-1 bg-gray-600 rounded-full opacity-60" />
+              </div>
+            </div>
+          </div>
+          <div className="shrink-0 px-4 pb-4">
+            <button
+              type="button"
+              onClick={() => setShowMobilePreview(false)}
+              className="w-full py-2.5 rounded-xl bg-gray-800 text-white text-sm font-medium"
+            >
+              Kembali ke Editor
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Full-Page Preview Overlay ── */}
+      {previewOpen && (
+        <div className="fixed inset-0 z-[60] flex flex-col bg-[#0a0a0a]">
+          {/* Preview bar */}
+          <div className="shrink-0 flex items-center justify-between px-4 py-2.5 bg-[#111] border-b border-white/10">
+            <div className="flex items-center gap-2.5">
+              <Eye className="w-4 h-4 text-gold" />
+              <span className="text-sm text-cream font-medium">Pratonton Kad</span>
+              {isDirty ? (
+                <span className="text-[11px] text-amber-400/80 bg-amber-400/10 px-2 py-0.5 rounded-full">
+                  Ada perubahan belum disimpan
+                </span>
+              ) : (
+                <span className="text-[11px] text-cream/30 bg-white/5 px-2 py-0.5 rounded-full">
+                  Versi disimpan
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-3">
+              <a
+                href={`/invite/${initialCard.slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-xs text-gold/70 hover:text-gold transition-colors"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Buka Tab Baru</span>
+              </a>
+              <button
+                type="button"
+                onClick={() => setPreviewOpen(false)}
+                className="flex items-center gap-1.5 text-sm text-cream/50 hover:text-cream transition-colors pl-3 border-l border-white/10"
+              >
+                <X className="w-4 h-4" />
+                <span className="hidden sm:inline text-xs">Tutup</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Iframe */}
+          <iframe
+            src={`/invite/${initialCard.slug}`}
+            className="flex-1 w-full border-0 bg-white"
+            title="Pratonton Kad Jemputan"
+            allow="autoplay"
+          />
+        </div>
+      )}
+
+      <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
+    </div>
+  )
+}

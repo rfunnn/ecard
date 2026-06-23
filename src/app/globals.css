@@ -1,26 +1,93 @@
 @import "tailwindcss";
 
+/* Class-based dark mode for Tailwind dark: variants */
+@variant dark (&:where(.dark, .dark *));
+
+/* ── Theme CSS variables ── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Light mode (default) */
+  --pg:      #ffffff;
+  --pg-alt:  #f7f4ef;
+  --pg-nav:  rgba(255,255,255,0.92);
+  --tx-1:    #141414;
+  --tx-2:    rgba(20,20,20,0.55);
+  --tx-3:    rgba(20,20,20,0.38);
+  --bd:      rgba(20,20,20,0.08);
+  --sf:      rgba(20,20,20,0.03);
+  --float:   #ffffff;
+  --float-bd:rgba(20,20,20,0.09);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.dark {
+  --pg:      #0a0a0a;
+  --pg-alt:  #080808;
+  --pg-nav:  rgba(10,10,10,0.9);
+  --tx-1:    #F5E6C8;
+  --tx-2:    rgba(245,230,200,0.5);
+  --tx-3:    rgba(245,230,200,0.3);
+  --bd:      rgba(255,255,255,0.05);
+  --sf:      rgba(255,255,255,0.02);
+  --float:   #111111;
+  --float-bd:rgba(255,255,255,0.10);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@theme {
+  --color-gold: oklch(71.4% 0.148 84.5);
+  --color-gold-light: oklch(84% 0.12 84);
+  --color-gold-dark: oklch(48% 0.12 60);
+  --color-cream: oklch(93% 0.04 81);
+  --color-ink: oklch(14% 0.04 45);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--pg);
+  color: var(--tx-1);
+  transition: background 0.2s, color 0.2s;
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.font-playfair   { font-family: var(--font-playfair), "Playfair Display", serif; }
+.font-cormorant  { font-family: var(--font-cormorant), "Cormorant Garamond", serif; }
+.font-great-vibes { font-family: var(--font-great-vibes), "Great Vibes", cursive; }
+.font-dancing    { font-family: var(--font-dancing), "Dancing Script", cursive; }
+.font-cinzel     { font-family: var(--font-cinzel), "Cinzel", serif; }
+.font-garamond   { font-family: var(--font-garamond), "EB Garamond", serif; }
+.font-lato       { font-family: var(--font-lato), "Lato", sans-serif; }
+.font-montserrat { font-family: var(--font-montserrat), "Montserrat", sans-serif; }
+.font-opensans   { font-family: var(--font-opensans), "Open Sans", sans-serif; }
+.font-raleway    { font-family: var(--font-raleway), "Raleway", sans-serif; }
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #D4AF37 #1a0a00;
+}
+*::-webkit-scrollbar { width: 4px; height: 4px; }
+*::-webkit-scrollbar-track { background: #1a0a00; }
+*::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 2px; }
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.shimmer {
+  background: linear-gradient(90deg, #D4AF37 25%, #F2D06B 50%, #D4AF37 75%);
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+.float { animation: float 4s ease-in-out infinite; }
+
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(2); opacity: 0; }
 }

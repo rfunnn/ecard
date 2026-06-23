@@ -1,0 +1,211 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id           String           @id @default(cuid())
+  email        String           @unique
+  name         String?
+  image        String?
+  passwordHash String?
+  createdAt    DateTime         @default(now())
+  cards        InvitationCard[]
+  likes        UserLike[]
+}
+
+model UserLike {
+  id         String   @id @default(cuid())
+  userId     String
+  templateId String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  template   Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, templateId])
+}
+
+model Template {
+  id            String             @id @default(cuid())
+  slug          String             @unique
+  name          String
+  nameMs        String             @default("")
+  category      TemplateCategory   @default(WEDDING)
+  thumbnail     String             @default("")
+  previewUrl    String?
+  isActive      Boolean            @default(true)
+  sortOrder     Int                @default(0)
+  defaultConfig Json
+  image1Url     String?
+  image2Url     String?
+  displayConfig Json?
+  cards         InvitationCard[]
+  likes         UserLike[]
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @default(now()) @updatedAt
+}
+
+model InvitationCard {
+  id             String         @id @default(cuid())
+  slug           String         @unique
+  userId         String?
+  templateId     String
+
+  title          String         @default("")
+  groomName      String?
+  brideName      String?
+  subtitle       String?
+  eventDate      DateTime?
+  eventTime      String?
+  venueName      String?
+  venueAddress   String?
+  venueMapUrl    String?
+  description    String?
+  footerNote     String?
+
+  whatsappNumber String?
+  contactName    String?
+
+  isPublished    Boolean        @default(false)
+  passwordHash   String?
+  language       String         @default("ms")
+  viewCount      Int            @default(0)
+
+  user           User?          @relation(fields: [userId], references: [id])
+  template       Template       @relation(fields: [templateId], references: [id])
+  theme          ThemeSettings?
+  media          MediaConfig?
+  scrollConfig   ScrollConfig?
+  rsvps          RSVP[]
+  analytics      CardAnalytic[]
+  giftItems      GiftItem[]
+
+  wizardConfig   Json?
+
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model ThemeSettings {
+  id             String         @id @default(cuid())
+  cardId         String         @unique
+  card           InvitationCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  primaryColor   String         @default("#D4AF37")
+  secondaryColor String         @default("#FFF8E7")
+  accentColor    String         @default("#8B6914")
+  bgColor        String         @default("#1a0a00")
+
+  titleFont      String         @default("Playfair Display")
+  bodyFont       String         @default("Lato")
+  titleSize      Int            @default(32)
+  bodySize       Int            @default(16)
+  titleColor     String         @default("#D4AF37")
+  bodyColor      String         @default("#F5E6C8")
+  textAlign      String         @default("center")
+
+  bgImageUrl     String?
+  bgOpacity      Float          @default(0.85)
+}
+
+model MediaConfig {
+  id             String         @id @default(cuid())
+  cardId         String         @unique
+  card           InvitationCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  youtubeUrl     String?
+  youtubeVideoId String?
+  audioEnabled   Boolean        @default(true)
+  autoplay       Boolean        @default(false)
+  volume         Float          @default(0.5)
+  loopAudio      Boolean        @default(true)
+}
+
+model ScrollConfig {
+  id           String         @id @default(cuid())
+  cardId       String         @unique
+  card         InvitationCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  autoScroll   Boolean        @default(false)
+  speed        ScrollSpeed    @default(MEDIUM)
+  pauseOnHover Boolean        @default(true)
+}
+
+model RSVP {
+  id         String           @id @default(cuid())
+  cardId     String
+  card       InvitationCard   @relation(fields: [cardId], references: [id])
+
+  guestName  String
+  attendance AttendanceStatus
+  guestCount Int              @default(1)
+  message    String?
+  phone      String?
+
+  createdAt  DateTime         @default(now())
+}
+
+model GiftItem {
+  id        String         @id @default(cuid())
+  cardId    String
+  card      InvitationCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  imageUrl  String
+  link      String
+  label     String?
+  sortOrder Int            @default(0)
+
+  createdAt DateTime       @default(now())
+}
+
+model CardAnalytic {
+  id        String         @id @default(cuid())
+  cardId    String
+  card      InvitationCard @relation(fields: [cardId], references: [id])
+
+  event     AnalyticEvent
+  ipHash    String?
+  userAgent String?
+  createdAt DateTime       @default(now())
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+enum TemplateCategory {
+  WEDDING
+  BIRTHDAY
+  CORPORATE
+  GENERIC
+}
+
+enum AttendanceStatus {
+  ATTENDING
+  NOT_ATTENDING
+  MAYBE
+}
+
+enum ScrollSpeed {
+  SLOW
+  MEDIUM
+  FAST
+}
+
+enum AnalyticEvent {
+  VIEW
+  RSVP_OPEN
+  RSVP_SUBMIT
+  MAP_CLICK
+  WHATSAPP_CLICK
+  MUSIC_PLAY
+  GIFT_CLICK
+}
