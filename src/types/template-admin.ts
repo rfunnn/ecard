@@ -4,12 +4,21 @@ export interface ContentBlock {
   url?: string
 }
 
+export type OpeningAnimationStyle = "fade" | "rise" | "split" | "zoom"
+
+export interface OpeningAnimation {
+  style: OpeningAnimationStyle
+  duration: number  // seconds
+  delay: number     // seconds
+}
+
 export interface TemplateDisplayConfig {
   page1: {
     overlayText: {
       title: string
       subtitle: string
     }
+    openingAnimation?: OpeningAnimation
   }
   page2: {
     scrollContent: ContentBlock[]
@@ -45,6 +54,7 @@ export interface AdminTemplate {
 export const DEFAULT_DISPLAY_CONFIG: TemplateDisplayConfig = {
   page1: {
     overlayText: { title: "", subtitle: "" },
+    openingAnimation: { style: "fade", duration: 1.2, delay: 0.2 },
   },
   page2: {
     scrollContent: [{ type: "text", value: "" }],

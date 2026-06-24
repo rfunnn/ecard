@@ -2,6 +2,7 @@ import { create } from "zustand"
 import { immer } from "zustand/middleware/immer"
 import type { WizardConfig, ContactConfig } from "@/types/config"
 import { DEFAULT_WIZARD_CONFIG } from "@/types/config"
+import type { GiftItem } from "@/types/invitation"
 
 export interface TemplateInfo {
   id: string
@@ -20,6 +21,7 @@ interface WizardState {
   isSaving: boolean
   cardSlug: string
   templateOverride: TemplateInfo | null
+  giftItems: GiftItem[]
 }
 
 interface WizardActions {
@@ -38,6 +40,9 @@ interface WizardActions {
   updateContact: (index: number, contact: Partial<ContactConfig>) => void
   moveContact: (from: number, to: number) => void
   resetToDefaults: () => void
+  setGiftItems: (items: GiftItem[]) => void
+  addGiftItem: (item: GiftItem) => void
+  removeGiftItem: (id: string) => void
 }
 
 export const TOTAL_PAGES = 11
@@ -50,6 +55,7 @@ export const useWizardStore = create<WizardState & WizardActions>()(
     isSaving: false,
     cardSlug: "",
     templateOverride: null,
+    giftItems: [],
 
     setConfig: (partial) =>
       set((state) => {
@@ -151,5 +157,14 @@ export const useWizardStore = create<WizardState & WizardActions>()(
         state.config = { ...DEFAULT_WIZARD_CONFIG }
         state.isDirty = false
       }),
+
+    setGiftItems: (items) =>
+      set((state) => { state.giftItems = items }),
+
+    addGiftItem: (item) =>
+      set((state) => { state.giftItems.push(item) }),
+
+    removeGiftItem: (id) =>
+      set((state) => { state.giftItems = state.giftItems.filter((g) => g.id !== id) }),
   }))
 )

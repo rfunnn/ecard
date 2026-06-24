@@ -5,15 +5,19 @@ import { useRouter } from "next/navigation"
 import { TemplateRenderer } from "@/components/templates/TemplateRenderer"
 import { MusicPlayer } from "./MusicPlayer"
 import { ActionBar } from "./ActionBar"
+import { EffectAnimation } from "./EffectAnimation"
 import type { InvitationCardData } from "@/types/invitation"
 import { SCROLL_SPEED_MS } from "@/types/invitation"
+import type { WizardConfig } from "@/types/config"
 import { ChevronLeft } from "lucide-react"
+import { OpeningGate } from "./OpeningGate"
 
 interface InviteClientProps {
   card: InvitationCardData
+  onClose?: () => void
 }
 
-export function InviteClient({ card }: InviteClientProps) {
+export function InviteClient({ card, onClose }: InviteClientProps) {
   const router = useRouter()
   const scrollRef = useRef<HTMLDivElement | undefined>(undefined)
   const scrollIntervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined)
@@ -38,9 +42,18 @@ export function InviteClient({ card }: InviteClientProps) {
     fireAnalytic("VIEW")
   }, [fireAnalytic])
 
+  const wCfg            = card.wizardConfig as WizardConfig | undefined
+  const effectAnimation = wCfg?.effectAnimation   ?? "Tiada"
+  const effectColor     = wCfg?.effectColor       ?? "#ffffff"
+  const openingStyle    = wCfg?.openingStyle      ?? "Tiada"
+  const openingStyleColor = wCfg?.openingStyleColor ?? "#1a1a1a"
+
+  const [gateOpen, setGateOpen] = useState(() => openingStyle !== "Tiada")
+
   useEffect(() => {
     const cfg = card.scrollConfig
     if (!cfg?.autoScroll) return
+    if (gateOpen) return
 
     const el = scrollRef.current
     if (!el) return
@@ -69,19 +82,12 @@ export function InviteClient({ card }: InviteClientProps) {
       el.removeEventListener("touchstart", handleInteraction)
       el.removeEventListener("mousedown", handleInteraction)
     }
-  }, [card.scrollConfig])
+  }, [card.scrollConfig, gateOpen])
 
   const image1 = card.template.image1Url
   const image2 = card.template.image2Url
 
-  // Full-screen background: solid bgColor only (or legacy bgImageUrl if no template images)
-  const screenBgStyle = card.theme.bgImageUrl && !image1 && !image2
-    ? {
-        backgroundImage: `linear-gradient(rgba(0,0,0,${card.theme.bgOpacity}),rgba(0,0,0,${card.theme.bgOpacity})),url(${card.theme.bgImageUrl})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }
-    : {}
+  const hasBgImage = !!(card.theme.bgImageUrl && !image1 && !image2)
 
   return (
     <div className="fixed inset-0 overflow-hidden">
@@ -89,12 +95,20 @@ export function InviteClient({ card }: InviteClientProps) {
       {/* ── Full-screen background — solid colour that shows outside the card column ── */}
       <div
         className="absolute inset-0 z-0"
-        style={{ background: card.theme.bgColor, ...screenBgStyle }}
+        style={{
+          backgroundColor: card.theme.bgColor,
+          backgroundImage: hasBgImage
+            ? `linear-gradient(rgba(0,0,0,${card.theme.bgOpacity}),rgba(0,0,0,${card.theme.bgOpacity})),url(${card.theme.bgImageUrl})`
+            : "none",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
       />
 
       {/* ── Back button ── */}
       <button
         onClick={() => {
+          if (onClose) { onClose(); return }
           if (window.history.length > 1) {
             router.back()
           } else {
@@ -114,21 +128,13 @@ export function InviteClient({ card }: InviteClientProps) {
 
       {/* ── Preview watermark (unpublished) ── */}
       {!card.isPublished && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center pointer-events-none">
           <div
-            className="flex flex-col items-center gap-1.5 px-8 py-4 rounded-2xl text-center select-none"
-            style={{
-              background: "rgba(0,0,0,0.55)",
-              border: "1px solid rgba(212,175,55,0.25)",
-              backdropFilter: "blur(6px)",
-              transform: "rotate(-15deg)",
-            }}
+            className="w-full max-w-md flex flex-col items-center py-3 select-none"
+            style={{ background: "rgba(150,150,150,0.55)", backdropFilter: "blur(2px)" }}
           >
-            <span className="text-xs font-bold tracking-[0.35em] uppercase" style={{ color: "#D4AF37", opacity: 0.9 }}>
-              Pratonton Sahaja
-            </span>
-            <span className="text-[10px] tracking-wider" style={{ color: "#D4AF37", opacity: 0.5 }}>
-              Terbitkan kad untuk menghapuskan watermark ini
+            <span className="text-sm font-bold tracking-[0.4em] uppercase" style={{ color: "#fff" }}>
+              PREVIEW ONLY
             </span>
           </div>
         </div>
@@ -144,7 +150,10 @@ export function InviteClient({ card }: InviteClientProps) {
           - Inner div: absolute inset-0, overflow-y-auto, z-10 — scrollable content layer
           - Image 1: absolute at top of scroll layer, 100svh tall — covers image2 on page 1, scrolls away
         */}
-        <div className="relative w-full max-w-md">
+        <div className="relative w-full max-w-md h-full">
+
+          {/* ── Particle effect — fixed overlay covering the full card view ── */}
+          <EffectAnimation effect={effectAnimation} color={effectColor} />
 
           {/* ── Image 2 — card-column-wide background, revealed as image1 scrolls away ── */}
           {image2 && (
@@ -205,6 +214,18 @@ export function InviteClient({ card }: InviteClientProps) {
           </div>
         </div>
       </div>
+
+      {/* ── Opening gate — shown on top of card until user taps ── */}
+      {gateOpen && (
+        <OpeningGate
+          style={openingStyle}
+          color={openingStyleColor}
+          onOpen={() => setGateOpen(false)}
+          displayName={wCfg?.displayName}
+          eventType={wCfg?.eventType}
+          eventDate={wCfg?.dayAndDate}
+        />
+      )}
     </div>
   )
 }

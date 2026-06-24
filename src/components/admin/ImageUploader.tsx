@@ -40,6 +40,9 @@ export function ImageUploader({ label, value, onChange, required }: Props) {
   const [dragOver, setDragOver] = useState(false)
 
   const handleFile = async (file: File) => {
+    // If the current value is a leftover blob URL from a failed upload, revoke it now
+    if (value?.startsWith("blob:")) URL.revokeObjectURL(value)
+
     setError(null)
 
     if (!file.type.startsWith("image/")) {
@@ -57,6 +60,10 @@ export function ImageUploader({ label, value, onChange, required }: Props) {
       return
     }
 
+    // Show local preview immediately so the phone frame updates without waiting for the upload
+    const objectUrl = URL.createObjectURL(file)
+    onChange(objectUrl)
+
     setUploading(true)
     try {
       const form = new FormData()
@@ -64,12 +71,21 @@ export function ImageUploader({ label, value, onChange, required }: Props) {
       const res = await fetch("/api/upload", { method: "POST", body: form })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? "Upload gagal")
+      URL.revokeObjectURL(objectUrl)
       onChange(data.url as string)
     } catch (e) {
+      // Keep the blob URL in state so the preview stays visible even if upload fails.
+      // It will be revoked the next time the user picks a file or removes the image.
       setError(e instanceof Error ? e.message : "Upload gagal")
     } finally {
       setUploading(false)
     }
+  }
+
+  const handleRemove = () => {
+    if (value?.startsWith("blob:")) URL.revokeObjectURL(value)
+    onChange("")
+    setError(null)
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,7 +122,7 @@ export function ImageUploader({ label, value, onChange, required }: Props) {
             />
             <button
               type="button"
-              onClick={() => { onChange(""); setError(null) }}
+              onClick={handleRemove}
               className="absolute top-1.5 right-1.5 w-6 h-6 bg-black/60 hover:bg-black/80 rounded-full flex items-center justify-center text-white transition-colors"
               title="Buang imej"
             >
@@ -114,10 +130,11 @@ export function ImageUploader({ label, value, onChange, required }: Props) {
             </button>
             <button
               type="button"
-              onClick={() => inputRef.current?.click()}
-              className="absolute bottom-1.5 inset-x-1.5 py-1 bg-black/60 hover:bg-black/80 rounded-lg text-white text-xs font-medium transition-colors"
+              onClick={() => !uploading && inputRef.current?.click()}
+              disabled={uploading}
+              className="absolute bottom-1.5 inset-x-1.5 py-1 bg-black/60 hover:bg-black/80 disabled:opacity-60 rounded-lg text-white text-xs font-medium transition-colors flex items-center justify-center gap-1"
             >
-              Tukar
+              {uploading ? <><Loader2 className="w-3 h-3 animate-spin" /> Memuat...</> : "Tukar"}
             </button>
           </>
         ) : (

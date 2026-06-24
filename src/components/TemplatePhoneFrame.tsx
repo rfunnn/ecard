@@ -45,11 +45,24 @@ export function TemplatePhoneFrame({ template, previewName = "", size = "md" }: 
 
         {/* Screen */}
         {template.thumbnail ? (
-          <img
-            src={template.thumbnail}
-            alt={template.nameMs}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+          <>
+            <img
+              src={template.thumbnail}
+              alt={template.nameMs}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-3 bg-black/30">
+              <p className="text-[8px] uppercase tracking-[0.25em] mb-2 text-white/70">
+                {template.category === "WEDDING" ? "Walimatul Urus"
+                  : template.category === "BIRTHDAY" ? "Jemputan"
+                  : template.nameMs}
+              </p>
+              <p className="text-base leading-tight font-playfair text-white drop-shadow-md">
+                {previewName || "Adam & Hawa"}
+              </p>
+              <div className="mt-3 w-10 h-px bg-white/40" />
+            </div>
+          </>
         ) : (
           <div
             className="absolute inset-0 flex flex-col items-center justify-center text-center px-3"

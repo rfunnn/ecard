@@ -84,6 +84,7 @@ export function ScrollConfigEditor({ value, onChange }: Props) {
     const next = structuredClone(value) as unknown as Record<string, unknown>
     let cur: Record<string, unknown> = next
     for (let i = 0; i < path.length - 1; i++) {
+      if (cur[path[i]] == null || typeof cur[path[i]] !== "object") cur[path[i]] = {}
       cur = cur[path[i]] as Record<string, unknown>
     }
     cur[path[path.length - 1]] = val
@@ -160,9 +161,12 @@ export function ScrollConfigEditor({ value, onChange }: Props) {
         </div>
       </div>
 
-      {/* Page 1 — Overlay text */}
+      {/* Page 1 — Overlay text + Opening Animation */}
       <div className={sectionCls}>
-        <p className={headingCls}>Imej 1 — Teks Overlay (Halaman Depan)</p>
+        <p className={headingCls}>Imej 1 — Halaman Depan</p>
+
+        {/* Overlay text */}
+        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Teks Overlay</p>
         <div>
           <label className={labelCls}>Tajuk</label>
           <input
@@ -182,6 +186,77 @@ export function ScrollConfigEditor({ value, onChange }: Props) {
             value={page1.overlayText.subtitle}
             onChange={(e) => set(["page1", "overlayText", "subtitle"], e.target.value)}
           />
+        </div>
+
+        {/* Opening animation */}
+        <div className="border-t border-gray-100 pt-4 mt-2 space-y-4">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Gaya Pembukaan</p>
+
+          <div className="grid grid-cols-2 gap-2">
+            {([
+              { value: "fade",  label: "Pudar Masuk",  desc: "Gelap perlahan hilang" },
+              { value: "rise",  label: "Naik",          desc: "Teks naik dari bawah" },
+              { value: "split", label: "Tersibak",      desc: "Tabir terbelah kiri-kanan" },
+              { value: "zoom",  label: "Zum Masuk",     desc: "Teks membesar muncul" },
+            ] as const).map((opt) => {
+              const active = (page1.openingAnimation?.style ?? "fade") === opt.value
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => set(["page1", "openingAnimation", "style"], opt.value)}
+                  className={`flex flex-col gap-0.5 text-left p-2.5 rounded-lg border-2 transition-colors ${
+                    active
+                      ? "border-amber-400 bg-amber-50"
+                      : "border-gray-200 hover:border-gray-300 bg-white"
+                  }`}
+                >
+                  <span className={`text-xs font-semibold ${active ? "text-amber-700" : "text-gray-700"}`}>
+                    {opt.label}
+                  </span>
+                  <span className="text-[10px] text-gray-400 leading-tight">{opt.desc}</span>
+                </button>
+              )
+            })}
+          </div>
+
+          <div>
+            <label className={labelCls}>
+              Tempoh:{" "}
+              <span className="text-amber-600 font-bold">
+                {(page1.openingAnimation?.duration ?? 1.2).toFixed(1)}s
+              </span>
+            </label>
+            <input
+              type="range"
+              min={0.5} max={3.0} step={0.1}
+              value={page1.openingAnimation?.duration ?? 1.2}
+              onChange={(e) => set(["page1", "openingAnimation", "duration"], parseFloat(e.target.value))}
+              className="w-full accent-amber-500"
+            />
+            <div className="flex justify-between text-xs text-gray-400 mt-0.5">
+              <span>0.5s</span><span>3.0s</span>
+            </div>
+          </div>
+
+          <div>
+            <label className={labelCls}>
+              Lengah:{" "}
+              <span className="text-amber-600 font-bold">
+                {(page1.openingAnimation?.delay ?? 0.2).toFixed(1)}s
+              </span>
+            </label>
+            <input
+              type="range"
+              min={0} max={2.0} step={0.1}
+              value={page1.openingAnimation?.delay ?? 0.2}
+              onChange={(e) => set(["page1", "openingAnimation", "delay"], parseFloat(e.target.value))}
+              className="w-full accent-amber-500"
+            />
+            <div className="flex justify-between text-xs text-gray-400 mt-0.5">
+              <span>0s</span><span>2.0s</span>
+            </div>
+          </div>
         </div>
       </div>
 

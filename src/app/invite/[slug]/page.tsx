@@ -78,8 +78,8 @@ export default async function InvitePage({ params, searchParams }: Props) {
       // Venue & Date
       hijriDate: "15 Jamadil Akhir 1446H",
       venueAddress: "Dewan Seri Murni\nJalan Ampang, 50450\nKuala Lumpur",
-      googleMapsUrl: "https://maps.google.com",
-      wazeUrl: "https://waze.com",
+      googleMapsUrl: "https://maps.google.com/?q=3.158360,101.712160",
+      wazeUrl: "https://waze.com/ul?ll=3.158360,101.712160&navigate=yes",
       gpsCoordinates: "3.158360, 101.712160",
 
       // Program
@@ -114,15 +114,16 @@ export default async function InvitePage({ params, searchParams }: Props) {
 
       // Contacts
       contacts: [
-        { name: "Pak Long Azman", role: "Penyelaras", phone: "60123456789", isWhatsApp: true },
-        { name: "Kak Nor", role: "Hos", phone: "60129876543", isWhatsApp: true },
+        { name: "Encik Ahmad bin Sulaiman", role: "Bapa Pengantin Lelaki", phone: "60123456789", isWhatsApp: true },
+        { name: "Puan Rohani binti Yusof",  role: "Ibu Pengantin Lelaki",  phone: "60129876543", isWhatsApp: true },
+        { name: "Pak Long Rashid",           role: "Penyelaras Majlis",     phone: "60111234567", isWhatsApp: true },
       ],
 
       // Music & scroll
-      youtubeUrl: "",
+      youtubeUrl: "https://www.youtube.com/watch?v=Tf_zS_ES_7k",
       musicStartTime: "00:00",
-      showMusicPlayer: false,
-      autoplayMusic: false,
+      showMusicPlayer: true,
+      autoplayMusic: true,
       scrollDelay: 3.5,
 
       // Segments — everything on
@@ -178,10 +179,37 @@ export default async function InvitePage({ params, searchParams }: Props) {
         textAlign: "center",
         bgOpacity: 0,
       },
-      media: { ...DEFAULT_MEDIA, audioEnabled: false },
-      scrollConfig: { autoScroll: true, speed: "SLOW", pauseOnHover: true },
+      media: {
+        ...DEFAULT_MEDIA,
+        audioEnabled: true,
+        youtubeUrl: "https://www.youtube.com/watch?v=Tf_zS_ES_7k",
+        youtubeVideoId: "Tf_zS_ES_7k",
+      },
+      scrollConfig: { autoScroll: true, speed: "MEDIUM", pauseOnHover: true },
       wizardConfig: demoWizardConfig,
-      giftItems: [],
+      giftItems: [
+        {
+          id: "demo-gift-1",
+          label: "Set Makan Porselin 32pcs",
+          imageUrl: "https://picsum.photos/seed/ceramicset/400/400",
+          link: "https://www.lazada.com.my/",
+          sortOrder: 0,
+        },
+        {
+          id: "demo-gift-2",
+          label: "Set Cadar Queen Premium",
+          imageUrl: "https://picsum.photos/seed/beddingset/400/400",
+          link: "https://shopee.com.my/",
+          sortOrder: 1,
+        },
+        {
+          id: "demo-gift-3",
+          label: "Blender Dapur Elektrik",
+          imageUrl: "https://picsum.photos/seed/kitchenblend/400/400",
+          link: "https://www.lazada.com.my/",
+          sortOrder: 2,
+        },
+      ],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }

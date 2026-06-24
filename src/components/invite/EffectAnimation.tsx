@@ -1,0 +1,274 @@
+"use client"
+
+import { useEffect, useRef } from "react"
+
+interface Props {
+  effect: string
+  color: string
+  contained?: boolean
+}
+
+interface Particle {
+  x: number
+  y: number
+  size: number
+  speed: number
+  opacity: number
+  drift: number        // max horizontal oscillation px per frame
+  driftPhase: number   // current sin phase
+  rotation: number     // radians
+  rotationSpeed: number
+  colorIndex: number   // for multi-colour effects
+}
+
+// ── Helpers ─────────────────────────────────────────────────────────────────
+
+function hexToRgb(hex: string): [number, number, number] {
+  const h = hex.replace("#", "").padStart(6, "0")
+  const n = parseInt(h.length === 3 ? h.split("").map((c) => c + c).join("") : h, 16)
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255]
+}
+
+function clamp(v: number) { return Math.max(0, Math.min(255, v)) }
+
+// Colour offsets for Bunga #2 and Confetti multi-colour particles
+const COLOR_OFFSETS: [number, number, number][] = [
+  [  0,   0,   0],
+  [ 70, -30, -30],
+  [-20,  60, -20],
+  [-30, -20,  80],
+  [ 60,  40, -50],
+  [-50,  20,  60],
+]
+
+function spawn(effect: string, w: number, h: number, spreadY = true): Particle {
+  const iSnow  = effect.startsWith("Salji")
+  const isConf = effect === "Confetti"
+  return {
+    x: Math.random() * w,
+    y: spreadY ? Math.random() * h : -(5 + Math.random() * 20),
+    size:
+      isConf    ? 3  + Math.random() * 5
+      : effect === "Salji #1" ? 2  + Math.random() * 4
+      : effect === "Salji #2" ? 4  + Math.random() * 9
+      : 6  + Math.random() * 10,
+    speed:
+      isConf   ? 1.8 + Math.random() * 2.2
+      : iSnow  ? (effect === "Salji #1" ? 0.55 + Math.random() * 1.1 : 0.4 + Math.random() * 0.85)
+      : 0.65 + Math.random() * 0.95,
+    opacity:  0.35 + Math.random() * 0.55,
+    drift:    (Math.random() - 0.5) * (isConf ? 2.2 : 1.4),
+    driftPhase: Math.random() * Math.PI * 2,
+    rotation: Math.random() * Math.PI * 2,
+    rotationSpeed: (Math.random() - 0.5) * (isConf ? 0.11 : 0.035),
+    colorIndex: Math.floor(Math.random() * COLOR_OFFSETS.length),
+  }
+}
+
+function makeParticles(effect: string, w: number, h: number): Particle[] {
+  const count =
+    effect === "Confetti"  ? 80
+    : effect === "Salji #1" ? 55
+    : effect === "Salji #2" ? 38
+    : 24
+  // First batch: scattered across screen so it doesn't start empty
+  return Array.from({ length: count }, (_, i) =>
+    spawn(effect, w, h, i < count * 0.6)
+  )
+}
+
+// ── Draw functions ───────────────────────────────────────────────────────────
+
+function drawSnow1(
+  ctx: CanvasRenderingContext2D,
+  p: Particle,
+  r: number, g: number, b: number
+) {
+  ctx.beginPath()
+  ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
+  ctx.fillStyle = `rgba(${r},${g},${b},${p.opacity})`
+  ctx.fill()
+}
+
+function drawSnow2(
+  ctx: CanvasRenderingContext2D,
+  p: Particle,
+  r: number, g: number, b: number
+) {
+  ctx.save()
+  ctx.translate(p.x, p.y)
+  ctx.rotate(p.rotation)
+  ctx.strokeStyle = `rgba(${r},${g},${b},${p.opacity})`
+  ctx.lineWidth = Math.max(0.8, p.size * 0.13)
+  ctx.lineCap = "round"
+  for (let arm = 0; arm < 6; arm++) {
+    ctx.rotate(Math.PI / 3)
+    ctx.beginPath()
+    ctx.moveTo(0, 0)
+    ctx.lineTo(0, -p.size)
+    const br = p.size * 0.48
+    ctx.moveTo(0, -br)
+    ctx.lineTo( p.size * 0.24, -br - p.size * 0.2)
+    ctx.moveTo(0, -br)
+    ctx.lineTo(-p.size * 0.24, -br - p.size * 0.2)
+    ctx.stroke()
+  }
+  ctx.restore()
+}
+
+function drawPetal1(
+  ctx: CanvasRenderingContext2D,
+  p: Particle,
+  r: number, g: number, b: number
+) {
+  ctx.save()
+  ctx.translate(p.x, p.y)
+  ctx.rotate(p.rotation)
+  ctx.fillStyle = `rgba(${r},${g},${b},${p.opacity})`
+  // Teardrop petal using two bezier curves
+  ctx.beginPath()
+  ctx.moveTo(0, -p.size)
+  ctx.bezierCurveTo( p.size * 0.65, -p.size * 0.2,  p.size * 0.65,  p.size * 0.45, 0, p.size * 0.55)
+  ctx.bezierCurveTo(-p.size * 0.65,  p.size * 0.45, -p.size * 0.65, -p.size * 0.2, 0, -p.size)
+  ctx.fill()
+  ctx.restore()
+}
+
+function drawPetal2(
+  ctx: CanvasRenderingContext2D,
+  p: Particle,
+  r: number, g: number, b: number
+) {
+  ctx.save()
+  ctx.translate(p.x, p.y)
+  ctx.rotate(p.rotation)
+  const [dr, dg, db] = COLOR_OFFSETS[p.colorIndex]
+  const pr = clamp(r + dr)
+  const pg = clamp(g + dg)
+  const pb = clamp(b + db)
+  // 5-petal flower (each petal is an ellipse rotated around centre)
+  for (let i = 0; i < 5; i++) {
+    ctx.save()
+    ctx.rotate((i * Math.PI * 2) / 5)
+    ctx.fillStyle = `rgba(${pr},${pg},${pb},${p.opacity})`
+    ctx.beginPath()
+    ctx.ellipse(0, -p.size * 0.58, p.size * 0.3, p.size * 0.52, 0, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.restore()
+  }
+  ctx.restore()
+}
+
+function drawConfetti(
+  ctx: CanvasRenderingContext2D,
+  p: Particle,
+  r: number, g: number, b: number
+) {
+  ctx.save()
+  ctx.translate(p.x, p.y)
+  ctx.rotate(p.rotation)
+  const [dr, dg, db] = COLOR_OFFSETS[p.colorIndex]
+  ctx.fillStyle = `rgba(${clamp(r + dr)},${clamp(g + dg)},${clamp(b + db)},${p.opacity})`
+  // Thin rectangle — looks like a real confetti strip
+  ctx.fillRect(-p.size * 0.45, -p.size * 1.5, p.size * 0.9, p.size * 3)
+  ctx.restore()
+}
+
+// ── Component ────────────────────────────────────────────────────────────────
+
+export function EffectAnimation({ effect, color, contained }: Props) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  useEffect(() => {
+    if (effect === "Tiada") return
+
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    let animId: number
+    let particles: Particle[]
+
+    const dims = () => ({
+      w: contained ? canvas.clientWidth  : (canvas.clientWidth  || window.innerWidth),
+      h: contained ? canvas.clientHeight : (canvas.clientHeight || window.innerHeight),
+    })
+
+    let lastW = 0, lastH = 0
+    const setup = () => {
+      const raw = dims()
+      if (!raw.w || !raw.h) return
+      const w = Math.min(raw.w, 1440)   // hard cap — prevents OOM on huge viewports
+      const h = Math.min(raw.h, 2800)
+      if (w === lastW && h === lastH) return   // no change — break any ResizeObserver feedback loop
+      lastW = w; lastH = h
+      canvas.width  = w * dpr
+      canvas.height = h * dpr
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      particles = makeParticles(effect, w, h)
+    }
+
+    setup()
+
+    const [r, g, b] = hexToRgb(color)
+
+    const tick = () => {
+      const raw = dims()
+      if (!raw.w || !raw.h || !particles) { animId = requestAnimationFrame(tick); return }
+      const w = Math.min(raw.w, 1440)
+      const h = Math.min(raw.h, 2800)
+      ctx.clearRect(0, 0, w, h)
+
+      for (const p of particles) {
+        // Physics
+        p.driftPhase += 0.02
+        p.x         += Math.sin(p.driftPhase) * p.drift
+        p.y         += p.speed
+        p.rotation  += p.rotationSpeed
+
+        // Wrap
+        if (p.y  >  h + p.size * 2) Object.assign(p, spawn(effect, w, h, false))
+        if (p.x  >  w + p.size * 2) p.x = -p.size * 2
+        if (p.x  < -p.size * 2)     p.x =  w + p.size * 2
+
+        // Draw
+        if      (effect === "Salji #1")  drawSnow1(ctx, p, r, g, b)
+        else if (effect === "Salji #2")  drawSnow2(ctx, p, r, g, b)
+        else if (effect === "Bunga #1")  drawPetal1(ctx, p, r, g, b)
+        else if (effect === "Bunga #2")  drawPetal2(ctx, p, r, g, b)
+        else if (effect === "Confetti") drawConfetti(ctx, p, r, g, b)
+      }
+
+      animId = requestAnimationFrame(tick)
+    }
+
+    tick()
+
+    let stopResize: () => void
+    if (contained) {
+      const ro = new ResizeObserver(setup)
+      ro.observe(canvas)
+      stopResize = () => ro.disconnect()
+    } else {
+      window.addEventListener("resize", setup)
+      stopResize = () => window.removeEventListener("resize", setup)
+    }
+
+    return () => {
+      cancelAnimationFrame(animId)
+      stopResize()
+    }
+  }, [effect, color, contained])
+
+  if (effect === "Tiada") return null
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className={`${contained ? "absolute" : "fixed"} inset-0 pointer-events-none`}
+      style={{ zIndex: 25 }}
+    />
+  )
+}

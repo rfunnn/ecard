@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { writeFile, mkdir } from "fs/promises"
-import { join } from "path"
-import { randomBytes } from "crypto"
+import { uploadFile } from "@/lib/storage"
 
 const MAX_SIZE = 5 * 1024 * 1024 // 5 MB
 
@@ -18,14 +16,12 @@ export async function POST(req: NextRequest) {
 
     const buffer = Buffer.from(await file.arrayBuffer())
     const ext = (file.name.split(".").pop() ?? "jpg").toLowerCase().replace(/[^a-z0-9]/g, "")
-    const filename = `${randomBytes(10).toString("hex")}.${ext}`
-    const dir = join(process.cwd(), "public", "uploads")
+    const url = await uploadFile(buffer, file.type, ext)
 
-    await mkdir(dir, { recursive: true })
-    await writeFile(join(dir, filename), buffer)
-
-    return NextResponse.json({ url: `/uploads/${filename}` })
-  } catch {
+    return NextResponse.json({ url })
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : String(err)
+    console.error("[upload] Failed:", detail, err)
     return NextResponse.json({ error: "Upload failed" }, { status: 500 })
   }
 }

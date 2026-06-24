@@ -85,9 +85,9 @@ export function WeddingTemplate({ card }: Props) {
 
   // shared divider
   const Divider = () => (
-    <div className="flex items-center justify-center gap-3 my-8 px-10">
+    <div className="flex items-center justify-center gap-3 my-5 px-5">
       <div className="h-px flex-1 opacity-15" style={{ background: bodyColor }} />
-      <svg width="12" height="12" viewBox="0 0 20 20" fill={bodyColor} opacity="0.25">
+      <svg width="10" height="10" viewBox="0 0 20 20" fill={bodyColor} opacity="0.25">
         <circle cx="10" cy="10" r="3" />
         <path d="M10 2v4M10 14v4M2 10h4M14 10h4" stroke={bodyColor} strokeWidth="1.2" fill="none" />
       </svg>
@@ -109,12 +109,12 @@ export function WeddingTemplate({ card }: Props) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.2 }}
-        className="min-h-screen flex flex-col items-center justify-center text-center px-8 py-16"
+        className="min-h-screen flex flex-col items-center justify-center text-center px-5 py-10"
       >
         {/* event type */}
         {(cfg?.eventType || card.subtitle) && (
           <p
-            className={`${headFont} uppercase tracking-[0.4em] mb-10 opacity-75`}
+            className={`${headFont} uppercase tracking-[0.4em] mb-6 opacity-75`}
             style={{ color: bodyColor, fontSize: `${cfg?.eventTypeSize ?? 13}px` }}
           >
             {cfg?.eventType || card.subtitle}
@@ -133,14 +133,16 @@ export function WeddingTemplate({ card }: Props) {
               {groomName}
             </motion.div>
           )}
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.8 }}
-            className={`${bodyFont} my-4 opacity-40`}
-            style={{ color: bodyColor, fontSize: "22px" }}
-          >
-            &amp;
-          </motion.div>
+          {(groomName || brideName) && (
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
+              className={`${bodyFont} my-4 opacity-40`}
+              style={{ color: bodyColor, fontSize: "22px" }}
+            >
+              &amp;
+            </motion.div>
+          )}
           {brideName && (
             <motion.div
               initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
@@ -178,13 +180,13 @@ export function WeddingTemplate({ card }: Props) {
 
       {/* ══ SECTION 2 · INVITATION TEXT (Config Page 3) ══════════════════ */}
       {(cfg?.openingSpeech || cfg?.organizer1?.name || card.description || cfg?.fullNames) && (
-        <div className="px-8 pb-4 text-center">
+        <div className="px-5 pb-3 text-center">
           <Divider />
 
           {/* opening speech / bismillah */}
           {cfg?.openingSpeech && (
             <div
-              className={`${orgFont} leading-relaxed mb-8 opacity-80`}
+              className={`${orgFont} leading-relaxed mb-5 opacity-80`}
               style={{ color: bodyColor, fontSize: `${orgSize}px` }}
             >
               {multiLine(cfg.openingSpeech)}
@@ -193,7 +195,7 @@ export function WeddingTemplate({ card }: Props) {
 
           {/* organizers */}
           {cfg?.organizer1?.name && (
-            <div className="mb-6 space-y-1">
+            <div className="mb-4 space-y-1">
               <p className={`${orgFont}`} style={{ color: bodyColor, fontSize: `${orgSize}px` }}>
                 {cfg.organizer1.name}
               </p>
@@ -223,7 +225,7 @@ export function WeddingTemplate({ card }: Props) {
           {/* invitation speech */}
           {(cfg?.invitationSpeech || card.description) && (
             <div
-              className={`${bodyFont} leading-relaxed mb-6 opacity-70 italic`}
+              className={`${bodyFont} leading-relaxed mb-4 opacity-70 italic`}
               style={{ color: bodyColor, fontSize: `${bodySize}px` }}
             >
               {multiLine(cfg?.invitationSpeech || card.description || "")}
@@ -233,7 +235,7 @@ export function WeddingTemplate({ card }: Props) {
           {/* full names */}
           {cfg?.fullNames && (
             <div
-              className={`${fullNFont} my-6 leading-snug`}
+              className={`${fullNFont} my-4 leading-snug`}
               style={{ color: displayColor, fontSize: `${fullNSize}px` }}
             >
               {multiLine(cfg.fullNames)}
@@ -244,14 +246,14 @@ export function WeddingTemplate({ card }: Props) {
 
       {/* ══ SECTION 3 · VENUE + DATE + DRESS CODE (Config Page 4) ═══════ */}
       {(seg.venue || seg.date) && (venueName || address || startDT) && (
-        <div className="px-8 pb-6 text-center">
+        <div className="px-5 pb-4 text-center">
           <Divider />
 
           {/* TEMPAT */}
           {seg.venue && (venueName || address) && (
-            <div className="mb-8">
+            <div className="mb-5">
               <p
-                className={`${headFont} text-[11px] tracking-[0.35em] uppercase opacity-45 mb-3`}
+                className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-45 mb-2`}
                 style={{ color: bodyColor }}
               >
                 Tempat
@@ -300,9 +302,9 @@ export function WeddingTemplate({ card }: Props) {
 
           {/* TARIKH */}
           {seg.date && startDT && (
-            <div className="mb-8">
+            <div className="mb-5">
               <p
-                className={`${headFont} text-[11px] tracking-[0.35em] uppercase opacity-45 mb-3`}
+                className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-45 mb-2`}
                 style={{ color: bodyColor }}
               >
                 Tarikh
@@ -327,7 +329,7 @@ export function WeddingTemplate({ card }: Props) {
           {/* additionalInfo1 — dress code / extra info */}
           {cfg?.additionalInfo1 && (
             <div
-              className={`${bodyFont} text-sm opacity-65 mb-6 leading-relaxed`}
+              className={`${bodyFont} text-sm opacity-65 mb-4 leading-relaxed`}
               style={{ color: bodyColor, fontSize: `${bodySize}px` }}
             >
               {multiLine(cfg.additionalInfo1)}
@@ -351,15 +353,15 @@ export function WeddingTemplate({ card }: Props) {
 
       {/* ══ SECTION 4 · EVENT PROGRAM (Config Page 5) ═══════════════════ */}
       {seg.eventProgram && cfg?.eventProgram && (
-        <div className="px-8 pb-6">
+        <div className="px-5 pb-4">
           <Divider />
           <p
-            className={`${headFont} text-[11px] tracking-[0.35em] uppercase opacity-45 text-center mb-6`}
+            className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-45 text-center mb-4`}
             style={{ color: bodyColor }}
           >
             Atur Cara Majlis
           </p>
-          <div className="space-y-4 max-w-xs mx-auto">
+          <div className="space-y-3 max-w-xs mx-auto">
             {parseProgramText(cfg.eventProgram).map((item, i) => (
               <div key={i} className="flex justify-between items-baseline gap-3">
                 <span
@@ -382,13 +384,13 @@ export function WeddingTemplate({ card }: Props) {
 
       {/* ══ SECTION 5 · PRAYER + COUNTDOWN ══════════════════════════════ */}
       {(cfg?.additionalInfo2 || (seg.countdown && cfg?.startDateTime && !eventPassed)) && (
-        <div className="px-8 pb-6 text-center">
+        <div className="px-5 pb-4 text-center">
           <Divider />
 
           {/* prayer / dua */}
           {cfg?.additionalInfo2 && (
             <div
-              className={`${orgFont} leading-relaxed mb-10 opacity-70 italic`}
+              className={`${orgFont} leading-relaxed mb-6 opacity-70 italic`}
               style={{ color: bodyColor, fontSize: `${orgSize - 2}px` }}
             >
               {multiLine(cfg.additionalInfo2)}
@@ -399,12 +401,12 @@ export function WeddingTemplate({ card }: Props) {
           {seg.countdown && cfg?.startDateTime && !eventPassed && (
             <div>
               <p
-                className={`${headFont} text-[11px] tracking-[0.35em] uppercase opacity-45 mb-6`}
+                className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-45 mb-4`}
                 style={{ color: bodyColor }}
               >
                 Menghitung Hari
               </p>
-              <div className="flex items-start justify-center gap-5">
+              <div className="flex items-start justify-center gap-4">
                 {([
                   { val: countdown.d, label: card.language === "ms" ? "Hari"  : "Days"    },
                   { val: countdown.h, label: card.language === "ms" ? "Jam"   : "Hours"   },
@@ -413,7 +415,7 @@ export function WeddingTemplate({ card }: Props) {
                 ] as const).map(({ val, label }, i) => (
                   <div key={i} className="flex flex-col items-center min-w-[2.5rem]">
                     <span
-                      className={`${headFont} text-3xl font-bold leading-none`}
+                      className={`${headFont} text-2xl font-bold leading-none`}
                       style={{ color: primaryColor }}
                     >
                       {String(val).padStart(2, "0")}
@@ -434,15 +436,15 @@ export function WeddingTemplate({ card }: Props) {
 
       {/* ══ SECTION 6 · WISHES ════════════════════════════════════════════ */}
       {seg.wishes && wishes.length > 0 && (
-        <div className="px-8 pb-6 text-center">
+        <div className="px-5 pb-4 text-center">
           <Divider />
           <p
-            className={`${headFont} text-[11px] tracking-[0.35em] uppercase opacity-45 mb-8`}
+            className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-45 mb-5`}
             style={{ color: bodyColor }}
           >
             Ucapan
           </p>
-          <div className="space-y-7 max-w-sm mx-auto">
+          <div className="space-y-5 max-w-sm mx-auto">
             {wishes.map((w, i) => (
               <motion.div
                 key={i}
@@ -467,7 +469,7 @@ export function WeddingTemplate({ card }: Props) {
       )}
 
       {/* footer spacer clears action bar */}
-      <div className="h-28" />
+      <div className="h-20" />
     </div>
   )
 }

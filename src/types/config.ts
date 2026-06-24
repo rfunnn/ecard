@@ -223,8 +223,7 @@ export const DEFAULT_WIZARD_CONFIG: WizardConfig = {
 
 export const OPENING_STYLES = [
   "Tingkap A", "Tingkap B", "Tingkap C",
-  "Kipas A", "Kipas B",
-  "Buku A", "Buku B",
+  "Sampul A", "Menaik",
   "Tiada",
 ]
 

@@ -47,9 +47,11 @@ export function TemplateForm({ initialData }: Props) {
     (initialData?.displayConfig as TemplateDisplayConfig | undefined) ?? DEFAULT_DISPLAY_CONFIG
   )
 
-  const [saving,   setSaving]   = useState(false)
-  const [deleting, setDeleting] = useState(false)
-  const [error,    setError]    = useState<string | null>(null)
+  const [saving,     setSaving]     = useState(false)
+  const [deleting,   setDeleting]   = useState(false)
+  const [error,      setError]      = useState<string | null>(null)
+  const [canForce,   setCanForce]   = useState(false)
+  const [cardCount,  setCardCount]  = useState(0)
 
   const handleNameChange = (v: string) => {
     setName(v)
@@ -59,8 +61,10 @@ export function TemplateForm({ initialData }: Props) {
   const handleSave = useCallback(async () => {
     setError(null)
     if (!name.trim()) { setError("Nama template diperlukan"); return }
-    if (!image1Url)   { setError("Imej 1 diperlukan"); return }
-    if (!image2Url)   { setError("Imej 2 diperlukan"); return }
+    if (!image1Url)                  { setError("Imej 1 diperlukan"); return }
+    if (image1Url.startsWith("blob:")) { setError("Sila tunggu muat naik Imej 1 selesai"); return }
+    if (!image2Url)                  { setError("Imej 2 diperlukan"); return }
+    if (image2Url.startsWith("blob:")) { setError("Sila tunggu muat naik Imej 2 selesai"); return }
 
     setSaving(true)
     try {
@@ -93,14 +97,26 @@ export function TemplateForm({ initialData }: Props) {
     }
   }, [name, nameMs, slug, category, isActive, sortOrder, image1Url, image2Url, displayConfig, isEdit, initialData, router])
 
-  const handleDelete = async () => {
+  const handleDelete = async (force = false) => {
     if (!initialData) return
-    if (!confirm(`Padam template "${name}"? Tindakan ini tidak boleh dibatalkan.`)) return
+    const confirmMsg = force
+      ? `Padam template "${name}" bersama ${cardCount} kad? Tindakan ini tidak boleh dibatalkan.`
+      : `Padam template "${name}"? Tindakan ini tidak boleh dibatalkan.`
+    if (!confirm(confirmMsg)) return
     setDeleting(true)
+    setError(null)
+    setCanForce(false)
     try {
-      const res = await fetch(`/api/admin/templates/${initialData.id}`, { method: "DELETE" })
+      const url = `/api/admin/templates/${initialData.id}${force ? "?force=true" : ""}`
+      const res = await fetch(url, { method: "DELETE" })
       const data = await res.json()
-      if (!res.ok) throw new Error(typeof data.error === "string" ? data.error : "Gagal memadam")
+      if (!res.ok) {
+        if (data.canForce) {
+          setCanForce(true)
+          setCardCount(data.cardCount ?? 0)
+        }
+        throw new Error(typeof data.error === "string" ? data.error : "Gagal memadam")
+      }
       router.push("/admin/templates")
     } catch (e) {
       setError(e instanceof Error ? e.message : "Ralat tidak diketahui")
@@ -138,12 +154,27 @@ export function TemplateForm({ initialData }: Props) {
       {error && (
         <div className="mb-4 flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
           <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
-          <span>{error}</span>
+          <div className="flex-1">
+            <span>{error}</span>
+            {canForce && (
+              <div className="mt-2">
+                <button
+                  type="button"
+                  onClick={() => handleDelete(true)}
+                  disabled={deleting}
+                  className="inline-flex items-center gap-1.5 bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white font-medium px-3 py-1.5 rounded-lg text-xs transition-colors"
+                >
+                  <Trash2 className="w-3 h-3" />
+                  Padam paksa (termasuk {cardCount} kad)
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
       {/* Two-column layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-6 items-start">
 
         {/* ── Left: form ── */}
         <div className="space-y-5">
@@ -290,7 +321,7 @@ export function TemplateForm({ initialData }: Props) {
             {isEdit && (
               <button
                 type="button"
-                onClick={handleDelete}
+                onClick={() => handleDelete()}
                 disabled={deleting}
                 className="inline-flex items-center gap-1.5 bg-red-50 hover:bg-red-100 disabled:opacity-60 text-red-600 border border-red-200 font-medium px-4 py-2 rounded-lg text-sm transition-colors"
               >
@@ -310,6 +341,9 @@ export function TemplateForm({ initialData }: Props) {
             image1Url={image1Url || undefined}
             image2Url={image2Url || undefined}
             config={displayConfig}
+            name={name}
+            slug={slug}
+            category={category}
           />
         </div>
       </div>

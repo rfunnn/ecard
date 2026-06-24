@@ -91,10 +91,11 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
+  const force = new URL(req.url).searchParams.get("force") === "true"
   try {
     const template = await prisma.template.findUnique({
       where: { id },
@@ -102,10 +103,25 @@ export async function DELETE(
     })
     if (!template) return NextResponse.json({ error: "Not found" }, { status: 404 })
     if (template._count.cards > 0) {
-      return NextResponse.json(
-        { error: `Cannot delete: ${template._count.cards} card(s) use this template` },
-        { status: 409 }
-      )
+      if (!force) {
+        return NextResponse.json(
+          {
+            error: `Cannot delete: ${template._count.cards} card(s) use this template`,
+            cardCount: template._count.cards,
+            canForce: true,
+          },
+          { status: 409 }
+        )
+      }
+      // Delete non-cascading children first, then cards
+      const cardIds = await prisma.invitationCard.findMany({
+        where: { templateId: id },
+        select: { id: true },
+      }).then((rows) => rows.map((r) => r.id))
+
+      await prisma.rSVP.deleteMany({ where: { cardId: { in: cardIds } } })
+      await prisma.cardAnalytic.deleteMany({ where: { cardId: { in: cardIds } } })
+      await prisma.invitationCard.deleteMany({ where: { templateId: id } })
     }
     await prisma.template.delete({ where: { id } })
     return NextResponse.json({ ok: true })

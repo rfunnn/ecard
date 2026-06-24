@@ -3,10 +3,12 @@
 import { useState } from "react"
 import { Phone, CirclePlay, CirclePause, MapPin, Gift, Mail, Heart } from "lucide-react"
 import { motion } from "framer-motion"
-import { buildWhatsAppUrl } from "@/lib/utils"
 import type { InvitationCardData } from "@/types/invitation"
+import type { WizardConfig } from "@/types/config"
 import { RSVPModal } from "./RSVPModal"
 import { GiftModal } from "./GiftModal"
+import { LocationModal } from "./LocationModal"
+import { ContactModal } from "./ContactModal"
 
 interface ActionBarProps {
   card: InvitationCardData
@@ -14,6 +16,7 @@ interface ActionBarProps {
   onMusicToggle?: () => void
   isMusicMuted?: boolean
   hasMusicPlayer?: boolean
+  contained?: boolean
 }
 
 export function ActionBar({
@@ -22,35 +25,19 @@ export function ActionBar({
   onMusicToggle,
   isMusicMuted = true,
   hasMusicPlayer = false,
+  contained = false,
 }: ActionBarProps) {
   const [rsvpOpen, setRsvpOpen] = useState(false)
   const [giftOpen, setGiftOpen] = useState(false)
+  const [locationOpen, setLocationOpen] = useState(false)
+  const [contactOpen, setContactOpen] = useState(false)
 
   const handleMapClick = () => {
-    onAnalytic?.("MAP_CLICK")
-    if (card.venueMapUrl) {
-      window.open(card.venueMapUrl, "_blank", "noopener,noreferrer")
-    } else if (card.venueAddress) {
-      window.open(
-        `https://maps.google.com/?q=${encodeURIComponent(card.venueAddress)}`,
-        "_blank",
-        "noopener,noreferrer"
-      )
-    }
+    setLocationOpen(true)
   }
 
-  const handleWhatsApp = () => {
-    onAnalytic?.("WHATSAPP_CLICK")
-    if (card.whatsappNumber) {
-      const msg =
-        card.language === "ms"
-          ? `Assalamualaikum ${card.contactName ?? ""}, saya ingin bertanya tentang ${card.title}.`
-          : `Hello ${card.contactName ?? ""}, I would like to enquire about ${card.title}.`
-      window.open(buildWhatsAppUrl(card.whatsappNumber, msg), "_blank", "noopener,noreferrer")
-    }
-  }
-
-  const hasMap = !!(card.venueMapUrl || card.venueAddress)
+  const wCfg = card.wizardConfig as WizardConfig | undefined
+  const hasMap = !!(card.venueMapUrl || card.venueAddress || wCfg?.googleMapsUrl || wCfg?.wazeUrl)
   const hasWhatsApp = !!card.whatsappNumber
   const hasGifts = (card.giftItems?.length ?? 0) > 0
   const { primaryColor, bgColor } = card.theme
@@ -61,24 +48,24 @@ export function ActionBar({
         initial={{ y: 80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.8, type: "spring", damping: 20 }}
-        className="fixed bottom-0 left-0 right-0 z-50"
+        className={`${contained ? "absolute" : "fixed"} bottom-0 left-0 right-0 z-50`}
         style={{
           background: bgColor,
           borderTop: `1px solid ${primaryColor}30`,
         }}
       >
-        <div className="flex items-center justify-around px-4 py-3 max-w-md mx-auto">
+        <div className="flex items-center justify-around px-3 py-2 max-w-md mx-auto">
 
           {/* Phone / Contact */}
           <button
-            onClick={handleWhatsApp}
+            onClick={() => setContactOpen(true)}
             disabled={!hasWhatsApp}
             aria-label={card.language === "ms" ? "Hubungi" : "Contact"}
-            className="flex items-center justify-center w-12 h-12 transition-all active:scale-90"
+            className="flex items-center justify-center w-10 h-10 transition-all active:scale-90"
             style={{ opacity: hasWhatsApp ? 0.85 : 0.3 }}
           >
             <Phone
-              className="w-6 h-6"
+              className="w-5 h-5"
               style={{ color: primaryColor, strokeWidth: 1.5 }}
             />
           </button>
@@ -88,17 +75,17 @@ export function ActionBar({
             onClick={hasMusicPlayer ? onMusicToggle : undefined}
             disabled={!hasMusicPlayer}
             aria-label={isMusicMuted ? "Play music" : "Pause music"}
-            className="flex items-center justify-center w-12 h-12 transition-all active:scale-90"
+            className="flex items-center justify-center w-10 h-10 transition-all active:scale-90"
             style={{ opacity: hasMusicPlayer ? 0.85 : 0.3 }}
           >
             {isMusicMuted ? (
               <CirclePlay
-                className="w-6 h-6"
+                className="w-5 h-5"
                 style={{ color: primaryColor, strokeWidth: 1.5 }}
               />
             ) : (
               <CirclePause
-                className="w-6 h-6"
+                className="w-5 h-5"
                 style={{ color: primaryColor, strokeWidth: 1.5 }}
               />
             )}
@@ -109,11 +96,11 @@ export function ActionBar({
             onClick={handleMapClick}
             disabled={!hasMap}
             aria-label={card.language === "ms" ? "Lokasi" : "Location"}
-            className="flex items-center justify-center w-12 h-12 transition-all active:scale-90"
+            className="flex items-center justify-center w-10 h-10 transition-all active:scale-90"
             style={{ opacity: hasMap ? 0.85 : 0.3 }}
           >
             <MapPin
-              className="w-6 h-6"
+              className="w-5 h-5"
               style={{ color: primaryColor, strokeWidth: 1.5 }}
             />
           </button>
@@ -123,11 +110,11 @@ export function ActionBar({
             onClick={hasGifts ? () => { onAnalytic?.("GIFT_CLICK"); setGiftOpen(true) } : undefined}
             disabled={!hasGifts}
             aria-label={card.language === "ms" ? "Hadiah" : "Gift"}
-            className="flex items-center justify-center w-12 h-12 transition-all active:scale-90"
+            className="flex items-center justify-center w-10 h-10 transition-all active:scale-90"
             style={{ opacity: hasGifts ? 0.85 : 0.3, cursor: hasGifts ? "pointer" : "default" }}
           >
             <Gift
-              className="w-6 h-6"
+              className="w-5 h-5"
               style={{ color: primaryColor, strokeWidth: 1.5 }}
             />
           </button>
@@ -139,16 +126,16 @@ export function ActionBar({
               setRsvpOpen(true)
             }}
             aria-label="RSVP"
-            className="flex items-center justify-center w-12 h-12 transition-all active:scale-90"
+            className="flex items-center justify-center w-10 h-10 transition-all active:scale-90"
             style={{ opacity: 0.85 }}
           >
             <div className="relative">
               <Mail
-                className="w-6 h-6"
+                className="w-5 h-5"
                 style={{ color: primaryColor, strokeWidth: 1.5 }}
               />
               <Heart
-                className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5"
+                className="absolute -top-1 -right-1 w-3 h-3"
                 style={{ color: primaryColor, fill: primaryColor }}
               />
             </div>
@@ -156,6 +143,20 @@ export function ActionBar({
 
         </div>
       </motion.div>
+
+      <ContactModal
+        isOpen={contactOpen}
+        onClose={() => setContactOpen(false)}
+        card={card}
+        onAnalytic={onAnalytic}
+      />
+
+      <LocationModal
+        isOpen={locationOpen}
+        onClose={() => setLocationOpen(false)}
+        card={card}
+        onAnalytic={onAnalytic}
+      />
 
       <RSVPModal
         isOpen={rsvpOpen}

@@ -60,12 +60,12 @@ export function CardPreview() {
               <div
                 className="absolute inset-0"
                 style={{
-                  background: card.theme?.bgColor ?? "#0a0a0a",
-                  ...(card.theme?.bgImageUrl && {
-                    backgroundImage: `linear-gradient(rgba(0,0,0,${card.theme.bgOpacity}),rgba(0,0,0,${card.theme.bgOpacity})), url(${card.theme.bgImageUrl})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }),
+                  backgroundColor: card.theme?.bgColor ?? "#0a0a0a",
+                  backgroundImage: card.theme?.bgImageUrl
+                    ? `linear-gradient(rgba(0,0,0,${card.theme.bgOpacity}),rgba(0,0,0,${card.theme.bgOpacity})), url(${card.theme.bgImageUrl})`
+                    : "none",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
                 }}
               />
 
@@ -105,12 +105,12 @@ export function CardPreview() {
             <div
               className="absolute inset-0"
               style={{
-                background: card.theme?.bgColor ?? "#0a0a0a",
-                ...(card.theme?.bgImageUrl && {
-                  backgroundImage: `linear-gradient(rgba(0,0,0,${card.theme.bgOpacity}),rgba(0,0,0,${card.theme.bgOpacity})), url(${card.theme.bgImageUrl})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }),
+                backgroundColor: card.theme?.bgColor ?? "#0a0a0a",
+                backgroundImage: card.theme?.bgImageUrl
+                  ? `linear-gradient(rgba(0,0,0,${card.theme.bgOpacity}),rgba(0,0,0,${card.theme.bgOpacity})), url(${card.theme.bgImageUrl})`
+                  : "none",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
               }}
             />
             {/* Scrollable content over static background */}

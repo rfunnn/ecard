@@ -1,16 +1,19 @@
 "use client"
 
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import Link from "next/link"
-import { ChevronLeft, ChevronRight, Save, Eye, X, ShoppingBag, ExternalLink, Loader2 } from "lucide-react"
+import { ChevronLeft, ChevronRight, Save, Eye, X, ShoppingBag, ExternalLink } from "lucide-react"
 import { useWizardStore, TOTAL_PAGES } from "@/store/wizardStore"
 import type { TemplateInfo } from "@/store/wizardStore"
 import type { WizardConfig } from "@/types/config"
 import { TemplateRenderer } from "@/components/templates/TemplateRenderer"
-import type { InvitationCardData } from "@/types/invitation"
-import { DEFAULT_THEME, DEFAULT_MEDIA, DEFAULT_SCROLL } from "@/types/invitation"
+import type { InvitationCardData, GiftItem } from "@/types/invitation"
 import { addToCart } from "@/lib/cart"
 import { CartDrawer } from "@/components/CartDrawer"
+import { InviteClient } from "@/components/invite/InviteClient"
+import { EffectAnimation } from "@/components/invite/EffectAnimation"
+import { OpeningGate } from "@/components/invite/OpeningGate"
+import { ActionBar } from "@/components/invite/ActionBar"
 import { Page1_Main } from "./pages/Page1_Main"
 import { Page2_FrontPage } from "./pages/Page2_FrontPage"
 import { Page3_InvitationText } from "./pages/Page3_InvitationText"
@@ -103,7 +106,8 @@ function buildInitialConfig(card: InvitationCardData): Partial<WizardConfig> {
 function buildCardPreview(
   initialCard: InvitationCardData,
   config: WizardConfig,
-  templateOverride?: TemplateInfo | null
+  templateOverride?: TemplateInfo | null,
+  giftItems?: GiftItem[]
 ): InvitationCardData {
   const [groomName, brideName] = config.displayName.includes("&")
     ? config.displayName.split("&").map((s) => s.trim())
@@ -113,6 +117,8 @@ function buildCardPreview(
 
   return {
     ...initialCard,
+    giftItems: giftItems ?? initialCard.giftItems,
+    wizardConfig: config,
     template: templateOverride
       ? {
           slug: templateOverride.slug,
@@ -170,6 +176,7 @@ export function WizardShell({ initialCard }: Props) {
     isDirty,
     isSaving,
     templateOverride,
+    giftItems,
     setPage,
     nextPage,
     prevPage,
@@ -177,13 +184,16 @@ export function WizardShell({ initialCard }: Props) {
     setIsSaving,
     markClean,
     loadConfig,
+    setGiftItems,
   } = useWizardStore()
 
   const [showMobilePreview, setShowMobilePreview] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
-  const [isSavingForPreview, setIsSavingForPreview] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
+  const [previewGateOpen, setPreviewGateOpen] = useState(
+    () => (config.openingStyle ?? "Tiada") !== "Tiada"
+  )
 
   const desktopScrollRef = useRef<HTMLDivElement | undefined>(undefined)
   const mobileScrollRef  = useRef<HTMLDivElement | undefined>(undefined)
@@ -212,12 +222,35 @@ export function WizardShell({ initialCard }: Props) {
     if (cardSlug !== initialCard.slug) {
       loadConfig(buildInitialConfig(initialCard))
       setCardSlug(initialCard.slug)
+      setGiftItems(initialCard.giftItems)
     }
     addToCart(initialCard.slug)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialCard.slug])
 
-  const cardPreview = buildCardPreview(initialCard, config, templateOverride)
+  // Scroll preview to the section relevant to the active wizard page when the user switches pages.
+  // Without this, the auto-scroll may be showing a different section and the user can't see their edits.
+  useEffect(() => {
+    const ph = desktopScrollRef.current?.clientHeight ?? 0
+    const target =
+      currentPage <= 2  ? 0           // cover / names / date
+      : currentPage === 3 ? ph * 1.05  // invitation text
+      : currentPage === 4 ? ph * 1.65  // venue & date
+      : currentPage === 5 ? ph * 2.3   // event program
+      : currentPage === 7 ? ph * 3.0   // RSVP / wishes
+      : 0
+
+    for (const ref of [desktopScrollRef, mobileScrollRef]) {
+      if (ref.current) ref.current.scrollTop = target
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage])
+
+  const cardPreview = useMemo(
+    () => buildCardPreview(initialCard, config, templateOverride, giftItems),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [config, templateOverride, giftItems],
+  )
 
   const save = useCallback(async () => {
     setIsSaving(true)
@@ -244,19 +277,28 @@ export function WizardShell({ initialCard }: Props) {
     }
   }, [cardPreview, config, initialCard.slug, markClean, setIsSaving, templateOverride])
 
-  const handlePreviewOpen = useCallback(async () => {
-    if (isDirty) {
-      setIsSavingForPreview(true)
-      await save()
-      setIsSavingForPreview(false)
-    }
+  const handlePreviewOpen = useCallback(() => {
     setPreviewOpen(true)
-  }, [isDirty, save])
+  }, [])
+
+  const previewEffect      = config.effectAnimation ?? "Tiada"
+  const previewEffectColor = config.effectColor ?? "#ffffff"
+  const previewOpenStyle   = config.openingStyle ?? "Tiada"
+  const previewOpenColor   = config.openingStyleColor ?? "#1a1a1a"
+
+  // Reset gate whenever the user picks a new opening style
+  useEffect(() => {
+    setPreviewGateOpen(previewOpenStyle !== "Tiada")
+  }, [previewOpenStyle])
 
   const isLastPage = currentPage === TOTAL_PAGES
   const CurrentPage = PAGE_COMPONENTS[currentPage - 1]
   const pageName = PAGE_NAMES[currentPage - 1]
   const showWarning = WARNING_PAGES.has(currentPage)
+
+  if (previewOpen) {
+    return <InviteClient card={cardPreview} onClose={() => setPreviewOpen(false)} />
+  }
 
   return (
     <div className="flex h-screen bg-white overflow-hidden">
@@ -275,14 +317,9 @@ export function WizardShell({ initialCard }: Props) {
               <button
                 type="button"
                 onClick={handlePreviewOpen}
-                disabled={isSavingForPreview}
-                className="flex items-center gap-1.5 text-xs text-amber-600 hover:text-amber-700 font-medium transition-colors px-2 py-1 rounded-md hover:bg-amber-50 disabled:opacity-60"
+                className="flex items-center gap-1.5 text-xs text-amber-600 hover:text-amber-700 font-medium transition-colors px-2 py-1 rounded-md hover:bg-amber-50"
               >
-                {isSavingForPreview ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <Eye className="w-3.5 h-3.5" />
-                )}
+                <Eye className="w-3.5 h-3.5" />
                 Lihat Kad
               </button>
               <button
@@ -383,7 +420,7 @@ export function WizardShell({ initialCard }: Props) {
           {showWarning && (
             <div className="px-4 py-2 bg-yellow-50 border-t border-yellow-100 text-center">
               <p className="text-[11px] text-yellow-700">Pastikan browser anda bukan dalam dark mode</p>
-              <p className="text-[11px] text-yellow-600">Previu ini tidak sepenuhnya tepat seperti produk sebenar</p>
+              <p className="text-[11px] text-yellow-600">Preview ini tidak sepenuhnya tepat seperti produk sebenar</p>
             </div>
           )}
 
@@ -412,22 +449,34 @@ export function WizardShell({ initialCard }: Props) {
               <div
                 className="absolute inset-0"
                 style={{
-                  background: cardPreview.theme?.bgColor ?? "#0a0a0a",
-                  ...(cardPreview.template?.image2Url
-                    ? {
-                        backgroundImage: `linear-gradient(rgba(0,0,0,${cardPreview.theme?.bgOpacity ?? 0.45}),rgba(0,0,0,${cardPreview.theme?.bgOpacity ?? 0.45})),url(${cardPreview.template.image2Url})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                      }
+                  backgroundColor: cardPreview.theme?.bgColor ?? "#0a0a0a",
+                  backgroundImage: cardPreview.template?.image2Url
+                    ? `linear-gradient(rgba(0,0,0,${cardPreview.theme?.bgOpacity ?? 0.45}),rgba(0,0,0,${cardPreview.theme?.bgOpacity ?? 0.45})),url(${cardPreview.template.image2Url})`
                     : cardPreview.theme?.bgImageUrl
-                    ? {
-                        backgroundImage: `linear-gradient(rgba(0,0,0,${cardPreview.theme.bgOpacity}),rgba(0,0,0,${cardPreview.theme.bgOpacity})),url(${cardPreview.theme.bgImageUrl})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                      }
-                    : {}),
+                    ? `linear-gradient(rgba(0,0,0,${cardPreview.theme.bgOpacity}),rgba(0,0,0,${cardPreview.theme.bgOpacity})),url(${cardPreview.theme.bgImageUrl})`
+                    : "none",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
                 }}
               />
+              {/* Particle effect — contained inside phone frame */}
+              <EffectAnimation effect={previewEffect} color={previewEffectColor} contained />
+
+              {/* Opening gate — pointer-events-auto overrides the parent's pointer-events-none */}
+              {previewOpenStyle !== "Tiada" && previewGateOpen && (
+                <div style={{ pointerEvents: "auto" }}>
+                  <OpeningGate
+                    key={previewOpenStyle}
+                    style={previewOpenStyle}
+                    color={previewOpenColor}
+                    onOpen={() => setPreviewGateOpen(false)}
+                    displayName={config.displayName}
+                    eventType={config.eventType}
+                    eventDate={config.dayAndDate}
+                  />
+                </div>
+              )}
+
               <div
                 ref={(el) => { if (el) desktopScrollRef.current = el }}
                 className="absolute inset-0 overflow-y-auto overflow-x-hidden z-10"
@@ -441,6 +490,11 @@ export function WizardShell({ initialCard }: Props) {
                 <div className="relative z-10">
                   <TemplateRenderer card={cardPreview} />
                 </div>
+              </div>
+
+              {/* Action bar — contained inside phone screen */}
+              <div style={{ pointerEvents: "auto" }}>
+                <ActionBar card={cardPreview} contained />
               </div>
             </div>
             {/* Notch */}
@@ -480,14 +534,9 @@ export function WizardShell({ initialCard }: Props) {
           <button
             type="button"
             onClick={handlePreviewOpen}
-            disabled={isSavingForPreview}
-            className="flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white text-xs font-medium px-3 py-2 rounded-lg shadow-lg transition-colors disabled:opacity-60"
+            className="flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white text-xs font-medium px-3 py-2 rounded-lg shadow-lg transition-colors"
           >
-            {isSavingForPreview ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            ) : (
-              <ExternalLink className="w-3.5 h-3.5" />
-            )}
+            <ExternalLink className="w-3.5 h-3.5" />
             Lihat Kad Penuh
           </button>
         </div>
@@ -515,22 +564,34 @@ export function WizardShell({ initialCard }: Props) {
                 <div
                   className="absolute inset-0"
                   style={{
-                    background: cardPreview.theme?.bgColor ?? "#0a0a0a",
-                    ...(cardPreview.template?.image2Url
-                      ? {
-                          backgroundImage: `linear-gradient(rgba(0,0,0,${cardPreview.theme?.bgOpacity ?? 0.45}),rgba(0,0,0,${cardPreview.theme?.bgOpacity ?? 0.45})),url(${cardPreview.template.image2Url})`,
-                          backgroundSize: "cover",
-                          backgroundPosition: "center",
-                        }
+                    backgroundColor: cardPreview.theme?.bgColor ?? "#0a0a0a",
+                    backgroundImage: cardPreview.template?.image2Url
+                      ? `linear-gradient(rgba(0,0,0,${cardPreview.theme?.bgOpacity ?? 0.45}),rgba(0,0,0,${cardPreview.theme?.bgOpacity ?? 0.45})),url(${cardPreview.template.image2Url})`
                       : cardPreview.theme?.bgImageUrl
-                      ? {
-                          backgroundImage: `linear-gradient(rgba(0,0,0,${cardPreview.theme.bgOpacity}),rgba(0,0,0,${cardPreview.theme.bgOpacity})),url(${cardPreview.theme.bgImageUrl})`,
-                          backgroundSize: "cover",
-                          backgroundPosition: "center",
-                        }
-                      : {}),
+                      ? `linear-gradient(rgba(0,0,0,${cardPreview.theme.bgOpacity}),rgba(0,0,0,${cardPreview.theme.bgOpacity})),url(${cardPreview.theme.bgImageUrl})`
+                      : "none",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
                   }}
                 />
+                {/* Particle effect — contained inside mobile phone frame */}
+                <EffectAnimation effect={previewEffect} color={previewEffectColor} contained />
+
+                {/* Opening gate */}
+                {previewOpenStyle !== "Tiada" && previewGateOpen && (
+                  <div style={{ pointerEvents: "auto" }}>
+                    <OpeningGate
+                      key={previewOpenStyle}
+                      style={previewOpenStyle}
+                      color={previewOpenColor}
+                      onOpen={() => setPreviewGateOpen(false)}
+                      displayName={config.displayName}
+                      eventType={config.eventType}
+                      eventDate={config.dayAndDate}
+                    />
+                  </div>
+                )}
+
                 <div
                   ref={(el) => { if (el) mobileScrollRef.current = el }}
                   className="absolute inset-0 overflow-y-auto overflow-x-hidden z-10"
@@ -544,6 +605,11 @@ export function WizardShell({ initialCard }: Props) {
                   <div className="relative z-10">
                     <TemplateRenderer card={cardPreview} />
                   </div>
+                </div>
+
+                {/* Action bar — contained inside phone screen */}
+                <div style={{ pointerEvents: "auto" }}>
+                  <ActionBar card={cardPreview} contained />
                 </div>
               </div>
               <div className="absolute top-1.5 left-0 right-0 flex justify-center z-20 pointer-events-none">
@@ -563,55 +629,6 @@ export function WizardShell({ initialCard }: Props) {
               Kembali ke Editor
             </button>
           </div>
-        </div>
-      )}
-
-      {/* ── Full-Page Preview Overlay ── */}
-      {previewOpen && (
-        <div className="fixed inset-0 z-[60] flex flex-col bg-[#0a0a0a]">
-          {/* Preview bar */}
-          <div className="shrink-0 flex items-center justify-between px-4 py-2.5 bg-[#111] border-b border-white/10">
-            <div className="flex items-center gap-2.5">
-              <Eye className="w-4 h-4 text-gold" />
-              <span className="text-sm text-cream font-medium">Pratonton Kad</span>
-              {isDirty ? (
-                <span className="text-[11px] text-amber-400/80 bg-amber-400/10 px-2 py-0.5 rounded-full">
-                  Ada perubahan belum disimpan
-                </span>
-              ) : (
-                <span className="text-[11px] text-cream/30 bg-white/5 px-2 py-0.5 rounded-full">
-                  Versi disimpan
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-3">
-              <a
-                href={`/invite/${initialCard.slug}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-xs text-gold/70 hover:text-gold transition-colors"
-              >
-                <ExternalLink className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Buka Tab Baru</span>
-              </a>
-              <button
-                type="button"
-                onClick={() => setPreviewOpen(false)}
-                className="flex items-center gap-1.5 text-sm text-cream/50 hover:text-cream transition-colors pl-3 border-l border-white/10"
-              >
-                <X className="w-4 h-4" />
-                <span className="hidden sm:inline text-xs">Tutup</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Iframe */}
-          <iframe
-            src={`/invite/${initialCard.slug}`}
-            className="flex-1 w-full border-0 bg-white"
-            title="Pratonton Kad Jemputan"
-            allow="autoplay"
-          />
         </div>
       )}
 

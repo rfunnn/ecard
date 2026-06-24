@@ -29,7 +29,7 @@ const STEPS = [
 const PACKAGES = [
   {
     name: "Bronze", emoji: "🥉",
-    headerBg: "#B8956A",
+    headerBg: "linear-gradient(135deg, #c8945a, #a06b3a)",
     price: "RM30",
     features: [
       { label: "Calendar",   bold: false },
@@ -41,7 +41,7 @@ const PACKAGES = [
   },
   {
     name: "Silver", emoji: "🥈",
-    headerBg: "#9CA3AF",
+    headerBg: "linear-gradient(135deg, #9CA3AF, #6B7280)",
     price: "RM40",
     features: [
       { label: "Calendar",       bold: false },
@@ -56,7 +56,7 @@ const PACKAGES = [
   },
   {
     name: "Gold", emoji: "🥇",
-    headerBg: "#C9A84C",
+    headerBg: "linear-gradient(135deg, #D4AF37, #a07820)",
     price: "RM60",
     features: [
       { label: "Calendar",         bold: false },
@@ -89,12 +89,19 @@ const ADDONS = [
 ]
 
 const PERKS = [
-  "Tiada langganan diperlukan",
-  "Pautan unik untuk setiap kad",
-  "Sokongan Bahasa Melayu & Inggeris",
-  "Muzik latar dari YouTube",
-  "Animasi skrol automatik",
-  "Butang RSVP, Peta & WhatsApp",
+  "Tiada langganan",
+  "Pautan unik",
+  "BM & Inggeris",
+  "Muzik YouTube",
+  "Animasi skrol",
+  "RSVP & Peta",
+]
+
+const TEMPLATES = [
+  { label: "Perkahwinan Klasik", bg: "#1a0a00", accent: "#D4AF37", emoji: "💍", font: "font-great-vibes",  preview: "Ahmad & Siti" },
+  { label: "Hari Jadi Ceria",    bg: "#0a0a1a", accent: "#8B5CF6", emoji: "🎂", font: "font-dancing",      preview: "Selamat Harijadi" },
+  { label: "Korporat Pro",       bg: "#0a1a0a", accent: "#10B981", emoji: "🏢", font: "font-montserrat",   preview: "Jemputan Rasmi" },
+  { label: "Umum Elegan",        bg: "#0d0d0d", accent: "#C0A050", emoji: "✉️", font: "font-cormorant",    preview: "Majlis Istimewa" },
 ]
 
 export default function HomePage() {
@@ -102,10 +109,10 @@ export default function HomePage() {
     <div className="min-h-screen bg-[var(--pg)] overflow-x-hidden">
 
       {/* ── Nav ── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 lg:px-10 py-4 bg-[var(--pg-nav)] backdrop-blur-md border-b border-[var(--bd)]">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 lg:px-10 py-3.5 bg-[var(--pg-nav)] backdrop-blur-md border-b border-[var(--bd)]">
         <div className="flex items-center gap-2">
-          <Heart className="w-4 h-4 text-gold fill-gold/30" />
-          <span className="font-playfair text-lg text-[var(--tx-1)] tracking-wide">kad.my</span>
+          <Heart className="w-3.5 h-3.5 text-gold fill-gold/30" />
+          <span className="font-playfair text-[15px] text-[var(--tx-1)] tracking-wide">kad.my</span>
         </div>
         <div className="flex items-center gap-2">
           <Link href="/invite/demo" className="hidden sm:inline-flex text-[var(--tx-2)] hover:text-[var(--tx-1)] text-sm transition-colors px-3 py-2">
@@ -114,148 +121,161 @@ export default function HomePage() {
           <UserMenu />
           <Link
             href="/new"
-            className="inline-flex items-center gap-2 bg-gold text-ink text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-gold-light transition-all hover:shadow-lg hover:shadow-gold/20 active:scale-95"
+            className="inline-flex items-center gap-1.5 bg-gold text-ink text-[13px] font-semibold px-4 py-2 rounded-full hover:bg-gold-light transition-all hover:shadow-lg hover:shadow-gold/20 active:scale-95"
           >
             Buat Kad
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-3 h-3" />
           </Link>
         </div>
       </nav>
 
       {/* ── Hero ── */}
-      <section className="min-h-screen flex items-center pt-20 lg:pt-0">
-        <div className="w-full max-w-7xl mx-auto px-6 lg:px-10 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center py-16 lg:py-0">
+      <section className="min-h-[100svh] flex items-center pt-14 pb-10 lg:pt-0 lg:pb-0">
+        <div className="w-full max-w-3xl mx-auto px-5 lg:px-10 flex flex-col items-center text-center gap-8 py-8 lg:py-0">
 
-          {/* Left — text */}
-          <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 text-gold/60 text-xs tracking-[0.3em] uppercase mb-6 border border-gold/20 rounded-full px-4 py-2 bg-gold/5">
-              <Sparkles className="w-3 h-3" />
+          {/* Text block */}
+          <div className="flex flex-col items-center text-center">
+            <div className="inline-flex items-center gap-1.5 text-gold/60 text-[10px] tracking-[0.3em] uppercase mb-5 border border-gold/20 rounded-full px-3.5 py-1.5 bg-gold/5">
+              <Sparkles className="w-2.5 h-2.5" />
               Kad Jemputan Digital
             </div>
 
-            <h1 className="font-playfair text-5xl sm:text-6xl lg:text-7xl xl:text-8xl text-[var(--tx-1)] leading-[1.08] mb-6">
+            <h1 className="font-playfair text-[2rem] leading-[1.1] sm:text-5xl lg:text-7xl xl:text-8xl text-[var(--tx-1)] mb-3 lg:mb-6">
               Jemput dengan<br />
               <span className="shimmer">Penuh Gaya</span>
             </h1>
 
-            <p className="text-[var(--tx-2)] text-base lg:text-lg leading-relaxed max-w-md mb-10">
-              Cipta kad jemputan digital yang memukau dalam minit. Tambah muzik YouTube, animasi skrol, dan kongsi pautan unik kepada tetamu.
+            <p className="text-[var(--tx-2)] text-[13px] lg:text-lg leading-relaxed max-w-sm lg:max-w-md mb-5 lg:mb-10">
+              Cipta kad jemputan digital yang memukau dalam minit. Tambah muzik, animasi skrol, dan kongsi pautan unik kepada tetamu.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center gap-3 mb-10">
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto mb-5 lg:mb-10">
               <Link
                 href="/new"
-                className="inline-flex items-center gap-2 bg-gold text-ink font-semibold px-8 py-3.5 rounded-full hover:bg-gold-light transition-all hover:shadow-xl hover:shadow-gold/20 active:scale-95 text-base w-full sm:w-auto justify-center"
+                className="inline-flex items-center justify-center gap-2 bg-gold text-ink font-semibold px-5 py-2.5 rounded-full hover:bg-gold-light transition-all hover:shadow-xl hover:shadow-gold/20 active:scale-95 text-[13px] sm:text-[15px]"
               >
                 Buat Kad Sekarang
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 href="/invite/demo"
-                className="inline-flex items-center gap-2 border border-[var(--bd)] text-[var(--tx-2)] hover:text-[var(--tx-1)] hover:border-[var(--bd)] px-8 py-3.5 rounded-full transition-colors text-base w-full sm:w-auto justify-center dark:border-white/15 dark:hover:border-white/30"
+                className="inline-flex items-center justify-center gap-2 border border-[var(--bd)] text-[var(--tx-2)] hover:text-[var(--tx-1)] px-5 py-2.5 rounded-full transition-colors text-[13px] sm:text-[15px] dark:border-white/15 dark:hover:border-white/25"
               >
                 Lihat Contoh
               </Link>
             </div>
 
-            {/* Perks */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-6">
+            {/* Perks — 3-col compact */}
+            <div className="grid grid-cols-3 gap-x-3 gap-y-2 w-full max-w-xs mx-auto">
               {PERKS.map((p) => (
-                <div key={p} className="flex items-center gap-2 text-[var(--tx-3)] text-sm">
-                  <Check className="w-3.5 h-3.5 text-gold/60 shrink-0" />
+                <div key={p} className="flex items-center gap-1.5 text-[var(--tx-3)] text-[12px] sm:text-[13px]">
+                  <Check className="w-2.5 h-2.5 text-gold/50 shrink-0" />
                   {p}
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Right — phone mockup */}
-          <div className="flex justify-center lg:justify-end relative">
+          {/* Phone mockup */}
+          <div className="flex justify-center relative">
+            {/* Glow */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-72 h-72 rounded-full blur-[80px] opacity-20" style={{ background: "#D4AF37" }} />
+              <div className="w-48 h-48 sm:w-72 sm:h-72 rounded-full blur-[80px] opacity-20 dark:opacity-15"
+                style={{ background: "#D4AF37" }} />
             </div>
 
-            <div className="relative w-64 sm:w-72 lg:w-80">
-              {/* Phone frame */}
-              <div className="relative rounded-[44px] border-2 border-black/10 dark:border-white/10 shadow-2xl overflow-hidden bg-[#1a0a00]"
-                style={{ aspectRatio: "9/19.5" }}>
-                <div className="absolute top-0 left-0 right-0 h-9 flex items-center justify-between px-5 z-10 bg-black/20">
-                  <span className="text-[10px] text-white/50">9:41</span>
-                  <div className="w-16 h-3.5 bg-black rounded-full" />
-                  <span className="text-[10px] text-white/50">●●●</span>
+            <div className="relative float" style={{ width: "min(68vw, 270px)" }}>
+              {/* Frame */}
+              <div
+                className="relative rounded-[40px] border-2 border-black/10 dark:border-white/[0.06] shadow-2xl overflow-hidden bg-[#140800]"
+                style={{ aspectRatio: "9/19.5" }}
+              >
+                {/* Status bar */}
+                <div className="absolute top-0 left-0 right-0 h-7 flex items-center justify-between px-4 z-10 bg-black/20">
+                  <span className="text-[8px] text-white/40">9:41</span>
+                  <div className="w-14 h-3 bg-black rounded-full" />
+                  <span className="text-[8px] text-white/40">●●●</span>
                 </div>
-                <div className="absolute top-0 left-0 right-0 flex justify-center pointer-events-none z-20">
-                  <div className="w-24 h-6 bg-black rounded-b-2xl" />
+                <div className="absolute top-0 left-0 right-0 flex justify-center z-20 pointer-events-none">
+                  <div className="w-18 h-5 bg-black rounded-b-2xl" />
                 </div>
-                <div className="absolute inset-0 pt-9 flex flex-col">
-                  <div className="h-0.5 w-full" style={{ background: "linear-gradient(90deg, transparent, #D4AF37, transparent)" }} />
-                  <div className="flex-1 flex flex-col items-center justify-start px-4 py-4 overflow-hidden">
+                {/* Gold line */}
+                <div className="absolute top-7 left-0 right-0 h-px" style={{ background: "linear-gradient(90deg,transparent,#D4AF37,transparent)" }} />
+
+                {/* Card content */}
+                <div className="absolute inset-0 pt-8 flex flex-col">
+                  <div className="flex-1 flex flex-col items-center justify-start px-4 pt-4 pb-2 overflow-hidden">
                     <div className="flex items-center gap-2 w-full mb-3">
-                      <div className="h-px flex-1 opacity-20 bg-gold" />
-                      <span className="text-gold/60 text-[8px]">✦</span>
-                      <div className="h-px flex-1 opacity-20 bg-gold" />
+                      <div className="h-px flex-1 bg-gold opacity-20" />
+                      <span className="text-gold/50 text-[7px]">✦</span>
+                      <div className="h-px flex-1 bg-gold opacity-20" />
                     </div>
-                    <p className="text-[7px] tracking-[0.25em] uppercase text-cream/50 mb-1">Dengan Hormat Menjemput</p>
-                    <p className="text-[7px] tracking-[0.2em] text-cream/30 mb-4">Ke Majlis Walimatul Urus</p>
-                    <p className="font-great-vibes text-2xl text-gold mb-1">Ahmad Faris</p>
-                    <p className="text-gold/50 text-xs mb-1">&amp;</p>
-                    <p className="font-great-vibes text-2xl text-gold mb-4">Nur Aisyah</p>
-                    <div className="flex items-center gap-2 w-full mb-4">
-                      <div className="h-px flex-1 opacity-10 bg-gold" />
-                      <div className="w-1 h-1 rounded-full bg-gold opacity-30" />
-                      <div className="h-px flex-1 opacity-10 bg-gold" />
+                    <p className="text-[6px] tracking-[0.25em] uppercase text-cream/50 mb-1">Dengan Hormat Menjemput</p>
+                    <p className="text-[6px] tracking-[0.2em] text-cream/30 mb-3">Ke Majlis Walimatul Urus</p>
+                    <p className="font-great-vibes text-[20px] text-gold leading-tight">Ahmad Faris</p>
+                    <p className="text-gold/40 text-[9px] my-0.5">&amp;</p>
+                    <p className="font-great-vibes text-[20px] text-gold leading-tight mb-4">Nur Aisyah</p>
+                    <div className="flex items-center gap-2 w-full mb-3">
+                      <div className="h-px flex-1 bg-gold opacity-10" />
+                      <div className="w-1 h-1 rounded-full bg-gold opacity-20" />
+                      <div className="h-px flex-1 bg-gold opacity-10" />
                     </div>
-                    <div className="space-y-1.5 text-center mb-4">
-                      <div className="flex items-center justify-center gap-1.5 text-cream/50 text-[8px]">
-                        <Calendar className="w-2.5 h-2.5 text-gold/50" />
+                    <div className="space-y-1.5 text-center">
+                      <div className="flex items-center justify-center gap-1 text-cream/45 text-[6.5px]">
+                        <Calendar className="w-2 h-2 text-gold/40" />
                         Sabtu, 14 Disember 2025
                       </div>
-                      <div className="flex items-center justify-center gap-1.5 text-cream/50 text-[8px]">
-                        <Clock className="w-2.5 h-2.5 text-gold/50" />
+                      <div className="flex items-center justify-center gap-1 text-cream/45 text-[6.5px]">
+                        <Clock className="w-2 h-2 text-gold/40" />
                         10:00 Pagi – 1:00 Tengah Hari
                       </div>
-                      <div className="flex items-center justify-center gap-1.5 text-cream/50 text-[8px]">
-                        <MapPin className="w-2.5 h-2.5 text-gold/50" />
+                      <div className="flex items-center justify-center gap-1 text-cream/45 text-[6.5px]">
+                        <MapPin className="w-2 h-2 text-gold/40" />
                         Dewan Seri Murni, KL
                       </div>
                     </div>
                   </div>
-                  <div className="bg-black/80 border-t border-white/10 px-3 py-2 flex items-center justify-around">
-                    <div className="flex flex-col items-center gap-0.5">
-                      <div className="w-6 h-6 rounded-full bg-gold/10 flex items-center justify-center">
-                        <MapPin className="w-3 h-3 text-gold/70" />
+
+                  {/* Action bar */}
+                  <div className="bg-black/75 border-t border-white/10 px-3 py-2.5 flex items-center justify-around">
+                    {[
+                      { icon: MapPin, label: "Lokasi" },
+                      { icon: Heart, label: "RSVP", primary: true },
+                      { icon: Share2, label: "Hubungi" },
+                    ].map(({ icon: Icon, label, primary }) => (
+                      <div key={label} className="flex flex-col items-center gap-0.5">
+                        <div className={`${primary ? "w-8 h-8 bg-gold shadow-lg shadow-gold/30" : "w-6 h-6 bg-gold/10"} rounded-full flex items-center justify-center`}>
+                          <Icon className={`${primary ? "w-3.5 h-3.5 text-ink fill-ink" : "w-2.5 h-2.5 text-gold/60"}`} />
+                        </div>
+                        <span className={`text-[5.5px] ${primary ? "text-gold font-semibold" : "text-cream/35"}`}>{label}</span>
                       </div>
-                      <span className="text-[7px] text-cream/40">Lokasi</span>
-                    </div>
-                    <div className="flex flex-col items-center gap-0.5">
-                      <div className="w-8 h-8 rounded-full bg-gold flex items-center justify-center shadow-lg shadow-gold/30">
-                        <Heart className="w-4 h-4 text-ink fill-ink" />
-                      </div>
-                      <span className="text-[7px] text-gold font-semibold">RSVP</span>
-                    </div>
-                    <div className="flex flex-col items-center gap-0.5">
-                      <div className="w-6 h-6 rounded-full bg-gold/10 flex items-center justify-center">
-                        <Share2 className="w-3 h-3 text-gold/70" />
-                      </div>
-                      <span className="text-[7px] text-cream/40">Hubungi</span>
-                    </div>
+                    ))}
                   </div>
                 </div>
                 <div className="absolute bottom-1 left-0 right-0 flex justify-center">
-                  <div className="w-16 h-1 bg-white/15 rounded-full" />
+                  <div className="w-12 h-0.5 bg-white/15 rounded-full" />
                 </div>
               </div>
 
-              {/* Floating labels */}
-              <div className="absolute -right-4 lg:-right-8 top-1/4 rounded-xl px-3 py-2 shadow-xl border" style={{ background: "var(--float)", borderColor: "var(--float-bd)" }}>
-                <div className="flex items-center gap-2">
-                  <Music className="w-3.5 h-3.5 text-gold" />
-                  <span className="text-xs text-[var(--tx-2)]">Muzik aktif</span>
+              {/* Floating badge — music */}
+              <div
+                className="absolute -right-1 sm:-right-8 top-[28%] rounded-2xl px-3 py-2 shadow-xl border"
+                style={{ background: "var(--float)", borderColor: "var(--float-bd)" }}
+              >
+                <div className="flex items-center gap-1.5">
+                  <Music className="w-3 h-3 text-gold" />
+                  <span className="text-[11px] font-medium text-[var(--tx-2)]">Muzik aktif</span>
                 </div>
               </div>
-              <div className="absolute -left-4 lg:-left-8 bottom-1/3 rounded-xl px-3 py-2 shadow-xl border border-gold/20" style={{ background: "var(--float)" }}>
-                <p className="text-[10px] text-[var(--tx-3)] mb-0.5">Pautan dikongsi</p>
-                <p className="text-xs text-gold font-mono">kad.my/ahmadfaris</p>
+
+              {/* Floating badge — link */}
+              <div
+                className="absolute -left-1 sm:-left-8 bottom-[30%] rounded-2xl px-3 py-2 shadow-xl border border-gold/20"
+                style={{ background: "var(--float)" }}
+              >
+                <p className="text-[9px] text-[var(--tx-3)] mb-0.5">Pautan dikongsi</p>
+                <p className="text-[11px] text-gold font-mono font-semibold">kad.my/faris</p>
               </div>
             </div>
           </div>
@@ -263,18 +283,21 @@ export default function HomePage() {
       </section>
 
       {/* ── How it works ── */}
-      <section className="py-20 lg:py-28 px-6 lg:px-10 border-t border-[var(--bd)]">
+      <section className="py-10 lg:py-28 px-5 lg:px-10 border-t border-[var(--bd)]">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-14">
-            <p className="text-gold/60 text-xs tracking-[0.3em] uppercase mb-3">Cara Kerja</p>
-            <h2 className="font-playfair text-3xl lg:text-4xl text-[var(--tx-1)]">Siap dalam 3 langkah</h2>
+          <div className="text-center mb-7 lg:mb-14">
+            <p className="text-gold/60 text-[10px] tracking-[0.3em] uppercase mb-2">Cara Kerja</p>
+            <h2 className="font-playfair text-2xl lg:text-4xl text-[var(--tx-1)]">Siap dalam 3 langkah</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-10">
+
+          <div className="flex flex-col md:grid md:grid-cols-3 gap-5 lg:gap-10">
             {STEPS.map(({ num, label, desc }) => (
-              <div key={num} className="relative flex flex-col items-center lg:items-start text-center lg:text-left">
-                <div className="font-playfair text-5xl lg:text-6xl text-gold/10 font-bold mb-4 select-none">{num}</div>
-                <h3 className="font-playfair text-xl text-[var(--tx-1)] mb-2">{label}</h3>
-                <p className="text-[var(--tx-2)] text-sm leading-relaxed">{desc}</p>
+              <div key={num} className="flex flex-col items-center text-center gap-3">
+                <div className="font-playfair text-[52px] leading-none text-gold/12 font-bold">{num}</div>
+                <div>
+                  <h3 className="font-playfair text-lg text-[var(--tx-1)] mb-1.5">{label}</h3>
+                  <p className="text-[var(--tx-2)] text-sm leading-relaxed">{desc}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -282,154 +305,133 @@ export default function HomePage() {
       </section>
 
       {/* ── Features ── */}
-      <section className="py-20 lg:py-28 px-6 lg:px-10 bg-[var(--pg-alt)]">
+      <section className="py-10 lg:py-28 px-5 lg:px-10 bg-[var(--pg-alt)]">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-14">
-            <p className="text-gold/60 text-xs tracking-[0.3em] uppercase mb-3">Ciri-ciri</p>
-            <h2 className="font-playfair text-3xl lg:text-4xl text-[var(--tx-1)]">Semua yang anda perlukan</h2>
+          <div className="text-center mb-7 lg:mb-14">
+            <p className="text-gold/60 text-[10px] tracking-[0.3em] uppercase mb-2">Ciri-ciri</p>
+            <h2 className="font-playfair text-2xl lg:text-4xl text-[var(--tx-1)]">Semua yang anda perlukan</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             {FEATURES.map(({ icon: Icon, title, desc }) => (
-              <div key={title}
-                className="p-6 lg:p-8 rounded-2xl border border-[var(--bd)] bg-[var(--pg)] hover:border-gold/30 transition-all group shadow-sm">
-                <div className="w-12 h-12 rounded-2xl bg-gold/10 flex items-center justify-center mb-5 group-hover:bg-gold/20 transition-colors">
-                  <Icon className="w-6 h-6 text-gold" />
+              <div
+                key={title}
+                className="flex flex-col items-center text-center gap-3 p-3.5 lg:p-7 rounded-xl lg:rounded-2xl border border-[var(--bd)] bg-[var(--pg)] hover:border-gold/30 transition-all group"
+              >
+                <div className="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center group-hover:bg-gold/20 transition-colors mb-1">
+                  <Icon className="w-4 h-4 text-gold" />
                 </div>
-                <h3 className="font-playfair text-lg text-[var(--tx-1)] mb-3">{title}</h3>
-                <p className="text-[var(--tx-2)] text-sm leading-relaxed">{desc}</p>
+                <div>
+                  <h3 className="font-playfair text-[13px] lg:text-base text-[var(--tx-1)] mb-0.5 lg:mb-1.5">{title}</h3>
+                  <p className="text-[var(--tx-2)] text-[11px] lg:text-[13px] leading-relaxed">{desc}</p>
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Template previews ── */}
-      <section className="py-20 lg:py-28 px-6 lg:px-10 bg-[var(--pg)]">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-12 gap-4">
-            <div>
-              <p className="text-gold/60 text-xs tracking-[0.3em] uppercase mb-3">Templat</p>
-              <h2 className="font-playfair text-3xl lg:text-4xl text-[var(--tx-1)]">Reka Bentuk Eksklusif</h2>
-            </div>
-            <Link href="/new" className="inline-flex items-center gap-2 text-gold/70 hover:text-gold text-sm transition-colors">
-              Lihat semua <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { label: "Perkahwinan Klasik", bg: "#1a0a00", accent: "#D4AF37", emoji: "💍", font: "font-great-vibes", preview: "Ahmad & Siti" },
-              { label: "Hari Jadi Ceria",    bg: "#0a0a1a", accent: "#8B5CF6", emoji: "🎂", font: "font-dancing",    preview: "Selamat Harijadi" },
-              { label: "Korporat Pro",       bg: "#0a1a0a", accent: "#10B981", emoji: "🏢", font: "font-montserrat", preview: "Jemputan Rasmi" },
-              { label: "Umum Elegan",        bg: "#0d0d0d", accent: "#C0A050", emoji: "✉️", font: "font-cormorant",  preview: "Majlis Istimewa" },
-            ].map(({ label, bg, accent, emoji, font, preview }) => (
-              <Link key={label} href="/new"
-                className="group relative rounded-2xl overflow-hidden border border-[var(--bd)] hover:border-gold/30 transition-all hover:scale-[1.02] hover:shadow-xl hover:shadow-gold/10"
-                style={{ aspectRatio: "3/4", background: bg }}>
-                <div className="absolute top-0 left-0 right-0 h-0.5" style={{ background: accent }} />
-                <div className="absolute inset-0 p-4 flex flex-col justify-between">
-                  <span className="text-2xl">{emoji}</span>
-                  <div>
-                    <p className={`${font} text-xl mb-1`} style={{ color: accent }}>{preview}</p>
-                    <p className="text-xs text-cream/40">{label}</p>
-                  </div>
-                </div>
-                <div className="absolute inset-0 bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </Link>
             ))}
           </div>
         </div>
       </section>
 
       {/* ── Packages ── */}
-      <section className="py-20 lg:py-28 px-6 lg:px-10 border-t border-[var(--bd)] bg-[var(--pg)]">
+      <section className="py-16 lg:py-28 border-t border-[var(--bd)] bg-[var(--pg)]">
         <div className="max-w-5xl mx-auto">
+          <div className="px-5 lg:px-10">
+            <h2 className="font-playfair text-3xl lg:text-5xl text-[var(--tx-1)] text-center mb-7 lg:mb-14">Pakej</h2>
+          </div>
 
-          <h2 className="font-playfair text-4xl lg:text-5xl text-[var(--tx-1)] text-center mb-14">Packages</h2>
-
-          {/* Tier cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-            {PACKAGES.map(({ name, emoji, headerBg, price, features }) => (
-              <div key={name} className="rounded-2xl overflow-hidden border border-[var(--bd)] bg-[var(--pg-alt)] flex flex-col">
-                <div className="py-4 text-center" style={{ background: headerBg }}>
-                  <span className="text-white font-bold text-xl">{name} {emoji}</span>
+          {/* Horizontal scroll on mobile, grid on desktop */}
+          <div className="-mx-0 lg:mx-0 px-5 lg:px-10">
+            <div className="flex justify-center lg:grid lg:grid-cols-3 gap-3 overflow-x-auto lg:overflow-visible pb-4 lg:pb-0 snap-x snap-mandatory lg:snap-none scrollbar-hide mb-6 lg:mb-8">
+              {PACKAGES.map(({ name, emoji, headerBg, price, features }) => (
+                <div
+                  key={name}
+                  className="rounded-2xl overflow-hidden border border-[var(--bd)] bg-[var(--pg-alt)] flex flex-col shrink-0 snap-center"
+                  style={{ width: "clamp(100px, 28vw, 180px)" }}
+                >
+                  <div className="py-2.5 text-center" style={{ background: headerBg }}>
+                    <span className="text-white font-bold text-xs tracking-wide">{name} {emoji}</span>
+                  </div>
+                  <div className="flex-1 pt-3 pb-2 px-3 flex flex-col items-center">
+                    <div className="space-y-1 text-center text-[11px] w-full">
+                      {features.map(({ label, bold }) => (
+                        <p key={label} className={bold ? "font-bold text-[var(--tx-1)]" : "text-[var(--tx-2)]"}>
+                          {label}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="px-3 pt-3 pb-3 flex flex-col items-center gap-2 border-t border-[var(--bd)] mt-2">
+                    <p className="text-2xl font-light text-[var(--tx-1)] leading-none">{price}</p>
+                    <Link
+                      href="/invite/demo"
+                      className="border border-[var(--tx-1)] text-[var(--tx-1)] text-[9px] font-semibold tracking-[0.12em] px-4 py-2 rounded-lg hover:bg-[var(--tx-1)] hover:text-[var(--pg)] transition-colors"
+                    >
+                      VIEW SAMPLE
+                    </Link>
+                  </div>
                 </div>
-                <div className="flex-1 pt-8 pb-4 px-6 flex flex-col items-center">
-                  <div className="space-y-2.5 text-center text-sm w-full">
-                    {features.map(({ label, bold }) => (
-                      <p key={label} className={bold ? "font-bold text-[var(--tx-1)]" : "text-[var(--tx-2)]"}>
+              ))}
+            </div>
+          </div>
+
+          <div className="px-5 lg:px-10">
+            <p className="text-center text-[13px] text-[var(--tx-2)] mb-12 lg:mb-16">
+              Semua ciri adalah pilihan —{" "}
+              <span className="text-blue-500 dark:text-blue-400">boleh dihidupkan atau dimatikan</span>.
+            </p>
+
+            {/* Add-ons */}
+            <h3 className="text-center font-bold text-[10px] tracking-[0.35em] uppercase text-[var(--tx-1)] mb-6">ADD-ONS</h3>
+            <div className="grid grid-cols-2 gap-2.5 max-w-2xl mx-auto">
+              {ADDONS.map(({ title, price, buttons }) => (
+                <div key={title} className="rounded-xl border border-[var(--bd)] bg-[var(--pg-alt)] p-3 flex flex-col items-center gap-3">
+                  <div className="text-center">
+                    <p className="font-semibold text-[var(--tx-1)] text-[12px] mb-0.5">{title}</p>
+                    <p className="font-bold text-[var(--tx-1)] text-[13px]">{price}</p>
+                  </div>
+                  <div className="w-full space-y-1.5">
+                    {buttons.map((label) => (
+                      <Link
+                        key={label}
+                        href="/invite/demo"
+                        className="block w-full text-center border border-[var(--tx-1)] text-[var(--tx-1)] text-[9px] font-semibold tracking-[0.08em] py-2 rounded-lg hover:bg-[var(--tx-1)] hover:text-[var(--pg)] transition-colors"
+                      >
                         {label}
-                      </p>
+                      </Link>
                     ))}
                   </div>
                 </div>
-                <div className="pb-8 px-6 pt-6 flex flex-col items-center gap-4 border-t border-[var(--bd)] mt-6">
-                  <p className="text-4xl font-light text-[var(--tx-1)]">{price}</p>
-                  <Link
-                    href="/invite/demo"
-                    className="border border-[var(--tx-1)] text-[var(--tx-1)] text-[11px] font-semibold tracking-[0.15em] px-8 py-2.5 rounded-lg hover:bg-[var(--tx-1)] hover:text-[var(--pg)] transition-colors"
-                  >
-                    VIEW SAMPLE
-                  </Link>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-
-          {/* Footnote */}
-          <p className="text-center text-sm text-[var(--tx-2)] mb-16">
-            All features are optional{" "}
-            <span className="text-blue-500 dark:text-blue-400">(toggle on/off)</span>.
-          </p>
-
-          {/* Add-ons */}
-          <h3 className="text-center font-bold text-xs tracking-[0.35em] uppercase text-[var(--tx-1)] mb-8">ADD-ONS</h3>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-2xl mx-auto">
-            {ADDONS.map(({ title, price, buttons }) => (
-              <div key={title} className="rounded-2xl border border-[var(--bd)] bg-[var(--pg-alt)] p-6 flex flex-col items-center gap-5">
-                <div className="text-center">
-                  <p className="font-semibold text-[var(--tx-1)] mb-1">{title}</p>
-                  <p className="font-bold text-[var(--tx-1)]">{price}</p>
-                </div>
-                <div className="w-full space-y-2">
-                  {buttons.map((label) => (
-                    <Link
-                      key={label}
-                      href="/invite/demo"
-                      className="block w-full text-center border border-[var(--tx-1)] text-[var(--tx-1)] text-[10px] font-semibold tracking-[0.12em] py-2.5 rounded-lg hover:bg-[var(--tx-1)] hover:text-[var(--pg)] transition-colors"
-                    >
-                      {label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-
         </div>
       </section>
 
       {/* ── CTA ── */}
-      <section className="py-20 lg:py-28 px-6 lg:px-10 bg-[var(--pg-alt)]">
-        <div className="max-w-2xl mx-auto text-center rounded-3xl p-10 lg:p-16 border border-gold/15 relative overflow-hidden bg-[var(--pg)]"
-          style={{ boxShadow: "0 0 60px rgba(212,175,55,0.06)" }}>
-          <div className="absolute top-0 left-0 right-0 h-px" style={{ background: "linear-gradient(90deg, transparent, #D4AF37, transparent)" }} />
-          <h2 className="font-playfair text-3xl lg:text-4xl text-[var(--tx-1)] mb-4">Sedia untuk memulakan?</h2>
-          <p className="text-[var(--tx-2)] text-sm lg:text-base mb-8">Buat kad jemputan pertama anda secara percuma hari ini.</p>
-          <Link href="/new"
-            className="inline-flex items-center gap-2 bg-gold text-ink font-semibold px-8 py-3.5 rounded-full hover:bg-gold-light transition-all hover:shadow-xl hover:shadow-gold/20 text-base">
+      <section className="py-10 lg:py-28 px-5 lg:px-10 bg-[var(--pg-alt)]">
+        <div
+          className="max-w-2xl mx-auto text-center rounded-3xl p-6 lg:p-16 border border-gold/15 relative overflow-hidden bg-[var(--pg)]"
+          style={{ boxShadow: "0 0 60px rgba(212,175,55,0.05)" }}
+        >
+          <div className="absolute top-0 left-0 right-0 h-px"
+            style={{ background: "linear-gradient(90deg, transparent, #D4AF37, transparent)" }} />
+          <h2 className="font-playfair text-2xl lg:text-4xl text-[var(--tx-1)] mb-2 lg:mb-4">Sedia untuk memulakan?</h2>
+          <p className="text-[var(--tx-2)] text-[14px] lg:text-base mb-7 lg:mb-8 leading-relaxed">
+            Buat kad jemputan pertama anda secara percuma hari ini.
+          </p>
+          <Link
+            href="/new"
+            className="inline-flex items-center gap-2 bg-gold text-ink font-semibold px-8 py-3.5 rounded-full hover:bg-gold-light transition-all hover:shadow-xl hover:shadow-gold/20 active:scale-95 text-[15px]"
+          >
             Mulakan Sekarang <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
       </section>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-[var(--bd)] px-6 lg:px-10 py-8 bg-[var(--pg)]">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <footer className="border-t border-[var(--bd)] px-5 lg:px-10 py-6 bg-[var(--pg)]">
+        <div className="max-w-5xl mx-auto flex flex-col items-center text-center gap-2">
           <div className="flex items-center gap-2">
-            <Heart className="w-4 h-4 text-gold/40 fill-gold/20" />
-            <span className="font-playfair text-[var(--tx-3)]">kad.my</span>
+            <Heart className="w-3.5 h-3.5 text-gold/40 fill-gold/20" />
+            <span className="font-playfair text-sm text-[var(--tx-3)]">kad.my</span>
           </div>
           <p className="text-[var(--tx-3)] text-xs">Dibuat dengan penuh kasih sayang · 2025</p>
         </div>
