@@ -451,7 +451,7 @@ export function WizardShell({ initialCard }: Props) {
                 style={{
                   backgroundColor: cardPreview.theme?.bgColor ?? "#0a0a0a",
                   backgroundImage: cardPreview.template?.image2Url
-                    ? `linear-gradient(rgba(0,0,0,${cardPreview.theme?.bgOpacity ?? 0.45}),rgba(0,0,0,${cardPreview.theme?.bgOpacity ?? 0.45})),url(${cardPreview.template.image2Url})`
+                    ? `url(${cardPreview.template.image2Url})`
                     : cardPreview.theme?.bgImageUrl
                     ? `linear-gradient(rgba(0,0,0,${cardPreview.theme.bgOpacity}),rgba(0,0,0,${cardPreview.theme.bgOpacity})),url(${cardPreview.theme.bgImageUrl})`
                     : "none",
@@ -566,7 +566,7 @@ export function WizardShell({ initialCard }: Props) {
                   style={{
                     backgroundColor: cardPreview.theme?.bgColor ?? "#0a0a0a",
                     backgroundImage: cardPreview.template?.image2Url
-                      ? `linear-gradient(rgba(0,0,0,${cardPreview.theme?.bgOpacity ?? 0.45}),rgba(0,0,0,${cardPreview.theme?.bgOpacity ?? 0.45})),url(${cardPreview.template.image2Url})`
+                      ? `url(${cardPreview.template.image2Url})`
                       : cardPreview.theme?.bgImageUrl
                       ? `linear-gradient(rgba(0,0,0,${cardPreview.theme.bgOpacity}),rgba(0,0,0,${cardPreview.theme.bgOpacity})),url(${cardPreview.theme.bgImageUrl})`
                       : "none",
