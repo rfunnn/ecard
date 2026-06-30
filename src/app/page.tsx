@@ -1,6 +1,7 @@
 import Link from "next/link"
-import { ArrowRight, Music, Share2, Sparkles, Heart, Calendar, MapPin, Clock, Check } from "lucide-react"
+import { ArrowRight, Music, Share2, Sparkles, Heart, Check } from "lucide-react"
 import UserMenu from "@/components/UserMenu"
+import { HomepagePhoneMockup } from "@/components/HomepagePhoneMockup"
 
 const FEATURES = [
   {
@@ -189,100 +190,7 @@ export default function HomePage() {
               <div className="w-48 h-48 sm:w-72 sm:h-72 rounded-full blur-[80px] opacity-20 dark:opacity-15"
                 style={{ background: "#D4AF37" }} />
             </div>
-
-            <div className="relative float" style={{ width: "min(68vw, 270px)" }}>
-              {/* Frame */}
-              <div
-                className="relative rounded-[40px] border-2 border-black/10 dark:border-white/[0.06] shadow-2xl overflow-hidden bg-[#140800]"
-                style={{ aspectRatio: "9/19.5" }}
-              >
-                {/* Status bar */}
-                <div className="absolute top-0 left-0 right-0 h-7 flex items-center justify-between px-4 z-10 bg-black/20">
-                  <span className="text-[8px] text-white/40">9:41</span>
-                  <div className="w-14 h-3 bg-black rounded-full" />
-                  <span className="text-[8px] text-white/40">●●●</span>
-                </div>
-                <div className="absolute top-0 left-0 right-0 flex justify-center z-20 pointer-events-none">
-                  <div className="w-18 h-5 bg-black rounded-b-2xl" />
-                </div>
-                {/* Gold line */}
-                <div className="absolute top-7 left-0 right-0 h-px" style={{ background: "linear-gradient(90deg,transparent,#D4AF37,transparent)" }} />
-
-                {/* Card content */}
-                <div className="absolute inset-0 pt-8 flex flex-col">
-                  <div className="flex-1 flex flex-col items-center justify-start px-4 pt-4 pb-2 overflow-hidden">
-                    <div className="flex items-center gap-2 w-full mb-3">
-                      <div className="h-px flex-1 bg-gold opacity-20" />
-                      <span className="text-gold/50 text-[7px]">✦</span>
-                      <div className="h-px flex-1 bg-gold opacity-20" />
-                    </div>
-                    <p className="text-[6px] tracking-[0.25em] uppercase text-cream/50 mb-1">Dengan Hormat Menjemput</p>
-                    <p className="text-[6px] tracking-[0.2em] text-cream/30 mb-3">Ke Majlis Walimatul Urus</p>
-                    <p className="font-great-vibes text-[20px] text-gold leading-tight">Ahmad Faris</p>
-                    <p className="text-gold/40 text-[9px] my-0.5">&amp;</p>
-                    <p className="font-great-vibes text-[20px] text-gold leading-tight mb-4">Nur Aisyah</p>
-                    <div className="flex items-center gap-2 w-full mb-3">
-                      <div className="h-px flex-1 bg-gold opacity-10" />
-                      <div className="w-1 h-1 rounded-full bg-gold opacity-20" />
-                      <div className="h-px flex-1 bg-gold opacity-10" />
-                    </div>
-                    <div className="space-y-1.5 text-center">
-                      <div className="flex items-center justify-center gap-1 text-cream/45 text-[6.5px]">
-                        <Calendar className="w-2 h-2 text-gold/40" />
-                        Sabtu, 14 Disember 2025
-                      </div>
-                      <div className="flex items-center justify-center gap-1 text-cream/45 text-[6.5px]">
-                        <Clock className="w-2 h-2 text-gold/40" />
-                        10:00 Pagi – 1:00 Tengah Hari
-                      </div>
-                      <div className="flex items-center justify-center gap-1 text-cream/45 text-[6.5px]">
-                        <MapPin className="w-2 h-2 text-gold/40" />
-                        Dewan Seri Murni, KL
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Action bar */}
-                  <div className="bg-black/75 border-t border-white/10 px-3 py-2.5 flex items-center justify-around">
-                    {[
-                      { icon: MapPin, label: "Lokasi" },
-                      { icon: Heart, label: "RSVP", primary: true },
-                      { icon: Share2, label: "Hubungi" },
-                    ].map(({ icon: Icon, label, primary }) => (
-                      <div key={label} className="flex flex-col items-center gap-0.5">
-                        <div className={`${primary ? "w-8 h-8 bg-gold shadow-lg shadow-gold/30" : "w-6 h-6 bg-gold/10"} rounded-full flex items-center justify-center`}>
-                          <Icon className={`${primary ? "w-3.5 h-3.5 text-ink fill-ink" : "w-2.5 h-2.5 text-gold/60"}`} />
-                        </div>
-                        <span className={`text-[5.5px] ${primary ? "text-gold font-semibold" : "text-cream/35"}`}>{label}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="absolute bottom-1 left-0 right-0 flex justify-center">
-                  <div className="w-12 h-0.5 bg-white/15 rounded-full" />
-                </div>
-              </div>
-
-              {/* Floating badge — music */}
-              <div
-                className="absolute -right-1 sm:-right-8 top-[28%] rounded-2xl px-3 py-2 shadow-xl border"
-                style={{ background: "var(--float)", borderColor: "var(--float-bd)" }}
-              >
-                <div className="flex items-center gap-1.5">
-                  <Music className="w-3 h-3 text-gold" />
-                  <span className="text-[11px] font-medium text-[var(--tx-2)]">Muzik aktif</span>
-                </div>
-              </div>
-
-              {/* Floating badge — link */}
-              <div
-                className="absolute -left-1 sm:-left-8 bottom-[30%] rounded-2xl px-3 py-2 shadow-xl border border-gold/20"
-                style={{ background: "var(--float)" }}
-              >
-                <p className="text-[9px] text-[var(--tx-3)] mb-0.5">Pautan dikongsi</p>
-                <p className="text-[11px] text-gold font-mono font-semibold">ekadku.com/faris</p>
-              </div>
-            </div>
+            <HomepagePhoneMockup />
           </div>
         </div>
       </section>
