@@ -191,18 +191,26 @@ export function EffectAnimation({ effect, color, contained }: Props) {
     let animId: number
     let particles: Particle[]
 
-    const dims = () => ({
-      w: contained ? canvas.clientWidth  : (canvas.clientWidth  || window.innerWidth),
-      h: contained ? canvas.clientHeight : (canvas.clientHeight || window.innerHeight),
-    })
+    // For contained mode use the parent element's size — avoids feedback loops
+    // that happen when setting canvas.width/height triggers its own ResizeObserver.
+    const dims = () => {
+      if (contained) {
+        const p = canvas.parentElement
+        return { w: p?.clientWidth ?? 0, h: p?.clientHeight ?? 0 }
+      }
+      return {
+        w: window.innerWidth,
+        h: window.innerHeight,
+      }
+    }
 
     let lastW = 0, lastH = 0
     const setup = () => {
       const raw = dims()
       if (!raw.w || !raw.h) return
-      const w = Math.min(raw.w, 1440)   // hard cap — prevents OOM on huge viewports
+      const w = Math.min(raw.w, 1440)
       const h = Math.min(raw.h, 2800)
-      if (w === lastW && h === lastH) return   // no change — break any ResizeObserver feedback loop
+      if (w === lastW && h === lastH) return
       lastW = w; lastH = h
       canvas.width  = w * dpr
       canvas.height = h * dpr
@@ -215,25 +223,22 @@ export function EffectAnimation({ effect, color, contained }: Props) {
     const [r, g, b] = hexToRgb(color)
 
     const tick = () => {
-      const raw = dims()
-      if (!raw.w || !raw.h || !particles) { animId = requestAnimationFrame(tick); return }
-      const w = Math.min(raw.w, 1440)
-      const h = Math.min(raw.h, 2800)
+      const { w: rw, h: rh } = dims()
+      if (!rw || !rh || !particles) { animId = requestAnimationFrame(tick); return }
+      const w = Math.min(rw, 1440)
+      const h = Math.min(rh, 2800)
       ctx.clearRect(0, 0, w, h)
 
       for (const p of particles) {
-        // Physics
         p.driftPhase += 0.02
         p.x         += Math.sin(p.driftPhase) * p.drift
         p.y         += p.speed
         p.rotation  += p.rotationSpeed
 
-        // Wrap
         if (p.y  >  h + p.size * 2) Object.assign(p, spawn(effect, w, h, false))
         if (p.x  >  w + p.size * 2) p.x = -p.size * 2
         if (p.x  < -p.size * 2)     p.x =  w + p.size * 2
 
-        // Draw
         if      (effect === "Salji #1")  drawSnow1(ctx, p, r, g, b)
         else if (effect === "Salji #2")  drawSnow2(ctx, p, r, g, b)
         else if (effect === "Bunga #1")  drawPetal1(ctx, p, r, g, b)
@@ -248,8 +253,11 @@ export function EffectAnimation({ effect, color, contained }: Props) {
 
     let stopResize: () => void
     if (contained) {
+      // Observe the parent so resizing the phone frame triggers a redraw
+      // without the canvas attribute changes feeding back into the observer.
+      const target = canvas.parentElement ?? canvas
       const ro = new ResizeObserver(setup)
-      ro.observe(canvas)
+      ro.observe(target)
       stopResize = () => ro.disconnect()
     } else {
       window.addEventListener("resize", setup)
@@ -268,7 +276,7 @@ export function EffectAnimation({ effect, color, contained }: Props) {
     <canvas
       ref={canvasRef}
       className={`${contained ? "absolute" : "fixed"} inset-0 pointer-events-none`}
-      style={{ zIndex: 25 }}
+      style={{ zIndex: 25, width: "100%", height: "100%" }}
     />
   )
 }

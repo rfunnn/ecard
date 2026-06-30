@@ -513,7 +513,7 @@ export function WizardShell({ initialCard }: Props) {
               </div>
 
               {/* Action bar — contained inside phone screen */}
-              <div style={{ pointerEvents: "auto" }}>
+              <div style={{ pointerEvents: "auto", position: "relative", zIndex: 50 }}>
                 <ActionBar card={cardPreview} contained />
               </div>
             </div>
