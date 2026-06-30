@@ -112,7 +112,12 @@ export default function HomePage() {
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 lg:px-10 py-3.5 bg-[var(--pg-nav)] backdrop-blur-md border-b border-[var(--bd)]">
         <div className="flex items-center gap-2">
           <Heart className="w-3.5 h-3.5 text-gold fill-gold/30" />
-          <span className="font-playfair text-[15px] text-[var(--tx-1)] tracking-wide">kad.my</span>
+          <span className="font-playfair text-[17px] tracking-wide leading-none">
+            <span className="text-[var(--tx-1)]">e</span>
+            <span style={{ color: "#D4AF37" }}>kad</span>
+            <span className="text-[var(--tx-1)]">ku</span>
+            <span className="text-gold/50 text-[10px] font-sans tracking-normal align-baseline">.com</span>
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <Link href="/invite/demo" className="hidden sm:inline-flex text-[var(--tx-2)] hover:text-[var(--tx-1)] text-sm transition-colors px-3 py-2">
@@ -275,7 +280,7 @@ export default function HomePage() {
                 style={{ background: "var(--float)" }}
               >
                 <p className="text-[9px] text-[var(--tx-3)] mb-0.5">Pautan dikongsi</p>
-                <p className="text-[11px] text-gold font-mono font-semibold">kad.my/faris</p>
+                <p className="text-[11px] text-gold font-mono font-semibold">ekadku.com/faris</p>
               </div>
             </div>
           </div>
@@ -378,29 +383,7 @@ export default function HomePage() {
               <span className="text-blue-500 dark:text-blue-400">boleh dihidupkan atau dimatikan</span>.
             </p>
 
-            {/* Add-ons */}
-            <h3 className="text-center font-bold text-[10px] tracking-[0.35em] uppercase text-[var(--tx-1)] mb-6">ADD-ONS</h3>
-            <div className="grid grid-cols-2 gap-2.5 max-w-2xl mx-auto">
-              {ADDONS.map(({ title, price, buttons }) => (
-                <div key={title} className="rounded-xl border border-[var(--bd)] bg-[var(--pg-alt)] p-3 flex flex-col items-center gap-3">
-                  <div className="text-center">
-                    <p className="font-semibold text-[var(--tx-1)] text-[12px] mb-0.5">{title}</p>
-                    <p className="font-bold text-[var(--tx-1)] text-[13px]">{price}</p>
-                  </div>
-                  <div className="w-full space-y-1.5">
-                    {buttons.map((label) => (
-                      <Link
-                        key={label}
-                        href="/invite/demo"
-                        className="block w-full text-center border border-[var(--tx-1)] text-[var(--tx-1)] text-[9px] font-semibold tracking-[0.08em] py-2 rounded-lg hover:bg-[var(--tx-1)] hover:text-[var(--pg)] transition-colors"
-                      >
-                        {label}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+            {/* Add-ons — hidden until ready */}
           </div>
         </div>
       </section>
@@ -427,13 +410,19 @@ export default function HomePage() {
       </section>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-[var(--bd)] px-5 lg:px-10 py-6 bg-[var(--pg)]">
-        <div className="max-w-5xl mx-auto flex flex-col items-center text-center gap-2">
+      <footer className="border-t border-[var(--bd)] px-5 lg:px-10 py-8 bg-[var(--pg)]">
+        <div className="max-w-5xl mx-auto flex flex-col items-center text-center gap-3">
           <div className="flex items-center gap-2">
-            <Heart className="w-3.5 h-3.5 text-gold/40 fill-gold/20" />
-            <span className="font-playfair text-sm text-[var(--tx-3)]">kad.my</span>
+            <Heart className="w-3.5 h-3.5 text-gold/50 fill-gold/20" />
+            <span className="font-playfair text-base tracking-wide leading-none">
+              <span className="text-[var(--tx-1)]">e</span>
+              <span style={{ color: "#D4AF37" }}>kad</span>
+              <span className="text-[var(--tx-1)]">ku</span>
+              <span className="text-gold/50 text-[10px] font-sans tracking-normal align-baseline">.com</span>
+            </span>
           </div>
-          <p className="text-[var(--tx-3)] text-xs">Dibuat dengan penuh kasih sayang · 2025</p>
+          <p className="text-[var(--tx-3)] text-[11px]">Kad jemputan digital yang memukau · Dibuat dengan ❤️ di Malaysia</p>
+          <p className="text-[var(--tx-3)] text-[10px] opacity-60">© 2025 ekadku.com · Hak Cipta Terpelihara</p>
         </div>
       </footer>
     </div>

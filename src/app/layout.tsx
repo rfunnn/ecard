@@ -27,11 +27,15 @@ const ebGaramond = EB_Garamond({ subsets: ["latin"], weight: ["400", "500"], var
 const openSans = Open_Sans({ subsets: ["latin"], weight: ["300", "400", "500", "600"], variable: "--font-opensans", display: "swap" })
 
 export const metadata: Metadata = {
-  title: "Kad.my — Kad Jemputan Digital",
+  title: "ekadku.com — Kad Jemputan Digital",
   description: "Cipta kad jemputan digital yang cantik dan mudah dikongsi. Wedding, hari jadi, korporat dan lebih lagi.",
-  keywords: ["kad jemputan", "digital invitation", "wedding card", "e-invite", "kad kahwin"],
+  keywords: ["kad jemputan", "digital invitation", "wedding card", "e-invite", "kad kahwin", "ekadku"],
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+  },
   openGraph: {
-    title: "Kad.my — Kad Jemputan Digital",
+    title: "ekadku.com — Kad Jemputan Digital",
     description: "Cipta kad jemputan digital yang cantik dan mudah dikongsi.",
     type: "website",
   },

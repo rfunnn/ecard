@@ -8,6 +8,7 @@ import { addToCart } from "@/lib/cart"
 import type { TemplateCategory } from "@/types/invitation"
 import { TemplatePhoneFrame } from "@/components/TemplatePhoneFrame"
 import { NavLikesButton } from "@/components/NavLikesButton"
+import { useLikes } from "@/hooks/useLikes"
 
 // ─── types ───────────────────────────────────────────────────────────────────
 
@@ -267,21 +268,9 @@ export default function NewCardPage() {
   const [activeColor,  setActiveColor]  = useState<string | null>(null)
   const [previewName,  setPreviewName]  = useState("")
   const [nameInput,    setNameInput]    = useState("")
-  const [liked,        setLiked]        = useState<Set<string>>(new Set())
+  const { liked, toggle } = useLikes()
   const [creating,     setCreating]     = useState<string | null>(null)
   const [mobileFilter, setMobileFilter] = useState(false)
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem("kad_liked_templates")
-      if (stored) setLiked(new Set(JSON.parse(stored) as string[]))
-    } catch {}
-  }, [])
-
-  const saveLikes = (next: Set<string>) => {
-    setLiked(next)
-    try { localStorage.setItem("kad_liked_templates", JSON.stringify([...next])) } catch {}
-  }
 
   useEffect(() => {
     fetch("/api/templates")
@@ -337,16 +326,20 @@ export default function NewCardPage() {
   }, [creating, router])
 
   const handleView = (template: Template) => {
-    const base = template.previewUrl ?? "/invite/demo"
-    const url = previewName ? `${base}?name=${encodeURIComponent(previewName)}` : base
-    window.open(url, "_blank", "noopener noreferrer")
+    if (template.previewUrl) {
+      const url = previewName
+        ? `${template.previewUrl}?name=${encodeURIComponent(previewName)}`
+        : template.previewUrl
+      window.open(url, "_blank", "noopener noreferrer")
+      return
+    }
+    const params = new URLSearchParams({ template: template.slug })
+    if (previewName) params.set("name", previewName)
+    window.open(`/invite/demo?${params.toString()}`, "_blank", "noopener noreferrer")
   }
 
   const handleLike = (id: string) => {
-    const next = new Set(liked)
-    if (next.has(id)) next.delete(id)
-    else next.add(id)
-    saveLikes(next)
+    toggle(id)
   }
 
   const sidebarProps = {

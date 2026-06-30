@@ -8,7 +8,7 @@ import type { WizardConfig } from "@/types/config"
 
 interface Props {
   params: Promise<{ slug: string }>
-  searchParams: Promise<{ name?: string }>
+  searchParams: Promise<{ name?: string; template?: string }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -30,9 +30,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function InvitePage({ params, searchParams }: Props) {
   const { slug } = await params
-  const { name: nameOverride } = await searchParams
+  const { name: nameOverride, template: templateSlug } = await searchParams
 
   if (slug === "demo") {
+    // Fetch the selected template first so its colours can drive the whole demo
+    const demoTemplate = await prisma.template.findFirst({
+      where: { slug: templateSlug ?? "wedding-classic" },
+      select: { slug: true, name: true, category: true, image1Url: true, image2Url: true, defaultConfig: true },
+    }) ?? await prisma.template.findFirst({
+      where: { slug: "wedding-classic" },
+      select: { slug: true, name: true, category: true, image1Url: true, image2Url: true, defaultConfig: true },
+    })
+
+    const tmplCfg    = (demoTemplate?.defaultConfig ?? {}) as { primaryColor?: string; bgColor?: string; titleFont?: string }
+    const demoPrimary = tmplCfg.primaryColor ?? "#9b4d5e"
+    const demoBg      = tmplCfg.bgColor      ?? "#faf7f4"
+
     // Future event date — 60 days from now
     const eventStart = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000)
     eventStart.setHours(10, 0, 0, 0)
@@ -47,14 +60,14 @@ export default async function InvitePage({ params, searchParams }: Props) {
       openingStyle: "Tingkap A",
       openingStyleColor: "#f2f2f2",
       effectAnimation: "Bunga #1",
-      effectColor: "#9b4d5e",
+      effectColor: demoPrimary,
 
       // Cover
       eventType: "Walimatul Urus",
       eventTypeSize: 13,
       displayName: "Ahmad Faris & Nur Aisyah",
       displayNameFont: "GreatVibes",
-      displayNameColor: "#7a3645",
+      displayNameColor: demoPrimary,
       displayNameSize: 52,
       startDateTime: eventStart.toISOString(),
       endDateTime: eventEnd.toISOString(),
@@ -78,6 +91,11 @@ export default async function InvitePage({ params, searchParams }: Props) {
       // Venue & Date
       hijriDate: "15 Jamadil Akhir 1446H",
       venueAddress: "Dewan Seri Murni\nJalan Ampang, 50450\nKuala Lumpur",
+      deliveryAddress: "",
+      bankName: "",
+      bankAccountName: "",
+      bankAccountNumber: "",
+      bankQrUrl: "",
       googleMapsUrl: "https://maps.google.com/?q=3.158360,101.712160",
       wazeUrl: "https://waze.com/ul?ll=3.158360,101.712160&navigate=yes",
       gpsCoordinates: "3.158360, 101.712160",
@@ -87,13 +105,13 @@ export default async function InvitePage({ params, searchParams }: Props) {
       eventProgram: "Ketibaan Tetamu\n8:30 pagi\n\nAkad Nikah\n10:00 pagi\n\nMajlis Resepsi\n12:00 tengah hari\n\nMajlis Berakhir\n3:00 petang",
       additionalInfo2: "\"Dan di antara tanda-tanda kekuasaanNya ialah Dia menciptakan untukmu pasangan dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikanNya di antaramu rasa kasih dan sayang.\"\n\n— Surah Ar-Rum (30:21)",
 
-      // Style
+      // Style — driven by the selected template's colours
       generalFont: "Cormorant",
-      generalColor: "#6b3a47",
+      generalColor: demoPrimary,
       generalSize: 16,
       headingFont: "Cormorant",
       headingSize: 36,
-      backgroundColor: "#faf7f4",
+      backgroundColor: demoBg,
       sideMargin: 1.25,
 
       // RSVP
@@ -142,12 +160,6 @@ export default async function InvitePage({ params, searchParams }: Props) {
         : parts[0]
     }
 
-    // Fetch the real template images so image1/image2 render correctly in the demo
-    const demoTemplate = await prisma.template.findFirst({
-      where: { slug: "wedding-classic" },
-      select: { slug: true, name: true, category: true, image1Url: true, image2Url: true },
-    })
-
     const demoCard: InvitationCardData = {
       id: "demo",
       slug: "demo",
@@ -166,16 +178,16 @@ export default async function InvitePage({ params, searchParams }: Props) {
         image2Url: demoTemplate?.image2Url ?? null,
       },
       theme: {
-        primaryColor: "#9b4d5e",
-        secondaryColor: "#faf7f4",
-        accentColor: "#7a3645",
-        bgColor: "#faf7f4",
-        titleFont: "Cormorant Garamond",
+        primaryColor: demoPrimary,
+        secondaryColor: demoBg,
+        accentColor: demoPrimary,
+        bgColor: demoBg,
+        titleFont: tmplCfg.titleFont ?? "Cormorant Garamond",
         bodyFont: "Lato",
         titleSize: 36,
         bodySize: 16,
-        titleColor: "#7a3645",
-        bodyColor: "#6b3a47",
+        titleColor: demoPrimary,
+        bodyColor: demoPrimary,
         textAlign: "center",
         bgOpacity: 0,
       },

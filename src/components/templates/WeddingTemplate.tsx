@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
@@ -6,12 +6,12 @@ import { MapPin, Navigation, Calendar } from "lucide-react"
 import type { InvitationCardData } from "@/types/invitation"
 import type { WizardConfig } from "@/types/config"
 
-// ─── helpers ────────────────────────────────────────────────────────────────
-import { wizardFont, calendarUrl, parseProgramText, useCountdown } from "./templateUtils"
+// â”€â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+import { wizardFont, calendarUrl, parseProgramText, useCountdown, multiLine } from "./templateUtils"
 
 interface WishEntry { guestName: string; message: string }
 
-// ─── component ──────────────────────────────────────────────────────────────
+// â”€â”€â”€ component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface Props { card: InvitationCardData }
 
@@ -19,14 +19,14 @@ export function WeddingTemplate({ card }: Props) {
   const cfg = card.wizardConfig as WizardConfig | undefined
   const { theme } = card
 
-  // segments — default everything on when no wizard config
+  // segments â€” default everything on when no wizard config
   const seg = cfg?.segments ?? {
     venue: true, date: true, time: true, endTime: true,
     saveDateBtn: true, eventProgram: true, countdown: true,
     attendance: true, wishes: true, confirmBtn: true, writeWishBtn: true,
   }
 
-  // names — wizard Page 2 stores combined "displayName" (e.g. "Ahmad & Nurul")
+  // names â€” wizard Page 2 stores combined "displayName" (e.g. "Ahmad & Nurul")
   const displayParts = cfg?.displayName
     ? cfg.displayName.split(/\s*&\s*/).map((s) => s.trim()).filter(Boolean)
     : [card.groomName ?? "", card.brideName ?? ""].filter(Boolean)
@@ -75,6 +75,7 @@ export function WeddingTemplate({ card }: Props) {
   const displaySize = cfg?.displayNameSize ?? 52
   const orgSize     = cfg?.organizerSize   ?? 20
   const fullNSize   = cfg?.fullNamesSize   ?? 22
+  const sideMargin  = cfg?.sideMargin      ?? 1.25
 
   // locale
   const locale = card.language === "ms" ? "ms-MY" : "en-MY"
@@ -85,7 +86,7 @@ export function WeddingTemplate({ card }: Props) {
 
   // shared divider
   const Divider = () => (
-    <div className="flex items-center justify-center gap-3 my-5 px-5">
+    <div className="flex items-center justify-center gap-3 my-5">
       <div className="h-px flex-1 opacity-15" style={{ background: bodyColor }} />
       <svg width="10" height="10" viewBox="0 0 20 20" fill={bodyColor} opacity="0.25">
         <circle cx="10" cy="10" r="3" />
@@ -95,27 +96,21 @@ export function WeddingTemplate({ card }: Props) {
     </div>
   )
 
-  // small text block renderer
-  const multiLine = (text: string, cls = "", style: React.CSSProperties = {}) =>
-    text.split("\n").map((line, i) => (
-      <p key={i} className={cls} style={style}>{line || " "}</p>
-    ))
-
   return (
-    <div className="min-h-screen w-full overflow-x-hidden">
+    <div className="min-h-screen w-full overflow-x-hidden" style={{ paddingLeft: `${sideMargin}rem`, paddingRight: `${sideMargin}rem` }}>
 
-      {/* ══ SECTION 1 · COVER (Config Page 2) ════════════════════════════ */}
+      {/* â•â• SECTION 1 Â· COVER (Config Page 2) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.2 }}
-        className="min-h-screen flex flex-col items-center justify-center text-center px-5 py-10"
+        className="min-h-screen flex flex-col items-center justify-center text-center py-10"
       >
         {/* event type */}
         {(cfg?.eventType || card.subtitle) && (
           <p
             className={`${headFont} uppercase tracking-[0.4em] mb-6 opacity-75`}
-            style={{ color: bodyColor, fontSize: `${cfg?.eventTypeSize ?? 13}px` }}
+            style={{ color: bodyColor, fontSize: `${cfg?.eventTypeSize ?? 13}px`, whiteSpace: "pre-line" }}
           >
             {cfg?.eventType || card.subtitle}
           </p>
@@ -161,9 +156,9 @@ export function WeddingTemplate({ card }: Props) {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             transition={{ delay: 1.2, duration: 0.8 }}
             className={`${bodyFont} mt-6 opacity-70`}
-            style={{ color: bodyColor, fontSize: `${cfg.dayAndDateSize ?? 18}px` }}
+            style={{ color: bodyColor, fontSize: `${cfg.dayAndDateSize ?? 18}px`, whiteSpace: "pre-line" }}
           >
-            {cfg.dayAndDate.replace(/\n/g, " · ")}
+            {cfg.dayAndDate}
           </motion.p>
         )}
 
@@ -171,16 +166,16 @@ export function WeddingTemplate({ card }: Props) {
         {venueName && (
           <p
             className={`${bodyFont} mt-3 opacity-45`}
-            style={{ color: bodyColor, fontSize: `${cfg?.venueLineSize ?? 13}px` }}
+            style={{ color: bodyColor, fontSize: `${cfg?.venueLineSize ?? 13}px`, whiteSpace: "pre-line" }}
           >
             {venueName}
           </p>
         )}
       </motion.div>
 
-      {/* ══ SECTION 2 · INVITATION TEXT (Config Page 3) ══════════════════ */}
+      {/* â•â• SECTION 2 Â· INVITATION TEXT (Config Page 3) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {(cfg?.openingSpeech || cfg?.organizer1?.name || card.description || cfg?.fullNames) && (
-        <div className="px-5 pb-3 text-center">
+        <div className="pb-3 text-center">
           <Divider />
 
           {/* opening speech / bismillah */}
@@ -244,9 +239,9 @@ export function WeddingTemplate({ card }: Props) {
         </div>
       )}
 
-      {/* ══ SECTION 3 · VENUE + DATE + DRESS CODE (Config Page 4) ═══════ */}
+      {/* â•â• SECTION 3 Â· VENUE + DATE + DRESS CODE (Config Page 4) â•â•â•â•â•â•â• */}
       {(seg.venue || seg.date) && (venueName || address || startDT) && (
-        <div className="px-5 pb-4 text-center">
+        <div className="pb-4 text-center">
           <Divider />
 
           {/* TEMPAT */}
@@ -259,7 +254,7 @@ export function WeddingTemplate({ card }: Props) {
                 Tempat
               </p>
               {venueName && (
-                <p className={`${orgFont} text-lg`} style={{ color: bodyColor }}>
+                <p className={`${orgFont} text-lg`} style={{ color: bodyColor, whiteSpace: "pre-line" }}>
                   {venueName}
                 </p>
               )}
@@ -315,7 +310,7 @@ export function WeddingTemplate({ card }: Props) {
               {seg.time && (
                 <p className={`${bodyFont} text-sm opacity-65 mt-1`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
                   {formatTime(startDT)}
-                  {seg.endTime && endDT && ` – ${formatTime(endDT)}`}
+                  {seg.endTime && endDT && ` â€“ ${formatTime(endDT)}`}
                 </p>
               )}
               {cfg?.hijriDate && (
@@ -326,7 +321,7 @@ export function WeddingTemplate({ card }: Props) {
             </div>
           )}
 
-          {/* additionalInfo1 — dress code / extra info */}
+          {/* additionalInfo1 â€” dress code / extra info */}
           {cfg?.additionalInfo1 && (
             <div
               className={`${bodyFont} text-sm opacity-65 mb-4 leading-relaxed`}
@@ -351,9 +346,9 @@ export function WeddingTemplate({ card }: Props) {
         </div>
       )}
 
-      {/* ══ SECTION 4 · EVENT PROGRAM (Config Page 5) ═══════════════════ */}
+      {/* â•â• SECTION 4 Â· EVENT PROGRAM (Config Page 5) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {seg.eventProgram && cfg?.eventProgram && (
-        <div className="px-5 pb-4">
+        <div className="pb-4">
           <Divider />
           <p
             className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-45 text-center mb-4`}
@@ -382,9 +377,9 @@ export function WeddingTemplate({ card }: Props) {
         </div>
       )}
 
-      {/* ══ SECTION 5 · PRAYER + COUNTDOWN ══════════════════════════════ */}
+      {/* â•â• SECTION 5 Â· PRAYER + COUNTDOWN â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {(cfg?.additionalInfo2 || (seg.countdown && cfg?.startDateTime && !eventPassed)) && (
-        <div className="px-5 pb-4 text-center">
+        <div className="pb-4 text-center">
           <Divider />
 
           {/* prayer / dua */}
@@ -434,9 +429,9 @@ export function WeddingTemplate({ card }: Props) {
         </div>
       )}
 
-      {/* ══ SECTION 6 · WISHES ════════════════════════════════════════════ */}
+      {/* â•â• SECTION 6 Â· WISHES â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {seg.wishes && wishes.length > 0 && (
-        <div className="px-5 pb-4 text-center">
+        <div className="pb-4 text-center">
           <Divider />
           <p
             className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-45 mb-5`}

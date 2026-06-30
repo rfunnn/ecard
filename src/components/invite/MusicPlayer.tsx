@@ -15,14 +15,16 @@ export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange }: Musi
   const [isMuted, setIsMuted] = useState(true)
   const [playerReady, setPlayerReady] = useState(false)
   const [interacted, setInteracted] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement | undefined>(undefined)
   const analyticFiredRef = useRef(false)
   const interactedRef = useRef(false)
 
   const { youtubeVideoId, audioEnabled, volume, loopAudio } = media
 
-  // Must be computed client-side — process.env.NEXTAUTH_URL is undefined in the browser
-  const origin = useMemo(() => typeof window !== "undefined" ? window.location.origin : "", [])
+  useEffect(() => { setMounted(true) }, [])
+
+  const origin = useMemo(() => (mounted ? window.location.origin : ""), [mounted])
 
   const sendCommand = useCallback((func: string, args?: unknown[]) => {
     iframeRef.current?.contentWindow?.postMessage(
@@ -104,7 +106,7 @@ export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange }: Musi
     onMuteChange?.(isMuted)
   }, [isMuted, onMuteChange])
 
-  if (!youtubeVideoId || !audioEnabled) return null
+  if (!mounted || !youtubeVideoId || !audioEnabled) return null
 
   // autoplay=1 + mute=1 → browser allows playback; we unmute after first user gesture
   const embedUrl = getYoutubeEmbedUrl(youtubeVideoId, true, loopAudio, true, origin)

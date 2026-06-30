@@ -28,8 +28,25 @@ export function calendarUrl(cfg: WizardConfig, venue: string): string {
   return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&location=${encodeURIComponent(venue)}`
 }
 
+// Strip HTML tags and decode common entities to get plain text.
+// Used by parseProgramText so that richtext-formatted eventProgram values
+// can still be parsed correctly.
+function htmlToPlain(html: string): string {
+  return html
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n")
+    .replace(/<\/div>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .trim()
+}
+
 export function parseProgramText(text: string) {
-  return text
+  const plain = /<[a-z]/i.test(text) ? htmlToPlain(text) : text
+  return plain
     .split(/\n{2,}/)
     .filter(Boolean)
     .map((chunk) => {
@@ -60,8 +77,15 @@ export function useCountdown(iso: string) {
   return t
 }
 
-export function multiLine(text: string, cls = "", style: React.CSSProperties = {}) {
+// Render a text/HTML value as React nodes.
+// • Plain text (no HTML tags): split on newlines → array of <p> elements.
+// • HTML content (from SimpleRichText): render via dangerouslySetInnerHTML
+//   inside a wrapper that accepts the same optional class/style.
+export function multiLine(text: string, cls = "", style: React.CSSProperties = {}): React.ReactNode {
+  if (/<[a-z]/i.test(text)) {
+    return <div className={cls} style={style} dangerouslySetInnerHTML={{ __html: text }} />
+  }
   return text.split("\n").map((line, i) => (
-    <p key={i} className={cls} style={style}>{line || " "}</p>
+    <p key={i} className={cls} style={style}>{line || " "}</p>
   ))
 }

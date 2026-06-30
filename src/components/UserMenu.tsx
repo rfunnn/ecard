@@ -93,14 +93,21 @@ export default function UserMenu() {
                 <p className="text-xs text-[var(--tx-3)] truncate mt-0.5">{session.user.email}</p>
               </div>
             ) : (
-              <div className="px-4 py-3 border-b border-[var(--bd)]">
-                <p className="text-[11px] text-[var(--tx-3)] mb-2.5">Belum log masuk</p>
+              <div className="px-4 py-3 border-b border-[var(--bd)] space-y-2">
+                <p className="text-[11px] text-[var(--tx-3)]">Belum log masuk</p>
                 <Link
                   href="/login"
                   onClick={() => setOpen(false)}
-                  className="block text-center text-xs py-1.5 rounded-lg border border-[var(--bd)] text-[var(--tx-2)] hover:bg-[var(--sf)] transition-colors"
+                  className="block text-center text-xs py-1.5 rounded-lg bg-gold/10 border border-gold/25 text-gold hover:bg-gold/20 transition-colors font-medium"
                 >
                   Log Masuk
+                </Link>
+                <Link
+                  href="/register"
+                  onClick={() => setOpen(false)}
+                  className="block text-center text-xs py-1.5 rounded-lg border border-[var(--bd)] text-[var(--tx-2)] hover:bg-[var(--sf)] transition-colors"
+                >
+                  Daftar Akaun
                 </Link>
               </div>
             )}

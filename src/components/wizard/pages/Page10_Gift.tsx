@@ -22,12 +22,54 @@ function check1to1(file: File): Promise<string | null> {
   })
 }
 
+function BankQrUpload({ onUploaded }: { onUploaded: (url: string) => void }) {
+  const [uploading, setUploading] = useState(false)
+  const ref = useRef<HTMLInputElement | undefined>(undefined)
+
+  async function handleFile(file: File) {
+    if (!file.type.startsWith("image/")) return
+    if (file.size > 5 * 1024 * 1024) return
+    setUploading(true)
+    try {
+      const fd = new FormData()
+      fd.append("file", file)
+      const res = await fetch("/api/upload", { method: "POST", body: fd })
+      const data = await res.json()
+      if (res.ok) onUploaded(data.url as string)
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => ref.current?.click()}
+      disabled={uploading}
+      className="absolute inset-0 w-full h-full flex flex-col items-center justify-center gap-1 hover:bg-amber-50 disabled:opacity-50"
+    >
+      {uploading
+        ? <Loader2 className="w-5 h-5 text-amber-500 animate-spin" />
+        : <><Upload className="w-5 h-5 text-gray-400" /><span className="text-[10px] text-gray-400">QR</span></>
+      }
+      <input
+        ref={(el) => { if (el) ref.current = el }}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = "" }}
+      />
+    </button>
+  )
+}
+
 export function Page10_Gift() {
   const cardSlug       = useWizardStore((s) => s.cardSlug)
   const giftItems      = useWizardStore((s) => s.giftItems)
   const setGiftItems   = useWizardStore((s) => s.setGiftItems)
   const addGiftItem    = useWizardStore((s) => s.addGiftItem)
   const removeGiftItem = useWizardStore((s) => s.removeGiftItem)
+  const { config, updateConfig } = useWizardStore()
 
   const [loading, setLoading] = useState(true)
   const [adding, setAdding] = useState(false)
@@ -141,6 +183,81 @@ export function Page10_Gift() {
           <p>Tambah gambar (nisbah 1:1) dan pautan untuk setiap hadiah. Tetamu akan melihat ini apabila mengetik ikon hadiah pada footer kad.</p>
         </div>
       </div>
+
+      {/* Delivery address */}
+      <div>
+        <FieldLabel label="Alamat Penghantaran Hadiah" />
+        <p className="text-xs text-gray-400 mb-2">
+          Alamat ini ditunjukkan kepada tetamu apabila mereka ingin menempah hadiah melalui pos.
+        </p>
+        <textarea
+          value={config.deliveryAddress}
+          onChange={(e) => updateConfig("deliveryAddress", e.target.value)}
+          rows={3}
+          className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500 resize-none"
+          placeholder={"No. 4, Jalan Pahat,\nTaman Gembira, Seksyen 40,\n40150 Shah Alam, Selangor"}
+        />
+      </div>
+
+      {/* Bank / payment info */}
+      <div className="space-y-3">
+        <FieldLabel label="Maklumat Bank / Pembayaran" />
+        <p className="text-xs text-gray-400 -mt-1">
+          Maklumat ini ditunjukkan kepada tetamu dalam bahagian hadiah untuk pemindahan wang.
+        </p>
+
+        <input
+          type="text"
+          value={config.bankName}
+          onChange={(e) => updateConfig("bankName", e.target.value)}
+          className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500"
+          placeholder="Nama Bank (cth: Maybank, CIMB, DuitNow)"
+        />
+        <input
+          type="text"
+          value={config.bankAccountName}
+          onChange={(e) => updateConfig("bankAccountName", e.target.value)}
+          className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500"
+          placeholder="Nama Pemilik Akaun"
+        />
+        <input
+          type="text"
+          value={config.bankAccountNumber}
+          onChange={(e) => updateConfig("bankAccountNumber", e.target.value)}
+          className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500"
+          placeholder="No. Akaun / No. Telefon (DuitNow)"
+        />
+
+        {/* QR code upload */}
+        <div>
+          <p className="text-xs text-gray-500 mb-2">QR Code Pembayaran (pilihan)</p>
+          <div className="flex items-start gap-3">
+            <div className="relative w-24 h-24 rounded-xl overflow-hidden border-2 border-dashed border-gray-300 bg-gray-50 shrink-0">
+              {config.bankQrUrl ? (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={config.bankQrUrl} alt="QR" className="absolute inset-0 w-full h-full object-contain p-1" />
+                  <button
+                    type="button"
+                    onClick={() => updateConfig("bankQrUrl", "")}
+                    className="absolute top-0.5 right-0.5 w-5 h-5 bg-black/60 hover:bg-black/80 rounded-full flex items-center justify-center text-white"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </>
+              ) : (
+                <BankQrUpload onUploaded={(url) => updateConfig("bankQrUrl", url)} />
+              )}
+            </div>
+            <p className="text-xs text-gray-400 pt-2 leading-snug">
+              Muat naik QR kod bank anda (DuitNow, Maybank QR, dll.).<br />
+              JPEG / PNG · Max 5 MB
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="border-t border-gray-100" />
 
       {/* Existing items */}
       <div>

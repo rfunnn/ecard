@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import Link from "next/link"
-import { ChevronLeft, ChevronRight, Save, Eye, X, ShoppingBag, ExternalLink } from "lucide-react"
+import { ChevronLeft, ChevronRight, Save, Eye, X, ShoppingBag, ExternalLink, Play, Pause } from "lucide-react"
 import { useWizardStore, TOTAL_PAGES } from "@/store/wizardStore"
 import type { TemplateInfo } from "@/store/wizardStore"
 import type { WizardConfig } from "@/types/config"
@@ -191,6 +191,7 @@ export function WizardShell({ initialCard }: Props) {
   const [cartOpen, setCartOpen] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
+  const [isScrolling, setIsScrolling] = useState(false)
   const [previewGateOpen, setPreviewGateOpen] = useState(
     () => (config.openingStyle ?? "Tiada") !== "Tiada"
   )
@@ -198,8 +199,9 @@ export function WizardShell({ initialCard }: Props) {
   const desktopScrollRef = useRef<HTMLDivElement | undefined>(undefined)
   const mobileScrollRef  = useRef<HTMLDivElement | undefined>(undefined)
 
-  // Auto-scroll both preview panes — speed driven by scrollDelay config (higher = slower)
+  // Auto-scroll both preview panes — only runs when isScrolling is true
   useEffect(() => {
+    if (!isScrolling) return
     const intervalMs = config.scrollDelay > 0 ? Math.round(config.scrollDelay * 20) : 60
     const id = setInterval(() => {
       for (const ref of [desktopScrollRef, mobileScrollRef]) {
@@ -214,7 +216,7 @@ export function WizardShell({ initialCard }: Props) {
     }, intervalMs)
     return () => clearInterval(id)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [config.scrollDelay])
+  }, [config.scrollDelay, isScrolling])
 
   // Load config when opening a card for the first time or switching cards.
   // Keeps in-memory edits intact when navigating within the same card.
@@ -228,9 +230,10 @@ export function WizardShell({ initialCard }: Props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialCard.slug])
 
-  // Scroll preview to the section relevant to the active wizard page when the user switches pages.
-  // Without this, the auto-scroll may be showing a different section and the user can't see their edits.
+  // When the wizard page changes: stop auto-scroll and jump to the relevant section
+  // so the user immediately sees what they're editing.
   useEffect(() => {
+    setIsScrolling(false)
     const ph = desktopScrollRef.current?.clientHeight ?? 0
     const target =
       currentPage <= 2  ? 0           // cover / names / date
@@ -279,6 +282,23 @@ export function WizardShell({ initialCard }: Props) {
 
   const handlePreviewOpen = useCallback(() => {
     setPreviewOpen(true)
+  }, [])
+
+  const openMobilePreview = useCallback(() => {
+    setShowMobilePreview(true)
+    const hasGate = (config.openingStyle ?? "Tiada") !== "Tiada"
+    if (hasGate) {
+      setPreviewGateOpen(true)   // show the opening animation first
+      setIsScrolling(false)      // don't scroll until gate is dismissed
+    } else {
+      setIsScrolling(true)       // no gate — start scrolling immediately
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [config.openingStyle])
+
+  const closeMobilePreview = useCallback(() => {
+    setShowMobilePreview(false)
+    setIsScrolling(false)
   }, [])
 
   const previewEffect      = config.effectAnimation ?? "Tiada"
@@ -408,7 +428,7 @@ export function WizardShell({ initialCard }: Props) {
             {/* Mobile preview toggle (hidden on desktop which already shows preview) */}
             <button
               type="button"
-              onClick={() => setShowMobilePreview(true)}
+              onClick={openMobilePreview}
               className="w-9 h-9 flex items-center justify-center rounded-full border border-amber-300 text-amber-600 hover:bg-amber-50 lg:hidden"
               title="Pratonton"
             >
@@ -480,7 +500,7 @@ export function WizardShell({ initialCard }: Props) {
               <div
                 ref={(el) => { if (el) desktopScrollRef.current = el }}
                 className="absolute inset-0 overflow-y-auto overflow-x-hidden z-10"
-                style={{ scrollbarWidth: "none" }}
+                style={{ scrollbarWidth: "none", pointerEvents: isScrolling ? "none" : "auto" }}
               >
                 {cardPreview.template?.image1Url && (
                   <div className="absolute top-0 left-0 right-0 pointer-events-none z-0" style={{ height: "100svh" }}>
@@ -523,10 +543,22 @@ export function WizardShell({ initialCard }: Props) {
           ))}
         </div>
 
-        {/* Quick nav label */}
+        {/* Quick nav label + scroll toggle */}
         <div className="absolute top-4 left-4 bg-white/80 backdrop-blur-sm rounded-lg px-3 py-2 shadow-sm border border-gray-200">
           <p className="text-xs text-gray-500">Pratonton Langsung</p>
           <p className="text-sm font-semibold text-gray-800">{pageName}</p>
+          <button
+            type="button"
+            onClick={() => setIsScrolling((v) => !v)}
+            className={`mt-1.5 flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-md w-full justify-center transition-colors ${
+              isScrolling
+                ? "bg-amber-100 text-amber-700 hover:bg-amber-200"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            }`}
+          >
+            {isScrolling ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+            {isScrolling ? "Henti Skrol" : "Mula Skrol"}
+          </button>
         </div>
 
         {/* Full preview button */}
@@ -552,7 +584,7 @@ export function WizardShell({ initialCard }: Props) {
             </div>
             <button
               type="button"
-              onClick={() => setShowMobilePreview(false)}
+              onClick={closeMobilePreview}
               className="w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors"
             >
               <X className="w-4 h-4" />
@@ -584,7 +616,7 @@ export function WizardShell({ initialCard }: Props) {
                       key={previewOpenStyle}
                       style={previewOpenStyle}
                       color={previewOpenColor}
-                      onOpen={() => setPreviewGateOpen(false)}
+                      onOpen={() => { setPreviewGateOpen(false); setIsScrolling(true) }}
                       displayName={config.displayName}
                       eventType={config.eventType}
                       eventDate={config.dayAndDate}
@@ -595,7 +627,7 @@ export function WizardShell({ initialCard }: Props) {
                 <div
                   ref={(el) => { if (el) mobileScrollRef.current = el }}
                   className="absolute inset-0 overflow-y-auto overflow-x-hidden z-10"
-                  style={{ scrollbarWidth: "none" }}
+                  style={{ scrollbarWidth: "none", pointerEvents: isScrolling ? "none" : "auto" }}
                 >
                   {cardPreview.template?.image1Url && (
                     <div className="absolute top-0 left-0 right-0 pointer-events-none z-0" style={{ height: "100svh" }}>
@@ -623,7 +655,7 @@ export function WizardShell({ initialCard }: Props) {
           <div className="shrink-0 px-4 pb-4">
             <button
               type="button"
-              onClick={() => setShowMobilePreview(false)}
+              onClick={closeMobilePreview}
               className="w-full py-2.5 rounded-xl bg-gray-800 text-white text-sm font-medium"
             >
               Kembali ke Editor

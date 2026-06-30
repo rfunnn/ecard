@@ -89,6 +89,11 @@ export interface WizardConfig {
   googleMapsUrl: string
   wazeUrl: string
   gpsCoordinates: string
+  deliveryAddress: string
+  bankName: string
+  bankAccountName: string
+  bankAccountNumber: string
+  bankQrUrl: string
 
   // Page 5 — Atur Cara & Lain-lain
   additionalInfo1: string
@@ -161,6 +166,11 @@ export const DEFAULT_WIZARD_CONFIG: WizardConfig = {
   googleMapsUrl: "",
   wazeUrl: "",
   gpsCoordinates: "",
+  deliveryAddress: "",
+  bankName: "",
+  bankAccountName: "",
+  bankAccountNumber: "",
+  bankQrUrl: "",
 
   additionalInfo1: "",
   eventProgram: "",

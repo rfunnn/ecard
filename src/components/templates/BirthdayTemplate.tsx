@@ -63,6 +63,7 @@ export function BirthdayTemplate({ card }: Props) {
   const displaySize = cfg?.displayNameSize ?? 48
   const orgSize     = cfg?.organizerSize   ?? 18
   const fullNSize   = cfg?.fullNamesSize   ?? 20
+  const sideMargin  = cfg?.sideMargin      ?? 1.25
 
   const locale = card.language === "ms" ? "ms-MY" : "en-MY"
   const isMs = card.language === "ms"
@@ -72,7 +73,7 @@ export function BirthdayTemplate({ card }: Props) {
     d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })
 
   const Divider = () => (
-    <div className="flex items-center justify-center gap-3 my-8 px-10">
+    <div className="flex items-center justify-center gap-3 my-8">
       <div className="h-px flex-1" style={{ background: `${primaryColor}30` }} />
       <div className="flex gap-1">
         {[0, 1, 2].map((i) => (
@@ -84,20 +85,20 @@ export function BirthdayTemplate({ card }: Props) {
   )
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden">
+    <div className="min-h-screen w-full overflow-x-hidden" style={{ paddingLeft: `${sideMargin}rem`, paddingRight: `${sideMargin}rem` }}>
 
       {/* ══ COVER (Page 2) ══════════════════════════════════════════════════ */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
-        className="min-h-screen flex flex-col items-center justify-center text-center px-8 py-16"
+        className="min-h-screen flex flex-col items-center justify-center text-center py-16"
       >
         {/* event type */}
         {(cfg?.eventType || card.subtitle) && (
           <p
             className={`${headFont} uppercase tracking-[0.3em] mb-8 opacity-70`}
-            style={{ color: bodyColor, fontSize: `${cfg?.eventTypeSize ?? 13}px` }}
+            style={{ color: bodyColor, fontSize: `${cfg?.eventTypeSize ?? 13}px`, whiteSpace: "pre-line" }}
           >
             {cfg?.eventType || card.subtitle}
           </p>
@@ -136,15 +137,15 @@ export function BirthdayTemplate({ card }: Props) {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             transition={{ delay: 0.9, duration: 0.7 }}
             className={`${bodyFont} mt-7 opacity-65`}
-            style={{ color: bodyColor, fontSize: `${cfg.dayAndDateSize ?? 18}px` }}
+            style={{ color: bodyColor, fontSize: `${cfg.dayAndDateSize ?? 18}px`, whiteSpace: "pre-line" }}
           >
-            {cfg.dayAndDate.replace(/\n/g, " · ")}
+            {cfg.dayAndDate}
           </motion.p>
         )}
 
         {/* venue line */}
         {venueName && (
-          <p className={`${bodyFont} mt-2 opacity-40`} style={{ color: bodyColor, fontSize: `${cfg?.venueLineSize ?? 13}px` }}>
+          <p className={`${bodyFont} mt-2 opacity-40`} style={{ color: bodyColor, fontSize: `${cfg?.venueLineSize ?? 13}px`, whiteSpace: "pre-line" }}>
             {venueName}
           </p>
         )}
@@ -152,7 +153,7 @@ export function BirthdayTemplate({ card }: Props) {
 
       {/* ══ INVITATION TEXT (Page 3) ════════════════════════════════════════ */}
       {(cfg?.openingSpeech || cfg?.organizer1?.name || card.description || cfg?.fullNames) && (
-        <div className="px-8 pb-4 text-center">
+        <div className="pb-4 text-center">
           <Divider />
 
           {cfg?.openingSpeech && (
@@ -195,7 +196,7 @@ export function BirthdayTemplate({ card }: Props) {
 
       {/* ══ VENUE + DATE (Page 4) ══════════════════════════════════════════ */}
       {(seg.venue || seg.date) && (venueName || address || startDT) && (
-        <div className="px-8 pb-6 text-center">
+        <div className="pb-6 text-center">
           <Divider />
 
           {seg.venue && (venueName || address) && (
@@ -203,7 +204,7 @@ export function BirthdayTemplate({ card }: Props) {
               <p className={`${headFont} text-[11px] tracking-[0.3em] uppercase opacity-40 mb-3`} style={{ color: bodyColor }}>
                 {isMs ? "Tempat" : "Venue"}
               </p>
-              {venueName && <p className={`${orgFont} text-lg`} style={{ color: bodyColor }}>{venueName}</p>}
+              {venueName && <p className={`${orgFont} text-lg`} style={{ color: bodyColor, whiteSpace: "pre-line" }}>{venueName}</p>}
               {address && (
                 <div className={`${bodyFont} text-xs opacity-55 mt-2 leading-relaxed`} style={{ color: bodyColor, fontSize: `${Math.max(bodySize - 2, 11)}px` }}>
                   {multiLine(address)}
@@ -269,7 +270,7 @@ export function BirthdayTemplate({ card }: Props) {
 
       {/* ══ EVENT PROGRAM (Page 5) ══════════════════════════════════════════ */}
       {seg.eventProgram && cfg?.eventProgram && (
-        <div className="px-8 pb-6">
+        <div className="pb-6">
           <Divider />
           <p className={`${headFont} text-[11px] tracking-[0.3em] uppercase opacity-40 text-center mb-6`} style={{ color: bodyColor }}>
             {isMs ? "Atur Cara" : "Programme"}
@@ -287,7 +288,7 @@ export function BirthdayTemplate({ card }: Props) {
 
       {/* ══ COUNTDOWN (Page 5 extra) ══════════════════════════════════════════ */}
       {(cfg?.additionalInfo2 || (seg.countdown && cfg?.startDateTime && !eventPassed)) && (
-        <div className="px-8 pb-6 text-center">
+        <div className="pb-6 text-center">
           <Divider />
 
           {cfg?.additionalInfo2 && (
@@ -325,7 +326,7 @@ export function BirthdayTemplate({ card }: Props) {
 
       {/* ══ WISHES ══════════════════════════════════════════════════════════ */}
       {seg.wishes && wishes.length > 0 && (
-        <div className="px-8 pb-6 text-center">
+        <div className="pb-6 text-center">
           <Divider />
           <p className={`${headFont} text-[11px] tracking-[0.3em] uppercase opacity-40 mb-8`} style={{ color: bodyColor }}>
             {isMs ? "Ucapan" : "Wishes"}

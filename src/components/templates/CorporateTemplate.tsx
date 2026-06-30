@@ -63,6 +63,7 @@ export function CorporateTemplate({ card }: Props) {
   const displaySize = cfg?.displayNameSize ?? 36
   const orgSize     = cfg?.organizerSize   ?? 16
   const fullNSize   = cfg?.fullNamesSize   ?? 18
+  const sideMargin  = cfg?.sideMargin      ?? 1.25
 
   const locale = card.language === "ms" ? "ms-MY" : "en-MY"
   const isMs = card.language === "ms"
@@ -72,7 +73,7 @@ export function CorporateTemplate({ card }: Props) {
     d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })
 
   const Rule = () => (
-    <div className="flex items-center gap-3 my-6 px-6">
+    <div className="flex items-center gap-3 my-6">
       <div className="h-px flex-1" style={{ background: `${primaryColor}20` }} />
       <div className="w-1.5 h-1.5 rotate-45" style={{ background: primaryColor, opacity: 0.4 }} />
       <div className="h-px flex-1" style={{ background: `${primaryColor}20` }} />
@@ -80,7 +81,7 @@ export function CorporateTemplate({ card }: Props) {
   )
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden">
+    <div className="min-h-screen w-full overflow-x-hidden" style={{ paddingLeft: `${sideMargin}rem`, paddingRight: `${sideMargin}rem` }}>
       {/* top accent bar */}
       <div className="h-1 w-full" style={{ background: primaryColor }} />
 
@@ -89,7 +90,7 @@ export function CorporateTemplate({ card }: Props) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="min-h-screen flex flex-col justify-center px-8 py-16"
+        className="min-h-screen flex flex-col justify-center py-16"
       >
         <div className="mb-6 inline-flex items-center justify-center w-12 h-12 rounded-lg"
           style={{ background: `${primaryColor}12`, border: `1px solid ${primaryColor}20` }}>
@@ -99,7 +100,7 @@ export function CorporateTemplate({ card }: Props) {
         {(cfg?.eventType || card.subtitle) && (
           <p
             className={`${headFont} text-[11px] uppercase tracking-[0.4em] mb-4 opacity-50`}
-            style={{ color: bodyColor, fontSize: `${cfg?.eventTypeSize ?? 11}px` }}
+            style={{ color: bodyColor, fontSize: `${cfg?.eventTypeSize ?? 11}px`, whiteSpace: "pre-line" }}
           >
             {cfg?.eventType || card.subtitle}
           </p>
@@ -131,14 +132,14 @@ export function CorporateTemplate({ card }: Props) {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.6 }}
             className={`${bodyFont} mt-6 opacity-55`}
-            style={{ color: bodyColor, fontSize: `${cfg.dayAndDateSize ?? 15}px` }}
+            style={{ color: bodyColor, fontSize: `${cfg.dayAndDateSize ?? 15}px`, whiteSpace: "pre-line" }}
           >
-            {cfg.dayAndDate.replace(/\n/g, " · ")}
+            {cfg.dayAndDate}
           </motion.p>
         )}
 
         {venueName && (
-          <p className={`${bodyFont} mt-1 opacity-35`} style={{ color: bodyColor, fontSize: `${cfg?.venueLineSize ?? 12}px` }}>
+          <p className={`${bodyFont} mt-1 opacity-35`} style={{ color: bodyColor, fontSize: `${cfg?.venueLineSize ?? 12}px`, whiteSpace: "pre-line" }}>
             {venueName}
           </p>
         )}
@@ -146,7 +147,7 @@ export function CorporateTemplate({ card }: Props) {
 
       {/* ══ INVITATION TEXT (Page 3) ════════════════════════════════════════ */}
       {(cfg?.openingSpeech || cfg?.organizer1?.name || card.description || cfg?.fullNames) && (
-        <div className="px-8 pb-4">
+        <div className="pb-4">
           <Rule />
 
           {cfg?.openingSpeech && (
@@ -189,7 +190,7 @@ export function CorporateTemplate({ card }: Props) {
 
       {/* ══ VENUE + DATE (Page 4) ══════════════════════════════════════════ */}
       {(seg.venue || seg.date) && (venueName || address || startDT) && (
-        <div className="px-8 pb-6">
+        <div className="pb-6">
           <Rule />
 
           <div className="rounded-xl p-5 space-y-5"
@@ -202,7 +203,7 @@ export function CorporateTemplate({ card }: Props) {
                   <p className={`${headFont} text-[10px] uppercase tracking-wider opacity-40 mb-1`} style={{ color: bodyColor }}>
                     {isMs ? "Tempat" : "Venue"}
                   </p>
-                  {venueName && <p className={`${orgFont} text-sm font-medium`} style={{ color: bodyColor }}>{venueName}</p>}
+                  {venueName && <p className={`${orgFont} text-sm font-medium`} style={{ color: bodyColor, whiteSpace: "pre-line" }}>{venueName}</p>}
                   {address && (
                     <div className={`${bodyFont} text-xs opacity-55 mt-1 leading-relaxed`} style={{ color: bodyColor }}>
                       {multiLine(address)}
@@ -273,7 +274,7 @@ export function CorporateTemplate({ card }: Props) {
 
       {/* ══ EVENT PROGRAM (Page 5) ══════════════════════════════════════════ */}
       {seg.eventProgram && cfg?.eventProgram && (
-        <div className="px-8 pb-6">
+        <div className="pb-6">
           <Rule />
           <p className={`${headFont} text-[10px] tracking-[0.3em] uppercase opacity-40 mb-5`} style={{ color: bodyColor }}>
             {isMs ? "Atur Cara" : "Programme"}
@@ -292,7 +293,7 @@ export function CorporateTemplate({ card }: Props) {
 
       {/* ══ COUNTDOWN ══════════════════════════════════════════════════════ */}
       {(cfg?.additionalInfo2 || (seg.countdown && cfg?.startDateTime && !eventPassed)) && (
-        <div className="px-8 pb-6 text-center">
+        <div className="pb-6 text-center">
           <Rule />
 
           {cfg?.additionalInfo2 && (
@@ -333,7 +334,7 @@ export function CorporateTemplate({ card }: Props) {
 
       {/* ══ WISHES ══════════════════════════════════════════════════════════ */}
       {seg.wishes && wishes.length > 0 && (
-        <div className="px-8 pb-6">
+        <div className="pb-6">
           <Rule />
           <p className={`${headFont} text-[10px] tracking-[0.3em] uppercase opacity-40 mb-6`} style={{ color: bodyColor }}>
             {isMs ? "Ucapan" : "Messages"}

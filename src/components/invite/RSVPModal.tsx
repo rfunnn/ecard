@@ -2,12 +2,8 @@
 
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { Heart, Check } from "lucide-react"
-import { motion } from "framer-motion"
-import { Modal } from "@/components/ui/Modal"
-import { Button } from "@/components/ui/Button"
-import { Input, Textarea } from "@/components/ui/Input"
-import { Select } from "@/components/ui/Select"
+import { Heart, Check, X } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 import type { InvitationCardData } from "@/types/invitation"
 
 interface FormData {
@@ -30,6 +26,7 @@ export function RSVPModal({ isOpen, onClose, card, onAnalytic }: RSVPModalProps)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
   const lang = card.language === "ms"
+  const { primaryColor, bgColor } = card.theme
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<FormData>({
     defaultValues: { attendance: "ATTENDING", guestCount: 1 },
@@ -57,82 +54,192 @@ export function RSVPModal({ isOpen, onClose, card, onAnalytic }: RSVPModalProps)
     }
   }
 
-  const attendanceOptions = [
-    { value: "ATTENDING",     label: lang ? "Ya, saya hadir" : "Yes, I'll attend" },
-    { value: "MAYBE",         label: lang ? "Mungkin hadir" : "Maybe" },
-    { value: "NOT_ATTENDING", label: lang ? "Tidak dapat hadir" : "Unable to attend" },
-  ]
+  const inputStyle: React.CSSProperties = {
+    background: `${primaryColor}12`,
+    border: `1px solid ${primaryColor}30`,
+    color: primaryColor,
+    borderRadius: "8px",
+    padding: "8px 10px",
+    width: "100%",
+    fontSize: "13px",
+    outline: "none",
+  }
+
+  const labelStyle: React.CSSProperties = {
+    color: `${primaryColor}90`,
+    fontSize: "11px",
+    display: "block",
+    marginBottom: "4px",
+  }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={lang ? "Pengesahan Kehadiran" : "RSVP"}>
-      {submitted ? (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="flex flex-col items-center justify-center py-12 px-6 text-center"
-        >
-          <div className="w-16 h-16 rounded-full bg-gold/20 flex items-center justify-center mb-4">
-            <Check className="w-8 h-8 text-gold" />
-          </div>
-          <h3 className="font-playfair text-xl text-cream mb-2">
-            {lang ? "Terima Kasih!" : "Thank You!"}
-          </h3>
-          <p className="text-cream/50 text-sm mb-6">
-            {lang ? "Maklum balas anda telah diterima." : "Your response has been recorded."}
-          </p>
-          <Button onClick={onClose}>{lang ? "Tutup" : "Close"}</Button>
-        </motion.div>
-      ) : (
-        <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
-          <Input
-            label={lang ? "Nama Anda" : "Your Name"}
-            placeholder={lang ? "cth: Ahmad bin Ali" : "e.g. John Smith"}
-            error={errors.guestName?.message}
-            {...register("guestName", { required: lang ? "Nama diperlukan" : "Name is required" })}
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* backdrop — transparent, captures click to close */}
+          <motion.div
+            key="backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60]"
+            onClick={onClose}
           />
 
-          <Select
-            label={lang ? "Kehadiran" : "Attendance"}
-            options={attendanceOptions}
-            {...register("attendance")}
-          />
+          {/* bottom sheet card */}
+          <motion.div
+            key="card"
+            initial={{ y: "100%", opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: "100%", opacity: 0 }}
+            transition={{ type: "spring", damping: 28, stiffness: 320 }}
+            className="fixed bottom-16 left-0 right-0 z-[61] flex justify-center px-4"
+          >
+            <div
+              className="w-full max-w-md rounded-2xl shadow-2xl overflow-hidden"
+              style={{ background: bgColor, border: `1px solid ${primaryColor}25` }}
+            >
+              {/* header */}
+              <div
+                className="flex items-center justify-between px-5 pt-4 pb-3"
+                style={{ borderBottom: `1px solid ${primaryColor}20` }}
+              >
+                <p className="text-xs font-bold tracking-[0.2em]" style={{ color: primaryColor }}>
+                  {lang ? "PENGESAHAN KEHADIRAN" : "RSVP"}
+                </p>
+                <button
+                  onClick={onClose}
+                  className="w-6 h-6 flex items-center justify-center rounded-full transition-opacity opacity-50 hover:opacity-100"
+                  style={{ color: primaryColor }}
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
 
-          {attendance !== "NOT_ATTENDING" && (
-            <Input
-              type="number"
-              label={lang ? "Bilangan Tetamu" : "Number of Guests"}
-              min={1}
-              max={20}
-              {...register("guestCount")}
-            />
-          )}
+              {/* scrollable content */}
+              <div className="overflow-y-auto max-h-[55vh]">
+                {submitted ? (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="flex flex-col items-center justify-center py-10 px-6 text-center"
+                  >
+                    <div
+                      className="w-14 h-14 rounded-full flex items-center justify-center mb-3"
+                      style={{ background: `${primaryColor}20` }}
+                    >
+                      <Check className="w-7 h-7" style={{ color: primaryColor }} />
+                    </div>
+                    <h3 className="text-base font-semibold mb-1" style={{ color: primaryColor }}>
+                      {lang ? "Terima Kasih!" : "Thank You!"}
+                    </h3>
+                    <p className="text-xs mb-5" style={{ color: `${primaryColor}80` }}>
+                      {lang ? "Maklum balas anda telah diterima." : "Your response has been recorded."}
+                    </p>
+                    <button
+                      onClick={onClose}
+                      className="px-6 py-2 rounded-full text-sm font-medium transition-all active:scale-95"
+                      style={{ border: `1.5px solid ${primaryColor}`, color: primaryColor }}
+                    >
+                      {lang ? "Tutup" : "Close"}
+                    </button>
+                  </motion.div>
+                ) : (
+                  <form onSubmit={handleSubmit(onSubmit)} className="px-5 py-4 space-y-3">
+                    <div>
+                      <label style={labelStyle}>{lang ? "Nama Anda" : "Your Name"}</label>
+                      <input
+                        style={inputStyle}
+                        placeholder={lang ? "cth: Ahmad bin Ali" : "e.g. John Smith"}
+                        {...register("guestName", { required: true })}
+                      />
+                      {errors.guestName && (
+                        <p className="text-[11px] mt-1" style={{ color: "#ef4444" }}>
+                          {lang ? "Nama diperlukan" : "Name is required"}
+                        </p>
+                      )}
+                    </div>
 
-          <Input
-            label={lang ? "No. WhatsApp (pilihan)" : "WhatsApp No. (optional)"}
-            placeholder="+601X-XXXXXXX"
-            {...register("phone")}
-          />
+                    <div>
+                      <label style={labelStyle}>{lang ? "Kehadiran" : "Attendance"}</label>
+                      <select style={inputStyle} {...register("attendance")}>
+                        <option value="ATTENDING">{lang ? "Ya, saya hadir" : "Yes, I'll attend"}</option>
+                        <option value="MAYBE">{lang ? "Mungkin hadir" : "Maybe"}</option>
+                        <option value="NOT_ATTENDING">{lang ? "Tidak dapat hadir" : "Unable to attend"}</option>
+                      </select>
+                    </div>
 
-          <Textarea
-            label={lang ? "Ucapan (pilihan)" : "Message (optional)"}
-            placeholder={lang ? "Selamat pengantin baru!" : "Congratulations!"}
-            rows={3}
-            {...register("message")}
-          />
+                    {attendance !== "NOT_ATTENDING" && (
+                      <div>
+                        <label style={labelStyle}>{lang ? "Bilangan Tetamu" : "Number of Guests"}</label>
+                        <input
+                          type="number"
+                          min={1}
+                          max={20}
+                          style={inputStyle}
+                          {...register("guestCount")}
+                        />
+                      </div>
+                    )}
 
-          {error && <p className="text-sm text-red-400 text-center">{error}</p>}
+                    <div>
+                      <label style={labelStyle}>{lang ? "No. WhatsApp (pilihan)" : "WhatsApp No. (optional)"}</label>
+                      <input
+                        style={inputStyle}
+                        placeholder="+601X-XXXXXXX"
+                        {...register("phone")}
+                      />
+                    </div>
 
-          <div className="flex gap-3 pt-2">
-            <Button type="button" variant="ghost" onClick={onClose} className="flex-1">
-              {lang ? "Batal" : "Cancel"}
-            </Button>
-            <Button type="submit" className="flex-1" loading={submitting}>
-              <Heart className="w-4 h-4" />
-              {lang ? "Hantar" : "Submit"}
-            </Button>
-          </div>
-        </form>
+                    <div>
+                      <label style={labelStyle}>{lang ? "Ucapan (pilihan)" : "Message (optional)"}</label>
+                      <textarea
+                        rows={2}
+                        style={{ ...inputStyle, resize: "none" }}
+                        placeholder={lang ? "Selamat pengantin baru!" : "Congratulations!"}
+                        {...register("message")}
+                      />
+                    </div>
+
+                    {error && (
+                      <p className="text-[11px] text-center" style={{ color: "#ef4444" }}>{error}</p>
+                    )}
+
+                    <div className="flex gap-2 pt-1 pb-2">
+                      <button
+                        type="button"
+                        onClick={onClose}
+                        className="flex-1 py-2 rounded-full text-sm transition-all active:scale-95"
+                        style={{ border: `1px solid ${primaryColor}35`, color: `${primaryColor}80` }}
+                      >
+                        {lang ? "Batal" : "Cancel"}
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={submitting}
+                        className="flex-1 py-2 rounded-full text-sm font-medium flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50"
+                        style={{ background: `${primaryColor}20`, border: `1px solid ${primaryColor}60`, color: primaryColor }}
+                      >
+                        {submitting ? (
+                          <div
+                            className="w-4 h-4 rounded-full border-2 animate-spin"
+                            style={{ borderColor: `${primaryColor}40`, borderTopColor: primaryColor }}
+                          />
+                        ) : (
+                          <>
+                            <Heart className="w-3.5 h-3.5" style={{ fill: primaryColor, color: primaryColor }} />
+                            {lang ? "Hantar" : "Submit"}
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        </>
       )}
-    </Modal>
+    </AnimatePresence>
   )
 }

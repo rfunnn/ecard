@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { createPortal } from "react-dom"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, Pencil, Eye, Trash2, Plus, ShoppingBag, Clock } from "lucide-react"
+import { X, Pencil, Eye, Trash2, Plus, ShoppingBag, Clock, CreditCard } from "lucide-react"
 import Link from "next/link"
 import { getCartSlugs, removeFromCart } from "@/lib/cart"
 
@@ -218,7 +218,17 @@ export function CartDrawer({ isOpen, onClose }: Props) {
             </div>
 
             {/* Footer */}
-            <div className="shrink-0 p-4 border-t border-white/10">
+            <div className="shrink-0 p-4 border-t border-white/10 space-y-2">
+              {cards.length > 0 && (
+                <Link
+                  href="/checkout"
+                  onClick={onClose}
+                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-gold text-ink text-sm font-bold hover:bg-gold/90 transition-colors"
+                >
+                  <CreditCard className="w-4 h-4" />
+                  Bayar &amp; Terbitkan
+                </Link>
+              )}
               <Link
                 href="/new"
                 onClick={onClose}
