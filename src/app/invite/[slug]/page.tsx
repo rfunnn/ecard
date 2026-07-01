@@ -132,9 +132,7 @@ export default async function InvitePage({ params, searchParams }: Props) {
 
       // Contacts
       contacts: [
-        { name: "Encik Ahmad bin Sulaiman", role: "Bapa Pengantin Lelaki", phone: "60123456789", isWhatsApp: true },
-        { name: "Puan Rohani binti Yusof",  role: "Ibu Pengantin Lelaki",  phone: "60129876543", isWhatsApp: true },
-        { name: "Pak Long Rashid",           role: "Penyelaras Majlis",     phone: "60111234567", isWhatsApp: true },
+        { name: "Ali", role: "", phone: "60123456789", isWhatsApp: true },
       ],
 
       // Music & scroll
@@ -167,6 +165,8 @@ export default async function InvitePage({ params, searchParams }: Props) {
       title: "Walimatul Urus",
       groomName: nameOverride ? nameOverride.split(/\s*&\s*/)[0]?.trim() : "Ahmad Faris",
       brideName: nameOverride ? nameOverride.split(/\s*&\s*/)[1]?.trim() : "Nur Aisyah",
+      whatsappNumber: "60123456789",
+      contactName: "Ali",
       isPublished: true,
       language: "ms",
       viewCount: 0,

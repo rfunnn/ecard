@@ -2,14 +2,6 @@ import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma"
 
-const rsvpSchema = z.object({
-  guestName: z.string().min(1).max(100),
-  attendance: z.enum(["ATTENDING", "NOT_ATTENDING", "MAYBE"]),
-  guestCount: z.number().int().min(1).max(20).default(1),
-  message: z.string().max(500).optional(),
-  phone: z.string().max(20).optional(),
-})
-
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
@@ -18,10 +10,21 @@ export async function POST(
   try {
     const card = await prisma.invitationCard.findUnique({
       where: { slug },
-      select: { id: true, isPublished: true },
+      select: { id: true, isPublished: true, wizardConfig: true },
     })
     if (!card) return NextResponse.json({ error: "Not found" }, { status: 404 })
     if (!card.isPublished) return NextResponse.json({ error: "Card not published" }, { status: 403 })
+
+    const wCfg = card.wizardConfig as { rsvp?: { guestLimitPerRSVP?: number } } | null
+    const guestLimitPerRSVP = wCfg?.rsvp?.guestLimitPerRSVP ?? 5
+
+    const rsvpSchema = z.object({
+      guestName: z.string().min(1).max(100),
+      attendance: z.enum(["ATTENDING", "NOT_ATTENDING", "MAYBE"]),
+      guestCount: z.number().int().min(1).max(guestLimitPerRSVP).default(1),
+      message: z.string().max(500).optional(),
+      phone: z.string().max(20).optional(),
+    })
 
     const body = await req.json()
     const data = rsvpSchema.parse(body)

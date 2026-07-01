@@ -9,9 +9,10 @@ interface LocationModalProps {
   onClose: () => void
   card: InvitationCardData
   onAnalytic?: (event: string) => void
+  contained?: boolean
 }
 
-export function LocationModal({ isOpen, onClose, card, onAnalytic }: LocationModalProps) {
+export function LocationModal({ isOpen, onClose, card, onAnalytic, contained }: LocationModalProps) {
   const cfg = card.wizardConfig as WizardConfig | undefined
   const mapsUrl = cfg?.googleMapsUrl || card.venueMapUrl || ""
   const wazeUrl = cfg?.wazeUrl || ""
@@ -46,7 +47,7 @@ export function LocationModal({ isOpen, onClose, card, onAnalytic }: LocationMod
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60]"
+            className={`${contained ? "absolute" : "fixed"} inset-0 z-60`}
             onClick={onClose}
           />
 
@@ -57,7 +58,7 @@ export function LocationModal({ isOpen, onClose, card, onAnalytic }: LocationMod
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: "100%", opacity: 0 }}
             transition={{ type: "spring", damping: 28, stiffness: 320 }}
-            className="fixed bottom-16 left-0 right-0 z-[61] flex justify-center px-4"
+            className={`${contained ? "absolute" : "fixed"} bottom-16 left-0 right-0 z-61 flex justify-center px-4`}
           >
             <div
               className="w-full max-w-md rounded-2xl px-6 py-5 shadow-2xl"

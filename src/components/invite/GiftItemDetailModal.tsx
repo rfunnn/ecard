@@ -12,9 +12,10 @@ interface GiftItemDetailModalProps {
   onClose: () => void
   card: InvitationCardData
   onAnalytic?: (event: string) => void
+  contained?: boolean
 }
 
-export function GiftItemDetailModal({ item, onClose, card, onAnalytic }: GiftItemDetailModalProps) {
+export function GiftItemDetailModal({ item, onClose, card, onAnalytic, contained }: GiftItemDetailModalProps) {
   const lang = card.language === "ms"
   const { primaryColor, bgColor } = card.theme
   const cfg = card.wizardConfig as WizardConfig | undefined
@@ -65,11 +66,11 @@ export function GiftItemDetailModal({ item, onClose, card, onAnalytic }: GiftIte
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
           transition={{ type: "spring", damping: 30, stiffness: 300 }}
-          className="fixed bottom-0 left-0 right-0 z-[62] flex justify-center"
+          className={`${contained ? "absolute" : "fixed"} bottom-0 left-0 right-0 z-62 flex justify-center`}
         >
           <div
             className="relative w-full max-w-md flex flex-col overflow-hidden"
-            style={{ height: "calc(100svh - 56px)", background: bgColor }}
+            style={{ height: contained ? "calc(100% - 56px)" : "calc(100svh - 56px)", background: bgColor }}
           >
             {/* decorative top */}
             {bgImage && (

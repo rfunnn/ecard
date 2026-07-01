@@ -12,9 +12,10 @@ interface GiftModalProps {
   onClose: () => void
   card: InvitationCardData
   onAnalytic?: (event: string) => void
+  contained?: boolean
 }
 
-export function GiftModal({ isOpen, onClose, card, onAnalytic }: GiftModalProps) {
+export function GiftModal({ isOpen, onClose, card, onAnalytic, contained }: GiftModalProps) {
   const lang = card.language === "ms"
   const { primaryColor, bgColor } = card.theme
   const items = card.giftItems ?? []
@@ -50,7 +51,7 @@ export function GiftModal({ isOpen, onClose, card, onAnalytic }: GiftModalProps)
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.3 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-60 bg-black"
+            className={`${contained ? "absolute" : "fixed"} inset-0 z-60 bg-black`}
             onClick={onClose}
           />
 
@@ -61,11 +62,11 @@ export function GiftModal({ isOpen, onClose, card, onAnalytic }: GiftModalProps)
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed bottom-0 left-0 right-0 z-61 flex justify-center"
+            className={`${contained ? "absolute" : "fixed"} bottom-0 left-0 right-0 z-61 flex justify-center`}
           >
             <div
               className="relative w-full max-w-md flex flex-col overflow-hidden shadow-2xl"
-              style={{ height: "calc(100svh - 56px)", background: bgColor }}
+              style={{ height: contained ? "calc(100% - 56px)" : "calc(100svh - 56px)", background: bgColor }}
             >
               {/* decorative top */}
               {bgImage && (
@@ -212,7 +213,7 @@ export function GiftModal({ isOpen, onClose, card, onAnalytic }: GiftModalProps)
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 z-70 flex flex-col items-center justify-center bg-black/80 px-8"
+                className={`${contained ? "absolute" : "fixed"} inset-0 z-70 flex flex-col items-center justify-center bg-black/80 px-8`}
                 onClick={() => setQrOpen(false)}
               >
                 <motion.div
@@ -242,6 +243,7 @@ export function GiftModal({ isOpen, onClose, card, onAnalytic }: GiftModalProps)
             onClose={() => setSelectedItem(null)}
             card={card}
             onAnalytic={onAnalytic}
+            contained={contained}
           />
         </>
       )}

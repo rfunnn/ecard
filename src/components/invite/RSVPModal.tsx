@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form"
 import { Heart, Check, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import type { InvitationCardData } from "@/types/invitation"
+import type { WizardConfig } from "@/types/config"
 
 interface FormData {
   guestName: string
@@ -19,14 +20,18 @@ interface RSVPModalProps {
   onClose: () => void
   card: InvitationCardData
   onAnalytic?: (event: string) => void
+  contained?: boolean
 }
 
-export function RSVPModal({ isOpen, onClose, card, onAnalytic }: RSVPModalProps) {
+export function RSVPModal({ isOpen, onClose, card, onAnalytic, contained }: RSVPModalProps) {
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
   const lang = card.language === "ms"
   const { primaryColor, bgColor } = card.theme
+
+  const wCfg = card.wizardConfig as WizardConfig | undefined
+  const guestLimitPerRSVP = wCfg?.rsvp?.guestLimitPerRSVP ?? 5
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<FormData>({
     defaultValues: { attendance: "ATTENDING", guestCount: 1 },
@@ -82,7 +87,7 @@ export function RSVPModal({ isOpen, onClose, card, onAnalytic }: RSVPModalProps)
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60]"
+            className={`${contained ? "absolute" : "fixed"} inset-0 z-60`}
             onClick={onClose}
           />
 
@@ -93,7 +98,7 @@ export function RSVPModal({ isOpen, onClose, card, onAnalytic }: RSVPModalProps)
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: "100%", opacity: 0 }}
             transition={{ type: "spring", damping: 28, stiffness: 320 }}
-            className="fixed bottom-16 left-0 right-0 z-[61] flex justify-center px-4"
+            className={`${contained ? "absolute" : "fixed"} bottom-16 left-0 right-0 z-61 flex justify-center px-4`}
           >
             <div
               className="w-full max-w-md rounded-2xl shadow-2xl overflow-hidden"
@@ -171,14 +176,25 @@ export function RSVPModal({ isOpen, onClose, card, onAnalytic }: RSVPModalProps)
 
                     {attendance !== "NOT_ATTENDING" && (
                       <div>
-                        <label style={labelStyle}>{lang ? "Bilangan Tetamu" : "Number of Guests"}</label>
+                        <label style={labelStyle}>
+                          {lang ? "Bilangan Tetamu" : "Number of Guests"}
+                          <span style={{ opacity: 0.6 }}> (max {guestLimitPerRSVP})</span>
+                        </label>
                         <input
                           type="number"
                           min={1}
-                          max={20}
+                          max={guestLimitPerRSVP}
                           style={inputStyle}
-                          {...register("guestCount")}
+                          {...register("guestCount", {
+                            min: { value: 1, message: lang ? "Minimum 1 tetamu" : "Minimum 1 guest" },
+                            max: { value: guestLimitPerRSVP, message: lang ? `Maksimum ${guestLimitPerRSVP} tetamu` : `Maximum ${guestLimitPerRSVP} guests` },
+                          })}
                         />
+                        {errors.guestCount && (
+                          <p className="text-[11px] mt-1" style={{ color: "#ef4444" }}>
+                            {errors.guestCount.message}
+                          </p>
+                        )}
                       </div>
                     )}
 

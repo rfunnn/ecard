@@ -56,6 +56,7 @@ export interface WizardConfig {
   openingStyleColor: string
   effectAnimation: string
   effectColor: string
+  effectSize: number
 
   // Page 2 — Muka Depan
   eventType: string
@@ -136,6 +137,7 @@ export const DEFAULT_WIZARD_CONFIG: WizardConfig = {
   openingStyleColor: "#f2f2f2",
   effectAnimation: "Tiada",
   effectColor: "#8999ab",
+  effectSize: 100,
 
   eventType: "Walimatul Urus",
   eventTypeSize: 14,

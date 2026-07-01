@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import Link from "next/link"
-import { ChevronLeft, ChevronRight, Save, Eye, X, ShoppingBag, ExternalLink, Play, Pause } from "lucide-react"
+import { ChevronLeft, ChevronRight, Save, Eye, X, ShoppingBag, ExternalLink } from "lucide-react"
 import { useWizardStore, TOTAL_PAGES } from "@/store/wizardStore"
 import type { TemplateInfo } from "@/store/wizardStore"
 import type { WizardConfig } from "@/types/config"
@@ -303,6 +303,7 @@ export function WizardShell({ initialCard }: Props) {
 
   const previewEffect      = config.effectAnimation ?? "Tiada"
   const previewEffectColor = config.effectColor ?? "#ffffff"
+  const previewEffectScale = (config.effectSize ?? 100) / 100
   const previewOpenStyle   = config.openingStyle ?? "Tiada"
   const previewOpenColor   = config.openingStyleColor ?? "#1a1a1a"
 
@@ -480,7 +481,7 @@ export function WizardShell({ initialCard }: Props) {
                 }}
               />
               {/* Particle effect — contained inside phone frame */}
-              <EffectAnimation effect={previewEffect} color={previewEffectColor} contained />
+              <EffectAnimation effect={previewEffect} color={previewEffectColor} sizeScale={previewEffectScale} contained />
 
               {/* Opening gate — pointer-events-auto overrides the parent's pointer-events-none */}
               {previewOpenStyle !== "Tiada" && previewGateOpen && (
@@ -489,7 +490,7 @@ export function WizardShell({ initialCard }: Props) {
                     key={previewOpenStyle}
                     style={previewOpenStyle}
                     color={previewOpenColor}
-                    onOpen={() => setPreviewGateOpen(false)}
+                    onOpen={() => { setPreviewGateOpen(false); if (config.scrollDelay > 0) setIsScrolling(true) }}
                     displayName={config.displayName}
                     eventType={config.eventType}
                     eventDate={config.dayAndDate}
@@ -501,6 +502,7 @@ export function WizardShell({ initialCard }: Props) {
                 ref={(el) => { if (el) desktopScrollRef.current = el }}
                 className="absolute inset-0 overflow-y-auto overflow-x-hidden z-10"
                 style={{ scrollbarWidth: "none", pointerEvents: isScrolling ? "none" : "auto" }}
+                onClick={() => { if (config.scrollDelay > 0 && !isScrolling) setIsScrolling(true) }}
               >
                 {cardPreview.template?.image1Url && (
                   <div className="absolute top-0 left-0 right-0 pointer-events-none z-0" style={{ height: "100svh" }}>
@@ -513,7 +515,7 @@ export function WizardShell({ initialCard }: Props) {
               </div>
 
               {/* Action bar — contained inside phone screen */}
-              <div style={{ pointerEvents: "auto", position: "relative", zIndex: 50 }}>
+              <div style={{ pointerEvents: "auto" }}>
                 <ActionBar card={cardPreview} contained />
               </div>
             </div>
@@ -543,22 +545,10 @@ export function WizardShell({ initialCard }: Props) {
           ))}
         </div>
 
-        {/* Quick nav label + scroll toggle */}
+        {/* Quick nav label */}
         <div className="absolute top-4 left-4 bg-white/80 backdrop-blur-sm rounded-lg px-3 py-2 shadow-sm border border-gray-200">
           <p className="text-xs text-gray-500">Pratonton Langsung</p>
           <p className="text-sm font-semibold text-gray-800">{pageName}</p>
-          <button
-            type="button"
-            onClick={() => setIsScrolling((v) => !v)}
-            className={`mt-1.5 flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-md w-full justify-center transition-colors ${
-              isScrolling
-                ? "bg-amber-100 text-amber-700 hover:bg-amber-200"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            {isScrolling ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
-            {isScrolling ? "Henti Skrol" : "Mula Skrol"}
-          </button>
         </div>
 
         {/* Full preview button */}
@@ -607,7 +597,7 @@ export function WizardShell({ initialCard }: Props) {
                   }}
                 />
                 {/* Particle effect — contained inside mobile phone frame */}
-                <EffectAnimation effect={previewEffect} color={previewEffectColor} contained />
+                <EffectAnimation effect={previewEffect} color={previewEffectColor} sizeScale={previewEffectScale} contained />
 
                 {/* Opening gate */}
                 {previewOpenStyle !== "Tiada" && previewGateOpen && (

@@ -5,6 +5,7 @@ import { useWizardStore } from "@/store/wizardStore"
 import type { TemplateInfo } from "@/store/wizardStore"
 import { FieldLabel } from "../shared/FieldLabel"
 import { ColorField } from "../shared/ColorField"
+import { SliderField } from "../shared/SliderField"
 import { OPENING_STYLES, EFFECT_ANIMATIONS } from "@/types/config"
 
 export function Page1_Main() {
@@ -141,6 +142,19 @@ export function Page1_Main() {
             onChange={(v) => updateConfig("effectColor", v)}
           />
         </div>
+        {config.effectAnimation !== "Tiada" && (
+          <div className="mt-3">
+            <FieldLabel label="Saiz Animasi" />
+            <SliderField
+              value={config.effectSize ?? 100}
+              onChange={(v) => updateConfig("effectSize", v)}
+              min={30}
+              max={200}
+              step={10}
+              unit="%"
+            />
+          </div>
+        )}
       </div>
     </div>
   )

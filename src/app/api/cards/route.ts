@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth-options"
 import { prisma } from "@/lib/prisma"
 import { generateSlug } from "@/lib/slug"
 import { DEFAULT_THEME, DEFAULT_MEDIA, DEFAULT_SCROLL } from "@/types/invitation"
+import { buildDemoWizardConfig } from "@/lib/demo-wizard-config"
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
@@ -50,10 +51,19 @@ export async function POST(req: NextRequest) {
 
     const template = await prisma.template.findUnique({
       where: { id: data.templateId },
+      select: { id: true, slug: true, defaultConfig: true },
     })
     if (!template) {
       return NextResponse.json({ error: "Template not found" }, { status: 404 })
     }
+
+    const tmplCfg = (template.defaultConfig ?? {}) as { primaryColor?: string; bgColor?: string; titleFont?: string }
+    const wizardConfig = buildDemoWizardConfig(
+      tmplCfg.primaryColor ?? "#9b4d5e",
+      tmplCfg.bgColor      ?? "#faf7f4",
+      tmplCfg.titleFont,
+      template.slug,
+    )
 
     let slug = generateSlug()
     let attempts = 0
@@ -72,6 +82,7 @@ export async function POST(req: NextRequest) {
         templateId: data.templateId,
         title: data.title,
         language: data.language,
+        wizardConfig: wizardConfig as object,
         ...(session?.user?.id ? { userId: session.user.id } : {}),
         theme: { create: { ...DEFAULT_THEME } },
         media: { create: { ...DEFAULT_MEDIA } },

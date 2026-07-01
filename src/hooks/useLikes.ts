@@ -44,18 +44,19 @@ export function useLikes() {
     async (templateId: string) => {
       const isLiked = liked.has(templateId)
 
+      // Compute next set outside the updater to avoid side effects during render
+      const next = new Set(liked)
+      if (isLiked) next.delete(templateId)
+      else next.add(templateId)
+
       // Optimistic UI update
-      setLiked((prev) => {
-        const next = new Set(prev)
-        if (isLiked) next.delete(templateId)
-        else next.add(templateId)
-        // Always mirror to localStorage for NavLikesButton count
-        try {
-          localStorage.setItem(LS_KEY, JSON.stringify([...next]))
-          window.dispatchEvent(new Event("storage"))
-        } catch {}
-        return next
-      })
+      setLiked(next)
+
+      // Mirror to localStorage for NavLikesButton count (must be outside state updater)
+      try {
+        localStorage.setItem(LS_KEY, JSON.stringify([...next]))
+        window.dispatchEvent(new Event("storage"))
+      } catch {}
 
       if (userId) {
         await fetch("/api/user/likes", {

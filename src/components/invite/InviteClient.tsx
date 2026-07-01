@@ -45,6 +45,7 @@ export function InviteClient({ card, onClose }: InviteClientProps) {
   const wCfg            = card.wizardConfig as WizardConfig | undefined
   const effectAnimation = wCfg?.effectAnimation   ?? "Tiada"
   const effectColor     = wCfg?.effectColor       ?? "#ffffff"
+  const effectSizeScale = (wCfg?.effectSize ?? 100) / 100
   const openingStyle    = wCfg?.openingStyle      ?? "Tiada"
   const openingStyleColor = wCfg?.openingStyleColor ?? "#1a1a1a"
 
@@ -152,8 +153,8 @@ export function InviteClient({ card, onClose }: InviteClientProps) {
         */}
         <div className="relative w-full max-w-md h-full">
 
-          {/* ── Particle effect — fixed overlay covering the full card view ── */}
-          <EffectAnimation effect={effectAnimation} color={effectColor} />
+          {/* ── Particle effect — contained to the card column ── */}
+          <EffectAnimation effect={effectAnimation} color={effectColor} sizeScale={effectSizeScale} contained />
 
           {/* ── Image 2 — card-column-wide background, revealed as image1 scrolls away ── */}
           {image2 && (

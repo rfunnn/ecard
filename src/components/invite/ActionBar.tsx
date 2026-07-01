@@ -149,6 +149,7 @@ export function ActionBar({
         onClose={() => setContactOpen(false)}
         card={card}
         onAnalytic={onAnalytic}
+        contained={contained}
       />
 
       <LocationModal
@@ -156,6 +157,7 @@ export function ActionBar({
         onClose={() => setLocationOpen(false)}
         card={card}
         onAnalytic={onAnalytic}
+        contained={contained}
       />
 
       <RSVPModal
@@ -163,6 +165,7 @@ export function ActionBar({
         onClose={() => setRsvpOpen(false)}
         card={card}
         onAnalytic={onAnalytic}
+        contained={contained}
       />
 
       <GiftModal
@@ -170,6 +173,7 @@ export function ActionBar({
         onClose={() => setGiftOpen(false)}
         card={card}
         onAnalytic={onAnalytic}
+        contained={contained}
       />
     </>
   )

@@ -6,6 +6,7 @@ interface Props {
   effect: string
   color: string
   contained?: boolean
+  sizeScale?: number
 }
 
 interface Particle {
@@ -41,17 +42,18 @@ const COLOR_OFFSETS: [number, number, number][] = [
   [-50,  20,  60],
 ]
 
-function spawn(effect: string, w: number, h: number, spreadY = true): Particle {
+function spawn(effect: string, w: number, h: number, spreadY = true, sizeScale = 1): Particle {
   const iSnow  = effect.startsWith("Salji")
   const isConf = effect === "Confetti"
+  const baseSize =
+    isConf    ? 3  + Math.random() * 5
+    : effect === "Salji #1" ? 2  + Math.random() * 4
+    : effect === "Salji #2" ? 4  + Math.random() * 9
+    : 6  + Math.random() * 10
   return {
     x: Math.random() * w,
     y: spreadY ? Math.random() * h : -(5 + Math.random() * 20),
-    size:
-      isConf    ? 3  + Math.random() * 5
-      : effect === "Salji #1" ? 2  + Math.random() * 4
-      : effect === "Salji #2" ? 4  + Math.random() * 9
-      : 6  + Math.random() * 10,
+    size: baseSize * sizeScale,
     speed:
       isConf   ? 1.8 + Math.random() * 2.2
       : iSnow  ? (effect === "Salji #1" ? 0.55 + Math.random() * 1.1 : 0.4 + Math.random() * 0.85)
@@ -65,7 +67,7 @@ function spawn(effect: string, w: number, h: number, spreadY = true): Particle {
   }
 }
 
-function makeParticles(effect: string, w: number, h: number): Particle[] {
+function makeParticles(effect: string, w: number, h: number, sizeScale = 1): Particle[] {
   const count =
     effect === "Confetti"  ? 80
     : effect === "Salji #1" ? 55
@@ -73,7 +75,7 @@ function makeParticles(effect: string, w: number, h: number): Particle[] {
     : 24
   // First batch: scattered across screen so it doesn't start empty
   return Array.from({ length: count }, (_, i) =>
-    spawn(effect, w, h, i < count * 0.6)
+    spawn(effect, w, h, i < count * 0.6, sizeScale)
   )
 }
 
@@ -176,7 +178,7 @@ function drawConfetti(
 
 // ── Component ────────────────────────────────────────────────────────────────
 
-export function EffectAnimation({ effect, color, contained }: Props) {
+export function EffectAnimation({ effect, color, contained, sizeScale = 1 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -215,7 +217,7 @@ export function EffectAnimation({ effect, color, contained }: Props) {
       canvas.width  = w * dpr
       canvas.height = h * dpr
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      particles = makeParticles(effect, w, h)
+      particles = makeParticles(effect, w, h, sizeScale)
     }
 
     setup()
@@ -235,7 +237,7 @@ export function EffectAnimation({ effect, color, contained }: Props) {
         p.y         += p.speed
         p.rotation  += p.rotationSpeed
 
-        if (p.y  >  h + p.size * 2) Object.assign(p, spawn(effect, w, h, false))
+        if (p.y  >  h + p.size * 2) Object.assign(p, spawn(effect, w, h, false, sizeScale))
         if (p.x  >  w + p.size * 2) p.x = -p.size * 2
         if (p.x  < -p.size * 2)     p.x =  w + p.size * 2
 
@@ -268,7 +270,7 @@ export function EffectAnimation({ effect, color, contained }: Props) {
       cancelAnimationFrame(animId)
       stopResize()
     }
-  }, [effect, color, contained])
+  }, [effect, color, contained, sizeScale])
 
   if (effect === "Tiada") return null
 
