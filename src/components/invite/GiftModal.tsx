@@ -23,13 +23,13 @@ export function GiftModal({ isOpen, onClose, card, onAnalytic, contained }: Gift
   const [qrOpen, setQrOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<GiftItem | null>(null)
 
-  const cfg = card.wizardConfig as WizardConfig | undefined
+  const wizardConfig = card.wizardConfig as WizardConfig | undefined
   const bgImage = card.template.image2Url || card.template.image1Url || card.theme.bgImageUrl
 
-  const bankName          = cfg?.bankName || ""
-  const bankAccountName   = cfg?.bankAccountName || card.contactName || ""
-  const bankAccountNumber = cfg?.bankAccountNumber || card.whatsappNumber || ""
-  const bankQrUrl         = cfg?.bankQrUrl || ""
+  const bankName          = wizardConfig?.bankName || ""
+  const bankAccountName   = wizardConfig?.bankAccountName || card.contactName || ""
+  const bankAccountNumber = wizardConfig?.bankAccountNumber || card.whatsappNumber || ""
+  const bankQrUrl         = wizardConfig?.bankQrUrl || ""
 
   const hasBank = !!(bankAccountName || bankAccountNumber)
 

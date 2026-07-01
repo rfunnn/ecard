@@ -3,9 +3,9 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { Heart, Check, X } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
 import type { InvitationCardData } from "@/types/invitation"
 import type { WizardConfig } from "@/types/config"
+import { InviteBottomSheet } from "./InviteBottomSheet"
 
 interface FormData {
   guestName: string
@@ -78,32 +78,11 @@ export function RSVPModal({ isOpen, onClose, card, onAnalytic, contained }: RSVP
   }
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* backdrop — transparent, captures click to close */}
-          <motion.div
-            key="backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={`${contained ? "absolute" : "fixed"} inset-0 z-60`}
-            onClick={onClose}
-          />
-
-          {/* bottom sheet card */}
-          <motion.div
-            key="card"
-            initial={{ y: "100%", opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: "100%", opacity: 0 }}
-            transition={{ type: "spring", damping: 28, stiffness: 320 }}
-            className={`${contained ? "absolute" : "fixed"} bottom-16 left-0 right-0 z-61 flex justify-center px-4`}
-          >
-            <div
-              className="w-full max-w-md rounded-2xl shadow-2xl overflow-hidden"
-              style={{ background: bgColor, border: `1px solid ${primaryColor}25` }}
-            >
+    <InviteBottomSheet isOpen={isOpen} onClose={onClose} contained={contained}>
+      <div
+        className="w-full max-w-md rounded-2xl shadow-2xl overflow-hidden"
+        style={{ background: bgColor, border: `1px solid ${primaryColor}25` }}
+      >
               {/* header */}
               <div
                 className="flex items-center justify-between px-5 pt-4 pb-3"
@@ -252,10 +231,7 @@ export function RSVPModal({ isOpen, onClose, card, onAnalytic, contained }: RSVP
                   </form>
                 )}
               </div>
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+      </div>
+    </InviteBottomSheet>
   )
 }

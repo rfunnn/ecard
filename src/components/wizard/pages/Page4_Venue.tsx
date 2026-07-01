@@ -2,7 +2,10 @@
 
 import { useWizardStore } from "@/store/wizardStore"
 import { FieldLabel } from "../shared/FieldLabel"
+import { WizardInput } from "../shared/WizardInput"
 import { SimpleRichText } from "../shared/SimpleRichText"
+
+const DIVIDER = <div className="border-t border-gray-100" />
 
 export function Page4_Venue() {
   const { config, updateConfig } = useWizardStore()
@@ -12,16 +15,14 @@ export function Page4_Venue() {
       {/* Hijri Date */}
       <div>
         <FieldLabel label="Tarikh Hijrah (jika ada)" />
-        <input
-          type="text"
+        <WizardInput
           value={config.hijriDate}
           onChange={(e) => updateConfig("hijriDate", e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="12 Rejab 1446H"
         />
       </div>
 
-      <div className="border-t border-gray-100" />
+      {DIVIDER}
 
       {/* Venue Address */}
       <div>
@@ -34,7 +35,7 @@ export function Page4_Venue() {
         />
       </div>
 
-      <div className="border-t border-gray-100" />
+      {DIVIDER}
 
       {/* Navigation */}
       <div>
@@ -42,22 +43,22 @@ export function Page4_Venue() {
         <div className="rounded-xl border border-gray-200 p-4 space-y-4">
           <div>
             <FieldLabel label="Pautan Google Maps" />
-            <input
+            <WizardInput
               type="url"
               value={config.googleMapsUrl}
               onChange={(e) => updateConfig("googleMapsUrl", e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm text-blue-600 outline-none focus:ring-2 focus:ring-blue-500"
+              className="text-blue-600"
               placeholder="https://g.co/kgs/CLMxFh8"
             />
           </div>
 
           <div>
             <FieldLabel label="Pautan Waze" />
-            <input
+            <WizardInput
               type="url"
               value={config.wazeUrl}
               onChange={(e) => updateConfig("wazeUrl", e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm text-blue-600 outline-none focus:ring-2 focus:ring-blue-500"
+              className="text-blue-600"
               placeholder="https://waze.com/ul/hw22tp0I6s"
             />
           </div>
@@ -70,11 +71,9 @@ export function Page4_Venue() {
 
           <div>
             <FieldLabel label="Koordinat GPS" info />
-            <input
-              type="text"
+            <WizardInput
               value={config.gpsCoordinates}
               onChange={(e) => updateConfig("gpsCoordinates", e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="1.870943, 103.119317"
             />
           </div>

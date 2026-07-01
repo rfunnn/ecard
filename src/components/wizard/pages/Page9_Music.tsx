@@ -6,35 +6,38 @@ import { useWizardStore } from "@/store/wizardStore"
 import { FieldLabel } from "../shared/FieldLabel"
 import { SliderField } from "../shared/SliderField"
 import { WizardToggle } from "../shared/WizardToggle"
+import { WizardInput } from "../shared/WizardInput"
 
 function extractYouTubeId(url: string): string | null {
   const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?/\s]{11})/)
   return match ? match[1] : null
 }
 
+function parseStartSeconds(timeString: string): number {
+  const [minutes, seconds] = timeString.split(":").map(Number)
+  return (minutes || 0) * 60 + (seconds || 0)
+}
+
 export function Page9_Music() {
   const { config, updateConfig } = useWizardStore()
   const [showEmbed, setShowEmbed] = useState(false)
-  const videoId = extractYouTubeId(config.youtubeUrl)
 
-  const startSeconds = (() => {
-    const [mm, ss] = config.musicStartTime.split(":").map(Number)
-    return (mm || 0) * 60 + (ss || 0)
-  })()
+  const videoId = extractYouTubeId(config.youtubeUrl)
+  const startSeconds = parseStartSeconds(config.musicStartTime)
 
   return (
     <div className="space-y-6">
       {/* YouTube URL */}
       <div>
         <FieldLabel label="Pautan Lagu Youtube (jika ada)" />
-        <input
+        <WizardInput
           type="url"
           value={config.youtubeUrl}
           onChange={(e) => {
             updateConfig("youtubeUrl", e.target.value)
             setShowEmbed(false)
           }}
-          className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm text-blue-600 outline-none focus:ring-2 focus:ring-blue-500"
+          className="text-blue-600"
           placeholder="https://www.youtube.be/UlkiwmnPDGk?si=hx5OH4WZUmLbvYsX"
         />
       </div>
@@ -43,11 +46,10 @@ export function Page9_Music() {
       <div>
         <FieldLabel label="Mula Dari (mm:ss)" />
         <div className="flex gap-2">
-          <input
-            type="text"
+          <WizardInput
             value={config.musicStartTime}
             onChange={(e) => updateConfig("musicStartTime", e.target.value)}
-            className="flex-1 border border-gray-300 rounded-md px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1"
             placeholder="00:00"
           />
           <button
@@ -77,16 +79,14 @@ export function Page9_Music() {
 
       {/* YouTube embed preview */}
       {videoId && showEmbed && (
-        <div>
-          <div className="rounded-xl overflow-hidden border border-gray-200 bg-black" style={{ aspectRatio: "16/9" }}>
-            <iframe
-              src={`https://www.youtube.com/embed/${videoId}?start=${startSeconds}&autoplay=1`}
-              className="w-full h-full"
-              allow="autoplay; encrypted-media"
-              allowFullScreen
-              title="YouTube Music Preview"
-            />
-          </div>
+        <div className="rounded-xl overflow-hidden border border-gray-200 bg-black" style={{ aspectRatio: "16/9" }}>
+          <iframe
+            src={`https://www.youtube.com/embed/${videoId}?start=${startSeconds}&autoplay=1`}
+            className="w-full h-full"
+            allow="autoplay; encrypted-media"
+            allowFullScreen
+            title="YouTube Music Preview"
+          />
         </div>
       )}
 
