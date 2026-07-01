@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { ChevronLeft, ChevronRight, Save, Eye, X, ShoppingBag, ExternalLink } from "lucide-react"
 import { useWizardStore, TOTAL_PAGES } from "@/store/wizardStore"
 import type { TemplateInfo } from "@/store/wizardStore"
@@ -196,8 +197,16 @@ export function WizardShell({ initialCard }: Props) {
     () => (config.openingStyle ?? "Tiada") !== "Tiada"
   )
 
+  const searchParams = useSearchParams()
   const desktopScrollRef = useRef<HTMLDivElement | undefined>(undefined)
   const mobileScrollRef  = useRef<HTMLDivElement | undefined>(undefined)
+
+  // Jump to a specific wizard page when ?page=N is in the URL (e.g. from dashboard quick-links)
+  useEffect(() => {
+    const p = Number(searchParams.get("page"))
+    if (p >= 1 && p <= TOTAL_PAGES) setPage(p)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Auto-scroll both preview panes — only runs when isScrolling is true
   useEffect(() => {

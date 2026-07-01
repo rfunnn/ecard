@@ -1,0 +1,39 @@
+# Dependencies — rebuilt inside Docker via npm ci
+node_modules
+.pnp
+.pnp.js
+
+# Next.js build output — rebuilt inside Docker via npm run build
+.next
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Environment files — injected at runtime via docker-compose, never baked in
+.env
+.env.*
+!.env.example
+
+# Dev-only uploaded files — production uploads go to MinIO, not public/uploads/
+public/uploads
+
+# Editor / OS artefacts
+.DS_Store
+*.log
+npm-debug.log*
+.idea
+.vscode
+
+# Test & CI files
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+coverage
+.nyc_output
+
+# Documentation
+*.md
+!README.md

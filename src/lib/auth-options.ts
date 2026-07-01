@@ -4,12 +4,39 @@ import GoogleProvider from "next-auth/providers/google"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
 
+// Fail fast in production if the JWT signing secret is the insecure dev fallback.
+if (
+  process.env.NODE_ENV === "production" &&
+  !process.env.NEXTAUTH_SECRET
+) {
+  throw new Error(
+    "NEXTAUTH_SECRET is not set. Generate one with: openssl rand -base64 32"
+  )
+}
+
+// Google OAuth is optional — only enabled when both credentials are provided.
+// Register credentials at https://console.cloud.google.com/apis/credentials
+// Authorised redirect URI must include: https://YOUR_DOMAIN/api/auth/callback/google
+const googleProvider =
+  process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+    ? [
+        GoogleProvider({
+          clientId: process.env.GOOGLE_CLIENT_ID,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          authorization: {
+            params: {
+              // Request offline access so the refresh token is returned
+              access_type: "offline",
+              prompt: "consent",
+            },
+          },
+        }),
+      ]
+    : []
+
 export const authOptions: NextAuthOptions = {
   providers: [
-    GoogleProvider({
-      clientId:     process.env.GOOGLE_CLIENT_ID  ?? "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
-    }),
+    ...googleProvider,
     CredentialsProvider({
       name: "credentials",
       credentials: {
@@ -51,7 +78,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, account }) {
       if (user) {
         if (account?.provider === "google") {
-          // After signIn upsert, fetch the real DB id
+          // signIn upserted the user — now fetch the real DB id
           const dbUser = await prisma.user.findUnique({ where: { email: token.email! } })
           token.id = dbUser?.id
         } else {

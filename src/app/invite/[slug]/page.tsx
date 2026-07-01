@@ -61,6 +61,7 @@ export default async function InvitePage({ params, searchParams }: Props) {
       openingStyleColor: "#f2f2f2",
       effectAnimation: "Bunga #1",
       effectColor: demoPrimary,
+      effectSize: 100,
 
       // Cover
       eventType: "Walimatul Urus",

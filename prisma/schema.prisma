@@ -4,6 +4,9 @@ generator client {
 
 datasource db {
   provider = "mysql"
+  // url is used by the Prisma CLI (db push, migrate). At runtime the
+  // PrismaMariaDb driver adapter in src/lib/prisma.ts handles the connection.
+  url      = env("DATABASE_URL")
 }
 
 model User {

@@ -1,0 +1,136 @@
+name: ekadku
+
+# ---------------------------------------------------------------------------
+# Shared environment block — referenced by both app and migrate services.
+# All values come from the .env file in the project root.
+# ---------------------------------------------------------------------------
+x-app-env: &app-env
+  DATABASE_URL:            "mysql://${DB_USER:-kad_user}:${DB_PASSWORD}@db:3306/${DB_NAME:-kad_db}"
+  NEXTAUTH_SECRET:         "${NEXTAUTH_SECRET}"
+  NEXTAUTH_URL:            "${NEXTAUTH_URL}"
+  GOOGLE_CLIENT_ID:        "${GOOGLE_CLIENT_ID:-}"
+  GOOGLE_CLIENT_SECRET:    "${GOOGLE_CLIENT_SECRET:-}"
+  TOYYIBPAY_SECRET_KEY:    "${TOYYIBPAY_SECRET_KEY:-}"
+  TOYYIBPAY_CATEGORY_CODE: "${TOYYIBPAY_CATEGORY_CODE:-}"
+  TOYYIBPAY_BASE_URL:      "${TOYYIBPAY_BASE_URL:-https://toyyibpay.com}"
+  # Inside Docker the app reaches MinIO via the service name, not localhost
+  STORAGE_ENDPOINT:        "http://storage:9000"
+  STORAGE_ACCESS_KEY:      "${MINIO_ROOT_USER:-minio_admin}"
+  STORAGE_SECRET_KEY:      "${MINIO_ROOT_PASSWORD}"
+  STORAGE_BUCKET:          "${STORAGE_BUCKET:-ecard}"
+  # Public URL browsers use to load uploaded images — must be reachable externally
+  STORAGE_PUBLIC_URL:      "${STORAGE_PUBLIC_URL}"
+  SMTP_HOST:               "${SMTP_HOST:-}"
+  SMTP_PORT:               "${SMTP_PORT:-587}"
+  SMTP_USER:               "${SMTP_USER:-}"
+  SMTP_PASS:               "${SMTP_PASS:-}"
+  SMTP_SECURE:             "${SMTP_SECURE:-false}"
+  SMTP_FROM:               "${SMTP_FROM:-noreply@e-kadku.com}"
+
+services:
+
+  # ── MariaDB ──────────────────────────────────────────────────────────
+  db:
+    image: mariadb:11.4
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
+      MARIADB_DATABASE:      "${DB_NAME:-kad_db}"
+      MARIADB_USER:          "${DB_USER:-kad_user}"
+      MARIADB_PASSWORD:      "${DB_PASSWORD}"
+    volumes:
+      - db_data:/var/lib/mysql
+    # Do NOT expose port 3306 to the host in production.
+    # The app connects via the internal Docker network.
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ── MinIO object storage ─────────────────────────────────────────────
+  storage:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER:     "${MINIO_ROOT_USER:-minio_admin}"
+      MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD}"
+    volumes:
+      - minio_data:/data
+    ports:
+      # MinIO admin console — restrict this port at the firewall in production.
+      # Do NOT expose port 9000 (API) publicly; use STORAGE_PUBLIC_URL behind a reverse proxy.
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # ── Bucket initialisation (runs once, then exits) ────────────────────
+  # Creates the storage bucket and sets it to public-read so uploaded
+  # images are accessible via STORAGE_PUBLIC_URL.
+  createbuckets:
+    image: minio/mc:latest
+    depends_on:
+      storage:
+        condition: service_healthy
+    environment:
+      MINIO_ROOT_USER:     "${MINIO_ROOT_USER:-minio_admin}"
+      MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD}"
+      STORAGE_BUCKET:      "${STORAGE_BUCKET:-ecard}"
+    entrypoint: >
+      /bin/sh -c "
+        mc alias set local http://storage:9000 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD &&
+        mc mb local/$$STORAGE_BUCKET --ignore-existing &&
+        mc anonymous set download local/$$STORAGE_BUCKET &&
+        echo 'MinIO bucket ready.'
+      "
+    restart: on-failure
+
+  # ── Database schema sync (runs once, then exits) ─────────────────────
+  # Uses the builder stage (which has full node_modules + prisma CLI).
+  # Runs `prisma db push` to create/update tables from schema.prisma.
+  # Re-run manually after schema changes: docker compose run --rm migrate
+  migrate:
+    build:
+      context: .
+      target: migrator
+    command: ["--accept-data-loss"]
+    environment:
+      <<: *app-env
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+
+  # ── Next.js application ──────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      target: runner
+      args:
+        STORAGE_PUBLIC_URL: "${STORAGE_PUBLIC_URL}"
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      <<: *app-env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      storage:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+
+volumes:
+  db_data:
+  minio_data:
