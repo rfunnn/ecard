@@ -1,6 +1,15 @@
 import type { WizardConfig } from "@/types/config"
 import { DEFAULT_WIZARD_CONFIG } from "@/types/config"
 
+export const DEMO_YOUTUBE_URL      = "https://www.youtube.com/watch?v=Tf_zS_ES_7k"
+export const DEMO_YOUTUBE_VIDEO_ID = "Tf_zS_ES_7k"
+
+export const DEMO_GIFT_ITEMS = [
+  { label: "Set Makan Porselin 32pcs", imageUrl: "https://picsum.photos/seed/ceramicset/400/400",  link: "https://www.lazada.com.my/", sortOrder: 0 },
+  { label: "Set Cadar Queen Premium",  imageUrl: "https://picsum.photos/seed/beddingset/400/400", link: "https://shopee.com.my/",      sortOrder: 1 },
+  { label: "Blender Dapur Elektrik",   imageUrl: "https://picsum.photos/seed/kitchenblend/400/400", link: "https://www.lazada.com.my/", sortOrder: 2 },
+] as const
+
 export function buildDemoWizardConfig(
   primaryColor: string,
   bgColor: string,

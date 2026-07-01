@@ -67,10 +67,14 @@ export function GiftItemDetailModal({ item, onClose, card, onAnalytic, contained
           exit={{ x: "100%" }}
           transition={{ type: "spring", damping: 30, stiffness: 300 }}
           className={`${contained ? "absolute" : "fixed"} bottom-0 left-0 right-0 z-62 flex justify-center`}
+          style={contained ? { height: "60%" } : undefined}
         >
           <div
-            className="relative w-full max-w-md flex flex-col overflow-hidden"
-            style={{ height: contained ? "calc(100% - 56px)" : "calc(100svh - 56px)", background: bgColor }}
+            className="relative w-full max-w-md flex flex-col overflow-hidden rounded-t-2xl"
+            style={{
+              height: contained ? "100%" : "calc(100svh - 56px)",
+              background: bgColor,
+            }}
           >
             {/* decorative top */}
             {bgImage && (

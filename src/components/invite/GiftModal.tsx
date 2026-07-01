@@ -63,10 +63,14 @@ export function GiftModal({ isOpen, onClose, card, onAnalytic, contained }: Gift
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
             className={`${contained ? "absolute" : "fixed"} bottom-0 left-0 right-0 z-61 flex justify-center`}
+            style={contained ? { height: "60%" } : undefined}
           >
             <div
-              className="relative w-full max-w-md flex flex-col overflow-hidden shadow-2xl"
-              style={{ height: contained ? "calc(100% - 56px)" : "calc(100svh - 56px)", background: bgColor }}
+              className="relative w-full max-w-md flex flex-col overflow-hidden shadow-2xl rounded-t-2xl"
+              style={{
+                height: contained ? "100%" : "calc(100svh - 56px)",
+                background: bgColor,
+              }}
             >
               {/* decorative top */}
               {bgImage && (
@@ -165,7 +169,7 @@ export function GiftModal({ isOpen, onClose, card, onAnalytic, contained }: Gift
               )}
 
               {/* scrollable gift list */}
-              <div className="relative z-10 flex-1 overflow-y-auto px-4 pb-24" style={{ scrollbarWidth: "thin" }}>
+              <div className={`relative z-10 flex-1 overflow-y-auto px-4 ${contained ? "pb-4" : "pb-24"}`} style={{ scrollbarWidth: "thin" }}>
                 {items.length === 0 ? (
                   <div className="flex flex-col items-center gap-2 py-10 text-center">
                     <p className="text-sm" style={{ color: `${primaryColor}60` }}>

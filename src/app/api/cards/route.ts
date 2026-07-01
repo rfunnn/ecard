@@ -5,7 +5,7 @@ import { authOptions } from "@/lib/auth-options"
 import { prisma } from "@/lib/prisma"
 import { generateSlug } from "@/lib/slug"
 import { DEFAULT_THEME, DEFAULT_MEDIA, DEFAULT_SCROLL } from "@/types/invitation"
-import { buildDemoWizardConfig } from "@/lib/demo-wizard-config"
+import { buildDemoWizardConfig, DEMO_YOUTUBE_URL, DEMO_YOUTUBE_VIDEO_ID, DEMO_GIFT_ITEMS } from "@/lib/demo-wizard-config"
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
@@ -85,14 +85,16 @@ export async function POST(req: NextRequest) {
         wizardConfig: wizardConfig as object,
         ...(session?.user?.id ? { userId: session.user.id } : {}),
         theme: { create: { ...DEFAULT_THEME } },
-        media: { create: { ...DEFAULT_MEDIA } },
+        media: { create: { ...DEFAULT_MEDIA, youtubeUrl: DEMO_YOUTUBE_URL, youtubeVideoId: DEMO_YOUTUBE_VIDEO_ID } },
         scrollConfig: { create: { ...DEFAULT_SCROLL } },
+        giftItems: { create: DEMO_GIFT_ITEMS.map((item) => ({ ...item })) },
       },
       include: {
         template: { select: { slug: true, name: true, category: true } },
         theme: true,
         media: true,
         scrollConfig: true,
+        giftItems: { orderBy: { sortOrder: "asc" } },
       },
     })
 

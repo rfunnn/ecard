@@ -37,6 +37,11 @@
   --color-gold-dark: oklch(48% 0.12 60);
   --color-cream: oklch(93% 0.04 81);
   --color-ink: oklch(14% 0.04 45);
+
+  --z-60: 60;
+  --z-61: 61;
+  --z-62: 62;
+  --z-70: 70;
 }
 
 body {

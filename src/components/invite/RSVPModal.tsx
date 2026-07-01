@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { motion } from "framer-motion"
 import { Heart, Check, X } from "lucide-react"
 import type { InvitationCardData } from "@/types/invitation"
 import type { WizardConfig } from "@/types/config"
@@ -101,7 +102,7 @@ export function RSVPModal({ isOpen, onClose, card, onAnalytic, contained }: RSVP
               </div>
 
               {/* scrollable content */}
-              <div className="overflow-y-auto max-h-[55vh]">
+              <div className={`overflow-y-auto ${contained ? "max-h-[25vh]" : "max-h-[55vh]"}`}>
                 {submitted ? (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}

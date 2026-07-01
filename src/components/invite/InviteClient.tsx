@@ -206,13 +206,14 @@ export function InviteClient({ card, onClose }: InviteClientProps) {
             </div>
           </div>
 
-          {/* ── Action bar — sibling of canvas so z-50 beats canvas z-25 ── */}
+          {/* ── Action bar — contained within the max-w-md card column ── */}
           <ActionBar
             card={card}
             onAnalytic={fireAnalytic}
             onMusicToggle={() => musicToggleRef.current?.()}
             isMusicMuted={isMusicMuted}
             hasMusicPlayer={hasMusicPlayer}
+            contained
           />
         </div>
       </div>
