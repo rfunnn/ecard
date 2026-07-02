@@ -8,6 +8,7 @@ import {
   ChevronLeft, Save, Eye
 } from "lucide-react"
 import { useBuilderStore } from "@/store/builderStore"
+import { addToCart } from "@/lib/cart"
 import { ContentPanel } from "./ContentPanel"
 import { StylePanel } from "./StylePanel"
 import { MediaPanel } from "./MediaPanel"
@@ -44,7 +45,7 @@ export function BuilderPage({ initialCard }: BuilderPageProps) {
     setCard(initialCard)
   }, [initialCard, setCard])
 
-  const save = useCallback(async (data: Partial<InvitationCardData>) => {
+  const save = useCallback(async (data: Partial<InvitationCardData>, saveToCart = false) => {
     setIsSaving(true)
     try {
       const { theme, media, scrollConfig, ...rest } = data
@@ -54,6 +55,7 @@ export function BuilderPage({ initialCard }: BuilderPageProps) {
         body: JSON.stringify({ ...rest, theme, media, scrollConfig }),
       })
       markClean()
+      if (saveToCart) addToCart(initialCard.slug)
     } catch {
       // silent retry — store remains dirty
     } finally {
@@ -187,7 +189,7 @@ export function BuilderPage({ initialCard }: BuilderPageProps) {
               size="sm"
               variant="outline"
               loading={isSaving}
-              onClick={() => save(card)}
+              onClick={() => save(card, true)}
             >
               <Save className="w-3.5 h-3.5" />
               {lang ? "Simpan" : "Save"}

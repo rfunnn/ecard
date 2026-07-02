@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Heart, ChevronLeft, Eye, Loader2, SlidersHorizontal, X, Search } from "lucide-react"
 import Link from "next/link"
-import { addToCart } from "@/lib/cart"
 import type { TemplateCategory } from "@/types/invitation"
 import { TemplatePhoneFrame } from "@/components/TemplatePhoneFrame"
 import { NavLikesButton } from "@/components/NavLikesButton"
@@ -318,7 +317,6 @@ export default function NewCardPage() {
       })
       if (!res.ok) throw new Error("Failed")
       const { card } = await res.json()
-      addToCart(card.slug)
       router.push(`/builder/${card.slug}`)
     } catch {
       setCreating(null)

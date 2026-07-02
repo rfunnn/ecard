@@ -4,7 +4,6 @@ import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
 import { useState, useRef, useEffect } from "react"
 import { User, Heart, ShoppingBag, Sun, Moon, LogOut, ExternalLink } from "lucide-react"
-import { CartDrawer } from "@/components/CartDrawer"
 import { getCartCount } from "@/lib/cart"
 import { useTheme } from "@/components/ThemeProvider"
 
@@ -14,7 +13,6 @@ export default function UserMenu() {
   const { data: session, status } = useSession()
   const { theme, toggle } = useTheme()
   const [open, setOpen] = useState(false)
-  const [cartOpen, setCartOpen] = useState(false)
   const [cartCount, setCartCount] = useState(0)
   const [likes, setLikes] = useState<LikedTemplate[]>([])
   const [likesLoaded, setLikesLoaded] = useState(false)
@@ -143,18 +141,19 @@ export default function UserMenu() {
 
             {/* Cart */}
             <div className="py-1">
-              <button
-                onClick={() => { setOpen(false); setCartOpen(true) }}
-                className="flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--tx-2)] hover:text-[var(--tx-1)] hover:bg-[var(--sf)] transition-colors w-full text-left"
+              <Link
+                href="/cart"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--tx-2)] hover:text-[var(--tx-1)] hover:bg-[var(--sf)] transition-colors w-full"
               >
                 <ShoppingBag className="w-4 h-4 shrink-0" />
-                My Cart
+                Kad Saya
                 {cartCount > 0 && (
                   <span className="ml-auto min-w-[18px] h-[18px] text-[10px] bg-gold text-ink rounded-full flex items-center justify-center px-1 font-bold leading-none">
                     {cartCount}
                   </span>
                 )}
-              </button>
+              </Link>
             </div>
 
             {/* Theme row */}
@@ -190,7 +189,6 @@ export default function UserMenu() {
         )}
       </div>
 
-      <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
     </>
   )
 }

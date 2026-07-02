@@ -235,7 +235,6 @@ export function WizardShell({ initialCard }: Props) {
       setCardSlug(initialCard.slug)
       setGiftItems(initialCard.giftItems)
     }
-    addToCart(initialCard.slug)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialCard.slug])
 

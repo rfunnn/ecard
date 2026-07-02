@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ChevronLeft, Heart, Eye, Loader2, Sparkles } from "lucide-react"
-import { addToCart } from "@/lib/cart"
 import { TemplatePhoneFrame } from "@/components/TemplatePhoneFrame"
 import type { TemplateForFrame } from "@/components/TemplatePhoneFrame"
 import { useLikes } from "@/hooks/useLikes"
@@ -118,7 +117,6 @@ export default function LikesPage() {
       })
       if (!res.ok) throw new Error("Failed")
       const { card } = await res.json()
-      addToCart(card.slug)
       router.push(`/builder/${card.slug}`)
     } catch {
       setCreating(null)
