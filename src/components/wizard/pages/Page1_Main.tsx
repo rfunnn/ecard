@@ -75,12 +75,13 @@ export function Page1_Main() {
   }
 
   const isBronze = getPackageTier(config.packageType) === "bronze"
+  const isMs = config.language === "ms"
 
   return (
     <div className="space-y-6">
       {/* Language */}
       <div>
-        <FieldLabel label="Bahasa Kad" />
+        <FieldLabel label={isMs ? "Bahasa Kad" : "Card Language"} />
         <div className="flex gap-6 mt-1">
           {(["en", "ms"] as const).map((lang) => (
             <label key={lang} className="flex items-center gap-2 cursor-pointer">
@@ -102,7 +103,7 @@ export function Page1_Main() {
 
       {/* Package */}
       <div>
-        <FieldLabel label="Pakej Pilihan" info />
+        <FieldLabel label={isMs ? "Pakej Pilihan" : "Package"} info />
         <select
           value={config.packageType}
           onChange={(e) => handlePackageChange(e.target.value)}
@@ -116,11 +117,11 @@ export function Page1_Main() {
 
       {/* Add-ons */}
       <div>
-        <FieldLabel label="Add-On" info />
+        <FieldLabel label={isMs ? "Add-On" : "Add-Ons"} info />
         <div className="space-y-2">
           {[
-            { key: "addOnCustomDesign" as const, label: "Muatnaik Rekaan Sendiri (+RM10)" },
-            { key: "addOnCoverVideo" as const,   label: "Muatnaik Cover Video (+RM10)" },
+            { key: "addOnCustomDesign" as const, label: isMs ? "Muatnaik Rekaan Sendiri (+RM10)" : "Upload Custom Design (+RM10)" },
+            { key: "addOnCoverVideo" as const,   label: isMs ? "Muatnaik Cover Video (+RM10)" : "Upload Cover Video (+RM10)" },
           ].map(({ key, label }) => (
             <label key={key} className="flex items-center gap-3 cursor-pointer">
               <span
@@ -139,13 +140,13 @@ export function Page1_Main() {
 
       {/* Design Code — driven by real DB templates */}
       <div>
-        <FieldLabel label="Kod Rekaan" required />
+        <FieldLabel label={isMs ? "Kod Rekaan" : "Design Code"} required />
         <select
           value={config.designCode}
           onChange={(e) => handleDesignCode(e.target.value)}
           className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm text-gray-700 bg-white outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="">-- Pilih Rekaan --</option>
+          <option value="">{isMs ? "-- Pilih Rekaan --" : "-- Select Design --"}</option>
           {templates.map((t) => (
             <option key={t.id} value={t.slug}>
               {t.nameMs || t.name}
@@ -153,13 +154,13 @@ export function Page1_Main() {
           ))}
         </select>
         {templates.length === 0 && (
-          <p className="text-xs text-gray-400 mt-1">Memuatkan rekaan...</p>
+          <p className="text-xs text-gray-400 mt-1">{isMs ? "Memuatkan rekaan..." : "Loading designs..."}</p>
         )}
       </div>
 
       {/* Opening Style */}
       <div>
-        <FieldLabel label="Gaya Pembukaan" required />
+        <FieldLabel label={isMs ? "Gaya Pembukaan" : "Opening Style"} required />
         <div className="flex gap-2">
           <select
             value={config.openingStyle}
@@ -178,7 +179,7 @@ export function Page1_Main() {
       {/* Effect Animation */}
       <div className={isBronze ? "opacity-50 pointer-events-none select-none" : ""}>
         <div className="flex items-center gap-2 mb-1">
-          <FieldLabel label="Animasi Efek" required />
+          <FieldLabel label={isMs ? "Animasi Efek" : "Effect Animation"} required />
           {isBronze && (
             <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full leading-none">
               Silver+
@@ -201,7 +202,7 @@ export function Page1_Main() {
         </div>
         {config.effectAnimation !== "Tiada" && (
           <div className="mt-3">
-            <FieldLabel label="Saiz Animasi" />
+            <FieldLabel label={isMs ? "Saiz Animasi" : "Animation Size"} />
             <SliderField
               value={config.effectSize ?? 100}
               onChange={(v) => updateConfig("effectSize", v)}

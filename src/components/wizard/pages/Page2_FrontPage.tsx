@@ -12,12 +12,13 @@ const DIVIDER = <div className="border-t border-gray-100" />
 
 export function Page2_FrontPage() {
   const { config, updateConfig } = useWizardStore()
+  const isMs = config.language === "ms"
 
   return (
     <div className="space-y-6">
       {/* Event Type */}
       <div>
-        <FieldLabel label="Jenis Majlis" />
+        <FieldLabel label={isMs ? "Jenis Majlis" : "Event Type"} />
         <WizardTextarea
           value={config.eventType}
           onChange={(e) => updateConfig("eventType", e.target.value)}
@@ -32,7 +33,7 @@ export function Page2_FrontPage() {
 
       {/* Display Name */}
       <div>
-        <FieldLabel label="Nama Panggilan" required info />
+        <FieldLabel label={isMs ? "Nama Panggilan" : "Display Name"} required info />
         <WizardInput
           value={config.displayName}
           onChange={(e) => updateConfig("displayName", e.target.value)}
@@ -53,7 +54,7 @@ export function Page2_FrontPage() {
 
       {/* Start DateTime */}
       <div>
-        <FieldLabel label="Tarikh & Waktu Majlis Bermula" required />
+        <FieldLabel label={isMs ? "Tarikh & Waktu Majlis Bermula" : "Event Start Date & Time"} required />
         <WizardInput
           type="datetime-local"
           value={config.startDateTime}
@@ -64,7 +65,7 @@ export function Page2_FrontPage() {
 
       {/* End DateTime */}
       <div>
-        <FieldLabel label="Tarikh & Waktu Majlis Berakhir" required />
+        <FieldLabel label={isMs ? "Tarikh & Waktu Majlis Berakhir" : "Event End Date & Time"} required />
         <WizardInput
           type="datetime-local"
           value={config.endDateTime}
@@ -77,7 +78,7 @@ export function Page2_FrontPage() {
 
       {/* Day & Date display text */}
       <div>
-        <FieldLabel label="Hari & Tarikh" />
+        <FieldLabel label={isMs ? "Hari & Tarikh" : "Day & Date"} />
         <WizardTextarea
           value={config.dayAndDate}
           onChange={(e) => updateConfig("dayAndDate", e.target.value)}
@@ -90,7 +91,7 @@ export function Page2_FrontPage() {
 
       {/* Venue line */}
       <div>
-        <FieldLabel label="Nama Tempat/Hashtag/dll (jika ada)" />
+        <FieldLabel label={isMs ? "Nama Tempat/Hashtag/dll (jika ada)" : "Venue Name/Hashtag/etc. (if any)"} />
         <WizardTextarea
           value={config.venueLine}
           onChange={(e) => updateConfig("venueLine", e.target.value)}
@@ -98,7 +99,7 @@ export function Page2_FrontPage() {
           className="text-center"
           placeholder={"Dataran Gangsa\nMelaka"}
         />
-        <FieldLabel label="Saiz Fon" />
+        <FieldLabel label={isMs ? "Saiz Fon" : "Font Size"} />
         <SliderField value={config.venueLineSize} onChange={(v) => updateConfig("venueLineSize", v)} min={8} max={36} />
       </div>
     </div>

@@ -9,12 +9,13 @@ const DIVIDER = <div className="border-t border-gray-100" />
 
 export function Page4_Venue() {
   const { config, updateConfig } = useWizardStore()
+  const isMs = config.language === "ms"
 
   return (
     <div className="space-y-6">
       {/* Hijri Date */}
       <div>
-        <FieldLabel label="Tarikh Hijrah (jika ada)" />
+        <FieldLabel label={isMs ? "Tarikh Hijrah (jika ada)" : "Hijri Date (if any)"} />
         <WizardInput
           value={config.hijriDate}
           onChange={(e) => updateConfig("hijriDate", e.target.value)}
@@ -26,7 +27,7 @@ export function Page4_Venue() {
 
       {/* Venue Address */}
       <div>
-        <FieldLabel label="Alamat Majlis" required info />
+        <FieldLabel label={isMs ? "Alamat Majlis" : "Event Address"} required info />
         <SimpleRichText
           value={config.venueAddress}
           onChange={(v) => updateConfig("venueAddress", v)}
@@ -39,10 +40,10 @@ export function Page4_Venue() {
 
       {/* Navigation */}
       <div>
-        <FieldLabel label="Navigasi (jika perlu)" info />
+        <FieldLabel label={isMs ? "Navigasi (jika perlu)" : "Navigation (if needed)"} info />
         <div className="rounded-xl border border-gray-200 p-4 space-y-4">
           <div>
-            <FieldLabel label="Pautan Google Maps" />
+            <FieldLabel label={isMs ? "Pautan Google Maps" : "Google Maps Link"} />
             <WizardInput
               type="url"
               value={config.googleMapsUrl}
@@ -53,7 +54,7 @@ export function Page4_Venue() {
           </div>
 
           <div>
-            <FieldLabel label="Pautan Waze" />
+            <FieldLabel label={isMs ? "Pautan Waze" : "Waze Link"} />
             <WizardInput
               type="url"
               value={config.wazeUrl}
@@ -65,12 +66,12 @@ export function Page4_Venue() {
 
           <div className="flex items-center gap-3">
             <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-xs text-gray-400 uppercase tracking-wider">ATAU</span>
+            <span className="text-xs text-gray-400 uppercase tracking-wider">{isMs ? "ATAU" : "OR"}</span>
             <div className="flex-1 h-px bg-gray-200" />
           </div>
 
           <div>
-            <FieldLabel label="Koordinat GPS" info />
+            <FieldLabel label={isMs ? "Koordinat GPS" : "GPS Coordinates"} info />
             <WizardInput
               value={config.gpsCoordinates}
               onChange={(e) => updateConfig("gpsCoordinates", e.target.value)}

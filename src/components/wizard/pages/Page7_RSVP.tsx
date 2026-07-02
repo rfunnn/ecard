@@ -10,14 +10,20 @@ import { getPackageCapabilities } from "@/types/config"
 
 type RSVPMode = RSVPWizardConfig["mode"]
 
-const MODES: { value: RSVPMode; label: string }[] = [
+const MODES_MS: { value: RSVPMode; label: string }[] = [
   { value: "RSVP_WISHES",  label: "RSVP + Ucapan" },
   { value: "WISHES_ONLY",  label: "Ucapan Sahaja" },
   { value: "THIRD_PARTY",  label: "Pihak Ketiga" },
   { value: "NONE",         label: "Tiada" },
 ]
+const MODES_EN: { value: RSVPMode; label: string }[] = [
+  { value: "RSVP_WISHES",  label: "RSVP + Wishes" },
+  { value: "WISHES_ONLY",  label: "Wishes Only" },
+  { value: "THIRD_PARTY",  label: "Third Party" },
+  { value: "NONE",         label: "None" },
+]
 
-const SHOW_FIELDS: { key: keyof RSVPWizardConfig["showFields"]; label: string }[] = [
+const SHOW_FIELDS_MS: { key: keyof RSVPWizardConfig["showFields"]; label: string }[] = [
   { key: "name",         label: "Nama" },
   { key: "phone",        label: "Telefon" },
   { key: "email",        label: "Alamat Emel" },
@@ -28,14 +34,28 @@ const SHOW_FIELDS: { key: keyof RSVPWizardConfig["showFields"]; label: string }[
   { key: "notes",        label: "Catatan" },
   { key: "wishes",       label: "Ucapan" },
 ]
+const SHOW_FIELDS_EN: { key: keyof RSVPWizardConfig["showFields"]; label: string }[] = [
+  { key: "name",         label: "Name" },
+  { key: "phone",        label: "Phone" },
+  { key: "email",        label: "Email Address" },
+  { key: "address",      label: "Home Address" },
+  { key: "company",      label: "Company Name" },
+  { key: "jobTitle",     label: "Job Title" },
+  { key: "vehiclePlate", label: "Vehicle Plate No." },
+  { key: "notes",        label: "Notes" },
+  { key: "wishes",       label: "Wishes" },
+]
 
 export function Page7_RSVP() {
   const { config, updateConfig } = useWizardStore()
   const rsvp = config.rsvp
   const caps = getPackageCapabilities(config.packageType)
+  const isMs = config.language === "ms"
+  const modes = isMs ? MODES_MS : MODES_EN
+  const showFields = isMs ? SHOW_FIELDS_MS : SHOW_FIELDS_EN
 
   if (!caps.rsvp) {
-    return <LockedPage feature="RSVP / Ucapan" requiredPlan="Silver (RM40)" />
+    return <LockedPage feature={isMs ? "RSVP / Ucapan" : "RSVP / Wishes"} requiredPlan="Silver (RM40)" />
   }
 
   function updateRSVP(updates: Partial<RSVPWizardConfig>) {
@@ -50,9 +70,9 @@ export function Page7_RSVP() {
     <div className="space-y-6">
       {/* Mode */}
       <div>
-        <FieldLabel label="Mod Pilihan" />
+        <FieldLabel label={isMs ? "Mod Pilihan" : "Mode"} />
         <div className="space-y-2 mt-1">
-          {MODES.map(({ value, label }) => (
+          {modes.map(({ value, label }) => (
             <label key={value} className="flex items-center gap-2 cursor-pointer">
               <input
                 type="radio"
@@ -71,7 +91,7 @@ export function Page7_RSVP() {
 
       {/* Note */}
       <div>
-        <FieldLabel label="Nota (jika ada)" />
+        <FieldLabel label={isMs ? "Nota (jika ada)" : "Note (if any)"} />
         <SimpleRichText
           value={rsvp.note}
           onChange={(v) => updateRSVP({ note: v })}
@@ -84,7 +104,7 @@ export function Page7_RSVP() {
 
       {/* RSVP close date */}
       <div>
-        <FieldLabel label="Tarikh Tutup RSVP (jika ada)" info />
+        <FieldLabel label={isMs ? "Tarikh Tutup RSVP (jika ada)" : "RSVP Close Date (if any)"} info />
         <div className="flex gap-2">
           <input
             type="datetime-local"
@@ -106,9 +126,9 @@ export function Page7_RSVP() {
 
       {/* Show fields */}
       <div>
-        <FieldLabel label="Tunjukkan Input" />
+        <FieldLabel label={isMs ? "Tunjukkan Input" : "Show Fields"} />
         <div className="space-y-2 mt-1">
-          {SHOW_FIELDS.map(({ key, label }) => (
+          {showFields.map(({ key, label }) => (
             <label key={key} className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
@@ -128,7 +148,7 @@ export function Page7_RSVP() {
       <WizardToggle
         checked={rsvp.separateChildren}
         onChange={(v) => updateRSVP({ separateChildren: v })}
-        label="Asingkan Kehadiran Kanak-kanak"
+        label={isMs ? "Asingkan Kehadiran Kanak-kanak" : "Separate Children's Attendance"}
       />
 
       <div className="border-t border-gray-100" />
@@ -136,7 +156,7 @@ export function Page7_RSVP() {
       {/* Guest limits */}
       <div className="space-y-4">
         <div>
-          <FieldLabel label="Had Tetamu per RSVP" required />
+          <FieldLabel label={isMs ? "Had Tetamu per RSVP" : "Guest Limit per RSVP"} required />
           <input
             type="number"
             value={rsvp.guestLimitPerRSVP}
@@ -146,7 +166,7 @@ export function Page7_RSVP() {
           />
         </div>
         <div>
-          <FieldLabel label="Jumlah Keseluruhan Tetamu" required />
+          <FieldLabel label={isMs ? "Jumlah Keseluruhan Tetamu" : "Total Guest Limit"} required />
           <input
             type="number"
             value={rsvp.totalGuestLimit}
@@ -161,7 +181,7 @@ export function Page7_RSVP() {
 
       {/* Slots */}
       <div>
-        <FieldLabel label="Slot / Kategori" required />
+        <FieldLabel label={isMs ? "Slot / Kategori" : "Slots / Categories"} required />
         <div className="flex gap-6 mt-1">
           {([true, false] as const).map((val) => (
             <label key={String(val)} className="flex items-center gap-2 cursor-pointer">
@@ -172,7 +192,7 @@ export function Page7_RSVP() {
                 onChange={() => updateRSVP({ hasSlots: val })}
                 className="accent-[#2563eb]"
               />
-              <span className="text-sm text-gray-700">{val ? "Ada" : "Tiada"}</span>
+              <span className="text-sm text-gray-700">{val ? (isMs ? "Ada" : "Yes") : (isMs ? "Tiada" : "None")}</span>
             </label>
           ))}
         </div>

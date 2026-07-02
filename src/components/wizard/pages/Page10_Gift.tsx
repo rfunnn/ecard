@@ -7,7 +7,7 @@ import { FieldLabel } from "../shared/FieldLabel"
 import { LockedPage } from "../shared/LockedPage"
 import { getPackageCapabilities } from "@/types/config"
 
-function check1to1(file: File): Promise<string | null> {
+function check1to1(file: File, isMs: boolean): Promise<string | null> {
   return new Promise((resolve) => {
     const url = URL.createObjectURL(file)
     const img = new window.Image()
@@ -15,7 +15,9 @@ function check1to1(file: File): Promise<string | null> {
       URL.revokeObjectURL(url)
       const ratio = img.width / img.height
       if (Math.abs(ratio - 1) > 0.15)
-        resolve(`Nisbah gambar tidak sesuai (${img.width}×${img.height}). Diperlukan 1:1 (persegi).`)
+        resolve(isMs
+          ? `Nisbah gambar tidak sesuai (${img.width}×${img.height}). Diperlukan 1:1 (persegi).`
+          : `Incorrect image ratio (${img.width}×${img.height}). A 1:1 (square) image is required.`)
       else
         resolve(null)
     }
@@ -73,6 +75,7 @@ export function Page10_Gift() {
   const removeGiftItem = useWizardStore((s) => s.removeGiftItem)
   const { config, updateConfig } = useWizardStore()
   const caps = getPackageCapabilities(config.packageType)
+  const isMs = config.language === "ms"
 
   const [loading, setLoading] = useState(true)
   const [adding, setAdding] = useState(false)
@@ -98,10 +101,10 @@ export function Page10_Gift() {
     if (form.imageUrl.startsWith("blob:")) URL.revokeObjectURL(form.imageUrl)
     setImgError(null)
 
-    if (!file.type.startsWith("image/")) { setImgError("Hanya fail imej dibenarkan"); return }
-    if (file.size > 5 * 1024 * 1024) { setImgError("Fail terlalu besar (had 5 MB)"); return }
+    if (!file.type.startsWith("image/")) { setImgError(isMs ? "Hanya fail imej dibenarkan" : "Only image files allowed"); return }
+    if (file.size > 5 * 1024 * 1024) { setImgError(isMs ? "Fail terlalu besar (had 5 MB)" : "File too large (max 5 MB)"); return }
 
-    const ratioErr = await check1to1(file)
+    const ratioErr = await check1to1(file, isMs)
     if (ratioErr) { setImgError(ratioErr); return }
 
     const blobUrl = URL.createObjectURL(file)
@@ -131,9 +134,9 @@ export function Page10_Gift() {
 
   async function handleAdd() {
     setFormError("")
-    if (!form.imageUrl.trim()) { setFormError("Gambar diperlukan"); return }
-    if (form.imageUrl.startsWith("blob:")) { setFormError("Sila tunggu muat naik gambar selesai"); return }
-    if (!form.link.trim()) { setFormError("Pautan diperlukan"); return }
+    if (!form.imageUrl.trim()) { setFormError(isMs ? "Gambar diperlukan" : "Image required"); return }
+    if (form.imageUrl.startsWith("blob:")) { setFormError(isMs ? "Sila tunggu muat naik gambar selesai" : "Please wait for image upload to complete"); return }
+    if (!form.link.trim()) { setFormError(isMs ? "Pautan diperlukan" : "Link required"); return }
 
     let linkUrl = form.link.trim()
     if (!/^https?:\/\//i.test(linkUrl)) linkUrl = "https://" + linkUrl
@@ -154,7 +157,7 @@ export function Page10_Gift() {
       addGiftItem(item)
       setForm({ imageUrl: "", link: "", label: "" })
     } catch {
-      setFormError("Gagal menambah item. Cuba semula.")
+      setFormError(isMs ? "Gagal menambah item. Cuba semula." : "Failed to add item. Try again.")
     } finally {
       setAdding(false)
     }
@@ -176,7 +179,7 @@ export function Page10_Gift() {
   }
 
   if (!caps.wishlist && !caps.moneyGift) {
-    return <LockedPage feature="Hadiah & Pembayaran" requiredPlan="Gold (RM60)" />
+    return <LockedPage feature={isMs ? "Hadiah & Pembayaran" : "Gifts & Payment"} requiredPlan="Gold (RM60)" />
   }
 
   return (
@@ -186,16 +189,16 @@ export function Page10_Gift() {
       <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-xs text-amber-800 flex gap-2">
         <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
         <div>
-          <p className="font-semibold mb-0.5">Tetapkan Senarai Hadiah</p>
-          <p>Tambah gambar (nisbah 1:1) dan pautan untuk setiap hadiah. Tetamu akan melihat ini apabila mengetik ikon hadiah pada footer kad.</p>
+          <p className="font-semibold mb-0.5">{isMs ? "Tetapkan Senarai Hadiah" : "Set Gift List"}</p>
+          <p>{isMs ? "Tambah gambar (nisbah 1:1) dan pautan untuk setiap hadiah. Tetamu akan melihat ini apabila mengetik ikon hadiah pada footer kad." : "Add images (1:1 ratio) and links for each gift. Guests will see this when tapping the gift icon on the card footer."}</p>
         </div>
       </div>
 
       {/* Delivery address */}
       <div>
-        <FieldLabel label="Alamat Penghantaran Hadiah" />
+        <FieldLabel label={isMs ? "Alamat Penghantaran Hadiah" : "Gift Delivery Address"} />
         <p className="text-xs text-gray-400 mb-2">
-          Alamat ini ditunjukkan kepada tetamu apabila mereka ingin menempah hadiah melalui pos.
+          {isMs ? "Alamat ini ditunjukkan kepada tetamu apabila mereka ingin menempah hadiah melalui pos." : "This address is shown to guests who wish to send gifts by post."}
         </p>
         <textarea
           value={config.deliveryAddress}
@@ -208,9 +211,9 @@ export function Page10_Gift() {
 
       {/* Bank / payment info */}
       <div className="space-y-3">
-        <FieldLabel label="Maklumat Bank / Pembayaran" />
+        <FieldLabel label={isMs ? "Maklumat Bank / Pembayaran" : "Bank / Payment Info"} />
         <p className="text-xs text-gray-400 -mt-1">
-          Maklumat ini ditunjukkan kepada tetamu dalam bahagian hadiah untuk pemindahan wang.
+          {isMs ? "Maklumat ini ditunjukkan kepada tetamu dalam bahagian hadiah untuk pemindahan wang." : "This info is shown to guests in the gift section for bank transfers."}
         </p>
 
         <input
@@ -218,26 +221,26 @@ export function Page10_Gift() {
           value={config.bankName}
           onChange={(e) => updateConfig("bankName", e.target.value)}
           className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500"
-          placeholder="Nama Bank (cth: Maybank, CIMB, DuitNow)"
+          placeholder={isMs ? "Nama Bank (cth: Maybank, CIMB, DuitNow)" : "Bank Name (e.g.: Maybank, CIMB, DuitNow)"}
         />
         <input
           type="text"
           value={config.bankAccountName}
           onChange={(e) => updateConfig("bankAccountName", e.target.value)}
           className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500"
-          placeholder="Nama Pemilik Akaun"
+          placeholder={isMs ? "Nama Pemilik Akaun" : "Account Holder Name"}
         />
         <input
           type="text"
           value={config.bankAccountNumber}
           onChange={(e) => updateConfig("bankAccountNumber", e.target.value)}
           className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-amber-500"
-          placeholder="No. Akaun / No. Telefon (DuitNow)"
+          placeholder={isMs ? "No. Akaun / No. Telefon (DuitNow)" : "Account No. / Phone No. (DuitNow)"}
         />
 
         {/* QR code upload */}
         <div>
-          <p className="text-xs text-gray-500 mb-2">QR Code Pembayaran (pilihan)</p>
+          <p className="text-xs text-gray-500 mb-2">{isMs ? "QR Code Pembayaran (pilihan)" : "Payment QR Code (optional)"}</p>
           <div className="flex items-start gap-3">
             <div className="relative w-24 h-24 rounded-xl overflow-hidden border-2 border-dashed border-gray-300 bg-gray-50 shrink-0">
               {config.bankQrUrl ? (
@@ -257,7 +260,7 @@ export function Page10_Gift() {
               )}
             </div>
             <p className="text-xs text-gray-400 pt-2 leading-snug">
-              Muat naik QR kod bank anda (DuitNow, Maybank QR, dll.).<br />
+              {isMs ? "Muat naik QR kod bank anda (DuitNow, Maybank QR, dll.)." : "Upload your bank QR code (DuitNow, Maybank QR, etc.)."}<br />
               JPEG / PNG · Max 5 MB
             </p>
           </div>
@@ -268,7 +271,7 @@ export function Page10_Gift() {
 
       {/* Existing items */}
       <div>
-        <FieldLabel label="Item Hadiah" />
+        <FieldLabel label={isMs ? "Item Hadiah" : "Gift Items"} />
 
         {loading && giftItems.length === 0 ? (
           <div className="flex justify-center py-8">
@@ -277,7 +280,7 @@ export function Page10_Gift() {
         ) : giftItems.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-8 text-gray-300 border border-dashed border-gray-200 rounded-xl">
             <Gift className="w-9 h-9" />
-            <p className="text-sm text-gray-400">Tiada item hadiah lagi</p>
+            <p className="text-sm text-gray-400">{isMs ? "Tiada item hadiah lagi" : "No gift items yet"}</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -336,11 +339,11 @@ export function Page10_Gift() {
 
       {/* Add new item */}
       <div className="space-y-4">
-        <p className="text-sm font-semibold text-gray-700">Tambah Item Baru</p>
+        <p className="text-sm font-semibold text-gray-700">{isMs ? "Tambah Item Baru" : "Add New Item"}</p>
 
         {/* Image upload */}
         <div>
-          <FieldLabel label="Gambar (nisbah 1:1)" />
+          <FieldLabel label={isMs ? "Gambar (nisbah 1:1)" : "Image (1:1 ratio)"} />
 
           <div className="flex items-start gap-3">
             {/* Square picker / preview */}
@@ -389,7 +392,7 @@ export function Page10_Gift() {
 
             <div className="flex-1 pt-1 space-y-1.5">
               <p className="text-xs text-gray-500 leading-snug">
-                Muat naik gambar persegi (1:1) seperti logo kedai atau produk.<br />
+                {isMs ? "Muat naik gambar persegi (1:1) seperti logo kedai atau produk." : "Upload a square (1:1) image like a store logo or product."}<br />
                 JPEG / PNG / WebP · Max 5 MB
               </p>
               {!form.imageUrl && !imgUploading && (
@@ -398,7 +401,7 @@ export function Page10_Gift() {
                   onClick={() => imgInputRef.current?.click()}
                   className="text-xs text-amber-600 underline decoration-amber-400"
                 >
-                  Pilih fail
+                  {isMs ? "Pilih fail" : "Select file"}
                 </button>
               )}
             </div>
@@ -426,7 +429,7 @@ export function Page10_Gift() {
 
         {/* Link */}
         <div>
-          <FieldLabel label="Pautan (URL)" />
+          <FieldLabel label={isMs ? "Pautan (URL)" : "Link (URL)"} />
           <input
             type="text"
             value={form.link}
@@ -438,7 +441,7 @@ export function Page10_Gift() {
 
         {/* Label */}
         <div>
-          <FieldLabel label="Label (pilihan)" />
+          <FieldLabel label={isMs ? "Label (pilihan)" : "Label (optional)"} />
           <input
             type="text"
             value={form.label}
@@ -466,7 +469,7 @@ export function Page10_Gift() {
           ) : (
             <Plus className="w-4 h-4" />
           )}
-          Tambah Item Hadiah
+          {isMs ? "Tambah Item Hadiah" : "Add Gift Item"}
         </button>
       </div>
     </div>

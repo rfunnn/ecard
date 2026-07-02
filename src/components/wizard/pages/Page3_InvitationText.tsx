@@ -11,12 +11,13 @@ const DIVIDER = <div className="border-t border-gray-100" />
 
 export function Page3_InvitationText() {
   const { config, updateConfig } = useWizardStore()
+  const isMs = config.language === "ms"
 
   return (
     <div className="space-y-6">
       {/* Opening Speech */}
       <div>
-        <FieldLabel label="Pembuka Ucapan" />
+        <FieldLabel label={isMs ? "Pembuka Ucapan" : "Opening Speech"} />
         <SimpleRichText
           value={config.openingSpeech}
           onChange={(v) => updateConfig("openingSpeech", v)}
@@ -29,7 +30,7 @@ export function Page3_InvitationText() {
 
       {/* Number of Organizers */}
       <div>
-        <FieldLabel label="Bilangan Penganjur" required />
+        <FieldLabel label={isMs ? "Bilangan Penganjur" : "Number of Organisers"} required />
         <div className="flex gap-6 mt-1">
           {([1, 2] as const).map((count) => (
             <label key={count} className="flex items-center gap-2 cursor-pointer">
@@ -40,7 +41,7 @@ export function Page3_InvitationText() {
                 onChange={() => updateConfig("organizerCount", count)}
                 className="accent-[#2563eb]"
               />
-              <span className="text-sm text-gray-700">{count === 1 ? "Satu" : "Dua"}</span>
+              <span className="text-sm text-gray-700">{count === 1 ? (isMs ? "Satu" : "One") : (isMs ? "Dua" : "Two")}</span>
             </label>
           ))}
         </div>
@@ -49,7 +50,7 @@ export function Page3_InvitationText() {
       {/* Organizer 1 */}
       <div className="space-y-2">
         <div>
-          <FieldLabel label="Nama Penganjur (jika ada)" />
+          <FieldLabel label={isMs ? "Nama Penganjur (jika ada)" : "Organiser Name (if any)"} />
           <WizardInput
             value={config.organizer1.name}
             onChange={(e) => updateConfig("organizer1", { ...config.organizer1, name: e.target.value })}
@@ -57,7 +58,7 @@ export function Page3_InvitationText() {
           />
         </div>
         <div>
-          <FieldLabel label="Hubungan (jika ada)" />
+          <FieldLabel label={isMs ? "Hubungan (jika ada)" : "Relationship (if any)"} />
           <WizardInput
             value={config.organizer1.relationship}
             onChange={(e) => updateConfig("organizer1", { ...config.organizer1, relationship: e.target.value })}
@@ -70,7 +71,7 @@ export function Page3_InvitationText() {
       {config.organizerCount === 2 && (
         <div className="space-y-2">
           <div>
-            <FieldLabel label="Nama Penganjur #2 (jika ada)" />
+            <FieldLabel label={isMs ? "Nama Penganjur #2 (jika ada)" : "Organiser #2 Name (if any)"} />
             <WizardInput
               value={config.organizer2.name}
               onChange={(e) => updateConfig("organizer2", { ...config.organizer2, name: e.target.value })}
@@ -78,7 +79,7 @@ export function Page3_InvitationText() {
             />
           </div>
           <div>
-            <FieldLabel label="Hubungan (jika ada)" />
+            <FieldLabel label={isMs ? "Hubungan (jika ada)" : "Relationship (if any)"} />
             <WizardInput
               value={config.organizer2.relationship}
               onChange={(e) => updateConfig("organizer2", { ...config.organizer2, relationship: e.target.value })}
@@ -100,7 +101,7 @@ export function Page3_InvitationText() {
 
       {/* Invitation Speech */}
       <div>
-        <FieldLabel label="Ayat Ucapan" required />
+        <FieldLabel label={isMs ? "Ayat Ucapan" : "Invitation Text"} required />
         <SimpleRichText
           value={config.invitationSpeech}
           onChange={(v) => updateConfig("invitationSpeech", v)}
@@ -113,7 +114,7 @@ export function Page3_InvitationText() {
 
       {/* Full Names */}
       <div>
-        <FieldLabel label="Nama Penuh (jika ada)" info />
+        <FieldLabel label={isMs ? "Nama Penuh (jika ada)" : "Full Name (if any)"} info />
         <WizardInput
           value={config.fullNames}
           onChange={(e) => updateConfig("fullNames", e.target.value)}

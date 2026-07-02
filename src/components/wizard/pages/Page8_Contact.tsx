@@ -10,20 +10,24 @@ const MAX_CONTACTS = 7
 export function Page8_Contact() {
   const { config, addContact, removeContact, updateContact, moveContact } = useWizardStore()
   const contacts = config.contacts
+  const isMs = config.language === "ms"
 
   return (
     <div className="space-y-1">
       <div className="pb-4">
         <p className="text-sm text-blue-600 font-medium">
-          Isi sehingga <span className="font-bold">{MAX_CONTACTS} kenalan</span>
+          {isMs
+            ? <>{`Isi sehingga `}<span className="font-bold">{MAX_CONTACTS} kenalan</span></>
+            : <>{`Fill up to `}<span className="font-bold">{MAX_CONTACTS} contacts</span></>
+          }
         </p>
-        <p className="text-xs text-gray-500 mt-0.5">Kosongkan jika tidak memerlukan</p>
+        <p className="text-xs text-gray-500 mt-0.5">{isMs ? "Kosongkan jika tidak memerlukan" : "Leave blank if not needed"}</p>
       </div>
 
       {contacts.map((contact, index) => (
         <div key={index} className="border-t border-gray-100 pt-4 pb-2">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-sm font-bold text-gray-800">Kenalan {index + 1} (jika ada)</p>
+            <p className="text-sm font-bold text-gray-800">{isMs ? `Kenalan ${index + 1} (jika ada)` : `Contact ${index + 1} (if any)`}</p>
             <div className="flex items-center gap-1">
               <button
                 type="button"
@@ -62,7 +66,7 @@ export function Page8_Contact() {
             <WizardInput
               value={contact.role}
               onChange={(e) => updateContact(index, { role: e.target.value })}
-              placeholder="Bapa"
+              placeholder={isMs ? "Bapa" : "Father"}
             />
           </div>
 
@@ -91,7 +95,7 @@ export function Page8_Contact() {
             className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800"
           >
             <Plus className="w-4 h-4" />
-            Tambah Kenalan
+            {isMs ? "Tambah Kenalan" : "Add Contact"}
           </button>
         </div>
       )}

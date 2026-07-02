@@ -5,7 +5,7 @@ import { WizardToggle } from "../shared/WizardToggle"
 import type { SegmentConfig } from "@/types/config"
 import { getPackageCapabilities } from "@/types/config"
 
-const SEGMENT_LIST: { key: keyof SegmentConfig; label: string }[] = [
+const SEGMENT_LIST_MS: { key: keyof SegmentConfig; label: string }[] = [
   { key: "venue",         label: "Tempat" },
   { key: "date",          label: "Tarikh" },
   { key: "time",          label: "Masa" },
@@ -19,6 +19,20 @@ const SEGMENT_LIST: { key: keyof SegmentConfig; label: string }[] = [
   { key: "writeWishBtn",  label: "Butang \"Tulis Ucapan\"" },
 ]
 
+const SEGMENT_LIST_EN: { key: keyof SegmentConfig; label: string }[] = [
+  { key: "venue",         label: "Venue" },
+  { key: "date",          label: "Date" },
+  { key: "time",          label: "Time" },
+  { key: "endTime",       label: "End Time" },
+  { key: "saveDateBtn",   label: "\"Save Date\" Button" },
+  { key: "eventProgram",  label: "Event Programme" },
+  { key: "countdown",     label: "Countdown" },
+  { key: "attendance",    label: "Attendance" },
+  { key: "wishes",        label: "Wishes" },
+  { key: "confirmBtn",    label: "\"Confirm Attendance\" Button" },
+  { key: "writeWishBtn",  label: "\"Write Wish\" Button" },
+]
+
 // These segments require Silver+ (tied to the RSVP feature)
 const RSVP_SEGMENTS = new Set<keyof SegmentConfig>(["attendance", "wishes", "confirmBtn", "writeWishBtn"])
 
@@ -26,6 +40,8 @@ export function Page11_Segments() {
   const { config, updateConfig } = useWizardStore()
   const segments = config.segments
   const caps = getPackageCapabilities(config.packageType)
+  const isMs = config.language === "ms"
+  const segmentList = isMs ? SEGMENT_LIST_MS : SEGMENT_LIST_EN
 
   function toggle(key: keyof SegmentConfig) {
     updateConfig("segments", { ...segments, [key]: !segments[key] })
@@ -33,9 +49,9 @@ export function Page11_Segments() {
 
   return (
     <div className="space-y-1">
-      <p className="text-sm font-bold text-gray-900 mb-4">Tunjukkan Segmen:</p>
+      <p className="text-sm font-bold text-gray-900 mb-4">{isMs ? "Tunjukkan Segmen:" : "Show Segments:"}</p>
       <div className="space-y-4">
-        {SEGMENT_LIST.map(({ key, label }) => {
+        {segmentList.map(({ key, label }) => {
           const locked = !caps.rsvp && RSVP_SEGMENTS.has(key)
           return (
             <div

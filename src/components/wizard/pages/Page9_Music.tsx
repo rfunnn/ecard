@@ -20,6 +20,7 @@ function parseStartSeconds(timeString: string): number {
 
 export function Page9_Music() {
   const { config, updateConfig } = useWizardStore()
+  const isMs = config.language === "ms"
   const [showEmbed, setShowEmbed] = useState(false)
 
   const videoId = extractYouTubeId(config.youtubeUrl)
@@ -29,7 +30,7 @@ export function Page9_Music() {
     <div className="space-y-6">
       {/* YouTube URL */}
       <div>
-        <FieldLabel label="Pautan Lagu Youtube (jika ada)" />
+        <FieldLabel label={isMs ? "Pautan Lagu Youtube (jika ada)" : "YouTube Music Link (if any)"} />
         <WizardInput
           type="url"
           value={config.youtubeUrl}
@@ -44,7 +45,7 @@ export function Page9_Music() {
 
       {/* Start time */}
       <div>
-        <FieldLabel label="Mula Dari (mm:ss)" />
+        <FieldLabel label={isMs ? "Mula Dari (mm:ss)" : "Start From (mm:ss)"} />
         <div className="flex gap-2">
           <WizardInput
             value={config.musicStartTime}
@@ -58,7 +59,7 @@ export function Page9_Music() {
             className="flex items-center gap-1.5 px-4 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md text-sm text-gray-700 font-medium"
           >
             <Play className="w-3.5 h-3.5" />
-            MAINKAN
+            {isMs ? "MAINKAN" : "PLAY"}
           </button>
         </div>
       </div>
@@ -68,7 +69,7 @@ export function Page9_Music() {
         <WizardToggle
           checked={config.showMusicPlayer}
           onChange={(v) => updateConfig("showMusicPlayer", v)}
-          label="Tunjukkan"
+          label={isMs ? "Tunjukkan" : "Show"}
         />
         <WizardToggle
           checked={config.autoplayMusic}
@@ -92,16 +93,16 @@ export function Page9_Music() {
 
       {/* Browser support info */}
       <div className="rounded-lg bg-gray-50 border border-gray-200 p-3 text-xs text-gray-600 space-y-1">
-        <p>Sokongan autoplay bergantung pada peranti &amp; pelayar:</p>
-        <p><span className="font-medium">Menyokong:</span> Chrome, Safari, Firefox, Opera, Brave, Edge &amp; UC Browser versi terkini.</p>
-        <p><span className="font-medium">Tidak Menyokong:</span> Facebook/Instagram/Telegram Browser &amp; pelayar yang kurang popular (Mi Browser, Vivo Browser, dll.)</p>
+        <p>{isMs ? "Sokongan autoplay bergantung pada peranti & pelayar:" : "Autoplay support depends on the device & browser:"}</p>
+        <p><span className="font-medium">{isMs ? "Menyokong:" : "Supported:"}</span> Chrome, Safari, Firefox, Opera, Brave, Edge &amp; UC Browser versi terkini.</p>
+        <p><span className="font-medium">{isMs ? "Tidak Menyokong:" : "Not Supported:"}</span> {isMs ? "Facebook/Instagram/Telegram Browser & pelayar yang kurang popular (Mi Browser, Vivo Browser, dll.)" : "Facebook/Instagram/Telegram Browser & less popular browsers (Mi Browser, Vivo Browser, etc.)"}</p>
       </div>
 
       <div className="border-t border-gray-100" />
 
       {/* Scroll delay */}
       <div>
-        <FieldLabel label="Delay Auto Skrol (saat)" />
+        <FieldLabel label={isMs ? "Delay Auto Skrol (saat)" : "Auto Scroll Delay (sec)"} />
         <SliderField
           value={config.scrollDelay}
           onChange={(v) => updateConfig("scrollDelay", v)}

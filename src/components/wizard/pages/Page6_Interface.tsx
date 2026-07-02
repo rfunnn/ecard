@@ -10,12 +10,13 @@ const DIVIDER = <div className="border-t border-gray-100" />
 
 export function Page6_Interface() {
   const { config, updateConfig } = useWizardStore()
+  const isMs = config.language === "ms"
 
   return (
     <div className="space-y-6">
       {/* General Text */}
       <div>
-        <FieldLabel label="Teks Umum" />
+        <FieldLabel label={isMs ? "Teks Umum" : "General Text"} />
         <div className="flex gap-2">
           <FontSelect
             value={config.generalFont}
@@ -31,7 +32,7 @@ export function Page6_Interface() {
 
       {/* Title Text */}
       <div>
-        <FieldLabel label="Teks Tajuk" />
+        <FieldLabel label={isMs ? "Teks Tajuk" : "Title Text"} />
         <FontSelect
           value={config.headingFont}
           onChange={(font) => updateConfig("headingFont", font)}
@@ -44,13 +45,13 @@ export function Page6_Interface() {
 
       {/* Background Color */}
       <div>
-        <FieldLabel label="Latar Belakang" />
+        <FieldLabel label={isMs ? "Latar Belakang" : "Background"} />
         <div className="flex items-center gap-3 mt-1">
           <ColorField
             value={config.backgroundColor}
             onChange={(v) => updateConfig("backgroundColor", v)}
           />
-          <span className="text-sm text-gray-600">Warna</span>
+          <span className="text-sm text-gray-600">{isMs ? "Warna" : "Colour"}</span>
         </div>
       </div>
 
@@ -58,7 +59,7 @@ export function Page6_Interface() {
 
       {/* Side Margin */}
       <div>
-        <FieldLabel label="Margin Sisi" />
+        <FieldLabel label={isMs ? "Margin Sisi" : "Side Margin"} />
         <SliderField
           value={config.sideMargin}
           onChange={(v) => updateConfig("sideMargin", v)}

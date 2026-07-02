@@ -31,7 +31,7 @@ interface Props {
   initialCard: InvitationCardData
 }
 
-const PAGE_NAMES = [
+const PAGE_NAMES_MS = [
   "Utama & Pembukaan",
   "Muka Depan",
   "Ayat Undangan",
@@ -43,6 +43,20 @@ const PAGE_NAMES = [
   "Lagu & Auto Skrol",
   "Hadiah",
   "Segmen & Tamat",
+]
+
+const PAGE_NAMES_EN = [
+  "Main & Opening",
+  "Front Page",
+  "Invitation Text",
+  "Venue & Navigation",
+  "Programme & Others",
+  "Interface",
+  "RSVP / Wishes",
+  "Contacts",
+  "Music & Scroll",
+  "Gifts",
+  "Segments & Done",
 ]
 
 const PAGE_COMPONENTS = [
@@ -188,6 +202,9 @@ export function WizardShell({ initialCard }: Props) {
     setGiftItems,
   } = useWizardStore()
 
+  const isMs = config.language === "ms"
+  const pageNames = isMs ? PAGE_NAMES_MS : PAGE_NAMES_EN
+
   const [showMobilePreview, setShowMobilePreview] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
@@ -276,13 +293,13 @@ export function WizardShell({ initialCard }: Props) {
         body: JSON.stringify(payload),
       })
       if (!res.ok) {
-        setSaveError("Gagal menyimpan. Cuba semula.")
+        setSaveError(config.language === "ms" ? "Gagal menyimpan. Cuba semula." : "Failed to save. Please try again.")
         return
       }
       addToCart(initialCard.slug)
       markClean()
     } catch {
-      setSaveError("Tiada sambungan. Cuba semula.")
+      setSaveError(config.language === "ms" ? "Tiada sambungan. Cuba semula." : "No connection. Please try again.")
     } finally {
       setIsSaving(false)
     }
@@ -322,7 +339,7 @@ export function WizardShell({ initialCard }: Props) {
 
   const isLastPage = currentPage === TOTAL_PAGES
   const CurrentPage = PAGE_COMPONENTS[currentPage - 1]
-  const pageName = PAGE_NAMES[currentPage - 1]
+  const pageName = pageNames[currentPage - 1]
   const showWarning = WARNING_PAGES.has(currentPage)
 
   if (previewOpen) {
@@ -340,7 +357,7 @@ export function WizardShell({ initialCard }: Props) {
           <div className="flex items-center justify-between mb-2">
             <Link href="/" className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1">
               <ChevronLeft className="w-4 h-4" />
-              Utama
+              {isMs ? "Utama" : "Home"}
             </Link>
             <div className="flex items-center gap-1">
               <button
@@ -349,7 +366,7 @@ export function WizardShell({ initialCard }: Props) {
                 className="flex items-center gap-1.5 text-xs text-amber-600 hover:text-amber-700 font-medium transition-colors px-2 py-1 rounded-md hover:bg-amber-50"
               >
                 <Eye className="w-3.5 h-3.5" />
-                Lihat Kad
+                {isMs ? "Lihat Kad" : "View Card"}
               </button>
               <button
                 type="button"
@@ -357,7 +374,7 @@ export function WizardShell({ initialCard }: Props) {
                 className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-800 transition-colors px-2 py-1 rounded-md hover:bg-gray-100"
               >
                 <ShoppingBag className="w-3.5 h-3.5" />
-                Kad Saya
+                {isMs ? "Kad Saya" : "My Cards"}
               </button>
             </div>
           </div>
@@ -392,7 +409,7 @@ export function WizardShell({ initialCard }: Props) {
               onChange={(e) => setPage(Number(e.target.value))}
               className="flex-1 border border-gray-300 rounded-md px-2 py-1.5 text-sm text-gray-700 bg-white outline-none text-center"
             >
-              {PAGE_NAMES.map((name, i) => (
+              {pageNames.map((name, i) => (
                 <option key={i} value={i + 1}>
                   {i + 1}. {name}
                 </option>
@@ -425,7 +442,7 @@ export function WizardShell({ initialCard }: Props) {
               onClick={save}
               disabled={isSaving}
               className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-              title="Simpan"
+              title={isMs ? "Simpan" : "Save"}
             >
               {isSaving ? (
                 <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
@@ -439,7 +456,7 @@ export function WizardShell({ initialCard }: Props) {
               type="button"
               onClick={openMobilePreview}
               className="w-9 h-9 flex items-center justify-center rounded-full border border-amber-300 text-amber-600 hover:bg-amber-50 lg:hidden"
-              title="Pratonton"
+              title={isMs ? "Pratonton" : "Preview"}
             >
               <Eye className="w-4 h-4" />
             </button>
@@ -448,8 +465,8 @@ export function WizardShell({ initialCard }: Props) {
           {/* Warning */}
           {showWarning && (
             <div className="px-4 py-2 bg-yellow-50 border-t border-yellow-100 text-center">
-              <p className="text-[11px] text-yellow-700">Pastikan browser anda bukan dalam dark mode</p>
-              <p className="text-[11px] text-yellow-600">Preview ini tidak sepenuhnya tepat seperti produk sebenar</p>
+              <p className="text-[11px] text-yellow-700">{isMs ? "Pastikan browser anda bukan dalam dark mode" : "Make sure your browser is not in dark mode"}</p>
+              <p className="text-[11px] text-yellow-600">{isMs ? "Preview ini tidak sepenuhnya tepat seperti produk sebenar" : "This preview may not exactly match the final card"}</p>
             </div>
           )}
 
@@ -463,7 +480,7 @@ export function WizardShell({ initialCard }: Props) {
           {/* Unsaved indicator */}
           {isDirty && !isSaving && !saveError && (
             <div className="px-4 py-1.5 bg-blue-50 border-t border-blue-100 text-center">
-              <p className="text-[11px] text-blue-600">Terdapat perubahan yang belum disimpan</p>
+              <p className="text-[11px] text-blue-600">{isMs ? "Terdapat perubahan yang belum disimpan" : "You have unsaved changes"}</p>
             </div>
           )}
         </div>
@@ -555,7 +572,7 @@ export function WizardShell({ initialCard }: Props) {
 
         {/* Quick nav label */}
         <div className="absolute top-4 left-4 bg-white/80 backdrop-blur-sm rounded-lg px-3 py-2 shadow-sm border border-gray-200">
-          <p className="text-xs text-gray-500">Pratonton Langsung</p>
+          <p className="text-xs text-gray-500">{isMs ? "Pratonton Langsung" : "Live Preview"}</p>
           <p className="text-sm font-semibold text-gray-800">{pageName}</p>
         </div>
 
@@ -567,7 +584,7 @@ export function WizardShell({ initialCard }: Props) {
             className="flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white text-xs font-medium px-3 py-2 rounded-lg shadow-lg transition-colors"
           >
             <ExternalLink className="w-3.5 h-3.5" />
-            Lihat Kad Penuh
+            {isMs ? "Lihat Kad Penuh" : "View Full Card"}
           </button>
         </div>
       </div>
@@ -577,7 +594,7 @@ export function WizardShell({ initialCard }: Props) {
         <div className="fixed inset-0 z-50 lg:hidden bg-gray-100 flex flex-col">
           <div className="shrink-0 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-100 shadow-sm">
             <div>
-              <p className="text-sm font-semibold text-gray-900">Pratonton Langsung</p>
+              <p className="text-sm font-semibold text-gray-900">{isMs ? "Pratonton Langsung" : "Live Preview"}</p>
               <p className="text-xs text-amber-600 mt-0.5">{pageName}</p>
             </div>
             <button
