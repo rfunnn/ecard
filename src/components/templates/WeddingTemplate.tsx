@@ -8,6 +8,7 @@ import type { WizardConfig } from "@/types/config"
 
 // â”€â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import { wizardFont, calendarUrl, parseProgramText, useCountdown, multiLine } from "./templateUtils"
+import { PhotoGallery } from "./PhotoGallery"
 
 interface WishEntry { guestName: string; message: string }
 
@@ -37,6 +38,7 @@ export function WeddingTemplate({ card }: Props) {
     venue: true, date: true, time: true, endTime: true,
     saveDateBtn: true, eventProgram: true, countdown: true,
     attendance: true, wishes: true, confirmBtn: true, writeWishBtn: true,
+    photoGallery: true,
   }
 
   // names â€” wizard Page 2 stores combined "displayName" (e.g. "Ahmad & Nurul")
@@ -461,6 +463,20 @@ export function WeddingTemplate({ card }: Props) {
               </motion.div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* ══ PHOTO GALLERY ════════════════════════════════════════════════════ */}
+      {seg.photoGallery && card.photoItems?.length > 0 && (
+        <div className="pb-6 text-center px-2">
+          <WeddingDivider color={bodyColor} />
+          <PhotoGallery
+            photos={card.photoItems}
+            bodyColor={bodyColor}
+            headFont={headFont}
+            bodyFont={bodyFont}
+            isMs={card.language === "ms"}
+          />
         </div>
       )}
 

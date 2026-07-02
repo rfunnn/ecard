@@ -20,6 +20,13 @@ export interface GiftItem {
   sortOrder: number
 }
 
+export interface PhotoItem {
+  id: string
+  imageUrl: string
+  caption?: string
+  sortOrder: number
+}
+
 export interface ThemeSettings {
   primaryColor: string
   secondaryColor: string
@@ -82,6 +89,7 @@ export interface InvitationCardData {
     image2Url?: string | null
   }
   giftItems: GiftItem[]
+  photoItems: PhotoItem[]
   wizardConfig?: WizardConfig
   createdAt: string
   updatedAt: string

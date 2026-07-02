@@ -94,7 +94,8 @@ export async function POST(req: NextRequest) {
         theme: true,
         media: true,
         scrollConfig: true,
-        giftItems: { orderBy: { sortOrder: "asc" } },
+        giftItems:  { orderBy: { sortOrder: "asc" } },
+        photoItems: { orderBy: { sortOrder: "asc" } },
       },
     })
 

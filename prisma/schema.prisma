@@ -4,9 +4,6 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  // url is used by the Prisma CLI (db push, migrate). At runtime the
-  // PrismaMariaDb driver adapter in src/lib/prisma.ts handles the connection.
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -86,6 +83,7 @@ model InvitationCard {
   rsvps          RSVP[]
   analytics      CardAnalytic[]
   giftItems      GiftItem[]
+  photoItems     PhotoItem[]
   orderItems     OrderItem[]
 
   wizardConfig   Json?
@@ -161,6 +159,18 @@ model GiftItem {
   imageUrl  String
   link      String
   label     String?
+  sortOrder Int            @default(0)
+
+  createdAt DateTime       @default(now())
+}
+
+model PhotoItem {
+  id        String         @id @default(cuid())
+  cardId    String
+  card      InvitationCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  imageUrl  String
+  caption   String?
   sortOrder Int            @default(0)
 
   createdAt DateTime       @default(now())

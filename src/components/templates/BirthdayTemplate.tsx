@@ -6,6 +6,7 @@ import { MapPin, Navigation, Calendar } from "lucide-react"
 import type { InvitationCardData } from "@/types/invitation"
 import type { WizardConfig } from "@/types/config"
 import { wizardFont, calendarUrl, parseProgramText, useCountdown, multiLine } from "./templateUtils"
+import { PhotoGallery } from "./PhotoGallery"
 
 interface WishEntry { guestName: string; message: string }
 
@@ -33,6 +34,7 @@ export function BirthdayTemplate({ card }: Props) {
     venue: true, date: true, time: true, endTime: true,
     saveDateBtn: true, eventProgram: true, countdown: true,
     attendance: true, wishes: true, confirmBtn: true, writeWishBtn: true,
+    photoGallery: true,
   }
 
   const displayParts = cfg?.displayName
@@ -343,6 +345,20 @@ export function BirthdayTemplate({ card }: Props) {
               </motion.div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* ══ PHOTO GALLERY ════════════════════════════════════════════════════ */}
+      {seg.photoGallery && card.photoItems?.length > 0 && (
+        <div className="pb-6 text-center px-2">
+          <BirthdayDivider color={primaryColor} />
+          <PhotoGallery
+            photos={card.photoItems}
+            bodyColor={bodyColor}
+            headFont={headFont}
+            bodyFont={bodyFont}
+            isMs={card.language === "ms"}
+          />
         </div>
       )}
 

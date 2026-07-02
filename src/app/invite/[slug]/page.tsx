@@ -158,6 +158,7 @@ export default async function InvitePage({ params, searchParams }: Props) {
         venue: true, date: true, time: true, endTime: true,
         saveDateBtn: true, eventProgram: true, countdown: true,
         attendance: true, wishes: true, confirmBtn: true, writeWishBtn: true,
+        photoGallery: true,
       },
     }
 
@@ -258,6 +259,7 @@ export default async function InvitePage({ params, searchParams }: Props) {
       scrollConfig: { autoScroll: true, speed: "MEDIUM", pauseOnHover: true },
       wizardConfig: demoWizardConfig,
       giftItems: demoGiftItems,
+      photoItems: [],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
@@ -274,7 +276,8 @@ export default async function InvitePage({ params, searchParams }: Props) {
         theme: true,
         media: true,
         scrollConfig: true,
-        giftItems: { orderBy: { sortOrder: "asc" } },
+        giftItems:  { orderBy: { sortOrder: "asc" } },
+        photoItems: { orderBy: { sortOrder: "asc" } },
       },
     })
 
@@ -347,6 +350,12 @@ export default async function InvitePage({ params, searchParams }: Props) {
         link: g.link,
         label: g.label ?? undefined,
         sortOrder: g.sortOrder,
+      })),
+      photoItems: raw.photoItems.map((p) => ({
+        id: p.id,
+        imageUrl: p.imageUrl,
+        caption: p.caption ?? undefined,
+        sortOrder: p.sortOrder,
       })),
       wizardConfig: (raw.wizardConfig ?? undefined) as import("@/types/config").WizardConfig | undefined,
       createdAt: raw.createdAt.toISOString(),

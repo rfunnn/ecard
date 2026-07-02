@@ -2,7 +2,7 @@ import { create } from "zustand"
 import { immer } from "zustand/middleware/immer"
 import type { WizardConfig, ContactConfig } from "@/types/config"
 import { DEFAULT_WIZARD_CONFIG } from "@/types/config"
-import type { GiftItem } from "@/types/invitation"
+import type { GiftItem, PhotoItem } from "@/types/invitation"
 
 export interface TemplateInfo {
   id: string
@@ -22,6 +22,7 @@ interface WizardState {
   cardSlug: string
   templateOverride: TemplateInfo | null
   giftItems: GiftItem[]
+  photoItems: PhotoItem[]
 }
 
 interface WizardActions {
@@ -43,9 +44,12 @@ interface WizardActions {
   setGiftItems: (items: GiftItem[]) => void
   addGiftItem: (item: GiftItem) => void
   removeGiftItem: (id: string) => void
+  setPhotoItems: (items: PhotoItem[]) => void
+  addPhotoItem: (item: PhotoItem) => void
+  removePhotoItem: (id: string) => void
 }
 
-export const TOTAL_PAGES = 11
+export const TOTAL_PAGES = 12
 
 export const useWizardStore = create<WizardState & WizardActions>()(
   immer((set) => ({
@@ -56,6 +60,7 @@ export const useWizardStore = create<WizardState & WizardActions>()(
     cardSlug: "",
     templateOverride: null,
     giftItems: [],
+    photoItems: [],
 
     setConfig: (partial) =>
       set((state) => {
@@ -166,5 +171,14 @@ export const useWizardStore = create<WizardState & WizardActions>()(
 
     removeGiftItem: (id) =>
       set((state) => { state.giftItems = state.giftItems.filter((g) => g.id !== id) }),
+
+    setPhotoItems: (items) =>
+      set((state) => { state.photoItems = items }),
+
+    addPhotoItem: (item) =>
+      set((state) => { state.photoItems.push(item) }),
+
+    removePhotoItem: (id) =>
+      set((state) => { state.photoItems = state.photoItems.filter((p) => p.id !== id) }),
   }))
 )

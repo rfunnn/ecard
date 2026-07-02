@@ -125,6 +125,7 @@ export function buildDemoWizardConfig(
       wishes: true,
       confirmBtn: true,
       writeWishBtn: true,
+      photoGallery: true,
     },
   }
 }

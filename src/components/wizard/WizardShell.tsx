@@ -9,7 +9,7 @@ import { useWizardStore, TOTAL_PAGES } from "@/store/wizardStore"
 import type { TemplateInfo } from "@/store/wizardStore"
 import type { WizardConfig } from "@/types/config"
 import { TemplateRenderer } from "@/components/templates/TemplateRenderer"
-import type { InvitationCardData, GiftItem } from "@/types/invitation"
+import type { InvitationCardData, GiftItem, PhotoItem } from "@/types/invitation"
 import { addToCart } from "@/lib/cart"
 import { CartDrawer } from "@/components/CartDrawer"
 import { InviteClient } from "@/components/invite/InviteClient"
@@ -26,7 +26,8 @@ import { Page7_RSVP } from "./pages/Page7_RSVP"
 import { Page8_Contact } from "./pages/Page8_Contact"
 import { Page9_Music } from "./pages/Page9_Music"
 import { Page10_Gift } from "./pages/Page10_Gift"
-import { Page11_Segments } from "./pages/Page11_Segments"
+import { Page11_Photos } from "./pages/Page11_Photos"
+import { Page12_Segments } from "./pages/Page12_Segments"
 
 interface Props {
   initialCard: InvitationCardData
@@ -43,6 +44,7 @@ const PAGE_NAMES_MS = [
   "Hubungi",
   "Lagu & Auto Skrol",
   "Hadiah",
+  "Galeri Foto",
   "Segmen & Tamat",
 ]
 
@@ -57,6 +59,7 @@ const PAGE_NAMES_EN = [
   "Contacts",
   "Music & Scroll",
   "Gifts",
+  "Photo Gallery",
   "Segments & Done",
 ]
 
@@ -71,10 +74,11 @@ const PAGE_COMPONENTS = [
   Page8_Contact,
   Page9_Music,
   Page10_Gift,
-  Page11_Segments,
+  Page11_Photos,
+  Page12_Segments,
 ]
 
-const WARNING_PAGES = new Set([1, 4, 6, 7, 8, 9, 10, 11])
+const WARNING_PAGES = new Set([1, 4, 6, 7, 8, 9, 10, 11, 12])
 
 // When a card has no saved wizardConfig (new card or failed save), bootstrap wizard fields
 // from the card's existing DB fields so the user sees their data instead of empty defaults.
@@ -123,7 +127,8 @@ function buildCardPreview(
   initialCard: InvitationCardData,
   config: WizardConfig,
   templateOverride?: TemplateInfo | null,
-  giftItems?: GiftItem[]
+  giftItems?: GiftItem[],
+  photoItems?: PhotoItem[]
 ): InvitationCardData {
   const [groomName, brideName] = config.displayName.includes("&")
     ? config.displayName.split("&").map((s) => s.trim())
@@ -133,7 +138,8 @@ function buildCardPreview(
 
   return {
     ...initialCard,
-    giftItems: giftItems ?? initialCard.giftItems,
+    giftItems:  giftItems  ?? initialCard.giftItems,
+    photoItems: photoItems ?? initialCard.photoItems,
     wizardConfig: config,
     template: templateOverride
       ? {
@@ -193,6 +199,7 @@ export function WizardShell({ initialCard }: Props) {
     isSaving,
     templateOverride,
     giftItems,
+    photoItems,
     setPage,
     nextPage,
     prevPage,
@@ -201,6 +208,7 @@ export function WizardShell({ initialCard }: Props) {
     markClean,
     loadConfig,
     setGiftItems,
+    setPhotoItems,
   } = useWizardStore()
 
   const isMs = config.language === "ms"
@@ -251,6 +259,7 @@ export function WizardShell({ initialCard }: Props) {
       loadConfig(buildInitialConfig(initialCard))
       setCardSlug(initialCard.slug)
       setGiftItems(initialCard.giftItems)
+      setPhotoItems(initialCard.photoItems)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialCard.slug])
@@ -274,9 +283,9 @@ export function WizardShell({ initialCard }: Props) {
   }, [currentPage])
 
   const cardPreview = useMemo(
-    () => buildCardPreview(initialCard, config, templateOverride, giftItems),
+    () => buildCardPreview(initialCard, config, templateOverride, giftItems, photoItems),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [config, templateOverride, giftItems],
+    [config, templateOverride, giftItems, photoItems],
   )
 
   const save = useCallback(async () => {

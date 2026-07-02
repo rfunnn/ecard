@@ -21,7 +21,8 @@ export default async function BuilderRoute({ params }: Props) {
         theme: true,
         media: true,
         scrollConfig: true,
-        giftItems: { orderBy: { sortOrder: "asc" } },
+        giftItems:  { orderBy: { sortOrder: "asc" } },
+        photoItems: { orderBy: { sortOrder: "asc" } },
       },
     })
 
@@ -94,6 +95,12 @@ export default async function BuilderRoute({ params }: Props) {
         link: g.link,
         label: g.label ?? undefined,
         sortOrder: g.sortOrder,
+      })),
+      photoItems: raw.photoItems.map((p) => ({
+        id: p.id,
+        imageUrl: p.imageUrl,
+        caption: p.caption ?? undefined,
+        sortOrder: p.sortOrder,
       })),
       wizardConfig: (raw.wizardConfig ?? undefined) as import("@/types/config").WizardConfig | undefined,
       createdAt: raw.createdAt.toISOString(),

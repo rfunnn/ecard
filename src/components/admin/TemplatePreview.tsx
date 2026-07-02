@@ -57,6 +57,7 @@ function buildMockCard(
       image2Url: image2Url ?? null,
     },
     giftItems: [],
+    photoItems: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   }

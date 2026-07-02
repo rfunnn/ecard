@@ -43,6 +43,7 @@ export interface SegmentConfig {
   wishes: boolean
   confirmBtn: boolean
   writeWishBtn: boolean
+  photoGallery: boolean
 }
 
 export interface WizardConfig {
@@ -230,6 +231,7 @@ export const DEFAULT_WIZARD_CONFIG: WizardConfig = {
     wishes: true,
     confirmBtn: true,
     writeWishBtn: true,
+    photoGallery: true,
   },
 }
 
@@ -245,19 +247,21 @@ export function getPackageTier(packageType: string): PackageTier {
 }
 
 export interface PackageCapabilities {
-  effects: boolean    // particle animation — Silver+
-  rsvp: boolean       // RSVP / Wishes — Silver+
-  moneyGift: boolean  // bank payment details — Gold only
-  wishlist: boolean   // gift registry items — Gold only
+  effects: boolean      // particle animation — Silver+
+  rsvp: boolean         // RSVP / Wishes — Silver+
+  moneyGift: boolean    // bank payment details — Gold only
+  wishlist: boolean     // gift registry items — Gold only
+  photoGallery: boolean // photo gallery — Silver+
 }
 
 export function getPackageCapabilities(packageType: string): PackageCapabilities {
   const tier = getPackageTier(packageType)
   return {
-    effects:   tier !== "bronze",
-    rsvp:      tier !== "bronze",
-    moneyGift: tier === "gold",
-    wishlist:  tier === "gold",
+    effects:      tier !== "bronze",
+    rsvp:         tier !== "bronze",
+    moneyGift:    tier === "gold",
+    wishlist:     tier === "gold",
+    photoGallery: tier !== "bronze",
   }
 }
 
