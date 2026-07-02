@@ -261,7 +261,7 @@ export function getPackageCapabilities(packageType: string): PackageCapabilities
     rsvp:         tier !== "bronze",
     moneyGift:    tier === "gold",
     wishlist:     tier === "gold",
-    photoGallery: tier !== "bronze",
+    photoGallery: tier === "gold",
   }
 }
 

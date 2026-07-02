@@ -17,7 +17,7 @@ const SEGMENT_LIST_MS: { key: keyof SegmentConfig; label: string; tier?: string 
   { key: "wishes",        label: "Ucapan",              tier: "Silver+" },
   { key: "confirmBtn",    label: "Butang \"Sahkan Kehadiran\"", tier: "Silver+" },
   { key: "writeWishBtn",  label: "Butang \"Tulis Ucapan\"",    tier: "Silver+" },
-  { key: "photoGallery",  label: "Galeri Foto",         tier: "Silver+" },
+  { key: "photoGallery",  label: "Galeri Foto",         tier: "Gold" },
 ]
 
 const SEGMENT_LIST_EN: { key: keyof SegmentConfig; label: string; tier?: string }[] = [
@@ -32,10 +32,11 @@ const SEGMENT_LIST_EN: { key: keyof SegmentConfig; label: string; tier?: string 
   { key: "wishes",        label: "Wishes",                      tier: "Silver+" },
   { key: "confirmBtn",    label: "\"Confirm Attendance\" Button", tier: "Silver+" },
   { key: "writeWishBtn",  label: "\"Write Wish\" Button",       tier: "Silver+" },
-  { key: "photoGallery",  label: "Photo Gallery",               tier: "Silver+" },
+  { key: "photoGallery",  label: "Photo Gallery",               tier: "Gold" },
 ]
 
-const SILVER_SEGMENTS = new Set<keyof SegmentConfig>(["attendance", "wishes", "confirmBtn", "writeWishBtn", "photoGallery"])
+const SILVER_SEGMENTS = new Set<keyof SegmentConfig>(["attendance", "wishes", "confirmBtn", "writeWishBtn"])
+const GOLD_SEGMENTS   = new Set<keyof SegmentConfig>(["photoGallery"])
 
 export function Page12_Segments() {
   const { config, updateConfig } = useWizardStore()
@@ -53,7 +54,9 @@ export function Page12_Segments() {
       <p className="text-sm font-bold text-gray-900 mb-4">{isMs ? "Tunjukkan Segmen:" : "Show Segments:"}</p>
       <div className="space-y-4">
         {segmentList.map(({ key, label, tier }) => {
-          const locked = !caps.rsvp && SILVER_SEGMENTS.has(key)
+          const locked =
+            (SILVER_SEGMENTS.has(key) && !caps.rsvp) ||
+            (GOLD_SEGMENTS.has(key)   && !caps.photoGallery)
           return (
             <div
               key={key}

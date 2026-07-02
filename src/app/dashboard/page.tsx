@@ -7,7 +7,7 @@ import { useEffect, useState, useCallback } from "react"
 import Link from "next/link"
 import {
   Pencil, ImageIcon, Gift, Mail, Eye, Printer,
-  MoreVertical, ExternalLink, Plus, ChevronDown, Trash2, Copy, Check,
+  MoreVertical, ExternalLink, Plus, ChevronDown, Trash2, Copy, Check, BarChart2,
 } from "lucide-react"
 import type { WizardConfig } from "@/types/config"
 import { generatePrintHTML } from "@/lib/print-card"
@@ -247,6 +247,16 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
           <Link href={`/builder/${card.slug}?page=7`} className={actionBtn}>
             <Mail className="w-3.5 h-3.5" /> RSVP
           </Link>
+          {card.isPublished && (
+            <Link
+              href={`/dashboard/${card.slug}/report`}
+              className={`${actionBtn} font-semibold`}
+              style={{ color: card.theme?.primaryColor ?? undefined }}
+            >
+              <BarChart2 className="w-3.5 h-3.5" />
+              {lang ? "Laporan" : "Report"}
+            </Link>
+          )}
           <Link href={`/invite/${card.slug}`} target="_blank" className={actionBtn}>
             <Eye className="w-3.5 h-3.5" /> Preview
           </Link>
