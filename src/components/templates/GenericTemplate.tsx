@@ -9,6 +9,16 @@ import { wizardFont, calendarUrl, parseProgramText, useCountdown, multiLine } fr
 
 interface WishEntry { guestName: string; message: string }
 
+function GenericSep({ color }: { color: string }) {
+  return (
+    <div className="flex items-center gap-4 my-10">
+      <div className="h-px flex-1" style={{ background: `${color}18` }} />
+      <div className="w-1 h-1 rounded-full" style={{ background: color, opacity: 0.35 }} />
+      <div className="h-px flex-1" style={{ background: `${color}18` }} />
+    </div>
+  )
+}
+
 interface Props { card: InvitationCardData }
 
 export function GenericTemplate({ card }: Props) {
@@ -71,14 +81,6 @@ export function GenericTemplate({ card }: Props) {
     d.toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long", year: "numeric" })
   const formatTime = (d: Date) =>
     d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })
-
-  const Sep = () => (
-    <div className="flex items-center gap-4 my-10">
-      <div className="h-px flex-1" style={{ background: `${primaryColor}18` }} />
-      <div className="w-1 h-1 rounded-full" style={{ background: primaryColor, opacity: 0.35 }} />
-      <div className="h-px flex-1" style={{ background: `${primaryColor}18` }} />
-    </div>
-  )
 
   return (
     <div className="min-h-screen w-full overflow-x-hidden" style={{ paddingLeft: `${sideMargin}rem`, paddingRight: `${sideMargin}rem` }}>
@@ -146,7 +148,7 @@ export function GenericTemplate({ card }: Props) {
       {/* ══ INVITATION TEXT (Page 3) ════════════════════════════════════════ */}
       {(cfg?.openingSpeech || cfg?.organizer1?.name || card.description || cfg?.fullNames) && (
         <div className="pb-4 text-center">
-          <Sep />
+          <GenericSep color={primaryColor} />
 
           {cfg?.openingSpeech && (
             <div className={`${orgFont} leading-relaxed mb-7 opacity-70`} style={{ color: bodyColor, fontSize: `${orgSize}px` }}>
@@ -189,7 +191,7 @@ export function GenericTemplate({ card }: Props) {
       {/* ══ VENUE + DATE (Page 4) ══════════════════════════════════════════ */}
       {(seg.venue || seg.date) && (venueName || address || startDT) && (
         <div className="pb-6 text-center">
-          <Sep />
+          <GenericSep color={primaryColor} />
 
           {seg.venue && (venueName || address) && (
             <div className="mb-8">
@@ -263,7 +265,7 @@ export function GenericTemplate({ card }: Props) {
       {/* ══ EVENT PROGRAM (Page 5) ══════════════════════════════════════════ */}
       {seg.eventProgram && cfg?.eventProgram && (
         <div className="pb-6 text-center">
-          <Sep />
+          <GenericSep color={primaryColor} />
           <p className={`${headFont} text-[10px] uppercase tracking-[0.4em] opacity-35 mb-6`} style={{ color: bodyColor }}>
             {isMs ? "Atur Cara" : "Programme"}
           </p>
@@ -281,7 +283,7 @@ export function GenericTemplate({ card }: Props) {
       {/* ══ COUNTDOWN ══════════════════════════════════════════════════════ */}
       {(cfg?.additionalInfo2 || (seg.countdown && cfg?.startDateTime && !eventPassed)) && (
         <div className="pb-6 text-center">
-          <Sep />
+          <GenericSep color={primaryColor} />
 
           {cfg?.additionalInfo2 && (
             <div className={`${orgFont} leading-relaxed mb-8 opacity-60`} style={{ color: bodyColor, fontSize: `${orgSize - 2}px` }}>
@@ -319,7 +321,7 @@ export function GenericTemplate({ card }: Props) {
       {/* ══ WISHES ══════════════════════════════════════════════════════════ */}
       {seg.wishes && wishes.length > 0 && (
         <div className="pb-6 text-center">
-          <Sep />
+          <GenericSep color={primaryColor} />
           <p className={`${headFont} text-[10px] uppercase tracking-[0.4em] opacity-35 mb-8`} style={{ color: bodyColor }}>
             {isMs ? "Ucapan" : "Wishes"}
           </p>

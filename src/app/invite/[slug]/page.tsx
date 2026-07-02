@@ -56,6 +56,7 @@ export default async function InvitePage({ params, searchParams }: Props) {
     const demoBg      = tmplCfg.bgColor      ?? "#faf7f4"
 
     // Future event date — 60 days from now
+    // eslint-disable-next-line react-hooks/purity
     const eventStart = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000)
     eventStart.setHours(10, 0, 0, 0)
     const eventEnd = new Date(eventStart.getTime() + 3 * 60 * 60 * 1000)

@@ -1,6 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
-import { PlusCircle, Pencil, CheckCircle2, XCircle, Image } from "lucide-react"
+import { PlusCircle, Pencil, CheckCircle2, XCircle, Image as ImageIcon } from "lucide-react"
 
 const CATEGORY_LABELS: Record<string, string> = {
   WEDDING: "Perkahwinan",
@@ -33,7 +34,7 @@ export default async function AdminTemplatesPage() {
 
       {templates.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-          <Image className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+          <ImageIcon className="w-10 h-10 text-gray-300 mx-auto mb-3" />
           <p className="text-gray-500 text-sm">No templates yet.</p>
           <Link
             href="/admin/templates/new"
@@ -81,7 +82,7 @@ export default async function AdminTemplatesPage() {
                         />
                       ) : (
                         <div className="w-8 h-14 bg-gray-100 rounded shrink-0 flex items-center justify-center">
-                          <Image className="w-3 h-3 text-gray-300" />
+                          <ImageIcon className="w-3 h-3 text-gray-300" />
                         </div>
                       )}
                       <div className="min-w-0">

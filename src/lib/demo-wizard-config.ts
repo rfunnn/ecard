@@ -13,7 +13,7 @@ export const DEMO_GIFT_ITEMS = [
 export function buildDemoWizardConfig(
   primaryColor: string,
   bgColor: string,
-  titleFont = "Cormorant",
+  _titleFont = "Cormorant",
   templateSlug = "",
 ): WizardConfig {
   const eventStart = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000)

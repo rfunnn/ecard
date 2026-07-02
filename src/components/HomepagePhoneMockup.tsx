@@ -259,7 +259,7 @@ export function HomepagePhoneMockup() {
                 {/* Verse footer */}
                 <div className="w-full text-center px-2 pt-3 pb-1" style={{ borderTop: `1px solid ${MAROON}18` }}>
                   <p className="text-[5.5px] italic leading-relaxed" style={{ color: `${TEXT}45` }}>
-                    "Dan di antara tanda-tanda kekuasaanNya ialah Dia menciptakan untukmu pasangan dari jenismu sendiri"
+                    &ldquo;Dan di antara tanda-tanda kekuasaanNya ialah Dia menciptakan untukmu pasangan dari jenismu sendiri&rdquo;
                   </p>
                   <p className="text-[5px] mt-0.5" style={{ color: `${MAROON}60` }}>— Surah Ar-Rum (30:21)</p>
                 </div>

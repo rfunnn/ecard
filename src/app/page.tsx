@@ -76,19 +76,6 @@ const PACKAGES = [
   },
 ]
 
-const ADDONS = [
-  {
-    title: "Upload Own Design",
-    price: "+RM10",
-    buttons: ["HALF CUSTOM SAMPLE", "FULL CUSTOM SAMPLE"],
-  },
-  {
-    title: "Upload Video Cover",
-    price: "+RM10",
-    buttons: ["COVER VIDEO SAMPLE", "MOTION INVITE SAMPLE"],
-  },
-]
-
 const PERKS = [
   "Tiada langganan",
   "Pautan unik",
@@ -96,13 +83,6 @@ const PERKS = [
   "Muzik YouTube",
   "Animasi skrol",
   "RSVP & Peta",
-]
-
-const TEMPLATES = [
-  { label: "Perkahwinan Klasik", bg: "#1a0a00", accent: "#D4AF37", emoji: "💍", font: "font-great-vibes",  preview: "Ahmad & Siti" },
-  { label: "Hari Jadi Ceria",    bg: "#0a0a1a", accent: "#8B5CF6", emoji: "🎂", font: "font-dancing",      preview: "Selamat Harijadi" },
-  { label: "Korporat Pro",       bg: "#0a1a0a", accent: "#10B981", emoji: "🏢", font: "font-montserrat",   preview: "Jemputan Rasmi" },
-  { label: "Umum Elegan",        bg: "#0d0d0d", accent: "#C0A050", emoji: "✉️", font: "font-cormorant",    preview: "Majlis Istimewa" },
 ]
 
 export default function HomePage() {

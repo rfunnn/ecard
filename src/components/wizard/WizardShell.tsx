@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client"
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react"
@@ -241,7 +242,6 @@ export function WizardShell({ initialCard }: Props) {
       }
     }, intervalMs)
     return () => clearInterval(id)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config.scrollDelay, isScrolling])
 
   // Load config when opening a card for the first time or switching cards.
@@ -271,7 +271,6 @@ export function WizardShell({ initialCard }: Props) {
     for (const ref of [desktopScrollRef, mobileScrollRef]) {
       if (ref.current) ref.current.scrollTop = target
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage])
 
   const cardPreview = useMemo(
@@ -318,7 +317,6 @@ export function WizardShell({ initialCard }: Props) {
     } else {
       setIsScrolling(true)       // no gate — start scrolling immediately
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config.openingStyle])
 
   const closeMobilePreview = useCallback(() => {

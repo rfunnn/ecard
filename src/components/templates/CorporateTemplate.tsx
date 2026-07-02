@@ -9,6 +9,16 @@ import { wizardFont, calendarUrl, parseProgramText, useCountdown, multiLine } fr
 
 interface WishEntry { guestName: string; message: string }
 
+function CorporateRule({ color }: { color: string }) {
+  return (
+    <div className="flex items-center gap-3 my-6">
+      <div className="h-px flex-1" style={{ background: `${color}20` }} />
+      <div className="w-1.5 h-1.5 rotate-45" style={{ background: color, opacity: 0.4 }} />
+      <div className="h-px flex-1" style={{ background: `${color}20` }} />
+    </div>
+  )
+}
+
 interface Props { card: InvitationCardData }
 
 export function CorporateTemplate({ card }: Props) {
@@ -71,14 +81,6 @@ export function CorporateTemplate({ card }: Props) {
     d.toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long", year: "numeric" })
   const formatTime = (d: Date) =>
     d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })
-
-  const Rule = () => (
-    <div className="flex items-center gap-3 my-6">
-      <div className="h-px flex-1" style={{ background: `${primaryColor}20` }} />
-      <div className="w-1.5 h-1.5 rotate-45" style={{ background: primaryColor, opacity: 0.4 }} />
-      <div className="h-px flex-1" style={{ background: `${primaryColor}20` }} />
-    </div>
-  )
 
   return (
     <div className="min-h-screen w-full overflow-x-hidden" style={{ paddingLeft: `${sideMargin}rem`, paddingRight: `${sideMargin}rem` }}>
@@ -148,7 +150,7 @@ export function CorporateTemplate({ card }: Props) {
       {/* ══ INVITATION TEXT (Page 3) ════════════════════════════════════════ */}
       {(cfg?.openingSpeech || cfg?.organizer1?.name || card.description || cfg?.fullNames) && (
         <div className="pb-4">
-          <Rule />
+          <CorporateRule color={primaryColor} />
 
           {cfg?.openingSpeech && (
             <div className={`${orgFont} leading-relaxed mb-6 opacity-75`} style={{ color: bodyColor, fontSize: `${orgSize}px` }}>
@@ -191,7 +193,7 @@ export function CorporateTemplate({ card }: Props) {
       {/* ══ VENUE + DATE (Page 4) ══════════════════════════════════════════ */}
       {(seg.venue || seg.date) && (venueName || address || startDT) && (
         <div className="pb-6">
-          <Rule />
+          <CorporateRule color={primaryColor} />
 
           <div className="rounded-xl p-5 space-y-5"
             style={{ background: `${primaryColor}07`, border: `1px solid ${primaryColor}14` }}>
@@ -275,7 +277,7 @@ export function CorporateTemplate({ card }: Props) {
       {/* ══ EVENT PROGRAM (Page 5) ══════════════════════════════════════════ */}
       {seg.eventProgram && cfg?.eventProgram && (
         <div className="pb-6">
-          <Rule />
+          <CorporateRule color={primaryColor} />
           <p className={`${headFont} text-[10px] tracking-[0.3em] uppercase opacity-40 mb-5`} style={{ color: bodyColor }}>
             {isMs ? "Atur Cara" : "Programme"}
           </p>
@@ -294,7 +296,7 @@ export function CorporateTemplate({ card }: Props) {
       {/* ══ COUNTDOWN ══════════════════════════════════════════════════════ */}
       {(cfg?.additionalInfo2 || (seg.countdown && cfg?.startDateTime && !eventPassed)) && (
         <div className="pb-6 text-center">
-          <Rule />
+          <CorporateRule color={primaryColor} />
 
           {cfg?.additionalInfo2 && (
             <div className={`${orgFont} leading-relaxed mb-8 opacity-65`} style={{ color: bodyColor, fontSize: `${orgSize - 2}px` }}>
@@ -335,7 +337,7 @@ export function CorporateTemplate({ card }: Props) {
       {/* ══ WISHES ══════════════════════════════════════════════════════════ */}
       {seg.wishes && wishes.length > 0 && (
         <div className="pb-6">
-          <Rule />
+          <CorporateRule color={primaryColor} />
           <p className={`${headFont} text-[10px] tracking-[0.3em] uppercase opacity-40 mb-6`} style={{ color: bodyColor }}>
             {isMs ? "Ucapan" : "Messages"}
           </p>

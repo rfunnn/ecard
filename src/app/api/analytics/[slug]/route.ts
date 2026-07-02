@@ -35,7 +35,7 @@ export async function POST(
     })
 
     return NextResponse.json({ ok: true })
-  } catch (_e) {
+  } catch {
     return NextResponse.json({ ok: false })
   }
 }

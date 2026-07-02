@@ -9,6 +9,20 @@ import { wizardFont, calendarUrl, parseProgramText, useCountdown, multiLine } fr
 
 interface WishEntry { guestName: string; message: string }
 
+function BirthdayDivider({ color }: { color: string }) {
+  return (
+    <div className="flex items-center justify-center gap-3 my-8">
+      <div className="h-px flex-1" style={{ background: `${color}30` }} />
+      <div className="flex gap-1">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="rounded-full" style={{ width: i === 1 ? "8px" : "5px", height: i === 1 ? "8px" : "5px", background: color, opacity: i === 1 ? 0.7 : 0.3 }} />
+        ))}
+      </div>
+      <div className="h-px flex-1" style={{ background: `${color}30` }} />
+    </div>
+  )
+}
+
 interface Props { card: InvitationCardData }
 
 export function BirthdayTemplate({ card }: Props) {
@@ -71,18 +85,6 @@ export function BirthdayTemplate({ card }: Props) {
     d.toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long", year: "numeric" })
   const formatTime = (d: Date) =>
     d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })
-
-  const Divider = () => (
-    <div className="flex items-center justify-center gap-3 my-8">
-      <div className="h-px flex-1" style={{ background: `${primaryColor}30` }} />
-      <div className="flex gap-1">
-        {[0, 1, 2].map((i) => (
-          <div key={i} className="rounded-full" style={{ width: i === 1 ? "8px" : "5px", height: i === 1 ? "8px" : "5px", background: primaryColor, opacity: i === 1 ? 0.7 : 0.3 }} />
-        ))}
-      </div>
-      <div className="h-px flex-1" style={{ background: `${primaryColor}30` }} />
-    </div>
-  )
 
   return (
     <div className="min-h-screen w-full overflow-x-hidden" style={{ paddingLeft: `${sideMargin}rem`, paddingRight: `${sideMargin}rem` }}>
@@ -154,7 +156,7 @@ export function BirthdayTemplate({ card }: Props) {
       {/* ══ INVITATION TEXT (Page 3) ════════════════════════════════════════ */}
       {(cfg?.openingSpeech || cfg?.organizer1?.name || card.description || cfg?.fullNames) && (
         <div className="pb-4 text-center">
-          <Divider />
+          <BirthdayDivider color={primaryColor} />
 
           {cfg?.openingSpeech && (
             <div className={`${orgFont} leading-relaxed mb-8 opacity-80`} style={{ color: bodyColor, fontSize: `${orgSize}px` }}>
@@ -197,7 +199,7 @@ export function BirthdayTemplate({ card }: Props) {
       {/* ══ VENUE + DATE (Page 4) ══════════════════════════════════════════ */}
       {(seg.venue || seg.date) && (venueName || address || startDT) && (
         <div className="pb-6 text-center">
-          <Divider />
+          <BirthdayDivider color={primaryColor} />
 
           {seg.venue && (venueName || address) && (
             <div className="mb-8">
@@ -271,7 +273,7 @@ export function BirthdayTemplate({ card }: Props) {
       {/* ══ EVENT PROGRAM (Page 5) ══════════════════════════════════════════ */}
       {seg.eventProgram && cfg?.eventProgram && (
         <div className="pb-6">
-          <Divider />
+          <BirthdayDivider color={primaryColor} />
           <p className={`${headFont} text-[11px] tracking-[0.3em] uppercase opacity-40 text-center mb-6`} style={{ color: bodyColor }}>
             {isMs ? "Atur Cara" : "Programme"}
           </p>
@@ -289,7 +291,7 @@ export function BirthdayTemplate({ card }: Props) {
       {/* ══ COUNTDOWN (Page 5 extra) ══════════════════════════════════════════ */}
       {(cfg?.additionalInfo2 || (seg.countdown && cfg?.startDateTime && !eventPassed)) && (
         <div className="pb-6 text-center">
-          <Divider />
+          <BirthdayDivider color={primaryColor} />
 
           {cfg?.additionalInfo2 && (
             <div className={`${orgFont} leading-relaxed mb-10 opacity-70 italic`} style={{ color: bodyColor, fontSize: `${orgSize - 2}px` }}>
@@ -327,7 +329,7 @@ export function BirthdayTemplate({ card }: Props) {
       {/* ══ WISHES ══════════════════════════════════════════════════════════ */}
       {seg.wishes && wishes.length > 0 && (
         <div className="pb-6 text-center">
-          <Divider />
+          <BirthdayDivider color={primaryColor} />
           <p className={`${headFont} text-[11px] tracking-[0.3em] uppercase opacity-40 mb-8`} style={{ color: bodyColor }}>
             {isMs ? "Ucapan" : "Wishes"}
           </p>

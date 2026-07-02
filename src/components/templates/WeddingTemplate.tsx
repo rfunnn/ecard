@@ -13,6 +13,19 @@ interface WishEntry { guestName: string; message: string }
 
 // â”€â”€â”€ component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
+function WeddingDivider({ color }: { color: string }) {
+  return (
+    <div className="flex items-center justify-center gap-3 my-5">
+      <div className="h-px flex-1 opacity-15" style={{ background: color }} />
+      <svg width="10" height="10" viewBox="0 0 20 20" fill={color} opacity="0.25">
+        <circle cx="10" cy="10" r="3" />
+        <path d="M10 2v4M10 14v4M2 10h4M14 10h4" stroke={color} strokeWidth="1.2" fill="none" />
+      </svg>
+      <div className="h-px flex-1 opacity-15" style={{ background: color }} />
+    </div>
+  )
+}
+
 interface Props { card: InvitationCardData }
 
 export function WeddingTemplate({ card }: Props) {
@@ -83,18 +96,6 @@ export function WeddingTemplate({ card }: Props) {
     d.toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long", year: "numeric" })
   const formatTime = (d: Date) =>
     d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })
-
-  // shared divider
-  const Divider = () => (
-    <div className="flex items-center justify-center gap-3 my-5">
-      <div className="h-px flex-1 opacity-15" style={{ background: bodyColor }} />
-      <svg width="10" height="10" viewBox="0 0 20 20" fill={bodyColor} opacity="0.25">
-        <circle cx="10" cy="10" r="3" />
-        <path d="M10 2v4M10 14v4M2 10h4M14 10h4" stroke={bodyColor} strokeWidth="1.2" fill="none" />
-      </svg>
-      <div className="h-px flex-1 opacity-15" style={{ background: bodyColor }} />
-    </div>
-  )
 
   return (
     <div className="min-h-screen w-full overflow-x-hidden" style={{ paddingLeft: `${sideMargin}rem`, paddingRight: `${sideMargin}rem` }}>
@@ -176,7 +177,7 @@ export function WeddingTemplate({ card }: Props) {
       {/* â•â• SECTION 2 Â· INVITATION TEXT (Config Page 3) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {(cfg?.openingSpeech || cfg?.organizer1?.name || card.description || cfg?.fullNames) && (
         <div className="pb-3 text-center">
-          <Divider />
+          <WeddingDivider color={bodyColor} />
 
           {/* opening speech / bismillah */}
           {cfg?.openingSpeech && (
@@ -242,7 +243,7 @@ export function WeddingTemplate({ card }: Props) {
       {/* â•â• SECTION 3 Â· VENUE + DATE + DRESS CODE (Config Page 4) â•â•â•â•â•â•â• */}
       {(seg.venue || seg.date) && (venueName || address || startDT) && (
         <div className="pb-4 text-center">
-          <Divider />
+          <WeddingDivider color={bodyColor} />
 
           {/* TEMPAT */}
           {seg.venue && (venueName || address) && (
@@ -349,7 +350,7 @@ export function WeddingTemplate({ card }: Props) {
       {/* â•â• SECTION 4 Â· EVENT PROGRAM (Config Page 5) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {seg.eventProgram && cfg?.eventProgram && (
         <div className="pb-4">
-          <Divider />
+          <WeddingDivider color={bodyColor} />
           <p
             className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-45 text-center mb-4`}
             style={{ color: bodyColor }}
@@ -380,7 +381,7 @@ export function WeddingTemplate({ card }: Props) {
       {/* â•â• SECTION 5 Â· PRAYER + COUNTDOWN â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {(cfg?.additionalInfo2 || (seg.countdown && cfg?.startDateTime && !eventPassed)) && (
         <div className="pb-4 text-center">
-          <Divider />
+          <WeddingDivider color={bodyColor} />
 
           {/* prayer / dua */}
           {cfg?.additionalInfo2 && (
@@ -432,7 +433,7 @@ export function WeddingTemplate({ card }: Props) {
       {/* â•â• SECTION 6 Â· WISHES â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {seg.wishes && wishes.length > 0 && (
         <div className="pb-4 text-center">
-          <Divider />
+          <WeddingDivider color={bodyColor} />
           <p
             className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-45 mb-5`}
             style={{ color: bodyColor }}

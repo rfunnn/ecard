@@ -95,7 +95,7 @@ export function Page10_Gift() {
       })
       .catch(() => {})
       .finally(() => setLoading(false))
-  }, [cardSlug])
+  }, [cardSlug, setGiftItems])
 
   async function handleImageFile(file: File) {
     if (form.imageUrl.startsWith("blob:")) URL.revokeObjectURL(form.imageUrl)

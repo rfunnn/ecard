@@ -84,8 +84,6 @@ export function BuilderPage({ initialCard }: BuilderPageProps) {
     })
   }
 
-  const activeCardForPreview = card as InvitationCardData
-
   return (
     <div className="flex h-screen bg-[#0a0a0a] overflow-hidden">
       {/* Sidebar */}

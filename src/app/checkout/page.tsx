@@ -8,7 +8,7 @@ import {
   ChevronLeft, ShoppingBag, Shield, Loader2,
   CheckCircle2, Package, Sparkles, Video, Paintbrush,
 } from "lucide-react"
-import { getCartSlugs, removeFromCart } from "@/lib/cart"
+import { getCartSlugs } from "@/lib/cart"
 
 // ─── types ───────────────────────────────────────────────────────────────────
 
@@ -148,7 +148,7 @@ function CardRow({ card }: { card: CartCard }) {
 
 export default function CheckoutPage() {
   const router = useRouter()
-  const { data: session, status } = useSession()
+  const { status } = useSession()
 
   const [cards, setCards]     = useState<CartCard[]>([])
   const [loading, setLoading] = useState(true)

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useRef, MutableRefObject } from "react"
+import { useState, useCallback, useRef, useEffect, MutableRefObject } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 
 interface Props {
@@ -402,7 +402,7 @@ function Menaik({ color, opening, openingRef, onOpen, tap, displayName, eventTyp
 export function OpeningGate({ style, color, onOpen, displayName, eventType, eventDate }: Props) {
   const [opening, setOpening] = useState(false)
   const openingRef = useRef(false)
-  openingRef.current = opening
+  useEffect(() => { openingRef.current = opening }, [opening])
 
   const tap = useCallback(() => { if (!opening) setOpening(true) }, [opening])
 
