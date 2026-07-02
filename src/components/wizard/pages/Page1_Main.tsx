@@ -6,10 +6,11 @@ import type { TemplateInfo } from "@/store/wizardStore"
 import { FieldLabel } from "../shared/FieldLabel"
 import { ColorField } from "../shared/ColorField"
 import { SliderField } from "../shared/SliderField"
-import { OPENING_STYLES, EFFECT_ANIMATIONS } from "@/types/config"
+import { OPENING_STYLES, EFFECT_ANIMATIONS, getPackageTier } from "@/types/config"
+import type { WizardConfig } from "@/types/config"
 
 export function Page1_Main() {
-  const { config, updateConfig, setTemplateOverride } = useWizardStore()
+  const { config, updateConfig, setConfig, setTemplateOverride } = useWizardStore()
   const [templates, setTemplates] = useState<TemplateInfo[]>([])
 
   useEffect(() => {
@@ -26,6 +27,54 @@ export function Page1_Main() {
     const found = templates.find((t) => t.slug === slug) ?? null
     setTemplateOverride(found)
   }
+
+  function handlePackageChange(newPackage: string) {
+    const tier = getPackageTier(newPackage)
+    const updates: Partial<WizardConfig> = { packageType: newPackage }
+
+    if (tier === "bronze") {
+      updates.effectAnimation = "Tiada"
+      updates.rsvp = { ...config.rsvp, mode: "NONE" }
+      updates.segments = {
+        ...config.segments,
+        attendance: false,
+        wishes: false,
+        confirmBtn: false,
+        writeWishBtn: false,
+      }
+      updates.bankName = ""
+      updates.bankAccountName = ""
+      updates.bankAccountNumber = ""
+      updates.bankQrUrl = ""
+    } else if (tier === "silver") {
+      if (config.rsvp.mode === "NONE") updates.rsvp = { ...config.rsvp, mode: "RSVP_WISHES" }
+      updates.segments = {
+        ...config.segments,
+        attendance: true,
+        wishes: true,
+        confirmBtn: true,
+        writeWishBtn: true,
+      }
+      updates.bankName = ""
+      updates.bankAccountName = ""
+      updates.bankAccountNumber = ""
+      updates.bankQrUrl = ""
+    } else {
+      // gold — unlock RSVP if it was locked by Bronze
+      if (config.rsvp.mode === "NONE") updates.rsvp = { ...config.rsvp, mode: "RSVP_WISHES" }
+      updates.segments = {
+        ...config.segments,
+        attendance: true,
+        wishes: true,
+        confirmBtn: true,
+        writeWishBtn: true,
+      }
+    }
+
+    setConfig(updates)
+  }
+
+  const isBronze = getPackageTier(config.packageType) === "bronze"
 
   return (
     <div className="space-y-6">
@@ -56,7 +105,7 @@ export function Page1_Main() {
         <FieldLabel label="Pakej Pilihan" info />
         <select
           value={config.packageType}
-          onChange={(e) => updateConfig("packageType", e.target.value)}
+          onChange={(e) => handlePackageChange(e.target.value)}
           className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm text-gray-700 bg-white outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option>Gold (RM60)</option>
@@ -127,13 +176,21 @@ export function Page1_Main() {
       </div>
 
       {/* Effect Animation */}
-      <div>
-        <FieldLabel label="Animasi Efek" required />
+      <div className={isBronze ? "opacity-50 pointer-events-none select-none" : ""}>
+        <div className="flex items-center gap-2 mb-1">
+          <FieldLabel label="Animasi Efek" required />
+          {isBronze && (
+            <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full leading-none">
+              Silver+
+            </span>
+          )}
+        </div>
         <div className="flex gap-2">
           <select
             value={config.effectAnimation}
             onChange={(e) => updateConfig("effectAnimation", e.target.value)}
             className="flex-1 border border-gray-300 rounded-md px-3 py-2.5 text-sm text-gray-700 bg-white outline-none"
+            disabled={isBronze}
           >
             {EFFECT_ANIMATIONS.map((s) => <option key={s}>{s}</option>)}
           </select>

@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react"
 import { Gift, Trash2, Plus, Upload, X, ExternalLink, Loader2, AlertCircle } from "lucide-react"
 import { useWizardStore } from "@/store/wizardStore"
 import { FieldLabel } from "../shared/FieldLabel"
+import { LockedPage } from "../shared/LockedPage"
+import { getPackageCapabilities } from "@/types/config"
 
 function check1to1(file: File): Promise<string | null> {
   return new Promise((resolve) => {
@@ -70,6 +72,7 @@ export function Page10_Gift() {
   const addGiftItem    = useWizardStore((s) => s.addGiftItem)
   const removeGiftItem = useWizardStore((s) => s.removeGiftItem)
   const { config, updateConfig } = useWizardStore()
+  const caps = getPackageCapabilities(config.packageType)
 
   const [loading, setLoading] = useState(true)
   const [adding, setAdding] = useState(false)
@@ -170,6 +173,10 @@ export function Page10_Gift() {
         .then((r) => r.json())
         .then((d) => setGiftItems(d.items ?? []))
     }
+  }
+
+  if (!caps.wishlist && !caps.moneyGift) {
+    return <LockedPage feature="Hadiah & Pembayaran" requiredPlan="Gold (RM60)" />
   }
 
   return (

@@ -233,6 +233,34 @@ export const DEFAULT_WIZARD_CONFIG: WizardConfig = {
   },
 }
 
+// ── Package capabilities ──────────────────────────────────────────────────────
+
+export type PackageTier = "bronze" | "silver" | "gold"
+
+export function getPackageTier(packageType: string): PackageTier {
+  const p = packageType.toLowerCase()
+  if (p.startsWith("bronze")) return "bronze"
+  if (p.startsWith("silver")) return "silver"
+  return "gold"
+}
+
+export interface PackageCapabilities {
+  effects: boolean    // particle animation — Silver+
+  rsvp: boolean       // RSVP / Wishes — Silver+
+  moneyGift: boolean  // bank payment details — Gold only
+  wishlist: boolean   // gift registry items — Gold only
+}
+
+export function getPackageCapabilities(packageType: string): PackageCapabilities {
+  const tier = getPackageTier(packageType)
+  return {
+    effects:   tier !== "bronze",
+    rsvp:      tier !== "bronze",
+    moneyGift: tier === "gold",
+    wishlist:  tier === "gold",
+  }
+}
+
 export const OPENING_STYLES = [
   "Tingkap A", "Tingkap B", "Tingkap C",
   "Sampul A", "Menaik",

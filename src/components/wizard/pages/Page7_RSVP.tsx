@@ -4,7 +4,9 @@ import { useWizardStore } from "@/store/wizardStore"
 import { FieldLabel } from "../shared/FieldLabel"
 import { SimpleRichText } from "../shared/SimpleRichText"
 import { WizardToggle } from "../shared/WizardToggle"
+import { LockedPage } from "../shared/LockedPage"
 import type { RSVPWizardConfig } from "@/types/config"
+import { getPackageCapabilities } from "@/types/config"
 
 type RSVPMode = RSVPWizardConfig["mode"]
 
@@ -30,6 +32,11 @@ const SHOW_FIELDS: { key: keyof RSVPWizardConfig["showFields"]; label: string }[
 export function Page7_RSVP() {
   const { config, updateConfig } = useWizardStore()
   const rsvp = config.rsvp
+  const caps = getPackageCapabilities(config.packageType)
+
+  if (!caps.rsvp) {
+    return <LockedPage feature="RSVP / Ucapan" requiredPlan="Silver (RM40)" />
+  }
 
   function updateRSVP(updates: Partial<RSVPWizardConfig>) {
     updateConfig("rsvp", { ...rsvp, ...updates })
