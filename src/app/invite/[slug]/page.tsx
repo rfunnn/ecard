@@ -8,7 +8,7 @@ import type { WizardConfig } from "@/types/config"
 
 interface Props {
   params: Promise<{ slug: string }>
-  searchParams: Promise<{ name?: string; template?: string }>
+  searchParams: Promise<{ name?: string; template?: string; package?: string }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -28,9 +28,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
+const PACKAGE_META: Record<string, { label: string; emoji: string; price: string }> = {
+  bronze: { label: "Bronze", emoji: "🥉", price: "RM30" },
+  silver: { label: "Silver", emoji: "🥈", price: "RM40" },
+  gold:   { label: "Gold",   emoji: "🥇", price: "RM60" },
+}
+
 export default async function InvitePage({ params, searchParams }: Props) {
   const { slug } = await params
-  const { name: nameOverride, template: templateSlug } = await searchParams
+  const sp = await searchParams
+  const nameOverride = sp.name
+  const templateSlug = sp.template
+  const packageParam = (sp.package ?? "gold").toLowerCase()
 
   if (slug === "demo") {
     // Fetch the selected template first so its colours can drive the whole demo
@@ -143,13 +152,31 @@ export default async function InvitePage({ params, searchParams }: Props) {
       autoplayMusic: true,
       scrollDelay: 3.5,
 
-      // Segments — everything on
+      // Segments — everything on by default (overridden per package below)
       segments: {
         venue: true, date: true, time: true, endTime: true,
         saveDateBtn: true, eventProgram: true, countdown: true,
         attendance: true, wishes: true, confirmBtn: true, writeWishBtn: true,
       },
     }
+
+    // Apply package-specific feature overrides
+    if (packageParam === "bronze") {
+      demoWizardConfig.effectAnimation = "Tiada"
+      demoWizardConfig.rsvp = { ...demoWizardConfig.rsvp, mode: "NONE" }
+      demoWizardConfig.segments = {
+        ...demoWizardConfig.segments,
+        attendance: false,
+        wishes: false,
+        confirmBtn: false,
+        writeWishBtn: false,
+      }
+    } else if (packageParam === "gold") {
+      demoWizardConfig.bankName = "Maybank"
+      demoWizardConfig.bankAccountName = "Ahmad Faris bin Ahmad"
+      demoWizardConfig.bankAccountNumber = "1234567890"
+    }
+    // Silver keeps base config: effects ON, RSVP ON, no bank details
 
     if (nameOverride) {
       demoWizardConfig.displayName = nameOverride
@@ -158,6 +185,35 @@ export default async function InvitePage({ params, searchParams }: Props) {
         ? `${parts[0]}\n&\n${parts[1]}`
         : parts[0]
     }
+
+    const demoGiftItems = packageParam === "gold"
+      ? [
+          {
+            id: "demo-gift-1",
+            label: "Set Makan Porselin 32pcs",
+            imageUrl: "https://picsum.photos/seed/ceramicset/400/400",
+            link: "https://www.lazada.com.my/",
+            sortOrder: 0,
+          },
+          {
+            id: "demo-gift-2",
+            label: "Set Cadar Queen Premium",
+            imageUrl: "https://picsum.photos/seed/beddingset/400/400",
+            link: "https://shopee.com.my/",
+            sortOrder: 1,
+          },
+          {
+            id: "demo-gift-3",
+            label: "Blender Dapur Elektrik",
+            imageUrl: "https://picsum.photos/seed/kitchenblend/400/400",
+            link: "https://www.lazada.com.my/",
+            sortOrder: 2,
+          },
+        ]
+      : []
+
+    const pkgMeta = PACKAGE_META[packageParam] ?? PACKAGE_META.gold
+    const demoBadge = `${pkgMeta.emoji} ${pkgMeta.label} · ${pkgMeta.price}`
 
     const demoCard: InvitationCardData = {
       id: "demo",
@@ -200,33 +256,11 @@ export default async function InvitePage({ params, searchParams }: Props) {
       },
       scrollConfig: { autoScroll: true, speed: "MEDIUM", pauseOnHover: true },
       wizardConfig: demoWizardConfig,
-      giftItems: [
-        {
-          id: "demo-gift-1",
-          label: "Set Makan Porselin 32pcs",
-          imageUrl: "https://picsum.photos/seed/ceramicset/400/400",
-          link: "https://www.lazada.com.my/",
-          sortOrder: 0,
-        },
-        {
-          id: "demo-gift-2",
-          label: "Set Cadar Queen Premium",
-          imageUrl: "https://picsum.photos/seed/beddingset/400/400",
-          link: "https://shopee.com.my/",
-          sortOrder: 1,
-        },
-        {
-          id: "demo-gift-3",
-          label: "Blender Dapur Elektrik",
-          imageUrl: "https://picsum.photos/seed/kitchenblend/400/400",
-          link: "https://www.lazada.com.my/",
-          sortOrder: 2,
-        },
-      ],
+      giftItems: demoGiftItems,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
-    return <InviteClient card={demoCard} />
+    return <InviteClient card={demoCard} demoBadge={demoBadge} />
   }
 
   let card: InvitationCardData | null = null

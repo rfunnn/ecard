@@ -15,9 +15,10 @@ import { OpeningGate } from "./OpeningGate"
 interface InviteClientProps {
   card: InvitationCardData
   onClose?: () => void
+  demoBadge?: string
 }
 
-export function InviteClient({ card, onClose }: InviteClientProps) {
+export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
   const router = useRouter()
   const scrollRef = useRef<HTMLDivElement | undefined>(undefined)
   const scrollIntervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined)
@@ -126,6 +127,21 @@ export function InviteClient({ card, onClose }: InviteClientProps) {
         <ChevronLeft className="w-3.5 h-3.5" />
         Kembali
       </button>
+
+      {/* ── Demo package badge ── */}
+      {demoBadge && (
+        <div
+          className="fixed top-4 right-4 z-50 text-[10px] font-bold tracking-[0.12em] px-3 py-1 rounded-full border pointer-events-none select-none"
+          style={{
+            background: `${card.theme.bgColor}dd`,
+            borderColor: `${card.theme.primaryColor}40`,
+            color: card.theme.primaryColor,
+            backdropFilter: "blur(8px)",
+          }}
+        >
+          {demoBadge}
+        </div>
+      )}
 
       {/* ── Preview watermark (unpublished) ── */}
       {!card.isPublished && (

@@ -274,7 +274,7 @@ export default function HomePage() {
                   <div className="px-3 pt-3 pb-3 flex flex-col items-center gap-2 border-t border-[var(--bd)] mt-2">
                     <p className="text-2xl font-light text-[var(--tx-1)] leading-none">{price}</p>
                     <Link
-                      href="/invite/demo"
+                      href={`/invite/demo?package=${name.toLowerCase()}`}
                       className="border border-[var(--tx-1)] text-[var(--tx-1)] text-[9px] font-semibold tracking-[0.12em] px-4 py-2 rounded-lg hover:bg-[var(--tx-1)] hover:text-[var(--pg)] transition-colors"
                     >
                       VIEW SAMPLE
