@@ -204,6 +204,7 @@ export function WizardShell({ initialCard }: Props) {
     nextPage,
     prevPage,
     setCardSlug,
+    setIsPublished,
     setIsSaving,
     markClean,
     loadConfig,
@@ -258,6 +259,7 @@ export function WizardShell({ initialCard }: Props) {
     if (cardSlug !== initialCard.slug) {
       loadConfig(buildInitialConfig(initialCard))
       setCardSlug(initialCard.slug)
+      setIsPublished(initialCard.isPublished)
       setGiftItems(initialCard.giftItems)
       setPhotoItems(initialCard.photoItems)
     }
@@ -304,14 +306,14 @@ export function WizardShell({ initialCard }: Props) {
         setSaveError(config.language === "ms" ? "Gagal menyimpan. Cuba semula." : "Failed to save. Please try again.")
         return
       }
-      addToCart(initialCard.slug)
+      if (!initialCard.isPublished) addToCart(initialCard.slug)
       markClean()
     } catch {
       setSaveError(config.language === "ms" ? "Tiada sambungan. Cuba semula." : "No connection. Please try again.")
     } finally {
       setIsSaving(false)
     }
-  }, [cardPreview, config, initialCard.slug, markClean, setIsSaving, templateOverride])
+  }, [cardPreview, config, initialCard.isPublished, initialCard.slug, markClean, setIsSaving, templateOverride])
 
   const handlePreviewOpen = useCallback(() => {
     setPreviewOpen(true)
@@ -362,11 +364,17 @@ export function WizardShell({ initialCard }: Props) {
         {/* Header */}
         <div className="shrink-0 border-b border-gray-100 px-4 pt-3 pb-2">
           <div className="flex items-center justify-between mb-2">
-            <Link href="/" className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1">
+            <Link href="/dashboard" className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1">
               <ChevronLeft className="w-4 h-4" />
-              {isMs ? "Utama" : "Home"}
+              {isMs ? "Dashboard" : "Dashboard"}
             </Link>
             <div className="flex items-center gap-1">
+              {initialCard.isPublished && (
+                <span className="flex items-center gap-1 text-[10px] font-bold tracking-widest text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  LIVE
+                </span>
+              )}
               <button
                 type="button"
                 onClick={handlePreviewOpen}
@@ -375,14 +383,16 @@ export function WizardShell({ initialCard }: Props) {
                 <Eye className="w-3.5 h-3.5" />
                 {isMs ? "Lihat Kad" : "View Card"}
               </button>
-              <button
-                type="button"
-                onClick={() => setCartOpen(true)}
-                className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-800 transition-colors px-2 py-1 rounded-md hover:bg-gray-100"
-              >
-                <ShoppingBag className="w-3.5 h-3.5" />
-                {isMs ? "Kad Saya" : "My Cards"}
-              </button>
+              {!initialCard.isPublished && (
+                <button
+                  type="button"
+                  onClick={() => setCartOpen(true)}
+                  className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-800 transition-colors px-2 py-1 rounded-md hover:bg-gray-100"
+                >
+                  <ShoppingBag className="w-3.5 h-3.5" />
+                  {isMs ? "Kad Saya" : "My Cards"}
+                </button>
+              )}
             </div>
           </div>
           <div className="text-center pb-1">

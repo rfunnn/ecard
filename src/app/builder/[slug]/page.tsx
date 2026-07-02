@@ -1,4 +1,6 @@
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth-options"
 import { prisma } from "@/lib/prisma"
 import { WizardShell } from "@/components/wizard/WizardShell"
 import type { InvitationCardData } from "@/types/invitation"
@@ -11,11 +13,14 @@ interface Props {
 export default async function BuilderRoute({ params }: Props) {
   const { slug } = await params
 
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.id) redirect(`/login?callbackUrl=/builder/${slug}`)
+
   let card: InvitationCardData | null = null
 
   try {
     const raw = await prisma.invitationCard.findUnique({
-      where: { slug },
+      where: { slug, userId: session.user.id },
       include: {
         template: { select: { slug: true, name: true, category: true, image1Url: true, image2Url: true } },
         theme: true,

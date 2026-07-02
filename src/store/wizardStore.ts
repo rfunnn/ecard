@@ -20,6 +20,7 @@ interface WizardState {
   isDirty: boolean
   isSaving: boolean
   cardSlug: string
+  isPublished: boolean
   templateOverride: TemplateInfo | null
   giftItems: GiftItem[]
   photoItems: PhotoItem[]
@@ -33,6 +34,7 @@ interface WizardActions {
   nextPage: () => void
   prevPage: () => void
   setCardSlug: (slug: string) => void
+  setIsPublished: (published: boolean) => void
   setIsSaving: (saving: boolean) => void
   markClean: () => void
   setTemplateOverride: (t: TemplateInfo | null) => void
@@ -58,6 +60,7 @@ export const useWizardStore = create<WizardState & WizardActions>()(
     isDirty: false,
     isSaving: false,
     cardSlug: "",
+    isPublished: false,
     templateOverride: null,
     giftItems: [],
     photoItems: [],
@@ -116,6 +119,11 @@ export const useWizardStore = create<WizardState & WizardActions>()(
     setCardSlug: (slug) =>
       set((state) => {
         state.cardSlug = slug
+      }),
+
+    setIsPublished: (published) =>
+      set((state) => {
+        state.isPublished = published
       }),
 
     setIsSaving: (saving) =>

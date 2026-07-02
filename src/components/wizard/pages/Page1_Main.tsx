@@ -10,7 +10,7 @@ import { OPENING_STYLES, EFFECT_ANIMATIONS, getPackageTier } from "@/types/confi
 import type { WizardConfig } from "@/types/config"
 
 export function Page1_Main() {
-  const { config, updateConfig, setConfig, setTemplateOverride } = useWizardStore()
+  const { config, updateConfig, setConfig, setTemplateOverride, isPublished } = useWizardStore()
   const [templates, setTemplates] = useState<TemplateInfo[]>([])
 
   useEffect(() => {
@@ -76,6 +76,7 @@ export function Page1_Main() {
 
   const isBronze = getPackageTier(config.packageType) === "bronze"
   const isMs = config.language === "ms"
+  const packageLocked = isPublished
 
   return (
     <div className="space-y-6">
@@ -103,16 +104,29 @@ export function Page1_Main() {
 
       {/* Package */}
       <div>
-        <FieldLabel label={isMs ? "Pakej Pilihan" : "Package"} info />
+        <div className="flex items-center gap-2 mb-1">
+          <FieldLabel label={isMs ? "Pakej Pilihan" : "Package"} info />
+          {packageLocked && (
+            <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-full leading-none">
+              {isMs ? "Aktif" : "Active"}
+            </span>
+          )}
+        </div>
         <select
           value={config.packageType}
           onChange={(e) => handlePackageChange(e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm text-gray-700 bg-white outline-none focus:ring-2 focus:ring-blue-500"
+          disabled={packageLocked}
+          className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm text-gray-700 bg-white outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
         >
           <option>Gold (RM60)</option>
           <option>Silver (RM40)</option>
           <option>Bronze (RM20)</option>
         </select>
+        {packageLocked && (
+          <p className="text-[11px] text-gray-400 mt-1">
+            {isMs ? "Pakej tidak boleh ditukar selepas pembayaran." : "Package cannot be changed after payment."}
+          </p>
+        )}
       </div>
 
       {/* Add-ons */}
