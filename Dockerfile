@@ -50,6 +50,13 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ARG STORAGE_PUBLIC_URL
 ENV STORAGE_PUBLIC_URL=$STORAGE_PUBLIC_URL
 
+# DATABASE_URL is needed so prisma.ts module-level init doesn't throw on import.
+# No DB connection is made during build; the value is server-only (no NEXT_PUBLIC_
+# prefix) so it is never embedded in client bundles. Runtime gets the real value
+# from docker-compose env vars.
+ARG DATABASE_URL="mysql://dummy:dummy@localhost:3306/dummy"
+ENV DATABASE_URL=$DATABASE_URL
+
 RUN npm run build
 
 ########################################################################
