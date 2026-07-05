@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { prisma } from "@/lib/prisma"
+
+export const dynamic = 'force-dynamic'
 import { InviteClient } from "@/components/invite/InviteClient"
 import type { InvitationCardData } from "@/types/invitation"
 import { DEFAULT_THEME, DEFAULT_MEDIA, DEFAULT_SCROLL } from "@/types/invitation"

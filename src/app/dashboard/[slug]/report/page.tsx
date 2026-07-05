@@ -1,6 +1,8 @@
 import { notFound, redirect } from "next/navigation"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth-options"
+
+export const dynamic = 'force-dynamic'
 import { prisma } from "@/lib/prisma"
 import type { WizardConfig } from "@/types/config"
 import { ReportClient } from "@/components/report/ReportClient"
