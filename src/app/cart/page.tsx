@@ -1,12 +1,13 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState, useCallback } from "react"
 import Link from "next/link"
 import {
   ChevronLeft, ShoppingBag, Pencil, Eye, Printer,
   Trash2, Plus, CreditCard, Clock, AlertTriangle,
+  Link2, Copy, Check, Share2, Download, QrCode,
 } from "lucide-react"
-import { getCartSlugs, removeFromCart } from "@/lib/cart"
+import { getCartSlugs, removeFromCart, addToCart } from "@/lib/cart"
 import type { WizardConfig } from "@/types/config"
 import { generatePrintHTML } from "@/lib/print-card"
 
@@ -32,28 +33,199 @@ const CAT_EMOJI: Record<string, string> = {
 function formatDate(iso: string) {
   try {
     return new Date(iso).toLocaleDateString("ms-MY", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
+      day: "numeric", month: "long", year: "numeric",
     })
   } catch {
     return iso
   }
 }
 
+const BASE_URL = typeof window !== "undefined"
+  ? window.location.origin
+  : "https://ekadku.com"
+
+// ── Share / QR panel for a single card ───────────────────────────────────────
+function SharePanel({ card, onSlugChange }: { card: CartCard; onSlugChange: (oldSlug: string, newSlug: string) => void }) {
+  const [input,      setInput]      = useState(card.slug)
+  const [saving,     setSaving]     = useState(false)
+  const [error,      setError]      = useState<string | null>(null)
+  const [copied,     setCopied]     = useState(false)
+  const [qrDataUrl,  setQrDataUrl]  = useState<string | null>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  const shareUrl = `${BASE_URL}/invite/${card.slug}`
+  const isMs = card.language === "ms"
+
+  // Generate QR whenever card.slug changes
+  useEffect(() => {
+    let cancelled = false
+    import("qrcode").then((QRCode) => {
+      QRCode.toDataURL(shareUrl, {
+        width: 256,
+        margin: 2,
+        color: { dark: "#1a1a1a", light: "#ffffff" },
+      }).then((url) => {
+        if (!cancelled) setQrDataUrl(url)
+      }).catch(() => {})
+    }).catch(() => {})
+    return () => { cancelled = true }
+  }, [shareUrl])
+
+  const handleSave = useCallback(async () => {
+    const trimmed = input.trim().toLowerCase()
+    if (trimmed === card.slug) return
+    setSaving(true)
+    setError(null)
+    try {
+      const res = await fetch(`/api/cards/${card.slug}/rename`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newSlug: trimmed }),
+      })
+      const data = await res.json() as { slug?: string; error?: string }
+      if (!res.ok) {
+        setError(data.error ?? (isMs ? "Gagal menyimpan." : "Failed to save."))
+        return
+      }
+      onSlugChange(card.slug, data.slug!)
+    } catch {
+      setError(isMs ? "Tiada sambungan. Cuba lagi." : "Connection error. Try again.")
+    } finally {
+      setSaving(false)
+    }
+  }, [card.slug, input, isMs, onSlugChange])
+
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(shareUrl)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // fallback — select in the displayed URL
+    }
+  }
+
+  async function nativeShare() {
+    if (!navigator.share) { copyLink(); return }
+    try {
+      await navigator.share({ title: card.title, url: shareUrl })
+    } catch {
+      // user cancelled
+    }
+  }
+
+  function downloadQr() {
+    if (!qrDataUrl) return
+    const a = document.createElement("a")
+    a.href = qrDataUrl
+    a.download = `qr-${card.slug}.png`
+    a.click()
+  }
+
+  return (
+    <div className="px-4 pb-4 space-y-3">
+      <div className="flex items-center gap-1.5 text-[11px] font-bold text-[var(--tx-3)] uppercase tracking-widest">
+        <Link2 className="w-3 h-3" />
+        {isMs ? "Pautan Perkongsian" : "Share Link"}
+      </div>
+
+      {/* Custom link editor */}
+      <div className="flex gap-2 items-center">
+        <span className="text-[11px] text-[var(--tx-3)] shrink-0">
+          {BASE_URL}/invite/
+        </span>
+        <input
+          value={input}
+          onChange={(e) => {
+            setInput(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))
+            setError(null)
+          }}
+          onKeyDown={(e) => e.key === "Enter" && handleSave()}
+          placeholder="nama-anda"
+          className="flex-1 min-w-0 border border-[var(--bd)] rounded-lg px-2.5 py-1.5 text-xs bg-[var(--pg)] text-[var(--tx-1)] focus:outline-none focus:ring-2 focus:ring-gold/40"
+        />
+        <button
+          onClick={handleSave}
+          disabled={saving || input.trim() === card.slug || input.trim().length < 3}
+          className="shrink-0 text-[11px] font-semibold px-3 py-1.5 rounded-lg bg-gold/10 border border-gold/30 text-gold hover:bg-gold/20 transition-colors disabled:opacity-40"
+        >
+          {saving ? "..." : (isMs ? "Simpan" : "Save")}
+        </button>
+      </div>
+      {error && <p className="text-[11px] text-red-500">{error}</p>}
+
+      {/* QR + actions row */}
+      <div className="flex gap-3 items-start">
+        {/* QR code */}
+        <div className="shrink-0 rounded-xl overflow-hidden border border-[var(--bd)] bg-white p-1.5" style={{ width: 80, height: 80 }}>
+          {qrDataUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={qrDataUrl} alt="QR" className="w-full h-full" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <QrCode className="w-6 h-6 text-gray-200 animate-pulse" />
+            </div>
+          )}
+          <canvas ref={canvasRef} className="hidden" />
+        </div>
+
+        {/* Buttons */}
+        <div className="flex-1 flex flex-col gap-1.5">
+          <button
+            onClick={copyLink}
+            className="flex items-center gap-2 text-xs font-medium py-2 px-3 rounded-lg border border-[var(--bd)] text-[var(--tx-2)] hover:bg-[var(--bd)] transition-colors"
+          >
+            {copied
+              ? <><Check className="w-3.5 h-3.5 text-emerald-500" />{isMs ? "Disalin!" : "Copied!"}</>
+              : <><Copy className="w-3.5 h-3.5" />{isMs ? "Salin Pautan" : "Copy Link"}</>
+            }
+          </button>
+          <button
+            onClick={nativeShare}
+            className="flex items-center gap-2 text-xs font-medium py-2 px-3 rounded-lg border border-[var(--bd)] text-[var(--tx-2)] hover:bg-[var(--bd)] transition-colors"
+          >
+            <Share2 className="w-3.5 h-3.5" />
+            {isMs ? "Kongsi" : "Share"}
+          </button>
+          <button
+            onClick={downloadQr}
+            disabled={!qrDataUrl}
+            className="flex items-center gap-2 text-xs font-medium py-2 px-3 rounded-lg border border-[var(--bd)] text-[var(--tx-2)] hover:bg-[var(--bd)] transition-colors disabled:opacity-40"
+          >
+            <Download className="w-3.5 h-3.5" />
+            {isMs ? "Muat Turun QR" : "Download QR"}
+          </button>
+        </div>
+      </div>
+
+      {/* Watermark notice for unpublished */}
+      {!card.isPublished && (
+        <div className="flex items-start gap-2 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
+          <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
+          <p className="text-[11px] text-amber-700 leading-snug">
+            {isMs
+              ? "Kad belum dibayar — akan ada tanda air (watermark) apabila dikongsi."
+              : "Card not paid — a watermark will appear when shared."}
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 export default function CartPage() {
-  const [cards, setCards] = useState<CartCard[]>([])
+  const [cards, setCards]     = useState<CartCard[]>([])
   const [loading, setLoading] = useState(true)
   const [mounted, setMounted] = useState(false)
   const [printing, setPrinting] = useState<string | null>(null)
+  const [openShare, setOpenShare] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     setMounted(true)
     const slugs = getCartSlugs()
-    if (slugs.length === 0) {
-      setLoading(false)
-      return
-    }
+    if (slugs.length === 0) { setLoading(false); return }
     fetch(`/api/cards?slugs=${slugs.join(",")}`)
       .then(r => r.json())
       .then(d => {
@@ -70,6 +242,29 @@ export default function CartPage() {
   function handleRemove(slug: string) {
     removeFromCart(slug)
     setCards(prev => prev.filter(c => c.slug !== slug))
+  }
+
+  function handleSlugChange(oldSlug: string, newSlug: string) {
+    // Update localStorage cart
+    removeFromCart(oldSlug)
+    addToCart(newSlug)
+    // Update local state
+    setCards(prev => prev.map(c => c.slug === oldSlug ? { ...c, slug: newSlug } : c))
+    // Update open share panels
+    setOpenShare(prev => {
+      const next = new Set(prev)
+      if (next.has(oldSlug)) { next.delete(oldSlug); next.add(newSlug) }
+      return next
+    })
+  }
+
+  function toggleShare(slug: string) {
+    setOpenShare(prev => {
+      const next = new Set(prev)
+      if (next.has(slug)) next.delete(slug)
+      else next.add(slug)
+      return next
+    })
   }
 
   function handlePrint(card: CartCard) {
@@ -95,11 +290,7 @@ export default function CartPage() {
     w.document.write(html)
     w.document.close()
     w.focus()
-    // Allow fonts to load before triggering print dialog
-    setTimeout(() => {
-      w.print()
-      setPrinting(null)
-    }, 1400)
+    setTimeout(() => { w.print(); setPrinting(null) }, 1400)
   }
 
   if (!mounted) return null
@@ -109,13 +300,9 @@ export default function CartPage() {
       {/* ── Header ── */}
       <div className="sticky top-0 z-10 bg-[var(--pg-nav)] backdrop-blur-sm border-b border-[var(--bd)]">
         <div className="max-w-4xl mx-auto flex items-center gap-3 px-4 h-14">
-          <Link
-            href="/"
-            className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--tx-2)] hover:bg-[var(--bd)] transition-colors"
-          >
+          <Link href="/" className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--tx-2)] hover:bg-[var(--bd)] transition-colors">
             <ChevronLeft className="w-5 h-5" />
           </Link>
-
           <ShoppingBag className="w-4 h-4 text-gold" />
           <h1 className="font-semibold text-[var(--tx-1)] text-sm">Kad Saya</h1>
           {cards.length > 0 && (
@@ -123,7 +310,6 @@ export default function CartPage() {
               {cards.length}
             </span>
           )}
-
           <Link
             href="/new"
             className="ml-auto flex items-center gap-1.5 text-xs font-medium text-gold border border-gold/30 rounded-lg px-3 py-1.5 hover:bg-gold/10 transition-colors"
@@ -136,14 +322,12 @@ export default function CartPage() {
 
       <div className="max-w-4xl mx-auto px-4 py-6 pb-16">
 
-        {/* Loading */}
         {loading && (
           <div className="flex items-center justify-center py-24">
             <div className="w-7 h-7 border-2 border-gold border-t-transparent rounded-full animate-spin" />
           </div>
         )}
 
-        {/* Empty state */}
         {!loading && cards.length === 0 && (
           <div className="flex flex-col items-center justify-center py-24 text-center gap-4">
             <div className="w-16 h-16 rounded-2xl bg-[var(--bd)] flex items-center justify-center">
@@ -163,7 +347,6 @@ export default function CartPage() {
           </div>
         )}
 
-        {/* Cards grid */}
         {!loading && cards.length > 0 && (
           <>
             <div className="flex items-center justify-between mb-4">
@@ -187,6 +370,7 @@ export default function CartPage() {
                     : card.title || "Kad Jemputan"
                 const emoji = CAT_EMOJI[card.template.category] ?? "✉️"
                 const isPrinting = printing === card.slug
+                const shareOpen = openShare.has(card.slug)
 
                 return (
                   <div
@@ -195,29 +379,19 @@ export default function CartPage() {
                   >
                     {/* Info row */}
                     <div className="flex gap-3 p-4">
-                      {/* 3:4 mini thumbnail */}
                       <div
                         className="shrink-0 rounded-xl overflow-hidden"
-                        style={{
-                          width: 54,
-                          aspectRatio: "3/4",
-                          background: bg,
-                          border: `1.5px solid ${accent}35`,
-                        }}
+                        style={{ width: 54, aspectRatio: "3/4", background: bg, border: `1.5px solid ${accent}35` }}
                       >
                         <div style={{ height: 3, background: accent }} />
                         <div className="flex flex-col items-center justify-center gap-1 px-1 mt-2">
                           <span className="text-base leading-none">{emoji}</span>
-                          <span
-                            className="font-great-vibes text-[7px] text-center leading-tight"
-                            style={{ color: accent }}
-                          >
+                          <span className="font-great-vibes text-[7px] text-center leading-tight" style={{ color: accent }}>
                             {displayName.split(" & ")[0]}
                           </span>
                         </div>
                       </div>
 
-                      {/* Card info */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-1 mb-0.5">
                           <h3 className="font-semibold text-[var(--tx-1)] text-sm leading-tight truncate pr-1">
@@ -236,9 +410,7 @@ export default function CartPage() {
                         </p>
                         <div className="flex items-center gap-1 mt-1.5">
                           <Clock className="w-3 h-3 text-[var(--tx-3)]" />
-                          <span className="text-[11px] text-[var(--tx-3)]">
-                            {formatDate(card.updatedAt)}
-                          </span>
+                          <span className="text-[11px] text-[var(--tx-3)]">{formatDate(card.updatedAt)}</span>
                         </div>
                       </div>
                     </div>
@@ -262,15 +434,25 @@ export default function CartPage() {
                         Lihat
                       </Link>
                       <button
+                        onClick={() => toggleShare(card.slug)}
+                        className={`flex-1 flex items-center justify-center gap-1.5 text-xs font-medium py-2 rounded-lg border transition-colors ${
+                          shareOpen
+                            ? "border-gold/50 text-gold bg-gold/10"
+                            : "border-[var(--bd)] text-[var(--tx-2)] hover:bg-[var(--bd)]"
+                        }`}
+                      >
+                        <Share2 className="w-3.5 h-3.5" />
+                        Kongsi
+                      </button>
+                      <button
                         onClick={() => handlePrint(card)}
                         disabled={isPrinting}
-                        className="flex-1 flex items-center justify-center gap-1.5 text-xs font-medium py-2 rounded-lg border border-gold/30 text-gold hover:bg-gold/10 transition-colors disabled:opacity-60"
+                        className="flex items-center justify-center gap-1.5 text-xs font-medium py-2 px-3 rounded-lg border border-gold/30 text-gold hover:bg-gold/10 transition-colors disabled:opacity-60"
                       >
-                        {isPrinting ? (
-                          <div className="w-3.5 h-3.5 border-2 border-gold border-t-transparent rounded-full animate-spin" />
-                        ) : (
-                          <Printer className="w-3.5 h-3.5" />
-                        )}
+                        {isPrinting
+                          ? <div className="w-3.5 h-3.5 border-2 border-gold border-t-transparent rounded-full animate-spin" />
+                          : <Printer className="w-3.5 h-3.5" />
+                        }
                         Cetak
                       </button>
                       <button
@@ -281,16 +463,12 @@ export default function CartPage() {
                       </button>
                     </div>
 
-                    {/* Watermark notice */}
-                    {!card.isPublished && (
-                      <div className="px-4 pb-3">
-                        <div className="flex items-start gap-2 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
-                          <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
-                          <p className="text-[11px] text-amber-700 leading-snug">
-                            Kad belum dibayar — cetakan akan ada tanda air (watermark).
-                          </p>
-                        </div>
-                      </div>
+                    {/* Share panel */}
+                    {shareOpen && (
+                      <>
+                        <div className="border-t border-[var(--bd)]" />
+                        <SharePanel card={card} onSlugChange={handleSlugChange} />
+                      </>
                     )}
                   </div>
                 )

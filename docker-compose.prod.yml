@@ -1,0 +1,14 @@
+# Production overrides for VPS deployment.
+# Replaces local build: directives with pre-built images pulled from GHCR.
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+services:
+
+  migrate:
+    image: ghcr.io/rfunnn/ecard-migrator:latest
+
+  app:
+    image: ghcr.io/rfunnn/ecard-app:latest
