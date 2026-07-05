@@ -50,12 +50,22 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ARG STORAGE_PUBLIC_URL
 ENV STORAGE_PUBLIC_URL=$STORAGE_PUBLIC_URL
 
-# DATABASE_URL is needed so prisma.ts module-level init doesn't throw on import.
-# No DB connection is made during build; the value is server-only (no NEXT_PUBLIC_
-# prefix) so it is never embedded in client bundles. Runtime gets the real value
-# from docker-compose env vars.
-ARG DATABASE_URL="mysql://dummy:dummy@localhost:3306/dummy"
-ENV DATABASE_URL=$DATABASE_URL
+# Dummy values for server-only env vars that are validated at module-load time.
+# None have a NEXT_PUBLIC_ prefix so they are never embedded in client bundles.
+# The runner stage starts fresh — it does NOT inherit these values.
+# Real values are injected by docker-compose at runtime.
+ENV DATABASE_URL="mysql://dummy:dummy@localhost:3306/dummy" \
+    NEXTAUTH_SECRET="build-time-dummy-secret" \
+    NEXTAUTH_URL="http://localhost:3000" \
+    STORAGE_ENDPOINT="http://localhost:9000" \
+    STORAGE_ACCESS_KEY="dummy" \
+    STORAGE_SECRET_KEY="dummy" \
+    STORAGE_BUCKET="ecard" \
+    TOYYIBPAY_SECRET_KEY="dummy" \
+    TOYYIBPAY_CATEGORY_CODE="dummy" \
+    SMTP_HOST="" \
+    SMTP_USER="" \
+    SMTP_PASS=""
 
 RUN npm run build
 
