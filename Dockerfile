@@ -24,7 +24,8 @@ COPY prisma ./prisma
 COPY package.json ./
 
 # Pre-generate the Prisma client so the CLI works offline
-RUN npx prisma generate
+# DATABASE_URL is required by prisma.config.ts even during generate (no DB connection is made)
+RUN DATABASE_URL="mysql://dummy:dummy@localhost:3306/dummy" npx prisma generate
 
 ENTRYPOINT ["npx", "prisma", "db", "push", "--skip-generate"]
 
@@ -39,7 +40,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Generate Prisma client matching the installed engine
-RUN npx prisma generate
+# DATABASE_URL is required by prisma.config.ts even during generate (no DB connection is made)
+RUN DATABASE_URL="mysql://dummy:dummy@localhost:3306/dummy" npx prisma generate
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
