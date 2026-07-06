@@ -7,8 +7,5 @@
 
 services:
 
-  migrate:
-    image: ghcr.io/rfunnn/ecard-migrator:latest
-
   app:
     image: ghcr.io/rfunnn/ecard-app:latest

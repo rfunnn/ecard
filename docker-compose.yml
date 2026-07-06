@@ -91,22 +91,6 @@ services:
       "
     restart: on-failure
 
-  # ── Database schema sync (runs once, then exits) ─────────────────────
-  # Uses the builder stage (which has full node_modules + prisma CLI).
-  # Runs `prisma db push` to create/update tables from schema.prisma.
-  # Re-run manually after schema changes: docker compose run --rm migrate
-  migrate:
-    build:
-      context: .
-      target: migrator
-    command: ["--accept-data-loss"]
-    environment:
-      <<: *app-env
-    depends_on:
-      db:
-        condition: service_healthy
-    restart: on-failure
-
   # ── Next.js application ──────────────────────────────────────────────
   app:
     build:
@@ -120,8 +104,8 @@ services:
     environment:
       <<: *app-env
     depends_on:
-      migrate:
-        condition: service_completed_successfully
+      db:
+        condition: service_healthy
       storage:
         condition: service_healthy
     healthcheck:
