@@ -89,9 +89,10 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static    ./.next/static
 
-# Prisma CLI and schema for running migrations on startup
-COPY --from=deps /app/node_modules/prisma      ./node_modules/prisma
-COPY --from=deps /app/node_modules/@prisma     ./node_modules/@prisma
+# Full node_modules from builder — needed so the Prisma CLI can run
+# `db push` on startup. The standalone output prunes the CLI's dependency
+# tree (@prisma/config, effect, etc.), so we overlay the complete set here.
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY prisma/schema.prisma                      ./prisma/schema.prisma
 COPY prisma.config.ts                          ./
 COPY package.json                              ./
