@@ -92,7 +92,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static    ./.next/static
 # Prisma CLI and schema for running migrations on startup
 COPY --from=deps /app/node_modules/prisma      ./node_modules/prisma
 COPY --from=deps /app/node_modules/@prisma     ./node_modules/@prisma
-COPY --from=deps /app/node_modules/.bin/prisma ./node_modules/.bin/prisma
+COPY --from=deps /app/node_modules/.bin/prisma* ./node_modules/.bin/
 COPY prisma/schema.prisma                      ./prisma/schema.prisma
 COPY prisma.config.ts                          ./
 COPY package.json                              ./
