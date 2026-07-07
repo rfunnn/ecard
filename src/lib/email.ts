@@ -17,7 +17,7 @@ function createTransporter() {
   })
 }
 
-const FROM = process.env.SMTP_FROM ?? "noreply@kad.my"
+const FROM = process.env.SMTP_FROM ?? "noreply@ekadku.com"
 const APP_URL = process.env.NEXTAUTH_URL ?? "http://localhost:3000"
 
 export async function sendPasswordResetEmail(email: string, token: string) {
@@ -34,12 +34,12 @@ export async function sendPasswordResetEmail(email: string, token: string) {
   await transporter.sendMail({
     from: FROM,
     to: email,
-    subject: "Tetapkan Semula Kata Laluan — Kad.my",
+    subject: "Tetapkan Semula Kata Laluan — ekadku.com",
     html: `
       <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px 24px">
         <h2 style="margin:0 0 8px;font-size:22px;color:#111">Tetapkan Semula Kata Laluan</h2>
         <p style="color:#555;margin:0 0 24px">
-          Kami menerima permintaan untuk menetapkan semula kata laluan akaun Kad.my anda.
+          Kami menerima permintaan untuk menetapkan semula kata laluan akaun ekadku.com anda.
           Klik butang di bawah untuk meneruskan. Pautan ini sah selama <strong>1 jam</strong>.
         </p>
         <a href="${resetUrl}"
@@ -52,7 +52,7 @@ export async function sendPasswordResetEmail(email: string, token: string) {
         </p>
         <hr style="border:none;border-top:1px solid #eee;margin:24px 0"/>
         <p style="color:#bbb;font-size:11px;margin:0">
-          © ${new Date().getFullYear()} Kad.my · Kad Jemputan Digital
+          © ${new Date().getFullYear()} ekadku.com · Kad Jemputan Digital
         </p>
       </div>
     `,

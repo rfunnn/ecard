@@ -15,7 +15,7 @@
  GET /api/auth/session 200 in 41ms (next.js: 24ms, application-code: 17ms)
  GET /api/auth/session 200 in 46ms (next.js: 7ms, application-code: 39ms)
 
-[EMAIL] Password reset link for test@kad.my
+[EMAIL] Password reset link for test@ekadku.com
 [EMAIL] http://localhost:3000/reset-password?token=a35856a79ae78a966a9dae51978f32b5916903e92b578480de5193b1e43c997c 
 
  POST /api/auth/forgot-password 200 in 565ms (next.js: 489ms, application-code: 76ms)

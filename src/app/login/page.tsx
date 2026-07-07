@@ -67,7 +67,7 @@ function LoginInner() {
           <ChevronLeft className="w-4 h-4" />
           Kembali
         </Link>
-        <span className="mx-auto font-playfair text-[15px] text-[var(--tx-1)]">Kad.my</span>
+        <span className="mx-auto font-playfair text-[15px] text-[var(--tx-1)]">ekadku.com</span>
         <div className="w-16" />
       </div>
 
@@ -77,7 +77,7 @@ function LoginInner() {
           {/* heading */}
           <div className="text-center mb-8">
             <h1 className="font-playfair text-3xl text-[var(--tx-1)] mb-1">Log Masuk</h1>
-            <p className="text-sm text-[var(--tx-3)]">Selamat kembali ke Kad.my</p>
+            <p className="text-sm text-[var(--tx-3)]">Selamat kembali ke ekadku.com</p>
           </div>
 
           {/* Google */}

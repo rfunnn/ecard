@@ -9,6 +9,7 @@ import {
   CheckCircle2, Package, Sparkles, Video, Paintbrush,
 } from "lucide-react"
 import { getCartSlugs } from "@/lib/cart"
+import { PaymentMethods } from "@/components/checkout/PaymentMethods"
 
 // ─── types ───────────────────────────────────────────────────────────────────
 
@@ -338,11 +339,14 @@ export default function CheckoutPage() {
 
                     <div className="flex items-center justify-center gap-1.5 text-[11px] text-[var(--tx-3)]">
                       <Shield className="w-3 h-3" />
-                      Pembayaran selamat melalui Toyyibpay (FPX)
+                      Pembayaran selamat melalui ToyyibPay
                     </div>
                   </div>
                 )}
               </div>
+
+              {/* Payment methods */}
+              {unpaidCards.length > 0 && <PaymentMethods />}
 
               {/* What you get */}
               {unpaidCards.length > 0 && (

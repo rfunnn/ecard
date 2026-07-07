@@ -65,11 +65,11 @@ function buildIcsContent(card: InvitationCardData): string {
     : fmt(new Date().toISOString())
   const end = wCfg?.endDateTime ? fmt(wCfg.endDateTime) : start
   const venue = wCfg?.venueAddress || wCfg?.venueLine || card.venueAddress || card.venueName || ""
-  const uid = `${card.slug}-rsvp@ekadku`
+  const uid = `${card.slug}-rsvp@ekadku.com`
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//e-kad ku//EN",
+    "PRODID:-//ekadku.com//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     "BEGIN:VEVENT",

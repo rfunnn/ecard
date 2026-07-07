@@ -269,7 +269,7 @@ export function generatePrintHTML(card: PrintCardInput): string {
   p4.push(
     `<div style="margin-top:6px;">` +
     `<p style="font-family:${SANS};font-size:6.5pt;letter-spacing:0.2em;color:${accent};text-transform:uppercase;opacity:0.42;margin-bottom:3px;">${lang ? "KAD DIGITAL" : "DIGITAL CARD"}</p>` +
-    `<p style="font-family:${SANS};font-size:8pt;color:${accent};opacity:0.58;">e-kadku.com/invite/${esc(card.slug)}</p>` +
+    `<p style="font-family:${SANS};font-size:8pt;color:${accent};opacity:0.58;">ekadku.com/invite/${esc(card.slug)}</p>` +
     `</div>`
   )
 
@@ -277,7 +277,7 @@ export function generatePrintHTML(card: PrintCardInput): string {
     `<div style="${pgStyle}">` +
     watermark + frame +
     `<div style="${centerCol}">${p4.join("")}</div>` +
-    `<p style="position:absolute;bottom:26px;left:0;right:0;text-align:center;font-family:${SANS};font-size:5.5pt;color:${accent};opacity:0.22;letter-spacing:0.25em;text-transform:uppercase;">e-kad ku &nbsp;&middot;&nbsp; kad jemputan digital</p>` +
+    `<p style="position:absolute;bottom:26px;left:0;right:0;text-align:center;font-family:${SANS};font-size:5.5pt;color:${accent};opacity:0.22;letter-spacing:0.25em;text-transform:uppercase;">ekadku.com &nbsp;&middot;&nbsp; kad jemputan digital</p>` +
     `</div>`
 
   return `<!DOCTYPE html>

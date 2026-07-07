@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
     },
   })
 
-  const billName = `Kad.my - ${cards[0].groomName ?? cards[0].title ?? "Pelanggan"}`
+  const billName = `ekadku.com - ${cards[0].groomName ?? cards[0].title ?? "Pelanggan"}`
   const billDesc = `${cards.length} kad jemputan digital`
   const baseUrl  = process.env.NEXTAUTH_URL ?? "http://localhost:3000"
 

@@ -104,7 +104,7 @@ export default function RegisterPage() {
           <ChevronLeft className="w-4 h-4" />
           Kembali
         </Link>
-        <span className="mx-auto font-playfair text-[15px] text-[var(--tx-1)]">Kad.my</span>
+        <span className="mx-auto font-playfair text-[15px] text-[var(--tx-1)]">ekadku.com</span>
         <div className="w-16" />
       </div>
 
