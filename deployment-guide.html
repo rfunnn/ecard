@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ekadku.com — VPS Deployment Guide</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 14px; color: #1a1a1a; background: #fff; padding: 40px; max-width: 860px; margin: auto; }
+  h1 { font-size: 26px; margin-bottom: 4px; color: #111; }
+  .subtitle { color: #666; margin-bottom: 32px; font-size: 13px; }
+  h2 { font-size: 17px; margin: 32px 0 10px; color: #1a1a1a; border-bottom: 2px solid #e2e2e2; padding-bottom: 6px; }
+  h3 { font-size: 14px; margin: 18px 0 6px; color: #333; }
+  p { margin-bottom: 10px; line-height: 1.6; }
+  ul, ol { padding-left: 20px; margin-bottom: 10px; }
+  li { margin-bottom: 5px; line-height: 1.6; }
+  pre { background: #f5f5f5; border: 1px solid #ddd; border-radius: 5px; padding: 12px 16px; font-family: 'Courier New', monospace; font-size: 12.5px; overflow-x: auto; margin: 8px 0 12px; white-space: pre-wrap; word-break: break-all; }
+  code { background: #f0f0f0; padding: 1px 5px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 12.5px; }
+  .step { background: #fafafa; border-left: 4px solid #2563eb; padding: 14px 18px; margin-bottom: 20px; border-radius: 0 6px 6px 0; }
+  .step-number { font-weight: 700; color: #2563eb; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .issue { background: #fff7ed; border-left: 4px solid #f97316; padding: 10px 14px; border-radius: 0 5px 5px 0; margin: 8px 0; font-size: 13px; }
+  .fix { background: #f0fdf4; border-left: 4px solid #22c55e; padding: 10px 14px; border-radius: 0 5px 5px 0; margin: 8px 0; font-size: 13px; }
+  .label { font-weight: 600; margin-right: 6px; }
+  table { border-collapse: collapse; width: 100%; margin: 10px 0 14px; font-size: 13px; }
+  th { background: #f0f0f0; text-align: left; padding: 7px 12px; border: 1px solid #ddd; font-weight: 600; }
+  td { padding: 7px 12px; border: 1px solid #ddd; }
+  tr:nth-child(even) { background: #fafafa; }
+  .badge { display: inline-block; background: #22c55e; color: #fff; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; margin-left: 8px; vertical-align: middle; }
+  @media print {
+    body { padding: 20px; }
+    pre { font-size: 11.5px; }
+    .step { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<h1>ekadku.com — VPS Deployment Guide <span class="badge">Completed</span></h1>
+<p class="subtitle">Platform: ekadku &nbsp;|&nbsp; VPS: 143.198.94.229 (DigitalOcean) &nbsp;|&nbsp; Domain: ekadku.com &nbsp;|&nbsp; Date: July 2026</p>
+
+<h2>1. Overview</h2>
+<p>This document records every step taken to deploy the <strong>ekadku</strong> Next.js 16 application on a VPS and serve it at <code>https://ekadku.com</code>.</p>
+
+<table>
+  <tr><th>Component</th><th>Technology</th></tr>
+  <tr><td>Application</td><td>Next.js 16 (standalone output)</td></tr>
+  <tr><td>Database</td><td>MariaDB 11.4</td></tr>
+  <tr><td>Object Storage</td><td>MinIO</td></tr>
+  <tr><td>ORM / Migrations</td><td>Prisma 7</td></tr>
+  <tr><td>Reverse Proxy + SSL</td><td>Nginx Proxy Manager (Let's Encrypt)</td></tr>
+  <tr><td>Container Runtime</td><td>Docker + Docker Compose</td></tr>
+  <tr><td>Domain Registrar</td><td>GoDaddy</td></tr>
+</table>
+
+<h2>2. Pre-Deployment Decision</h2>
+<p>Initially attempted to pull a pre-built Docker image from GitHub Container Registry (GHCR) but received an <code>unauthorized</code> error. The GitHub Actions CI/CD pipeline had not successfully built and pushed the image.</p>
+<p><strong>Decision:</strong> Build the Docker images directly on the VPS from source code instead of pulling from GHCR. This removes the dependency on GitHub Actions for the initial deployment.</p>
+
+<h2>3. VPS Preparation</h2>
+
+<div class="step">
+  <div class="step-number">Step 1 — Clone the repository</div>
+  <pre>apt install git -y
+git clone https://github.com/rfunnn/ecard-app.git /opt/ecard
+cd /opt/ecard/ecard</pre>
+</div>
+
+<div class="step">
+  <div class="step-number">Step 2 — Remove existing standalone containers (if any)</div>
+  <p>The VPS had existing standalone MariaDB and MinIO containers. These were removed so Docker Compose could manage a self-contained stack.</p>
+  <pre>docker stop &lt;old-mysql-container&gt; &lt;old-minio-container&gt;
+docker rm &lt;old-mysql-container&gt; &lt;old-minio-container&gt;</pre>
+</div>
+
+<div class="step">
+  <div class="step-number">Step 3 — Create the .env file</div>
+  <pre>nano /opt/ecard/ecard/.env</pre>
+  <p>Paste the following (replace secrets with real values):</p>
+  <pre># Database
+DB_ROOT_PASSWORD=Ekadku@Root2024!
+DB_PASSWORD=Ekadku@User2024!
+DB_USER=kad_user
+DB_NAME=kad_db
+
+# NextAuth
+NEXTAUTH_SECRET=&lt;output of: openssl rand -base64 32&gt;
+NEXTAUTH_URL=https://ekadku.com
+
+# Google OAuth (leave blank to disable)
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+# MinIO
+MINIO_ROOT_USER=admin
+MINIO_ROOT_PASSWORD=StrongPassword123
+STORAGE_BUCKET=ecard
+STORAGE_PUBLIC_URL=http://143.198.94.229:9000
+
+# Toyyibpay
+TOYYIBPAY_SECRET_KEY=
+TOYYIBPAY_CATEGORY_CODE=
+TOYYIBPAY_BASE_URL=https://toyyibpay.com
+
+# SMTP
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_USER=
+SMTP_PASS=
+SMTP_SECURE=false
+SMTP_FROM=noreply@ekadku.com</pre>
+  <p>Generate the <code>NEXTAUTH_SECRET</code>:</p>
+  <pre>openssl rand -base64 32</pre>
+</div>
+
+<h2>4. Dockerfile Fixes</h2>
+<p>Three issues in the Dockerfile were discovered and fixed during the deployment process.</p>
+
+<div class="step">
+  <div class="step-number">Fix 1 — Remove deprecated --skip-generate flag</div>
+  <div class="issue"><span class="label">Issue:</span> Prisma 7 removed the <code>--skip-generate</code> flag from <code>prisma db push</code>. The migrator container kept restarting with <em>"unknown or unexpected option"</em>.</div>
+  <div class="fix"><span class="label">Fix:</span> Removed the flag from the <code>ENTRYPOINT</code> in the <code>migrator</code> stage.</div>
+  <pre># Before
+ENTRYPOINT ["npx", "prisma", "db", "push", "--skip-generate"]
+
+# After
+ENTRYPOINT ["npx", "prisma", "db", "push"]</pre>
+</div>
+
+<div class="step">
+  <div class="step-number">Fix 2 — Move migrations into the app container</div>
+  <p>Removed the separate <code>migrate</code> service from <code>docker-compose.yml</code> and instead run <code>prisma db push</code> inside the app container at startup via an entrypoint script.</p>
+  <p>Created <code>entrypoint.sh</code> at the project root:</p>
+  <pre>#!/bin/sh
+set -e
+node node_modules/prisma/build/index.js db push --accept-data-loss
+exec node server.js</pre>
+  <p>Updated the <code>runner</code> stage in the Dockerfile:</p>
+  <pre># Copy full node_modules so Prisma CLI has its complete dependency tree
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY prisma/schema.prisma  ./prisma/schema.prisma
+COPY prisma.config.ts      ./
+COPY package.json          ./
+COPY --chmod=755 entrypoint.sh ./
+
+CMD ["./entrypoint.sh"]</pre>
+  <p>Updated <code>docker-compose.yml</code> — app service <code>depends_on</code> changed from <code>migrate</code> to just <code>db</code> and <code>storage</code>.</p>
+</div>
+
+<div class="step">
+  <div class="step-number">Fix 3 — Prisma WASM file path issue</div>
+  <div class="issue"><span class="label">Issue:</span> Copying only <code>node_modules/.bin/prisma</code> caused <em>"ENOENT prisma_schema_build_bg.wasm"</em> because Docker dereferences the symlink, making <code>__dirname</code> wrong — the CLI then looks for WASM files in <code>.bin/</code> instead of <code>prisma/build/</code>.</div>
+  <div class="fix"><span class="label">Fix:</span> Call the prisma CLI directly via <code>node node_modules/prisma/build/index.js</code> in <code>entrypoint.sh</code> (no symlink involved), and copy the full <code>node_modules</code> from the builder stage to ensure all transitive dependencies (<code>effect</code>, <code>@prisma/config</code>, etc.) are available.</div>
+</div>
+
+<h2>5. Build and Start</h2>
+
+<div class="step">
+  <div class="step-number">Step — Build images and start all containers</div>
+  <pre>cd /opt/ecard/ecard
+docker compose down
+docker compose up -d --build</pre>
+  <p>Expected healthy containers after a successful start:</p>
+  <table>
+    <tr><th>Container</th><th>Image</th><th>Status</th></tr>
+    <tr><td>ekadku-app-1</td><td>ekadku-app</td><td>Up (healthy)</td></tr>
+    <tr><td>ekadku-db-1</td><td>mariadb:11.4</td><td>Up (healthy)</td></tr>
+    <tr><td>ekadku-storage-1</td><td>minio/minio</td><td>Up (healthy)</td></tr>
+    <tr><td>ekadku-createbuckets-1</td><td>minio/mc</td><td>Exited (0)</td></tr>
+    <tr><td>npm</td><td>nginx-proxy-manager</td><td>Up</td></tr>
+  </table>
+  <p>Verify the app is responding:</p>
+  <pre>curl http://localhost:3000/api/health
+# Expected: {"ok":true,"db":"connected"}</pre>
+</div>
+
+<h2>6. Domain and SSL Setup</h2>
+
+<div class="step">
+  <div class="step-number">Step 1 — Add DNS A record at GoDaddy</div>
+  <p>GoDaddy → My Products → ekadku.com → DNS → Manage DNS</p>
+  <table>
+    <tr><th>Type</th><th>Name</th><th>Value</th><th>TTL</th></tr>
+    <tr><td>A</td><td>@</td><td>143.198.94.229</td><td>600</td></tr>
+  </table>
+  <p>Note: The existing <code>www</code> CNAME was left as-is (GoDaddy prevents adding a conflicting <code>www</code> A record).</p>
+  <p>Verify DNS propagation from VPS:</p>
+  <pre>nslookup ekadku.com
+# Expected: Address: 143.198.94.229</pre>
+</div>
+
+<div class="step">
+  <div class="step-number">Step 2 — Connect Nginx Proxy Manager to the app network</div>
+  <p>NPM runs in its own Docker network. It needs to join the app's network to forward traffic to <code>ekadku-app-1</code>.</p>
+  <pre>docker network connect ekadku_default npm</pre>
+  <p>Verify NPM can reach the app:</p>
+  <pre>docker exec npm curl -I http://ekadku-app-1:3000
+# Expected: HTTP/1.1 200 OK</pre>
+</div>
+
+<div class="step">
+  <div class="step-number">Step 3 — Configure Proxy Host in NPM UI</div>
+  <p>Open <code>http://143.198.94.229:81</code> → Proxy Hosts → Add Proxy Host</p>
+  <p><strong>Details tab:</strong></p>
+  <table>
+    <tr><th>Field</th><th>Value</th></tr>
+    <tr><td>Domain Names</td><td>ekadku.com</td></tr>
+    <tr><td>Scheme</td><td>http</td></tr>
+    <tr><td>Forward Hostname/IP</td><td>ekadku-app-1</td></tr>
+    <tr><td>Forward Port</td><td>3000</td></tr>
+    <tr><td>Block Common Exploits</td><td>✅ Enabled</td></tr>
+  </table>
+  <p><strong>SSL tab:</strong></p>
+  <ul>
+    <li>SSL Certificate → <strong>Request a new SSL Certificate</strong></li>
+    <li>✅ Force SSL</li>
+    <li>✅ HTTP/2 Support</li>
+    <li>✅ Agree to Let's Encrypt Terms of Service</li>
+    <li>Click <strong>Save</strong></li>
+  </ul>
+</div>
+
+<h2>7. Update for Future Code Deployments</h2>
+<p>When you push new code and want to redeploy on the VPS:</p>
+<pre>cd /opt/ecard/ecard
+git pull
+docker compose down
+docker compose up -d --build
+docker image prune -f</pre>
+
+<h2>8. Database Connection Details</h2>
+<table>
+  <tr><th>Field</th><th>Value</th></tr>
+  <tr><td>Host (inside Docker)</td><td>db</td></tr>
+  <tr><td>Port</td><td>3306</td></tr>
+  <tr><td>Database</td><td>kad_db</td></tr>
+  <tr><td>User</td><td>kad_user</td></tr>
+  <tr><td>Connection string</td><td>mysql://kad_user:Ekadku@User2024!@db:3306/kad_db</td></tr>
+</table>
+<p>Port 3306 is <strong>not exposed</strong> to the host for security. Connect externally by temporarily adding a port mapping to <code>docker-compose.yml</code> if needed.</p>
+
+<h2>9. Useful Commands</h2>
+<pre># View running containers
+docker ps
+
+# View app logs
+docker logs -f ekadku-app-1
+
+# Restart just the app (no rebuild)
+docker compose up -d app
+
+# Run migrations manually
+docker exec ekadku-app-1 node node_modules/prisma/build/index.js db push --accept-data-loss
+
+# Check health endpoint
+curl https://ekadku.com/api/health</pre>
+
+</body>
+</html>

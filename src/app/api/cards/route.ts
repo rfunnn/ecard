@@ -76,6 +76,22 @@ export async function POST(req: NextRequest) {
 
     const session = await getServerSession(authOptions)
 
+    // A JWT session can outlive its User row — e.g. the DB was reset by
+    // `prisma db push --accept-data-loss` on deploy while the browser kept a
+    // valid session cookie. Writing that stale id would violate the userId
+    // foreign key and fail the whole insert, so verify the user still exists.
+    let userId: string | undefined
+    if (session?.user?.id) {
+      const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { id: true },
+      })
+      if (!user) {
+        return NextResponse.json({ error: "SESSION_EXPIRED" }, { status: 401 })
+      }
+      userId = user.id
+    }
+
     const card = await prisma.invitationCard.create({
       data: {
         slug,
@@ -83,7 +99,7 @@ export async function POST(req: NextRequest) {
         title: data.title,
         language: data.language,
         wizardConfig: wizardConfig as object,
-        ...(session?.user?.id ? { userId: session.user.id } : {}),
+        ...(userId ? { userId } : {}),
         theme: { create: { ...DEFAULT_THEME } },
         media: { create: { ...DEFAULT_MEDIA, youtubeUrl: DEMO_YOUTUBE_URL, youtubeVideoId: DEMO_YOUTUBE_VIDEO_ID } },
         scrollConfig: { create: { ...DEFAULT_SCROLL } },
@@ -104,6 +120,7 @@ export async function POST(req: NextRequest) {
     if (err instanceof z.ZodError) {
       return NextResponse.json({ error: err.issues }, { status: 400 })
     }
+    console.error("POST /api/cards failed:", err)
     return NextResponse.json({ error: "Failed to create card" }, { status: 500 })
   }
 }

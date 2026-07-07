@@ -108,6 +108,13 @@ export default function LikesPage() {
 
   const handleTryNow = useCallback(async (template: Template) => {
     if (creating) return
+    // Guests get an ephemeral trial builder (no DB write, edits lost on refresh).
+    // Only branch on a definite "unauthenticated" so a logged-in user caught in
+    // the transient "loading" state still goes through the normal DB flow.
+    if (status === "unauthenticated") {
+      router.push(`/builder/try/${template.slug}`)
+      return
+    }
     setCreating(template.id)
     try {
       const res = await fetch("/api/cards", {
@@ -115,13 +122,21 @@ export default function LikesPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ templateId: template.id, title: "Jemputan", language: "ms" }),
       })
-      if (!res.ok) throw new Error("Failed")
+      // Stale JWT session (user row gone) — force a fresh login and come back here.
+      if (res.status === 401) {
+        router.push(`/login?callbackUrl=${encodeURIComponent("/likes")}`)
+        return
+      }
+      if (!res.ok) throw new Error(`Create failed (${res.status})`)
       const { card } = await res.json()
+      if (!card?.slug) throw new Error("Malformed response")
       router.push(`/builder/${card.slug}`)
-    } catch {
+    } catch (err) {
+      console.error("handleTryNow failed:", err)
+      alert("Gagal membuka pembina kad. Sila cuba lagi.")
       setCreating(null)
     }
-  }, [creating, router])
+  }, [creating, status, router])
 
   const handleView = (template: Template) => {
     if (template.previewUrl) {

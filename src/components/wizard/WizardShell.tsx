@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import Link from "next/link"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 import { ChevronLeft, ChevronRight, Save, Eye, X, ShoppingBag, ExternalLink } from "lucide-react"
 import { useWizardStore, TOTAL_PAGES } from "@/store/wizardStore"
 import type { TemplateInfo } from "@/store/wizardStore"
@@ -31,6 +31,9 @@ import { Page12_Segments } from "./pages/Page12_Segments"
 
 interface Props {
   initialCard: InvitationCardData
+  // Guest mode: the card is ephemeral (not in the DB). Saving is disabled and
+  // instead sends the visitor to register so their work can be persisted.
+  guest?: boolean
 }
 
 const PAGE_NAMES_MS = [
@@ -190,7 +193,8 @@ function buildCardPreview(
   }
 }
 
-export function WizardShell({ initialCard }: Props) {
+export function WizardShell({ initialCard, guest = false }: Props) {
+  const router = useRouter()
   const {
     config,
     cardSlug,
@@ -291,6 +295,12 @@ export function WizardShell({ initialCard }: Props) {
   )
 
   const save = useCallback(async () => {
+    // Guests have no card to save to — send them to register. Their in-memory
+    // edits are intentionally discarded (a fresh account starts clean).
+    if (guest) {
+      router.push(`/register?callbackUrl=${encodeURIComponent("/new")}`)
+      return
+    }
     setIsSaving(true)
     setSaveError(null)
     try {
@@ -313,7 +323,7 @@ export function WizardShell({ initialCard }: Props) {
     } finally {
       setIsSaving(false)
     }
-  }, [cardPreview, config, initialCard.isPublished, initialCard.slug, markClean, setIsSaving, templateOverride])
+  }, [guest, router, cardPreview, config, initialCard.isPublished, initialCard.slug, markClean, setIsSaving, templateOverride])
 
   const handlePreviewOpen = useCallback(() => {
     setPreviewOpen(true)
@@ -364,11 +374,16 @@ export function WizardShell({ initialCard }: Props) {
         {/* Header */}
         <div className="shrink-0 border-b border-gray-100 px-4 pt-3 pb-2">
           <div className="flex items-center justify-between mb-2">
-            <Link href="/dashboard" className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1">
+            <Link href={guest ? "/new" : "/dashboard"} className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1">
               <ChevronLeft className="w-4 h-4" />
-              {isMs ? "Dashboard" : "Dashboard"}
+              {guest ? (isMs ? "Templat" : "Templates") : "Dashboard"}
             </Link>
             <div className="flex items-center gap-1">
+              {guest && (
+                <span className="text-[10px] font-bold tracking-widest text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                  {isMs ? "CUBAAN" : "TRIAL"}
+                </span>
+              )}
               {initialCard.isPublished && (
                 <span className="flex items-center gap-1 text-[10px] font-bold tracking-widest text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -383,7 +398,7 @@ export function WizardShell({ initialCard }: Props) {
                 <Eye className="w-3.5 h-3.5" />
                 {isMs ? "Lihat Kad" : "View Card"}
               </button>
-              {!initialCard.isPublished && (
+              {!guest && !initialCard.isPublished && (
                 <button
                   type="button"
                   onClick={() => setCartOpen(true)}
@@ -441,7 +456,7 @@ export function WizardShell({ initialCard }: Props) {
                 disabled={isSaving}
                 className="px-5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-md disabled:opacity-60 transition-colors"
               >
-                {isSaving ? "..." : "SAVE"}
+                {isSaving ? "..." : guest ? (isMs ? "DAFTAR" : "SIGN UP") : "SAVE"}
               </button>
             ) : (
               <button
