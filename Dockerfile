@@ -94,6 +94,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static    ./.next/static
 # tree (@prisma/config, effect, etc.), so we overlay the complete set here.
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY prisma/schema.prisma                      ./prisma/schema.prisma
+COPY prisma/seed.js                            ./prisma/seed.js
 COPY prisma.config.ts                          ./
 COPY package.json                              ./
 COPY --chmod=755 entrypoint.sh                 ./
