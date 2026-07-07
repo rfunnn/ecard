@@ -272,8 +272,8 @@ export function TemplateForm({ initialData }: Props) {
 
           {/* B. Image Upload */}
           <div className={sectionCls}>
-            <h2 className={sectionHeadingCls}>B · Muat Naik Imej (9:16)</h2>
-            <div className="grid grid-cols-2 gap-6">
+            <h2 className={sectionHeadingCls}>B · Muat Naik Imej (potret)</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <ImageUploader
                 label="Imej 1 — Skrin Depan"
                 value={image1Url}

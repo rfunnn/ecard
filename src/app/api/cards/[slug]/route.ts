@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import bcrypt from "bcryptjs"
 import { Prisma } from "@prisma/client"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth-options"
 import { prisma } from "@/lib/prisma"
 import { extractYoutubeVideoId } from "@/lib/youtube"
 
@@ -186,5 +188,38 @@ export async function PATCH(
       return NextResponse.json({ error: err.issues }, { status: 400 })
     }
     return NextResponse.json({ error: "Failed to update card" }, { status: 500 })
+  }
+}
+
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  const { slug } = await params
+
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  const card = await prisma.invitationCard.findUnique({
+    where: { slug },
+    select: { id: true, userId: true },
+  })
+  if (!card) return NextResponse.json({ error: "Not found" }, { status: 404 })
+  if (card.userId !== session.user.id) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+  }
+
+  try {
+    // RSVP, analytics and order-item rows don't cascade — remove them before the card itself.
+    await prisma.rSVP.deleteMany({ where: { cardId: card.id } })
+    await prisma.cardAnalytic.deleteMany({ where: { cardId: card.id } })
+    await prisma.orderItem.deleteMany({ where: { cardId: card.id } })
+    await prisma.invitationCard.delete({ where: { id: card.id } })
+    return NextResponse.json({ ok: true })
+  } catch (err) {
+    console.error("DELETE /api/cards/[slug] failed:", err)
+    return NextResponse.json({ error: "Failed to delete card" }, { status: 500 })
   }
 }

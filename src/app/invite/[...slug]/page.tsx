@@ -56,8 +56,11 @@ export default async function InvitePage({ params, searchParams }: Props) {
     })
 
     const tmplCfg    = (demoTemplate?.defaultConfig ?? {}) as { primaryColor?: string; bgColor?: string; titleFont?: string }
-    const demoPrimary = tmplCfg.primaryColor ?? "#9b4d5e"
-    const demoBg      = tmplCfg.bgColor      ?? "#faf7f4"
+    // Package example cards (and the generic demo) always use the "creamy maroon"
+    // house theme. Only an explicit ?template= preview keeps that template's own colours.
+    const isTemplatePreview = !!templateSlug
+    const demoPrimary = isTemplatePreview ? (tmplCfg.primaryColor ?? "#7B1414") : "#7B1414"
+    const demoBg      = isTemplatePreview ? (tmplCfg.bgColor      ?? "#fdf5ee") : "#fdf5ee"
 
     // eslint-disable-next-line react-hooks/purity
     const eventStart = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000)

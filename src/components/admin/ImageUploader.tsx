@@ -11,9 +11,12 @@ interface Props {
   required?: boolean
 }
 
-const EXPECTED_RATIO = 16 / 9 // height / width for 9:16 portrait
-const RATIO_TOLERANCE = 0.08
+// Designs are tall phone screens (roughly 9:16 up to 9:19.5). We only *warn* when an
+// image isn't portrait — we never block the preview or upload, so admins always see
+// what they picked. ratio = height / width; portrait means ratio > 1.
+const MIN_PORTRAIT_RATIO = 1.3
 
+// Returns a non-blocking warning message, or null when the aspect ratio looks fine.
 function checkRatio(file: File): Promise<string | null> {
   return new Promise((resolve) => {
     const url = URL.createObjectURL(file)
@@ -21,9 +24,9 @@ function checkRatio(file: File): Promise<string | null> {
     img.onload = () => {
       URL.revokeObjectURL(url)
       const ratio = img.height / img.width
-      if (Math.abs(ratio - EXPECTED_RATIO) > RATIO_TOLERANCE * EXPECTED_RATIO) {
+      if (ratio < MIN_PORTRAIT_RATIO) {
         resolve(
-          `Nisbah imej tidak sesuai (${img.width}×${img.height}). Diperlukan nisbah 9:16 seperti 1080×1920`
+          `Imej ini kelihatan tidak menegak (${img.width}×${img.height}). Untuk hasil terbaik gunakan potret seperti 1080×1920 (9:16).`
         )
       } else {
         resolve(null)
@@ -38,6 +41,7 @@ export function ImageUploader({ label, value, onChange, required }: Props) {
   const inputRef = useRef<HTMLInputElement | undefined>(undefined)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [warning, setWarning] = useState<string | null>(null)
   const [dragOver, setDragOver] = useState(false)
 
   const handleFile = async (file: File) => {
@@ -45,6 +49,7 @@ export function ImageUploader({ label, value, onChange, required }: Props) {
     if (value?.startsWith("blob:")) URL.revokeObjectURL(value)
 
     setError(null)
+    setWarning(null)
 
     if (!file.type.startsWith("image/")) {
       setError("Hanya fail imej dibenarkan")
@@ -55,11 +60,8 @@ export function ImageUploader({ label, value, onChange, required }: Props) {
       return
     }
 
-    const ratioError = await checkRatio(file)
-    if (ratioError) {
-      setError(ratioError)
-      return
-    }
+    // Aspect ratio is only a hint — never blocks preview or upload.
+    setWarning(await checkRatio(file))
 
     // Show local preview immediately so the phone frame updates without waiting for the upload
     const objectUrl = URL.createObjectURL(file)
@@ -87,6 +89,7 @@ export function ImageUploader({ label, value, onChange, required }: Props) {
     if (value?.startsWith("blob:")) URL.revokeObjectURL(value)
     onChange("")
     setError(null)
+    setWarning(null)
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -169,9 +172,12 @@ export function ImageUploader({ label, value, onChange, required }: Props) {
       {error && (
         <p className="text-xs text-red-500 text-center">{error}</p>
       )}
+      {!error && warning && (
+        <p className="text-xs text-amber-600 text-center">{warning}</p>
+      )}
 
       <p className="text-xs text-gray-400 text-center">
-        JPEG/PNG/WebP · Max 5 MB · Nisbah 9:16
+        JPEG/PNG/WebP · Max 5 MB · Potret (9:16)
       </p>
 
       <input

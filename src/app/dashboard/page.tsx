@@ -12,6 +12,7 @@ import {
 } from "lucide-react"
 import type { WizardConfig } from "@/types/config"
 import { generatePrintHTML } from "@/lib/print-card"
+import { removeFromCart } from "@/lib/cart"
 
 type Card = {
   id: string
@@ -485,8 +486,23 @@ function DashboardInner() {
 
   if (!session) return null
 
-  function handleRemove(slug: string) {
+  async function handleRemove(slug: string) {
+    if (!confirm("Padam kad ini secara kekal? Tindakan ini tidak boleh dibatalkan.")) return
+
+    const snapshot = cards
+    // Optimistic removal
     setCards(prev => prev.filter(c => c.slug !== slug))
+
+    try {
+      const res = await fetch(`/api/cards/${slug}`, { method: "DELETE" })
+      if (!res.ok) throw new Error(`Delete failed (${res.status})`)
+      // Keep the localStorage "saved cards" list in sync
+      removeFromCart(slug)
+    } catch (err) {
+      console.error("Failed to remove card:", err)
+      setCards(snapshot) // rollback on failure
+      alert("Gagal memadam kad. Sila cuba lagi.")
+    }
   }
 
   const sideNav = [
@@ -515,18 +531,36 @@ function DashboardInner() {
       </aside>
 
       {/* ── Main ── */}
-      <main className="flex-1 min-w-0 px-6 md:px-10 py-8">
+      <main className="flex-1 min-w-0 px-4 sm:px-6 md:px-10 py-6 md:py-8">
+        {/* Mobile tab nav (sidebar is hidden on small screens) */}
+        <div className="md:hidden flex gap-5 mb-5 border-b border-gray-100 overflow-x-auto scrollbar-hide">
+          {sideNav.map(({ key, label }) => (
+            <Link
+              key={key}
+              href={key === "profile" ? "/profile" : `/dashboard?tab=${key}`}
+              className={`shrink-0 pb-2.5 text-[11px] font-bold tracking-widest transition-colors ${
+                tab === key
+                  ? "text-gray-900 border-b-2 border-gray-900"
+                  : "text-gray-400 hover:text-gray-700"
+              }`}
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
+
         {/* Top bar */}
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-xl font-black tracking-widest text-gray-900 uppercase">
+        <div className="flex items-center justify-between gap-3 mb-6">
+          <h1 className="text-lg sm:text-xl font-black tracking-widest text-gray-900 uppercase">
             {tab === "orders" ? "Orders" : tab === "favorites" ? "Favorites" : "My Profile"}
           </h1>
           <Link
             href="/templates"
-            className="flex items-center gap-1.5 bg-gray-900 text-white text-xs font-black tracking-widest uppercase px-4 py-2.5 rounded-lg hover:bg-gray-700 transition-colors"
+            className="flex items-center gap-1.5 shrink-0 bg-gray-900 text-white text-[11px] sm:text-xs font-black tracking-widest uppercase px-3 sm:px-4 py-2.5 rounded-lg hover:bg-gray-700 transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
-            Create New Card
+            <span className="hidden sm:inline">Create New Card</span>
+            <span className="sm:hidden">New</span>
           </Link>
         </div>
 
