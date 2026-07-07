@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
+﻿/* eslint-disable @next/next/no-img-element */
 "use client"
 
 import { useEffect, useRef, useState, useCallback } from "react"
@@ -115,7 +115,7 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
           if (window.history.length > 1) {
             router.back()
           } else {
-            router.push("/new")
+            router.push("/templates")
           }
         }}
         className="fixed top-4 left-4 z-50 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs backdrop-blur-sm transition-all hover:opacity-80"

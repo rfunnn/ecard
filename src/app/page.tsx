@@ -1,4 +1,4 @@
-import Link from "next/link"
+﻿import Link from "next/link"
 import { ArrowRight, Music, Share2, Sparkles, Heart, Check } from "lucide-react"
 import UserMenu from "@/components/UserMenu"
 import { HomepagePhoneMockup } from "@/components/HomepagePhoneMockup"
@@ -106,7 +106,7 @@ export default function HomePage() {
           </Link>
           <UserMenu />
           <Link
-            href="/new"
+            href="/templates"
             className="inline-flex items-center gap-1.5 bg-gold text-ink text-[13px] font-semibold px-4 py-2 rounded-full hover:bg-gold-light transition-all hover:shadow-lg hover:shadow-gold/20 active:scale-95"
           >
             Buat Kad
@@ -138,7 +138,7 @@ export default function HomePage() {
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto mb-5 lg:mb-10">
               <Link
-                href="/new"
+                href="/templates"
                 className="inline-flex items-center justify-center gap-2 bg-gold text-ink font-semibold px-5 py-2.5 rounded-full hover:bg-gold-light transition-all hover:shadow-xl hover:shadow-gold/20 active:scale-95 text-[13px] sm:text-[15px]"
               >
                 Buat Kad Sekarang
@@ -289,7 +289,7 @@ export default function HomePage() {
             Buat kad jemputan pertama anda secara percuma hari ini.
           </p>
           <Link
-            href="/new"
+            href="/templates"
             className="inline-flex items-center gap-2 bg-gold text-ink font-semibold px-8 py-3.5 rounded-full hover:bg-gold-light transition-all hover:shadow-xl hover:shadow-gold/20 active:scale-95 text-[15px]"
           >
             Mulakan Sekarang <ArrowRight className="w-4 h-4" />

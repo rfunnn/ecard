@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useState, useCallback } from "react"
 import { useSession } from "next-auth/react"
@@ -155,7 +155,7 @@ export default function LikesPage() {
       <div className="sticky top-0 z-40 bg-[var(--pg-nav)] backdrop-blur-md border-b border-[var(--bd)]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between h-12">
           <Link
-            href="/new"
+            href="/templates"
             className="flex items-center gap-2 text-[var(--tx-3)] hover:text-[var(--tx-1)] transition-colors"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -197,7 +197,7 @@ export default function LikesPage() {
               Tekan ikon ❤ pada templat yang anda suka semasa melayari koleksi kami
             </p>
             <Link
-              href="/new"
+              href="/templates"
               className="inline-flex items-center gap-2 bg-gold/10 hover:bg-gold/20 border border-gold/25 text-gold text-sm font-medium px-5 py-2.5 rounded-full transition-colors"
             >
               <Sparkles className="w-4 h-4" />

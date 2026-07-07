@@ -12,9 +12,18 @@ export default function UserMenu() {
   const { data: session, status } = useSession()
   const { theme, toggle } = useTheme()
   const [open, setOpen] = useState(false)
+  const [cardCount, setCardCount] = useState(0)
   const [likes, setLikes] = useState<LikedTemplate[]>([])
   const [likesLoaded, setLikesLoaded] = useState(false)
   const ref = useRef<HTMLDivElement | undefined>(undefined)
+
+  useEffect(() => {
+    if (!session) { setCardCount(0); return }
+    fetch("/api/user/cards")
+      .then(r => r.json())
+      .then(d => setCardCount(d.cards?.length ?? 0))
+      .catch(() => {})
+  }, [session])
 
   useEffect(() => {
     function onOutsideClick(e: MouseEvent) {
@@ -137,6 +146,11 @@ export default function UserMenu() {
               >
                 <ShoppingBag className="w-4 h-4 shrink-0" />
                 Kad Saya
+                {cardCount > 0 && (
+                  <span className="ml-auto min-w-[18px] h-[18px] text-[10px] bg-gold text-ink rounded-full flex items-center justify-center px-1 font-bold leading-none">
+                    {cardCount}
+                  </span>
+                )}
               </Link>
             </div>
 

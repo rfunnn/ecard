@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useState, useRef, useCallback, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
@@ -144,7 +144,7 @@ function CheckoutSuccessContent() {
         <p className="text-sm text-[var(--tx-3)] mb-6 max-w-sm">
           Pembayaran anda sedang disahkan. Kad anda akan diterbitkan secara automatik sebaik sahaja pengesahan selesai.
         </p>
-        <Link href="/new" className="text-gold text-sm hover:underline">Kembali ke templat</Link>
+        <Link href="/templates" className="text-gold text-sm hover:underline">Kembali ke templat</Link>
       </div>
     )
   }
@@ -198,7 +198,7 @@ function CheckoutSuccessContent() {
         {/* Actions */}
         <div className="flex flex-col gap-3">
           <Link
-            href="/new"
+            href="/templates"
             className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gold hover:bg-gold/90 text-ink text-sm font-bold transition-all"
           >
             Buat Kad Lain

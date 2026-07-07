@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
@@ -326,7 +326,7 @@ export default function NewCardPage() {
       })
       // Stale JWT session (user row gone) — force a fresh login and come back here.
       if (res.status === 401) {
-        router.push(`/login?callbackUrl=${encodeURIComponent("/new")}`)
+        router.push(`/login?callbackUrl=${encodeURIComponent("/templates")}`)
         return
       }
       if (!res.ok) throw new Error(`Create failed (${res.status})`)

@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect } from "react"
 import { createPortal } from "react-dom"
@@ -230,7 +230,7 @@ export function CartDrawer({ isOpen, onClose }: Props) {
                 </Link>
               )}
               <Link
-                href="/new"
+                href="/templates"
                 onClick={onClose}
                 className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-gold/10 border border-gold/20 text-gold text-sm font-medium hover:bg-gold/20 transition-colors"
               >

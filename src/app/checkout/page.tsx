@@ -1,8 +1,9 @@
-"use client"
+﻿"use client"
 
+import { Suspense } from "react"
 import { useEffect, useState, useCallback } from "react"
 import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import {
   ChevronLeft, ShoppingBag, Shield, Loader2,
@@ -95,7 +96,6 @@ function CardRow({ card }: { card: CartCard }) {
 
   return (
     <div className="flex gap-4 p-4 rounded-xl border border-[var(--bd)] bg-[var(--pg-alt)] hover:border-gold/20 transition-colors">
-      {/* Mini card thumbnail */}
       <div
         className="shrink-0 w-10 rounded-lg overflow-hidden flex flex-col items-center justify-center"
         style={{ aspectRatio: "3/4", background: bg, border: `1px solid ${accent}30` }}
@@ -104,13 +104,11 @@ function CardRow({ card }: { card: CartCard }) {
         <span className="text-base mt-auto mb-auto">{CATEGORY_EMOJI[card.template.category] ?? "✉️"}</span>
       </div>
 
-      {/* Details */}
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-[var(--tx-1)] truncate">{displayName}</p>
         <p className="text-xs text-[var(--tx-3)] mt-0.5">{card.template.nameMs}</p>
 
         <div className="flex flex-wrap gap-1.5 mt-2">
-          {/* Package badge */}
           <span
             className="inline-flex items-center gap-1 text-[10px] font-semibold rounded-full px-2 py-0.5"
             style={{
@@ -123,7 +121,6 @@ function CardRow({ card }: { card: CartCard }) {
             {pkg.label} — RM{pkg.price}
           </span>
 
-          {/* Add-on badges */}
           {wc?.addOnCustomDesign && (
             <span className="inline-flex items-center gap-1 text-[10px] text-purple-400 bg-purple-400/10 border border-purple-400/20 rounded-full px-2 py-0.5">
               <Paintbrush className="w-2.5 h-2.5" /> Reka Bentuk +RM10
@@ -137,7 +134,6 @@ function CardRow({ card }: { card: CartCard }) {
         </div>
       </div>
 
-      {/* Price */}
       <div className="shrink-0 text-right">
         <p className="text-base font-bold text-gold">RM{total}</p>
       </div>
@@ -148,37 +144,51 @@ function CardRow({ card }: { card: CartCard }) {
 // ─── page ────────────────────────────────────────────────────────────────────
 
 export default function CheckoutPage() {
+  return (
+    <Suspense>
+      <CheckoutInner />
+    </Suspense>
+  )
+}
+
+function CheckoutInner() {
   const router = useRouter()
   const { status } = useSession()
+  const params = useSearchParams()
+  const specificSlug = params.get("slug")
 
   const [cards, setCards]     = useState<CartCard[]>([])
   const [loading, setLoading] = useState(true)
   const [paying,  setPaying]  = useState(false)
   const [error,   setError]   = useState<string | null>(null)
 
-  // Redirect guests to login
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.replace("/login?callbackUrl=/checkout")
+      const callbackUrl = specificSlug
+        ? `/checkout?slug=${specificSlug}`
+        : "/checkout"
+      router.replace(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`)
     }
-  }, [status, router])
+  }, [status, router, specificSlug])
 
-  // Load cart cards
   useEffect(() => {
     if (status !== "authenticated") return
 
-    const slugs = getCartSlugs()
-    if (slugs.length === 0) {
+    // When coming from dashboard "PAY NOW", only load that specific card.
+    // Otherwise fall back to the full localStorage cart.
+    const slugsToLoad = specificSlug ? [specificSlug] : getCartSlugs()
+
+    if (slugsToLoad.length === 0) {
       setLoading(false)
       return
     }
 
-    fetch(`/api/cards?slugs=${slugs.join(",")}`)
+    fetch(`/api/cards?slugs=${slugsToLoad.join(",")}`)
       .then((r) => r.json())
       .then((d) => setCards(d.cards ?? []))
       .catch(() => setCards([]))
       .finally(() => setLoading(false))
-  }, [status])
+  }, [status, specificSlug])
 
   const unpaidCards    = cards.filter((c) => !c.isPublished)
   const publishedCards = cards.filter((c) =>  c.isPublished)
@@ -202,7 +212,6 @@ export default function CheckoutPage() {
         return
       }
 
-      // Redirect to Toyyibpay
       window.location.href = data.paymentUrl
     } catch {
       setError("Masalah sambungan. Sila cuba lagi.")
@@ -212,6 +221,8 @@ export default function CheckoutPage() {
   }, [paying, unpaidCards])
 
   const isLoading = status === "loading" || loading
+  const backHref  = specificSlug ? "/dashboard" : "/templates"
+  const backLabel = specificSlug ? "Kad Saya" : "Kembali"
 
   return (
     <div className="min-h-screen bg-[var(--pg)] flex flex-col">
@@ -220,11 +231,11 @@ export default function CheckoutPage() {
       <div className="sticky top-0 z-40 bg-[var(--pg-nav)] backdrop-blur-md border-b border-[var(--bd)]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 flex items-center justify-between h-12">
           <Link
-            href="/new"
+            href={backHref}
             className="flex items-center gap-2 text-[var(--tx-3)] hover:text-[var(--tx-1)] transition-colors"
           >
             <ChevronLeft className="w-4 h-4" />
-            <span className="text-sm font-medium">Kembali</span>
+            <span className="text-sm font-medium">{backLabel}</span>
           </Link>
           <h1 className="font-playfair text-[15px] text-[var(--tx-1)]">Pembayaran</h1>
           <div className="w-20" />
@@ -241,10 +252,10 @@ export default function CheckoutPage() {
         ) : cards.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <ShoppingBag className="w-12 h-12 text-[var(--tx-3)]/30 mb-4" />
-            <h2 className="text-lg font-semibold text-[var(--tx-1)] mb-2">Tiada kad dalam troli</h2>
+            <h2 className="text-lg font-semibold text-[var(--tx-1)] mb-2">Tiada kad untuk dibayar</h2>
             <p className="text-sm text-[var(--tx-3)] mb-6">Buat kad dahulu untuk meneruskan pembayaran</p>
             <Link
-              href="/new"
+              href="/templates"
               className="inline-flex items-center gap-2 bg-gold/10 hover:bg-gold/20 border border-gold/25 text-gold text-sm font-medium px-5 py-2.5 rounded-full transition-colors"
             >
               <Sparkles className="w-4 h-4" /> Pilih Templat
@@ -256,6 +267,19 @@ export default function CheckoutPage() {
 
             {/* ── Left: Card list ── */}
             <div className="space-y-3">
+              {/* Context banner when paying for a single specific card */}
+              {specificSlug && unpaidCards.length === 1 && (
+                <div className="flex items-start gap-3 rounded-xl border border-gold/20 bg-gold/5 px-4 py-3">
+                  <Sparkles className="w-4 h-4 text-gold shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-semibold text-[var(--tx-1)]">Pembayaran untuk kad ini sahaja</p>
+                    <p className="text-xs text-[var(--tx-3)] mt-0.5">
+                      Kad lain dalam akaun anda tidak termasuk dalam transaksi ini.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {unpaidCards.length > 0 && (
                 <div>
                   <p className="text-[10px] font-bold text-[var(--tx-3)] uppercase tracking-widest mb-3">
@@ -282,13 +306,11 @@ export default function CheckoutPage() {
             {/* ── Right: Order summary ── */}
             <div className="lg:sticky lg:top-20 space-y-4">
               <div className="rounded-xl border border-[var(--bd)] bg-[var(--pg-alt)] overflow-hidden">
-                {/* Summary header */}
                 <div className="px-5 py-4 border-b border-[var(--bd)]">
                   <p className="font-semibold text-[var(--tx-1)]">Ringkasan Pesanan</p>
                 </div>
 
                 <div className="px-5 py-4 space-y-3">
-                  {/* Per-card breakdown */}
                   {unpaidCards.map((c) => {
                     const name = c.groomName && c.brideName
                       ? `${c.groomName} & ${c.brideName}`
@@ -306,18 +328,14 @@ export default function CheckoutPage() {
                     <p className="text-sm text-[var(--tx-3)]">Semua kad sudah aktif.</p>
                   )}
 
-                  {/* Total */}
                   {unpaidCards.length > 0 && (
-                    <>
-                      <div className="border-t border-[var(--bd)] pt-3 flex items-center justify-between">
-                        <span className="text-sm font-semibold text-[var(--tx-1)]">Jumlah</span>
-                        <span className="text-lg font-bold text-gold">RM{subtotal}</span>
-                      </div>
-                    </>
+                    <div className="border-t border-[var(--bd)] pt-3 flex items-center justify-between">
+                      <span className="text-sm font-semibold text-[var(--tx-1)]">Jumlah</span>
+                      <span className="text-lg font-bold text-gold">RM{subtotal}</span>
+                    </div>
                   )}
                 </div>
 
-                {/* Pay button */}
                 {unpaidCards.length > 0 && (
                   <div className="px-5 pb-5 space-y-3">
                     {error && (
@@ -345,10 +363,8 @@ export default function CheckoutPage() {
                 )}
               </div>
 
-              {/* Payment methods */}
               {unpaidCards.length > 0 && <PaymentMethods />}
 
-              {/* What you get */}
               {unpaidCards.length > 0 && (
                 <div className="rounded-xl border border-[var(--bd)] bg-[var(--pg-alt)] px-5 py-4">
                   <p className="text-[10px] font-bold text-[var(--tx-3)] uppercase tracking-widest mb-3">

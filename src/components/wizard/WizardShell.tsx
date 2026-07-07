@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
+﻿/* eslint-disable @next/next/no-img-element */
 "use client"
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react"
@@ -298,7 +298,7 @@ export function WizardShell({ initialCard, guest = false }: Props) {
     // Guests have no card to save to — send them to register. Their in-memory
     // edits are intentionally discarded (a fresh account starts clean).
     if (guest) {
-      router.push(`/register?callbackUrl=${encodeURIComponent("/new")}`)
+      router.push(`/register?callbackUrl=${encodeURIComponent("/templates")}`)
       return
     }
     setIsSaving(true)
@@ -374,7 +374,7 @@ export function WizardShell({ initialCard, guest = false }: Props) {
         {/* Header */}
         <div className="shrink-0 border-b border-gray-100 px-4 pt-3 pb-2">
           <div className="flex items-center justify-between mb-2">
-            <Link href={guest ? "/new" : "/dashboard"} className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1">
+            <Link href={guest ? "/templates" : "/dashboard"} className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1">
               <ChevronLeft className="w-4 h-4" />
               {guest ? (isMs ? "Templat" : "Templates") : "Dashboard"}
             </Link>
