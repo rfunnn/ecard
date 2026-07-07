@@ -4,7 +4,6 @@ import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
 import { useState, useRef, useEffect } from "react"
 import { User, Heart, ShoppingBag, Sun, Moon, LogOut, ExternalLink } from "lucide-react"
-import { getCartCount } from "@/lib/cart"
 import { useTheme } from "@/components/ThemeProvider"
 
 interface LikedTemplate { id: string; slug: string; name: string; nameMs?: string | null }
@@ -13,14 +12,9 @@ export default function UserMenu() {
   const { data: session, status } = useSession()
   const { theme, toggle } = useTheme()
   const [open, setOpen] = useState(false)
-  const [cartCount, setCartCount] = useState(0)
   const [likes, setLikes] = useState<LikedTemplate[]>([])
   const [likesLoaded, setLikesLoaded] = useState(false)
   const ref = useRef<HTMLDivElement | undefined>(undefined)
-
-  useEffect(() => {
-    setCartCount(getCartCount())
-  }, [])
 
   useEffect(() => {
     function onOutsideClick(e: MouseEvent) {
@@ -71,11 +65,6 @@ export default function UserMenu() {
             <User className="w-4 h-4" />
           )}
 
-          {cartCount > 0 && !open && (
-            <span className="absolute -top-0.5 -right-0.5 min-w-[14px] h-[14px] text-[9px] bg-gold text-ink rounded-full flex items-center justify-center px-0.5 font-bold leading-none pointer-events-none">
-              {cartCount}
-            </span>
-          )}
         </button>
 
         {/* ── Dropdown ── */}
@@ -139,20 +128,15 @@ export default function UserMenu() {
               </div>
             )}
 
-            {/* Cart */}
+            {/* Kad Saya */}
             <div className="py-1">
               <Link
-                href="/cart"
+                href="/dashboard"
                 onClick={() => setOpen(false)}
                 className="flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--tx-2)] hover:text-[var(--tx-1)] hover:bg-[var(--sf)] transition-colors w-full"
               >
                 <ShoppingBag className="w-4 h-4 shrink-0" />
                 Kad Saya
-                {cartCount > 0 && (
-                  <span className="ml-auto min-w-[18px] h-[18px] text-[10px] bg-gold text-ink rounded-full flex items-center justify-center px-1 font-bold leading-none">
-                    {cartCount}
-                  </span>
-                )}
               </Link>
             </div>
 
