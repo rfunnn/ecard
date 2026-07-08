@@ -227,18 +227,18 @@ function CheckoutInner() {
   return (
     <div className="min-h-screen bg-[var(--pg)] flex flex-col">
 
-      {/* Nav */}
-      <div className="sticky top-0 z-40 bg-[var(--pg-nav)] backdrop-blur-md border-b border-[var(--bd)]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 flex items-center justify-between h-12">
+      {/* Sub-nav: back + title */}
+      <div className="bg-[var(--pg-nav)] border-b border-[var(--bd)]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 flex items-center justify-between h-10">
           <Link
             href={backHref}
-            className="flex items-center gap-2 text-[var(--tx-3)] hover:text-[var(--tx-1)] transition-colors"
+            className="flex items-center gap-1.5 text-[var(--tx-3)] hover:text-[var(--tx-1)] text-sm transition-colors"
           >
             <ChevronLeft className="w-4 h-4" />
-            <span className="text-sm font-medium">{backLabel}</span>
+            {backLabel}
           </Link>
-          <h1 className="font-playfair text-[15px] text-[var(--tx-1)]">Pembayaran</h1>
-          <div className="w-20" />
+          <h1 className="font-playfair text-[14px] text-[var(--tx-1)]">Pembayaran</h1>
+          <div className="w-16" />
         </div>
       </div>
 

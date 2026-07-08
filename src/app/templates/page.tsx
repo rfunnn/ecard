@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
-import { Heart, ChevronLeft, Eye, Loader2, SlidersHorizontal, X, Search } from "lucide-react"
+import { Heart, Eye, Loader2, SlidersHorizontal, X, Search } from "lucide-react"
 import Link from "next/link"
 import type { TemplateCategory } from "@/types/invitation"
 import { TemplatePhoneFrame } from "@/components/TemplatePhoneFrame"
@@ -368,23 +368,17 @@ export default function NewCardPage() {
   return (
     <div className="min-h-screen bg-[var(--pg)] flex flex-col">
 
-      {/* ── Top nav ── */}
-      <div className="sticky top-0 z-40 bg-[var(--pg-nav)] backdrop-blur-md border-b border-[var(--bd)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-12">
-          <Link href="/" className="flex items-center gap-1.5 text-[var(--tx-3)] hover:text-[var(--tx-1)] transition-colors">
-            <ChevronLeft className="w-4 h-4" />
-            <span className="text-sm font-medium">Kembali</span>
-          </Link>
+      {/* ── Sub-nav: page title + mobile filter ── */}
+      <div className="bg-[var(--pg-nav)] border-b border-[var(--bd)]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-10">
           <h1 className="font-playfair text-[15px] text-[var(--tx-1)]">Pilih Templat</h1>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setMobileFilter(true)}
-              className="lg:hidden flex items-center gap-1.5 text-[13px] text-[var(--tx-2)] border border-[var(--bd)] hover:border-gold/30 hover:text-[var(--tx-1)] rounded-full px-3 py-1.5 transition-all"
-            >
-              <SlidersHorizontal className="w-3.5 h-3.5" />
-              Penapis
-            </button>
-          </div>
+          <button
+            onClick={() => setMobileFilter(true)}
+            className="lg:hidden flex items-center gap-1.5 text-[13px] text-[var(--tx-2)] border border-[var(--bd)] hover:border-gold/30 hover:text-[var(--tx-1)] rounded-full px-3 py-1.5 transition-all"
+          >
+            <SlidersHorizontal className="w-3.5 h-3.5" />
+            Penapis
+          </button>
         </div>
 
         {/* ── Mobile category pills ── */}

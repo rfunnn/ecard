@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { ThemeProvider } from "@/components/ThemeProvider"
 import AuthProvider from "@/components/AuthProvider"
+import { ConditionalSiteNav } from "@/components/ConditionalSiteNav"
 import {
   Playfair_Display,
   Lato,
@@ -50,9 +51,14 @@ const fontVars = [
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ms" className={`${fontVars} h-full antialiased`} suppressHydrationWarning>
+      <head>
+        {/* Apply saved theme before first paint to prevent flash */}
+        <script dangerouslySetInnerHTML={{ __html: `try{if(localStorage.getItem('kad_theme')==='dark')document.documentElement.classList.add('dark')}catch{}` }} />
+      </head>
       <body className="min-h-full flex flex-col font-lato">
         <AuthProvider>
           <ThemeProvider>
+            <ConditionalSiteNav />
             {children}
           </ThemeProvider>
         </AuthProvider>

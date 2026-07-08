@@ -160,28 +160,16 @@ function InviteLinkRow({ card }: { card: Card }) {
     <div className="mb-3 space-y-2">
       {/* Base URL row */}
       <div>
-        <p className="text-[10px] text-gray-400 mb-1">Pautan Jemputan:</p>
-        <div className="flex items-center gap-1 bg-gray-50 border border-gray-200 rounded-lg px-2 py-1.5">
-          <span className="text-[11px] text-gray-600 truncate flex-1 font-mono">
+        <p className="text-[10px] text-[var(--tx-3)] mb-1">Pautan Jemputan:</p>
+        <div className="flex items-center gap-1 bg-[var(--pg-alt)] border border-[var(--bd)] rounded-lg px-2 py-1.5">
+          <span className="text-[11px] text-[var(--tx-2)] truncate flex-1 font-mono">
             {fullUrl.replace(/^https?:\/\//, "")}
           </span>
-          <button
-            onClick={copyLink}
-            className="ml-1 p-1 rounded transition-colors hover:bg-gray-200"
-            title="Salin pautan"
-          >
-            {copied
-              ? <Check className="w-3.5 h-3.5 text-green-600" />
-              : <Copy className="w-3.5 h-3.5 text-gray-400" />
-            }
+          <button onClick={copyLink} className="ml-1 p-1 rounded transition-colors hover:bg-[var(--sf)]" title="Salin pautan">
+            {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5 text-[var(--tx-3)]" />}
           </button>
-          <a
-            href={fullUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-1 hover:bg-gray-200 rounded transition-colors"
-          >
-            <ExternalLink className="w-3 h-3 text-gray-400" />
+          <a href={fullUrl} target="_blank" rel="noopener noreferrer" className="p-1 hover:bg-[var(--sf)] rounded transition-colors">
+            <ExternalLink className="w-3 h-3 text-[var(--tx-3)]" />
           </a>
         </div>
       </div>
@@ -190,24 +178,22 @@ function InviteLinkRow({ card }: { card: Card }) {
       {!editing ? (
         <button
           onClick={openEditor}
-          className="flex items-center gap-1.5 text-[11px] text-gray-400 hover:text-gray-700 transition-colors group"
+          className="flex items-center gap-1.5 text-[11px] text-[var(--tx-3)] hover:text-[var(--tx-1)] transition-colors group"
         >
           <Link2 className="w-3 h-3" />
           {suffix
-            ? <span>Nama pautan: <span className="font-mono text-gray-600">/{suffix}</span></span>
+            ? <span>Nama pautan: <span className="font-mono text-[var(--tx-2)]">/{suffix}</span></span>
             : <span className="group-hover:underline">+ Tambah nama pada pautan</span>
           }
-          <span className="text-[10px] text-gray-300 group-hover:text-gray-400">(pilihan)</span>
+          <span className="text-[10px] text-[var(--tx-3)] opacity-60 group-hover:opacity-100">(pilihan)</span>
         </button>
       ) : (
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-2.5 space-y-2">
-          <p className="text-[10px] text-gray-500 font-medium">
+        <div className="rounded-lg border border-[var(--bd)] bg-[var(--pg-alt)] p-2.5 space-y-2">
+          <p className="text-[10px] text-[var(--tx-3)] font-medium">
             Tambah nama selepas pautan asas — kedua-dua URL berfungsi
           </p>
-
-          {/* Input row */}
           <div className="flex items-center gap-1 text-[11px] font-mono">
-            <span className="text-gray-400 shrink-0 truncate max-w-[140px]">
+            <span className="text-[var(--tx-3)] shrink-0 truncate max-w-[140px]">
               …/invite/{card.slug}/
             </span>
             <input
@@ -220,50 +206,38 @@ function InviteLinkRow({ card }: { card: Card }) {
               }}
               placeholder="nama-anda"
               maxLength={60}
-              className={`flex-1 min-w-0 border rounded px-2 py-1 bg-white text-gray-800 focus:outline-none focus:ring-1 ${
-                error ? "border-red-300 focus:ring-red-300" : "border-gray-300 focus:ring-blue-300"
+              className={`flex-1 min-w-0 border rounded px-2 py-1 bg-[var(--pg)] text-[var(--tx-1)] focus:outline-none focus:ring-1 ${
+                error ? "border-red-400 focus:ring-red-400" : "border-[var(--bd)] focus:ring-gold/40"
               }`}
             />
           </div>
-
-          {/* Error / hint */}
           {error ? (
             <p className="flex items-center gap-1 text-[10px] text-red-500">
               <AlertCircle className="w-3 h-3 shrink-0" />{error}
             </p>
           ) : draft ? (
-            <p className="text-[10px] text-gray-400 font-mono truncate">
+            <p className="text-[10px] text-[var(--tx-3)] font-mono truncate">
               → …/invite/{card.slug}/{draft}
             </p>
           ) : (
-            <p className="text-[10px] text-gray-400">
+            <p className="text-[10px] text-[var(--tx-3)]">
               Huruf kecil, nombor dan sempang sahaja. Contoh: <span className="font-mono">ahmad-dan-sara</span>
             </p>
           )}
-
-          {/* Actions */}
           <div className="flex items-center gap-2 pt-0.5">
             <button
               onClick={saveSuffix}
               disabled={!!error || draft === suffix}
-              className="text-[11px] font-semibold px-3 py-1 rounded bg-gray-800 text-white hover:bg-gray-700 transition-colors disabled:opacity-40"
+              className="text-[11px] font-semibold px-3 py-1 rounded bg-[var(--tx-1)] text-[var(--pg)] hover:opacity-80 transition-opacity disabled:opacity-40"
             >
               Simpan
             </button>
-            <button
-              onClick={cancelEdit}
-              className="text-[11px] text-gray-500 hover:text-gray-700 transition-colors px-2 py-1"
-            >
+            <button onClick={cancelEdit} className="text-[11px] text-[var(--tx-3)] hover:text-[var(--tx-1)] transition-colors px-2 py-1">
               Batal
             </button>
             {suffix && (
               <button
-                onClick={() => {
-                  setSuffix("")
-                  setDraft("")
-                  try { localStorage.removeItem(storageKey) } catch { /* ignore */ }
-                  setEditing(false)
-                }}
+                onClick={() => { setSuffix(""); setDraft(""); try { localStorage.removeItem(storageKey) } catch { /* ignore */ } setEditing(false) }}
                 className="ml-auto text-[11px] text-red-400 hover:text-red-600 transition-colors"
               >
                 Buang nama
@@ -314,128 +288,78 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
     setTimeout(() => { w.print(); setPrinting(false) }, 1400)
   }
 
-  const actionBtn = "flex items-center gap-1 text-xs text-gray-600 hover:text-gray-900 transition-colors py-1 px-1.5 rounded hover:bg-gray-100"
+  const actionBtn = "flex items-center gap-1 text-xs text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors py-1 px-1.5 rounded hover:bg-[var(--sf)]"
 
   return (
     <div className="flex gap-4 py-6">
-      {/* Thumbnail */}
       <CardThumbnail card={card} />
 
-      {/* Content */}
       <div className="flex-1 min-w-0">
-        {/* Title row */}
         <div className="flex items-start justify-between gap-2 mb-1">
-          <h3 className="font-bold text-gray-900 text-sm leading-tight">{displayName}</h3>
+          <h3 className="font-bold text-[var(--tx-1)] text-sm leading-tight">{displayName}</h3>
           <div className="relative shrink-0">
             <button
               onClick={() => setMenuOpen(v => !v)}
-              className="p-1 rounded hover:bg-gray-100 transition-colors"
+              className="p-1 rounded hover:bg-[var(--sf)] transition-colors"
             >
-              <MoreVertical className="w-4 h-4 text-gray-400" />
+              <MoreVertical className="w-4 h-4 text-[var(--tx-3)]" />
             </button>
             {menuOpen && (
               <>
-                {/* Click-outside backdrop — closes menu without eating the underlying tap */}
                 <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
-              <div
-                className="absolute right-0 top-7 z-20 bg-white border border-gray-200 rounded-xl shadow-lg py-1 w-36"
-              >
-                <Link
-                  href={`/builder/${card.slug}`}
-                  className="flex items-center gap-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-50"
-                >
-                  <Pencil className="w-3.5 h-3.5" /> Edit
-                </Link>
-                <Link
-                  href={`/invite/${card.slug}`}
-                  target="_blank"
-                  className="flex items-center gap-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-50"
-                >
-                  <Eye className="w-3.5 h-3.5" /> Preview
-                </Link>
-                <button
-                  onClick={() => { setMenuOpen(false); handlePrint() }}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-gray-700 hover:bg-gray-50"
-                >
-                  <Printer className="w-3.5 h-3.5" /> Print Card
-                </button>
-                <hr className="my-1 border-gray-100" />
-                <button
-                  onClick={() => { setMenuOpen(false); onRemove(card.slug) }}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-50"
-                >
-                  <Trash2 className="w-3.5 h-3.5" /> Remove
-                </button>
-              </div>
+                <div className="absolute right-0 top-7 z-20 bg-[var(--float)] border border-[var(--float-bd)] rounded-xl shadow-lg py-1 w-36">
+                  <Link href={`/builder/${card.slug}`} className="flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)]">
+                    <Pencil className="w-3.5 h-3.5" /> Edit
+                  </Link>
+                  <Link href={`/invite/${card.slug}`} target="_blank" className="flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)]">
+                    <Eye className="w-3.5 h-3.5" /> Preview
+                  </Link>
+                  <button onClick={() => { setMenuOpen(false); handlePrint() }} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)]">
+                    <Printer className="w-3.5 h-3.5" /> Print Card
+                  </button>
+                  <hr className="my-1 border-[var(--bd)]" />
+                  <button onClick={() => { setMenuOpen(false); onRemove(card.slug) }} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-500/10">
+                    <Trash2 className="w-3.5 h-3.5" /> Remove
+                  </button>
+                </div>
               </>
             )}
           </div>
         </div>
 
-        {/* Date */}
         {eventDateStr && (
           <div className="flex items-center gap-1 mb-2">
-            <span className="text-xs text-amber-700 font-medium">{eventDateStr}</span>
-            <ChevronDown className="w-3 h-3 text-amber-700" />
+            <span className="text-xs text-amber-600 font-medium">{eventDateStr}</span>
+            <ChevronDown className="w-3 h-3 text-amber-600" />
           </div>
         )}
 
-        {/* Invitation link */}
         <InviteLinkRow card={card} />
 
-        {/* Quick actions */}
         <div className="flex items-center flex-wrap gap-1 mb-3">
-          <Link href={`/builder/${card.slug}`} className={actionBtn}>
-            <Pencil className="w-3.5 h-3.5" /> Edit
-          </Link>
-          <Link href={`/builder/${card.slug}?page=2`} className={actionBtn}>
-            <ImageIcon className="w-3.5 h-3.5" /> Gallery
-          </Link>
-          <Link href={`/builder/${card.slug}?page=10`} className={actionBtn}>
-            <Gift className="w-3.5 h-3.5" /> Gifts
-          </Link>
-          <Link href={`/builder/${card.slug}?page=7`} className={actionBtn}>
-            <Mail className="w-3.5 h-3.5" /> RSVP
-          </Link>
+          <Link href={`/builder/${card.slug}`} className={actionBtn}><Pencil className="w-3.5 h-3.5" /> Edit</Link>
+          <Link href={`/builder/${card.slug}?page=2`} className={actionBtn}><ImageIcon className="w-3.5 h-3.5" /> Gallery</Link>
+          <Link href={`/builder/${card.slug}?page=10`} className={actionBtn}><Gift className="w-3.5 h-3.5" /> Gifts</Link>
+          <Link href={`/builder/${card.slug}?page=7`} className={actionBtn}><Mail className="w-3.5 h-3.5" /> RSVP</Link>
           {card.isPublished && (
-            <Link
-              href={`/dashboard/${card.slug}/report`}
-              className={`${actionBtn} font-semibold`}
-              style={{ color: card.theme?.primaryColor ?? undefined }}
-            >
-              <BarChart2 className="w-3.5 h-3.5" />
-              {lang ? "Laporan" : "Report"}
+            <Link href={`/dashboard/${card.slug}/report`} className={`${actionBtn} font-semibold`} style={{ color: card.theme?.primaryColor ?? undefined }}>
+              <BarChart2 className="w-3.5 h-3.5" />{lang ? "Laporan" : "Report"}
             </Link>
           )}
-          <Link href={`/invite/${card.slug}`} target="_blank" className={actionBtn}>
-            <Eye className="w-3.5 h-3.5" /> Preview
-          </Link>
-          <button
-            onClick={handlePrint}
-            disabled={printing}
-            className={`${actionBtn} text-amber-700 hover:text-amber-900`}
-            title="Preview physical card for printing"
-          >
-            {printing
-              ? <div className="w-3.5 h-3.5 border-2 border-amber-600 border-t-transparent rounded-full animate-spin" />
-              : <Printer className="w-3.5 h-3.5" />
-            }
+          <Link href={`/invite/${card.slug}`} target="_blank" className={actionBtn}><Eye className="w-3.5 h-3.5" /> Preview</Link>
+          <button onClick={handlePrint} disabled={printing} className={`${actionBtn} text-amber-600 hover:text-amber-800`}>
+            {printing ? <div className="w-3.5 h-3.5 border-2 border-amber-600 border-t-transparent rounded-full animate-spin" /> : <Printer className="w-3.5 h-3.5" />}
             Print Card
           </button>
         </div>
 
-        {/* Pay now */}
         {!card.isPublished && (
-          <Link
-            href={`/checkout?slug=${card.slug}`}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold border border-gray-800 text-gray-800 px-4 py-1.5 rounded-full hover:bg-gray-800 hover:text-white transition-colors"
-          >
+          <Link href={`/checkout?slug=${card.slug}`} className="inline-flex items-center gap-1.5 text-xs font-semibold border border-[var(--tx-1)] text-[var(--tx-1)] px-4 py-1.5 rounded-full hover:bg-[var(--tx-1)] hover:text-[var(--pg)] transition-colors">
             PAY NOW
           </Link>
         )}
-
         {card.isPublished && (
-          <span className="inline-flex items-center gap-1 text-xs text-green-700 bg-green-50 border border-green-200 px-3 py-1 rounded-full font-medium">
+          <span className="inline-flex items-center gap-1 text-xs text-green-600 bg-green-500/10 border border-green-500/20 px-3 py-1 rounded-full font-medium">
             Active
           </span>
         )}
@@ -500,8 +424,8 @@ function DashboardInner() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-gray-200 border-t-gray-800 rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-[var(--pg)]">
+        <div className="w-8 h-8 border-2 border-[var(--bd)] border-t-[var(--tx-1)] rounded-full animate-spin" />
       </div>
     )
   }
@@ -515,17 +439,18 @@ function DashboardInner() {
   ]
 
   return (
-    <div className="min-h-screen bg-white flex">
+    <div className="min-h-screen bg-[var(--pg)] flex">
       {/* ── Sidebar ── */}
-      <aside className="hidden md:flex flex-col w-44 shrink-0 border-r border-gray-100 py-10 px-6 gap-6">
+      <aside className="hidden md:flex flex-col w-44 shrink-0 border-r border-[var(--bd)] py-8 px-6 gap-5">
+        <div className="mb-2 text-[10px] font-bold tracking-widest text-[var(--tx-3)] uppercase">Menu</div>
         {sideNav.map(({ key, label }) => (
           <Link
             key={key}
             href={`/dashboard?tab=${key}`}
             className={`text-xs font-bold tracking-widest transition-colors ${
               tab === key
-                ? "text-gray-900 underline underline-offset-4 decoration-2"
-                : "text-gray-400 hover:text-gray-700"
+                ? "text-[var(--tx-1)] underline underline-offset-4 decoration-2"
+                : "text-[var(--tx-3)] hover:text-[var(--tx-1)]"
             }`}
           >
             {label}
@@ -535,16 +460,16 @@ function DashboardInner() {
 
       {/* ── Main ── */}
       <main className="flex-1 min-w-0 px-4 sm:px-6 md:px-10 py-6 md:py-8">
-        {/* Mobile tab nav (sidebar is hidden on small screens) */}
-        <div className="md:hidden flex gap-5 mb-5 border-b border-gray-100 overflow-x-auto scrollbar-hide">
+        {/* Mobile tab nav */}
+        <div className="md:hidden flex gap-5 mb-5 border-b border-[var(--bd)] overflow-x-auto scrollbar-hide">
           {sideNav.map(({ key, label }) => (
             <Link
               key={key}
               href={`/dashboard?tab=${key}`}
               className={`shrink-0 pb-2.5 text-[11px] font-bold tracking-widest transition-colors ${
                 tab === key
-                  ? "text-gray-900 border-b-2 border-gray-900"
-                  : "text-gray-400 hover:text-gray-700"
+                  ? "text-[var(--tx-1)] border-b-2 border-[var(--tx-1)]"
+                  : "text-[var(--tx-3)] hover:text-[var(--tx-1)]"
               }`}
             >
               {label}
@@ -554,12 +479,12 @@ function DashboardInner() {
 
         {/* Top bar */}
         <div className="flex items-center justify-between gap-3 mb-6">
-          <h1 className="text-lg sm:text-xl font-black tracking-widest text-gray-900 uppercase">
+          <h1 className="text-lg sm:text-xl font-black tracking-widest text-[var(--tx-1)] uppercase">
             {tab === "orders" ? "Orders" : tab === "favorites" ? "Favorites" : "My Profile"}
           </h1>
           <Link
             href="/templates"
-            className="flex items-center gap-1.5 shrink-0 bg-gray-900 text-white text-[11px] sm:text-xs font-black tracking-widest uppercase px-3 sm:px-4 py-2.5 rounded-lg hover:bg-gray-700 transition-colors"
+            className="flex items-center gap-1.5 shrink-0 bg-[var(--tx-1)] text-[var(--pg)] text-[11px] sm:text-xs font-black tracking-widest uppercase px-3 sm:px-4 py-2.5 rounded-lg hover:opacity-80 transition-opacity"
           >
             <Plus className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Create New Card</span>
@@ -572,20 +497,20 @@ function DashboardInner() {
           <>
             {cardsLoading ? (
               <div className="flex justify-center py-24">
-                <div className="w-7 h-7 border-2 border-gray-200 border-t-gray-800 rounded-full animate-spin" />
+                <div className="w-7 h-7 border-2 border-[var(--bd)] border-t-[var(--tx-1)] rounded-full animate-spin" />
               </div>
             ) : cards.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 text-center gap-4">
-                <p className="text-gray-400 text-sm">No cards yet.</p>
+                <p className="text-[var(--tx-3)] text-sm">No cards yet.</p>
                 <Link
                   href="/templates"
-                  className="text-xs font-bold bg-gray-900 text-white px-5 py-2.5 rounded-lg hover:bg-gray-700 transition-colors"
+                  className="text-xs font-bold bg-[var(--tx-1)] text-[var(--pg)] px-5 py-2.5 rounded-lg hover:opacity-80 transition-opacity"
                 >
                   Create Your First Card
                 </Link>
               </div>
             ) : (
-              <div className="divide-y divide-gray-100">
+              <div className="divide-y divide-[var(--bd)]">
                 {cards.map(card => (
                   <CardRow key={card.id} card={card} onRemove={handleRemove} />
                 ))}
@@ -599,12 +524,12 @@ function DashboardInner() {
           <>
             {likesLoading ? (
               <div className="flex justify-center py-24">
-                <div className="w-7 h-7 border-2 border-gray-200 border-t-gray-800 rounded-full animate-spin" />
+                <div className="w-7 h-7 border-2 border-[var(--bd)] border-t-[var(--tx-1)] rounded-full animate-spin" />
               </div>
             ) : likes.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 text-center gap-4">
-                <p className="text-gray-400 text-sm">No liked templates yet.</p>
-                <Link href="/templates" className="text-xs font-bold bg-gray-900 text-white px-5 py-2.5 rounded-lg hover:bg-gray-700 transition-colors">
+                <p className="text-[var(--tx-3)] text-sm">No liked templates yet.</p>
+                <Link href="/templates" className="text-xs font-bold bg-[var(--tx-1)] text-[var(--pg)] px-5 py-2.5 rounded-lg hover:opacity-80 transition-opacity">
                   Browse Templates
                 </Link>
               </div>
@@ -621,18 +546,18 @@ function DashboardInner() {
                         <img src={tpl.thumbnail} alt={tpl.nameMs} className="absolute inset-0 w-full h-full object-cover" />
                       )}
                     </div>
-                    <p className="text-xs font-semibold text-gray-800 text-center">{tpl.nameMs || tpl.name}</p>
+                    <p className="text-xs font-semibold text-[var(--tx-1)] text-center">{tpl.nameMs || tpl.name}</p>
                     <div className="flex gap-2 w-full">
                       <Link
                         href={`/templates?template=${tpl.slug}`}
-                        className="flex-1 text-center text-xs font-bold bg-gray-900 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                        className="flex-1 text-center text-xs font-bold bg-[var(--tx-1)] text-[var(--pg)] py-2 rounded-lg hover:opacity-80 transition-opacity"
                       >
                         Use
                       </Link>
                       <Link
                         href={tpl.previewUrl ?? `/invite/${tpl.slug}`}
                         target="_blank"
-                        className="flex-1 text-center text-xs font-bold border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                        className="flex-1 text-center text-xs font-bold border border-[var(--bd)] text-[var(--tx-2)] py-2 rounded-lg hover:bg-[var(--sf)] transition-colors"
                       >
                         Preview
                       </Link>
@@ -647,13 +572,13 @@ function DashboardInner() {
         {/* ── PROFILE tab ── */}
         {tab === "profile" && (
           <div className="max-w-sm space-y-4">
-            <div className="rounded-2xl border border-gray-100 p-5">
-              <p className="text-xs text-gray-400 mb-1">Name</p>
-              <p className="font-semibold text-gray-900">{session.user.name ?? "–"}</p>
+            <div className="rounded-2xl border border-[var(--bd)] bg-[var(--pg-alt)] p-5">
+              <p className="text-xs text-[var(--tx-3)] mb-1">Name</p>
+              <p className="font-semibold text-[var(--tx-1)]">{session.user.name ?? "–"}</p>
             </div>
-            <div className="rounded-2xl border border-gray-100 p-5">
-              <p className="text-xs text-gray-400 mb-1">Email</p>
-              <p className="font-semibold text-gray-900">{session.user.email ?? "–"}</p>
+            <div className="rounded-2xl border border-[var(--bd)] bg-[var(--pg-alt)] p-5">
+              <p className="text-xs text-[var(--tx-3)] mb-1">Email</p>
+              <p className="font-semibold text-[var(--tx-1)]">{session.user.email ?? "–"}</p>
             </div>
           </div>
         )}
