@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
-import { Heart, Eye, Loader2, SlidersHorizontal, X, Search } from "lucide-react"
+import { Heart, Eye, Loader2, SlidersHorizontal, X, Search, AlertTriangle } from "lucide-react"
 import Link from "next/link"
 import type { TemplateCategory } from "@/types/invitation"
 import { TemplatePhoneFrame } from "@/components/TemplatePhoneFrame"
@@ -269,8 +269,9 @@ export default function NewCardPage() {
   const [previewName,  setPreviewName]  = useState("")
   const [nameInput,    setNameInput]    = useState("")
   const { liked, toggle } = useLikes()
-  const [creating,     setCreating]     = useState<string | null>(null)
-  const [mobileFilter, setMobileFilter] = useState(false)
+  const [creating,        setCreating]        = useState<string | null>(null)
+  const [draftLimitError, setDraftLimitError] = useState(false)
+  const [mobileFilter,    setMobileFilter]    = useState(false)
 
   useEffect(() => {
     fetch("/api/templates")
@@ -323,10 +324,17 @@ export default function NewCardPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ templateId: template.id, title: "Jemputan", language: "ms" }),
       })
-      // Stale JWT session (user row gone) — force a fresh login and come back here.
       if (res.status === 401) {
         router.push(`/login?callbackUrl=${encodeURIComponent("/templates")}`)
         return
+      }
+      if (res.status === 403) {
+        const body = await res.json().catch(() => ({}))
+        if (body.error === "DRAFT_LIMIT_EXCEEDED") {
+          setDraftLimitError(true)
+          setCreating(null)
+          return
+        }
       }
       if (!res.ok) throw new Error(`Create failed (${res.status})`)
       const { card } = await res.json()
@@ -367,6 +375,41 @@ export default function NewCardPage() {
 
   return (
     <div className="min-h-screen bg-[var(--pg)] flex flex-col">
+
+      {/* ── Draft limit error modal ── */}
+      {draftLimitError && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setDraftLimitError(false)} />
+          <div className="relative w-full max-w-sm bg-[var(--float)] border border-[var(--float-bd)] rounded-2xl shadow-2xl p-6 flex flex-col gap-4">
+            <div className="flex items-start gap-3">
+              <span className="mt-0.5 flex-shrink-0 w-9 h-9 rounded-full bg-amber-500/15 flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5 text-amber-400" />
+              </span>
+              <div>
+                <h2 className="font-semibold text-[var(--tx-1)] text-base leading-snug">Had Draf Dicapai</h2>
+                <p className="mt-1.5 text-sm text-[var(--tx-2)] leading-relaxed">
+                  Anda sudah mempunyai <span className="font-semibold text-[var(--tx-1)]">3 draf reka bentuk</span> kad jemputan. Sila selesaikan atau padamkan salah satu draf sedia ada sebelum mencipta reka bentuk baharu.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2 justify-end pt-1">
+              <button
+                onClick={() => setDraftLimitError(false)}
+                className="px-4 py-2 text-sm rounded-lg border border-[var(--bd)] text-[var(--tx-2)] hover:bg-[var(--sf)] transition-colors"
+              >
+                Tutup
+              </button>
+              <Link
+                href="/dashboard"
+                onClick={() => setDraftLimitError(false)}
+                className="px-4 py-2 text-sm rounded-lg bg-gold/10 border border-gold/25 text-gold hover:bg-gold/20 transition-colors font-medium"
+              >
+                Pergi ke Kad Saya
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Sub-nav: page title + mobile filter ── */}
       <div className="bg-[var(--pg-nav)] border-b border-[var(--bd)]">

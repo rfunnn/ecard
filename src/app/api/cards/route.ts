@@ -90,6 +90,13 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "SESSION_EXPIRED" }, { status: 401 })
       }
       userId = user.id
+
+      const draftCount = await prisma.invitationCard.count({
+        where: { userId, isPublished: false },
+      })
+      if (draftCount >= 3) {
+        return NextResponse.json({ error: "DRAFT_LIMIT_EXCEEDED" }, { status: 403 })
+      }
     }
 
     const card = await prisma.invitationCard.create({
