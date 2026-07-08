@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { createHash } from "crypto"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma"
+import { rateLimit, rateLimitKey } from "@/lib/rate-limit"
 
 function hashIp(raw: string | null): string | undefined {
   if (!raw) return undefined
@@ -22,6 +23,11 @@ export async function POST(
     })
     if (!card) return NextResponse.json({ error: "Not found" }, { status: 404 })
     if (!card.isPublished) return NextResponse.json({ error: "Card not published" }, { status: 403 })
+
+    // 3 RSVP submissions per IP per card per hour
+    if (!rateLimit(rateLimitKey(req, `rsvp:${card.id}`), 3, 60 * 60 * 1000)) {
+      return NextResponse.json({ error: "Terlalu banyak percubaan. Cuba lagi selepas 1 jam." }, { status: 429 })
+    }
 
     const wCfg = card.wizardConfig as { rsvp?: { guestLimitPerRSVP?: number } } | null
     const guestLimitPerRSVP = wCfg?.rsvp?.guestLimitPerRSVP ?? 5

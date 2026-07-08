@@ -4,6 +4,24 @@ import GoogleProvider from "next-auth/providers/google"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
 
+// In-memory brute-force guard keyed by lowercase email.
+// 5 consecutive failures → 15-minute lockout.
+const _fl = (global as typeof global & { _fl: Map<string, { count: number; lockedUntil: number }> })
+if (!_fl._fl) _fl._fl = new Map()
+const failedLogins = _fl._fl
+
+function isLocked(email: string): boolean {
+  const e = failedLogins.get(email)
+  return !!e && Date.now() < e.lockedUntil
+}
+function recordFail(email: string): void {
+  const e = failedLogins.get(email) ?? { count: 0, lockedUntil: 0 }
+  e.count++
+  if (e.count >= 5) { e.lockedUntil = Date.now() + 15 * 60 * 1000; e.count = 0 }
+  failedLogins.set(email, e)
+}
+function clearFail(email: string): void { failedLogins.delete(email) }
+
 // Fail fast in production if the JWT signing secret is the insecure dev fallback.
 if (
   process.env.NODE_ENV === "production" &&
@@ -46,14 +64,25 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email.toLowerCase().trim() },
-        })
-        if (!user || !user.passwordHash) return null
+        const email = credentials.email.toLowerCase().trim()
+
+        if (isLocked(email)) {
+          throw new Error("Akaun dikunci sementara. Cuba lagi dalam 15 minit.")
+        }
+
+        const user = await prisma.user.findUnique({ where: { email } })
+        if (!user || !user.passwordHash) {
+          recordFail(email)
+          return null
+        }
 
         const valid = await bcrypt.compare(credentials.password, user.passwordHash)
-        if (!valid) return null
+        if (!valid) {
+          recordFail(email)
+          return null
+        }
 
+        clearFail(email)
         return { id: user.id, email: user.email, name: user.name, image: user.image }
       },
     }),
