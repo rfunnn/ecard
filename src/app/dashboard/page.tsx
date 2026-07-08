@@ -60,7 +60,7 @@ function CardThumbnail({ card }: { card: Card }) {
   return (
     <div
       className="relative shrink-0 rounded-[14px] overflow-hidden shadow-lg"
-      style={{ width: 70, aspectRatio: "9/19.5", background: bg, border: "4px solid #2a2a2a" }}
+      style={{ width: "clamp(72px, 22vw, 96px)", aspectRatio: "9/19.5", background: bg, border: "4px solid #2a2a2a" }}
     >
       {/* notch */}
       <div className="absolute top-0 left-0 right-0 flex justify-center z-10 pointer-events-none">
@@ -334,9 +334,11 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
               <MoreVertical className="w-4 h-4 text-gray-400" />
             </button>
             {menuOpen && (
+              <>
+                {/* Click-outside backdrop — closes menu without eating the underlying tap */}
+                <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
               <div
                 className="absolute right-0 top-7 z-20 bg-white border border-gray-200 rounded-xl shadow-lg py-1 w-36"
-                onMouseLeave={() => setMenuOpen(false)}
               >
                 <Link
                   href={`/builder/${card.slug}`}
@@ -365,6 +367,7 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
                   <Trash2 className="w-3.5 h-3.5" /> Remove
                 </button>
               </div>
+              </>
             )}
           </div>
         </div>
@@ -470,6 +473,25 @@ function DashboardInner() {
     setLikesLoading(false)
   }, [])
 
+  const handleRemove = useCallback(async (slug: string) => {
+    if (!confirm("Padam kad ini secara kekal? Tindakan ini tidak boleh dibatalkan.")) return
+
+    // Optimistic removal
+    setCards(prev => prev.filter(c => c.slug !== slug))
+
+    try {
+      const res = await fetch(`/api/cards/${slug}`, { method: "DELETE" })
+      if (!res.ok) throw new Error(`Delete failed (${res.status})`)
+      removeFromCart(slug)
+    } catch (err) {
+      console.error("Failed to remove card:", err)
+      // Reload from server on failure so the list is consistent
+      const res = await fetch("/api/user/cards")
+      if (res.ok) setCards((await res.json()).cards)
+      alert("Gagal memadam kad. Sila cuba lagi.")
+    }
+  }, [])
+
   useEffect(() => {
     if (status !== "authenticated") return
     if (tab === "orders")    loadCards()
@@ -485,25 +507,6 @@ function DashboardInner() {
   }
 
   if (!session) return null
-
-  async function handleRemove(slug: string) {
-    if (!confirm("Padam kad ini secara kekal? Tindakan ini tidak boleh dibatalkan.")) return
-
-    const snapshot = cards
-    // Optimistic removal
-    setCards(prev => prev.filter(c => c.slug !== slug))
-
-    try {
-      const res = await fetch(`/api/cards/${slug}`, { method: "DELETE" })
-      if (!res.ok) throw new Error(`Delete failed (${res.status})`)
-      // Keep the localStorage "saved cards" list in sync
-      removeFromCart(slug)
-    } catch (err) {
-      console.error("Failed to remove card:", err)
-      setCards(snapshot) // rollback on failure
-      alert("Gagal memadam kad. Sila cuba lagi.")
-    }
-  }
 
   const sideNav = [
     { key: "orders",    label: "ORDERS" },

@@ -1,5 +1,5 @@
 ﻿import Link from "next/link"
-import { ArrowRight, Music, Share2, Sparkles, Heart, Check } from "lucide-react"
+import { ArrowRight, Music, Share2, Sparkles, Heart, Check, Eye, Shield, Mail } from "lucide-react"
 import UserMenu from "@/components/UserMenu"
 import { HomepagePhoneMockup } from "@/components/HomepagePhoneMockup"
 
@@ -101,7 +101,11 @@ export default function HomePage() {
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <Link href="/invite/demo" className="hidden sm:inline-flex text-[var(--tx-2)] hover:text-[var(--tx-1)] text-sm transition-colors px-3 py-2">
+          <Link
+            href="/invite/demo"
+            className="hidden sm:inline-flex items-center gap-1.5 text-[var(--tx-2)] hover:text-[var(--tx-1)] text-[13px] transition-all px-3 py-1.5 rounded-full border border-[var(--bd)] hover:border-gold/30 hover:bg-[var(--sf)]"
+          >
+            <Eye className="w-3.5 h-3.5" />
             Lihat Contoh
           </Link>
           <UserMenu />
@@ -146,8 +150,9 @@ export default function HomePage() {
               </Link>
               <Link
                 href="/invite/demo"
-                className="inline-flex items-center justify-center gap-2 border border-[var(--bd)] text-[var(--tx-2)] hover:text-[var(--tx-1)] px-5 py-2.5 rounded-full transition-colors text-[13px] sm:text-[15px] dark:border-white/15 dark:hover:border-white/25"
+                className="inline-flex items-center justify-center gap-2 border border-gold/30 hover:border-gold/60 text-[var(--tx-1)] hover:bg-gold/5 px-5 py-2.5 rounded-full transition-all text-[13px] sm:text-[15px] active:scale-95"
               >
+                <Eye className="w-4 h-4 text-gold/70" />
                 Lihat Contoh
               </Link>
             </div>
@@ -251,13 +256,15 @@ export default function HomePage() {
                       ))}
                     </div>
                   </div>
-                  <div className="px-3 pt-3 pb-3 flex flex-col items-center gap-2 border-t border-[var(--bd)] mt-2">
+                  <div className="px-3 pt-3 pb-3 flex flex-col items-center gap-2.5 border-t border-[var(--bd)] mt-2">
                     <p className="text-2xl font-light text-[var(--tx-1)] leading-none">{price}</p>
                     <Link
                       href={`/invite/demo?package=${name.toLowerCase()}`}
-                      className="border border-[var(--tx-1)] text-[var(--tx-1)] text-[9px] font-semibold tracking-[0.12em] px-4 py-2 rounded-lg hover:bg-[var(--tx-1)] hover:text-[var(--pg)] transition-colors"
+                      className="w-full flex items-center justify-center gap-1.5 text-white text-[10px] font-bold tracking-[0.1em] px-4 py-2 rounded-lg transition-all hover:opacity-90 hover:shadow-md active:scale-95"
+                      style={{ background: headerBg }}
                     >
-                      VIEW SAMPLE
+                      <Eye className="w-3 h-3 opacity-90" />
+                      LIHAT CONTOH
                     </Link>
                   </div>
                 </div>
@@ -298,20 +305,122 @@ export default function HomePage() {
       </section>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-[var(--bd)] px-5 lg:px-10 py-8 bg-[var(--pg)]">
-        <div className="max-w-5xl mx-auto flex flex-col items-center text-center gap-3">
-          <div className="flex items-center gap-2">
-            <Heart className="w-3.5 h-3.5 text-gold/50 fill-gold/20" />
-            <span className="font-playfair text-base tracking-wide leading-none">
-              <span className="text-[var(--tx-1)]">e</span>
-              <span style={{ color: "#D4AF37" }}>kad</span>
-              <span className="text-[var(--tx-1)]">ku</span>
-              <span className="text-gold/50 text-[10px] font-sans tracking-normal align-baseline">.com</span>
-            </span>
+      <footer className="border-t border-[var(--bd)] bg-[var(--pg-alt)]">
+
+        {/* Main columns */}
+        <div className="max-w-5xl mx-auto px-5 lg:px-10 py-12 lg:py-16">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-10">
+
+            {/* Brand */}
+            <div className="col-span-2 md:col-span-1 flex flex-col gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Heart className="w-3.5 h-3.5 text-gold/50 fill-gold/20" />
+                  <span className="font-playfair text-base tracking-wide leading-none">
+                    <span className="text-[var(--tx-1)]">e</span>
+                    <span style={{ color: "#D4AF37" }}>kad</span>
+                    <span className="text-[var(--tx-1)]">ku</span>
+                    <span className="text-gold/50 text-[10px] font-sans tracking-normal align-baseline">.com</span>
+                  </span>
+                </div>
+                <p className="text-[var(--tx-3)] text-[12px] leading-relaxed">
+                  Platform kad jemputan digital premium untuk majlis istimewa anda. Cantik, mudah, dan boleh dikongsi dalam saat.
+                </p>
+              </div>
+              <div className="flex items-center gap-1.5 text-[var(--tx-3)] text-[11px]">
+                <Shield className="w-3 h-3 text-gold/50 shrink-0" />
+                Pembayaran selamat melalui ToyyibPay
+              </div>
+              <a
+                href="mailto:hello@ekadku.com"
+                className="inline-flex items-center gap-1.5 text-[12px] text-[var(--tx-2)] hover:text-gold transition-colors"
+              >
+                <Mail className="w-3.5 h-3.5" />
+                hello@ekadku.com
+              </a>
+            </div>
+
+            {/* Produk */}
+            <div>
+              <p className="text-[10px] font-bold text-[var(--tx-3)] uppercase tracking-widest mb-4">Produk</p>
+              <ul className="space-y-3">
+                {[
+                  { label: "Pilih Templat",  href: "/templates" },
+                  { label: "Demo Kad",       href: "/invite/demo" },
+                  { label: "Pakej & Harga",  href: "/#pakej" },
+                  { label: "Kad Saya",       href: "/dashboard" },
+                ].map(({ label, href }) => (
+                  <li key={label}>
+                    <Link href={href} className="text-[13px] text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors">
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Akaun */}
+            <div>
+              <p className="text-[10px] font-bold text-[var(--tx-3)] uppercase tracking-widest mb-4">Akaun</p>
+              <ul className="space-y-3">
+                {[
+                  { label: "Log Masuk",  href: "/login" },
+                  { label: "Daftar",     href: "/register" },
+                  { label: "Dashboard",  href: "/dashboard" },
+                ].map(({ label, href }) => (
+                  <li key={label}>
+                    <Link href={href} className="text-[13px] text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors">
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Dasar */}
+            <div>
+              <p className="text-[10px] font-bold text-[var(--tx-3)] uppercase tracking-widest mb-4">Dasar &amp; Bantuan</p>
+              <ul className="space-y-3">
+                {[
+                  "Dasar Privasi",
+                  "Terma Perkhidmatan",
+                  "Polisi Bayaran Balik",
+                  "Soalan Lazim",
+                ].map((label) => (
+                  <li key={label}>
+                    <span className="text-[13px] text-[var(--tx-3)] cursor-default select-none">{label}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-          <p className="text-[var(--tx-3)] text-[11px]">Kad jemputan digital yang memukau · Dibuat dengan ❤️ di Malaysia</p>
-          <p className="text-[var(--tx-3)] text-[10px] opacity-60">© 2025 ekadku.com · Hak Cipta Terpelihara</p>
         </div>
+
+        {/* Bottom bar */}
+        <div className="border-t border-[var(--bd)]">
+          <div className="max-w-5xl mx-auto px-5 lg:px-10 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <p className="text-[var(--tx-3)] text-[11px]">
+              © {new Date().getFullYear()} ekadku.com · Hak Cipta Terpelihara
+            </p>
+            <div className="flex items-center gap-4">
+              <a
+                href="https://instagram.com/ekadku"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[var(--tx-3)] hover:text-gold transition-colors"
+                aria-label="Instagram ekadku"
+              >
+                {/* Instagram icon */}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
       </footer>
     </div>
   )
