@@ -7,7 +7,6 @@ import { Heart, ChevronLeft, Eye, Loader2, SlidersHorizontal, X, Search } from "
 import Link from "next/link"
 import type { TemplateCategory } from "@/types/invitation"
 import { TemplatePhoneFrame } from "@/components/TemplatePhoneFrame"
-import { NavLikesButton } from "@/components/NavLikesButton"
 import { useLikes } from "@/hooks/useLikes"
 
 // ─── types ───────────────────────────────────────────────────────────────────
@@ -378,7 +377,6 @@ export default function NewCardPage() {
           </Link>
           <h1 className="font-playfair text-[15px] text-[var(--tx-1)]">Pilih Templat</h1>
           <div className="flex items-center gap-2">
-            <NavLikesButton />
             <button
               onClick={() => setMobileFilter(true)}
               className="lg:hidden flex items-center gap-1.5 text-[13px] text-[var(--tx-2)] border border-[var(--bd)] hover:border-gold/30 hover:text-[var(--tx-1)] rounded-full px-3 py-1.5 transition-all"
