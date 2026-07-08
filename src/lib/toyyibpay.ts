@@ -55,10 +55,9 @@ export async function createToyyibpayBill(params: CreateBillParams): Promise<Cre
     billPhone: params.billPhone ?? "",
     billSplitPayment: "0",
     billSplitPaymentArgs: "",
-    billPaymentChannel: "2",     // 0 = FPX, 1 = credit/debit card, 2 = both
+    billPaymentChannel: "0",     // 0 = FPX only (safest — works on all account types)
     billContentEmail: "",
-    billChargeToCustomer: "0",   // merchant absorbs fee
-    billExpiryDays: "1",
+    billChargeToCustomer: "1",   // 1 = customer pays fee (default; "0" requires fee-absorption plan)
   })
 
   const res = await fetch(`${BASE_URL}/index.php/api/createBill`, {

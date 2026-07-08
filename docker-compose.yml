@@ -26,6 +26,7 @@ x-app-env: &app-env
   SMTP_PASS:               "${SMTP_PASS:-}"
   SMTP_SECURE:             "${SMTP_SECURE:-false}"
   SMTP_FROM:               "${SMTP_FROM:-noreply@ekadku.com}"
+  ADMIN_EMAILS:            "${ADMIN_EMAILS:-}"
 
 services:
 

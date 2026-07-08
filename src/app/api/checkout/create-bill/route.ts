@@ -108,9 +108,11 @@ export async function POST(req: NextRequest) {
     })
 
     return NextResponse.json({ paymentUrl: bill.paymentUrl, orderId: order.id })
-  } catch {
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : String(err)
+    console.error("[create-bill] Toyyibpay error:", detail)
     // Roll back the order so the user can retry
     await prisma.order.delete({ where: { id: order.id } }).catch(() => {})
-    return NextResponse.json({ error: "Failed to create payment bill. Please try again." }, { status: 500 })
+    return NextResponse.json({ error: "Failed to create payment bill. Please try again.", detail }, { status: 500 })
   }
 }
