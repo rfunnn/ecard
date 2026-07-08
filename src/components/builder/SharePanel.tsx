@@ -22,9 +22,11 @@ export function SharePanel({ onPublishToggle, onPasswordSet }: SharePanelProps) 
   const [showPasswordField, setShowPasswordField] = useState(false)
   const lang = card.language === "ms"
 
-  const shareUrl = typeof window !== "undefined"
-    ? `${window.location.origin}/invite/${card.slug}`
-    : `/invite/${card.slug}`
+  const [shareUrl, setShareUrl] = useState(`/invite/${card.slug}`)
+
+  useEffect(() => {
+    setShareUrl(`${window.location.origin}/invite/${card.slug}`)
+  }, [card.slug])
 
   useEffect(() => {
     if (!canvasRef.current || !card.slug) return

@@ -108,22 +108,22 @@ function suffixError(val: string): string | null {
 }
 
 function InviteLinkRow({ card }: { card: Card }) {
-  const base = typeof window !== "undefined" ? window.location.origin : "https://ekadku.com"
-  const baseUrl = `${base}/invite/${card.slug}`
-
   const storageKey = `invite-suffix-${card.slug}`
   const [suffix, setSuffix]   = useState("")
+  const [origin, setOrigin]   = useState("https://ekadku.com")
   const [editing, setEditing] = useState(false)
   const [draft, setDraft]     = useState("")
   const [copied, setCopied]   = useState(false)
 
-  // Load persisted suffix on mount
+  // Load persisted suffix and resolve origin on mount
   useEffect(() => {
+    setOrigin(window.location.origin)
     try {
       setSuffix(localStorage.getItem(storageKey) ?? "")
     } catch { /* ignore */ }
   }, [storageKey])
 
+  const baseUrl = `${origin}/invite/${card.slug}`
   const fullUrl = suffix ? `${baseUrl}/${suffix}` : baseUrl
   const error   = suffixError(draft)
 
@@ -521,7 +521,7 @@ function DashboardInner() {
         {sideNav.map(({ key, label }) => (
           <Link
             key={key}
-            href={key === "profile" ? "/profile" : `/dashboard?tab=${key}`}
+            href={`/dashboard?tab=${key}`}
             className={`text-xs font-bold tracking-widest transition-colors ${
               tab === key
                 ? "text-gray-900 underline underline-offset-4 decoration-2"
@@ -540,7 +540,7 @@ function DashboardInner() {
           {sideNav.map(({ key, label }) => (
             <Link
               key={key}
-              href={key === "profile" ? "/profile" : `/dashboard?tab=${key}`}
+              href={`/dashboard?tab=${key}`}
               className={`shrink-0 pb-2.5 text-[11px] font-bold tracking-widest transition-colors ${
                 tab === key
                   ? "text-gray-900 border-b-2 border-gray-900"

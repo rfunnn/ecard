@@ -29,6 +29,7 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
   const hasMusicPlayer = !!(card.media?.audioEnabled && card.media?.youtubeVideoId)
 
   const fireAnalytic = useCallback(async (event: string) => {
+    if (demoBadge) return
     try {
       await fetch(`/api/analytics/${card.slug}`, {
         method: "POST",
@@ -38,7 +39,7 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
     } catch {
       // silent fail
     }
-  }, [card.slug])
+  }, [card.slug, demoBadge])
 
   useEffect(() => {
     fireAnalytic("VIEW")

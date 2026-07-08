@@ -218,7 +218,7 @@ function CheckoutInner() {
     } finally {
       setPaying(false)
     }
-  }, [paying, unpaidCards])
+  }, [paying, unpaidCards, setError])
 
   const isLoading = status === "loading" || loading
   const backHref  = specificSlug ? "/dashboard" : "/templates"

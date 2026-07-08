@@ -50,7 +50,7 @@ export async function createToyyibpayBill(params: CreateBillParams): Promise<Cre
     billReturnUrl: params.billReturnUrl,
     billCallbackUrl: params.billCallbackUrl,
     billExternalReferenceNo: params.billExternalReferenceNo,
-    billTo: params.billTo ?? "",
+    billTo:    params.billTo    ?? "",
     billEmail: params.billEmail ?? "",
     billPhone: params.billPhone ?? "",
     billSplitPayment: "0",

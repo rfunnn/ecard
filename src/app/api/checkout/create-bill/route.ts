@@ -98,8 +98,9 @@ export async function POST(req: NextRequest) {
       billReturnUrl:  `${baseUrl}/checkout/success?orderId=${order.id}`,
       billCallbackUrl: `${baseUrl}/api/checkout/callback`,
       billExternalReferenceNo: order.id,
-      billTo:    session.user.name  ?? undefined,
-      billEmail: session.user.email ?? undefined,
+      billTo:    session.user.name ?? undefined,
+      billEmail: "ar.worldwide.biz@gmail.com",
+      billPhone: "0129190025",
     })
 
     await prisma.order.update({
