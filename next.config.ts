@@ -15,15 +15,10 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "img.youtube.com" },
       { protocol: "https", hostname: "i.ytimg.com" },
-      // Allow images served from the MinIO/S3 public URL (set via STORAGE_PUBLIC_URL)
-      ...(process.env.STORAGE_PUBLIC_URL
-        ? [
-            {
-              protocol: process.env.STORAGE_PUBLIC_URL.startsWith("https") ? "https" as const : "http" as const,
-              hostname: new URL(process.env.STORAGE_PUBLIC_URL).hostname,
-            },
-          ]
-        : []),
+      // Wildcard allows any storage host — avoids baking STORAGE_PUBLIC_URL into
+      // the build layer, which forced a full Next.js rebuild on every env change.
+      { protocol: "https", hostname: "**" },
+      { protocol: "http",  hostname: "**" },
     ],
   },
 }

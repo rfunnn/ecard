@@ -55,11 +55,6 @@ RUN DATABASE_URL="mysql://dummy:dummy@localhost:3306/dummy" npx prisma generate
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# STORAGE_PUBLIC_URL may be evaluated at build time by next.config.ts
-# to add the MinIO hostname to image remotePatterns. Pass it as a build arg.
-ARG STORAGE_PUBLIC_URL
-ENV STORAGE_PUBLIC_URL=$STORAGE_PUBLIC_URL
-
 # Inline dummy env vars so module-level validation passes without persisting
 # values in the image layers. Runner stage starts fresh — real values come
 # from docker-compose at runtime.

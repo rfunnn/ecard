@@ -98,8 +98,6 @@ services:
     build:
       context: .
       target: runner
-      args:
-        STORAGE_PUBLIC_URL: "${STORAGE_PUBLIC_URL}"
     restart: unless-stopped
     ports:
       - "${APP_PORT:-3000}:3000"
