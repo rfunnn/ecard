@@ -19,27 +19,44 @@ const client = new S3Client({
 
 const BUCKET = process.env.STORAGE_BUCKET ?? "ecard"
 
+// Always build URLs as {host}:{port}/{bucket}/{key}.
+// STORAGE_PUBLIC_URL is just the host:port (e.g. http://143.198.94.229:9000).
 function publicUrl(key: string): string {
-  const base = process.env.STORAGE_PUBLIC_URL
-    ? process.env.STORAGE_PUBLIC_URL.replace(/\/$/, "")
-    : `${process.env.STORAGE_ENDPOINT?.replace(/\/$/, "")}/${BUCKET}`
-  return `${base}/${key}`
+  const base = (process.env.STORAGE_PUBLIC_URL ?? process.env.STORAGE_ENDPOINT ?? "http://localhost:9000")
+    .replace(/\/$/, "")
+  return `${base}/${BUCKET}/${key}`
 }
 
 /**
- * Rewrites a URL that was stored when STORAGE_PUBLIC_URL was not set (so it
- * contains the internal Docker endpoint, e.g. http://storage:9000/ecard/...)
- * to the current externally-reachable URL.  No-op for URLs that already use
- * a non-internal base or when STORAGE_PUBLIC_URL is unset.
+ * Normalises any stored MinIO URL to the correct public form.
+ * Handles two broken cases that existed before this fix:
+ *   1. Internal Docker hostname:  http://storage:9000/ecard/{key}
+ *   2. Public host but no bucket: http://143.x.x.x:9000/{key}
  */
 export function rewriteStorageUrl(storedUrl: string | null | undefined): string {
   if (!storedUrl) return ""
+
   const internalEndpoint = process.env.STORAGE_ENDPOINT?.replace(/\/$/, "")
-  if (!internalEndpoint || !storedUrl.startsWith(internalEndpoint)) return storedUrl
-  // Strip the internal base + bucket prefix to get the raw key, then regenerate.
-  const internalWithBucket = `${internalEndpoint}/${BUCKET}/`
-  if (!storedUrl.startsWith(internalWithBucket)) return storedUrl
-  return publicUrl(storedUrl.slice(internalWithBucket.length))
+  const publicBase       = process.env.STORAGE_PUBLIC_URL?.replace(/\/$/, "")
+
+  // Case 1 — internal Docker hostname (http://storage:9000/ecard/key)
+  const internalWithBucket = internalEndpoint ? `${internalEndpoint}/${BUCKET}/` : null
+  if (internalWithBucket && storedUrl.startsWith(internalWithBucket)) {
+    return publicUrl(storedUrl.slice(internalWithBucket.length))
+  }
+
+  // Case 2 — public host but bucket missing (http://143.x.x.x:9000/key)
+  if (publicBase && storedUrl.startsWith(`${publicBase}/`)) {
+    const rest = storedUrl.slice(publicBase.length + 1)
+    if (!rest.startsWith(`${BUCKET}/`)) {
+      // key is directly after host — inject the bucket
+      return `${publicBase}/${BUCKET}/${rest}`
+    }
+    // Already correct (http://143.x.x.x:9000/ecard/key)
+    return storedUrl
+  }
+
+  return storedUrl
 }
 
 // Uploaded images are served directly via <img src>, so the bucket must allow
