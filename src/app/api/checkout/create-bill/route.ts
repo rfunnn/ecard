@@ -85,7 +85,10 @@ export async function POST(req: NextRequest) {
 
   const billName = `ekadku.com - ${cards[0].groomName ?? cards[0].title ?? "Pelanggan"}`
   const billDesc = `${cards.length} kad jemputan digital`
-  const baseUrl  = process.env.NEXTAUTH_URL ?? "http://localhost:3000"
+  const baseUrl = process.env.NEXTAUTH_URL
+  if (!baseUrl) {
+    return NextResponse.json({ error: "Server misconfiguration: NEXTAUTH_URL is not set" }, { status: 500 })
+  }
 
   try {
     const bill = await createToyyibpayBill({

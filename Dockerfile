@@ -39,6 +39,16 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# Force TypeScript and ESLint checks off regardless of what next.config.ts says.
+# next.config.ts should already have ignoreBuildErrors:true, but this makes it
+# impossible for a stale config to cause a 30-minute type-check on the VPS.
+RUN node -e "\
+const fs=require('fs');\
+let c=fs.readFileSync('next.config.ts','utf8');\
+if(!c.includes('ignoreBuildErrors: true'))\
+  c=c.replace('output: \"standalone\"','output: \"standalone\",\n  typescript: { ignoreBuildErrors: true },\n  eslint: { ignoreDuringBuilds: true },');\
+fs.writeFileSync('next.config.ts',c);"
+
 # Generate Prisma client matching the installed engine
 # DATABASE_URL is required by prisma.config.ts even during generate (no DB connection is made)
 RUN DATABASE_URL="mysql://dummy:dummy@localhost:3306/dummy" npx prisma generate

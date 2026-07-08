@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from "next/server"
+import { createHash } from "crypto"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma"
+
+function hashIp(raw: string | null): string | undefined {
+  if (!raw) return undefined
+  // Take first IP in X-Forwarded-For chain, strip port, then SHA-256
+  const ip = raw.split(",")[0].trim().replace(/:\d+$/, "")
+  return createHash("sha256").update(ip).digest("hex")
+}
 
 export async function POST(
   req: NextRequest,
@@ -37,7 +45,7 @@ export async function POST(
       data: {
         cardId: card.id,
         event: "RSVP_SUBMIT",
-        ipHash: req.headers.get("x-forwarded-for") ?? undefined,
+        ipHash: hashIp(req.headers.get("x-forwarded-for")),
       },
     })
 
@@ -65,6 +73,7 @@ export async function GET(
     prisma.rSVP.findMany({
       where: { cardId: card.id },
       orderBy: { createdAt: "desc" },
+      take: 200,
     }),
     prisma.rSVP.groupBy({
       by: ["attendance"],
