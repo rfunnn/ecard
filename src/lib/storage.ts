@@ -26,6 +26,22 @@ function publicUrl(key: string): string {
   return `${base}/${key}`
 }
 
+/**
+ * Rewrites a URL that was stored when STORAGE_PUBLIC_URL was not set (so it
+ * contains the internal Docker endpoint, e.g. http://storage:9000/ecard/...)
+ * to the current externally-reachable URL.  No-op for URLs that already use
+ * a non-internal base or when STORAGE_PUBLIC_URL is unset.
+ */
+export function rewriteStorageUrl(storedUrl: string | null | undefined): string {
+  if (!storedUrl) return ""
+  const internalEndpoint = process.env.STORAGE_ENDPOINT?.replace(/\/$/, "")
+  if (!internalEndpoint || !storedUrl.startsWith(internalEndpoint)) return storedUrl
+  // Strip the internal base + bucket prefix to get the raw key, then regenerate.
+  const internalWithBucket = `${internalEndpoint}/${BUCKET}/`
+  if (!storedUrl.startsWith(internalWithBucket)) return storedUrl
+  return publicUrl(storedUrl.slice(internalWithBucket.length))
+}
+
 // Uploaded images are served directly via <img src>, so the bucket must allow
 // anonymous GetObject. Ensure the bucket exists and carries a public-read policy.
 // Runs at most once per server process.

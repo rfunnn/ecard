@@ -1,5 +1,5 @@
 ﻿import Link from "next/link"
-import { ArrowRight, Music, Share2, Sparkles, Heart, Check, Eye, Shield, Mail } from "lucide-react"
+import { ArrowRight, Music, Share2, Sparkles, Heart, Check, Eye } from "lucide-react"
 import UserMenu from "@/components/UserMenu"
 import { HomepagePhoneMockup } from "@/components/HomepagePhoneMockup"
 
@@ -306,121 +306,11 @@ export default function HomePage() {
 
       {/* ── Footer ── */}
       <footer className="border-t border-[var(--bd)] bg-[var(--pg-alt)]">
-
-        {/* Main columns */}
-        <div className="max-w-5xl mx-auto px-5 lg:px-10 py-12 lg:py-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-10">
-
-            {/* Brand */}
-            <div className="col-span-2 md:col-span-1 flex flex-col gap-4">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <Heart className="w-3.5 h-3.5 text-gold/50 fill-gold/20" />
-                  <span className="font-playfair text-base tracking-wide leading-none">
-                    <span className="text-[var(--tx-1)]">e</span>
-                    <span style={{ color: "#D4AF37" }}>kad</span>
-                    <span className="text-[var(--tx-1)]">ku</span>
-                    <span className="text-gold/50 text-[10px] font-sans tracking-normal align-baseline">.com</span>
-                  </span>
-                </div>
-                <p className="text-[var(--tx-3)] text-[12px] leading-relaxed">
-                  Platform kad jemputan digital premium untuk majlis istimewa anda. Cantik, mudah, dan boleh dikongsi dalam saat.
-                </p>
-              </div>
-              <div className="flex items-center gap-1.5 text-[var(--tx-3)] text-[11px]">
-                <Shield className="w-3 h-3 text-gold/50 shrink-0" />
-                Pembayaran selamat melalui ToyyibPay
-              </div>
-              <a
-                href="mailto:hello@ekadku.com"
-                className="inline-flex items-center gap-1.5 text-[12px] text-[var(--tx-2)] hover:text-gold transition-colors"
-              >
-                <Mail className="w-3.5 h-3.5" />
-                hello@ekadku.com
-              </a>
-            </div>
-
-            {/* Produk */}
-            <div>
-              <p className="text-[10px] font-bold text-[var(--tx-3)] uppercase tracking-widest mb-4">Produk</p>
-              <ul className="space-y-3">
-                {[
-                  { label: "Pilih Templat",  href: "/templates" },
-                  { label: "Demo Kad",       href: "/invite/demo" },
-                  { label: "Pakej & Harga",  href: "/#pakej" },
-                  { label: "Kad Saya",       href: "/dashboard" },
-                ].map(({ label, href }) => (
-                  <li key={label}>
-                    <Link href={href} className="text-[13px] text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors">
-                      {label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Akaun */}
-            <div>
-              <p className="text-[10px] font-bold text-[var(--tx-3)] uppercase tracking-widest mb-4">Akaun</p>
-              <ul className="space-y-3">
-                {[
-                  { label: "Log Masuk",  href: "/login" },
-                  { label: "Daftar",     href: "/register" },
-                  { label: "Dashboard",  href: "/dashboard" },
-                ].map(({ label, href }) => (
-                  <li key={label}>
-                    <Link href={href} className="text-[13px] text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors">
-                      {label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Dasar */}
-            <div>
-              <p className="text-[10px] font-bold text-[var(--tx-3)] uppercase tracking-widest mb-4">Dasar &amp; Bantuan</p>
-              <ul className="space-y-3">
-                {[
-                  "Dasar Privasi",
-                  "Terma Perkhidmatan",
-                  "Polisi Bayaran Balik",
-                  "Soalan Lazim",
-                ].map((label) => (
-                  <li key={label}>
-                    <span className="text-[13px] text-[var(--tx-3)] cursor-default select-none">{label}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+        <div className="max-w-5xl mx-auto px-5 py-4 text-center">
+          <p className="text-[var(--tx-3)] text-[11px]">
+            © {new Date().getFullYear()} ekadku.com
+          </p>
         </div>
-
-        {/* Bottom bar */}
-        <div className="border-t border-[var(--bd)]">
-          <div className="max-w-5xl mx-auto px-5 lg:px-10 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <p className="text-[var(--tx-3)] text-[11px]">
-              © {new Date().getFullYear()} ekadku.com · Hak Cipta Terpelihara
-            </p>
-            <div className="flex items-center gap-4">
-              <a
-                href="https://instagram.com/ekadku"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[var(--tx-3)] hover:text-gold transition-colors"
-                aria-label="Instagram ekadku"
-              >
-                {/* Instagram icon */}
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-                </svg>
-              </a>
-            </div>
-          </div>
-        </div>
-
       </footer>
     </div>
   )

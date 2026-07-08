@@ -60,8 +60,10 @@ services:
     volumes:
       - minio_data:/data
     ports:
-      # MinIO admin console — restrict this port at the firewall in production.
-      # Do NOT expose port 9000 (API) publicly; use STORAGE_PUBLIC_URL behind a reverse proxy.
+      # MinIO API — browsers load uploaded images directly from this port.
+      # Set STORAGE_PUBLIC_URL=http://YOUR_SERVER_IP:9000/ecard in .env
+      - "${MINIO_PORT:-9000}:9000"
+      # MinIO admin console
       - "${MINIO_CONSOLE_PORT:-9001}:9001"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]

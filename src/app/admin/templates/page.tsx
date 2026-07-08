@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
+import { rewriteStorageUrl } from "@/lib/storage"
 import { PlusCircle, Pencil, CheckCircle2, XCircle, Image as ImageIcon } from "lucide-react"
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -76,7 +77,7 @@ export default async function AdminTemplatesPage() {
                     <div className="flex items-center gap-3">
                       {t.image1Url ? (
                         <img
-                          src={t.image1Url}
+                          src={rewriteStorageUrl(t.image1Url)}
                           alt={t.name}
                           className="w-8 h-14 object-cover rounded shrink-0 bg-gray-100"
                         />

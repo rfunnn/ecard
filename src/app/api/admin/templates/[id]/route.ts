@@ -57,11 +57,8 @@ export async function PATCH(
       }
     }
 
-    // If image1Url changes and thumbnail was previously set to the old image1Url, keep them in sync
-    const thumbnailUpdate =
-      data.image1Url !== undefined && existing.thumbnail === (existing.image1Url ?? "")
-        ? { thumbnail: data.image1Url ?? "" }
-        : {}
+    // Always keep thumbnail in sync with image1Url (thumbnail is the display field read by /templates)
+    const thumbnailUpdate = data.image1Url !== undefined ? { thumbnail: data.image1Url ?? "" } : {}
 
     const template = await prisma.template.update({
       where: { id },
