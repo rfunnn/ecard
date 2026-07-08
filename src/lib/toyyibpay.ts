@@ -45,7 +45,7 @@ export async function createToyyibpayBill(params: CreateBillParams): Promise<Cre
     billName,
     billDescription,
     billPriceSetting: "1",       // 1 = fixed amount (use billAmount); 0 = payer enters amount
-    billPayorInfo: "1",          // collect name/email/phone
+    billPayorInfo: "0",          // do not collect/display payor info on payment page
     billAmount: String(params.billAmount),
     billReturnUrl: params.billReturnUrl,
     billCallbackUrl: params.billCallbackUrl,
