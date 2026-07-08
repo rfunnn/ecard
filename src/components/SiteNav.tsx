@@ -2,10 +2,8 @@
 
 import Link from "next/link"
 import { Heart } from "lucide-react"
-import { ThemeToggle } from "@/components/ThemeToggle"
 import UserMenu from "@/components/UserMenu"
 import { NavLikesButton } from "@/components/NavLikesButton"
-import { NavCartButton } from "@/components/NavCartButton"
 import type { ReactNode } from "react"
 
 interface SiteNavProps {
@@ -32,8 +30,6 @@ export function SiteNav({ actions }: SiteNavProps) {
         <div className="flex items-center gap-1">
           {actions}
           <NavLikesButton />
-          <NavCartButton />
-          <ThemeToggle />
           <UserMenu />
         </div>
       </div>
