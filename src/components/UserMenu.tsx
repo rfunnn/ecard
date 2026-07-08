@@ -3,18 +3,14 @@
 import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
 import { useState, useRef, useEffect } from "react"
-import { User, Heart, ShoppingBag, Sun, Moon, LogOut, ExternalLink } from "lucide-react"
+import { User, ShoppingBag, Sun, Moon, LogOut } from "lucide-react"
 import { useTheme } from "@/components/ThemeProvider"
-
-interface LikedTemplate { id: string; slug: string; name: string; nameMs?: string | null }
 
 export default function UserMenu() {
   const { data: session, status } = useSession()
   const { theme, toggle } = useTheme()
   const [open, setOpen] = useState(false)
   const [cardCount, setCardCount] = useState(0)
-  const [likes, setLikes] = useState<LikedTemplate[]>([])
-  const [likesLoaded, setLikesLoaded] = useState(false)
   const ref = useRef<HTMLDivElement | undefined>(undefined)
 
   useEffect(() => {
@@ -32,16 +28,6 @@ export default function UserMenu() {
     document.addEventListener("mousedown", onOutsideClick)
     return () => document.removeEventListener("mousedown", onOutsideClick)
   }, [])
-
-  useEffect(() => {
-    if (open && session && !likesLoaded) {
-      setLikesLoaded(true)
-      fetch("/api/user/likes")
-        .then((r) => r.json())
-        .then((d) => setLikes(d.likes ?? []))
-        .catch(() => {})
-    }
-  }, [open, session, likesLoaded])
 
   const initials = session?.user?.name
     ? session.user.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)
@@ -108,34 +94,6 @@ export default function UserMenu() {
               </div>
             )}
 
-            {/* Likes section — only when logged in */}
-            {session && (
-              <div className="border-b border-[var(--bd)]">
-                <div className="px-4 py-2 flex items-center gap-2">
-                  <Heart className="w-3.5 h-3.5 text-[var(--tx-3)]" />
-                  <span className="text-[11px] uppercase tracking-wider text-[var(--tx-3)]">Suka</span>
-                </div>
-                {likes.length === 0 ? (
-                  <p className="px-4 pb-3 text-xs text-[var(--tx-3)] opacity-60">
-                    {likesLoaded ? "Tiada rekaan disukai." : "Memuatkan…"}
-                  </p>
-                ) : (
-                  <div className="max-h-40 overflow-y-auto">
-                    {likes.map((t) => (
-                      <Link
-                        key={t.id}
-                        href={`/invite/${t.slug}`}
-                        onClick={() => setOpen(false)}
-                        className="flex items-center justify-between gap-2 px-4 py-2 text-xs text-[var(--tx-2)] hover:text-[var(--tx-1)] hover:bg-[var(--sf)] transition-colors"
-                      >
-                        <span className="truncate">{t.nameMs || t.name}</span>
-                        <ExternalLink className="w-3 h-3 shrink-0 opacity-40" />
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
 
             {/* Kad Saya */}
             <div className="py-1">
