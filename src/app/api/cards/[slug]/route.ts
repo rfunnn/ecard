@@ -106,6 +106,9 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
   const { slug } = await params
   try {
     const body = await req.json()
@@ -113,6 +116,7 @@ export async function PATCH(
 
     const existing = await getCard(slug)
     if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 })
+    if (existing.userId !== session.user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
     const { theme, media, scrollConfig, wizardConfig, password, ...cardFields } = data
 

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth-options"
 import { prisma } from "@/lib/prisma"
 
 const addSchema = z.object({
@@ -13,7 +15,7 @@ const deleteSchema = z.object({
 })
 
 async function resolveCard(slug: string) {
-  return prisma.invitationCard.findUnique({ where: { slug }, select: { id: true } })
+  return prisma.invitationCard.findUnique({ where: { slug }, select: { id: true, userId: true } })
 }
 
 export async function GET(
@@ -35,6 +37,9 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
   const { slug } = await params
   try {
     const body = await req.json()
@@ -42,6 +47,7 @@ export async function POST(
 
     const card = await resolveCard(slug)
     if (!card) return NextResponse.json({ error: "Not found" }, { status: 404 })
+    if (card.userId !== session.user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
     const count = await prisma.giftItem.count({ where: { cardId: card.id } })
     const item = await prisma.giftItem.create({
@@ -60,6 +66,9 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
   const { slug } = await params
   try {
     const body = await req.json()
@@ -67,6 +76,7 @@ export async function DELETE(
 
     const card = await resolveCard(slug)
     if (!card) return NextResponse.json({ error: "Not found" }, { status: 404 })
+    if (card.userId !== session.user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
     await prisma.giftItem.delete({ where: { id, cardId: card.id } })
     return NextResponse.json({ ok: true })

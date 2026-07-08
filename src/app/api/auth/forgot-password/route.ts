@@ -3,10 +3,16 @@ import { z } from "zod"
 import crypto from "crypto"
 import { prisma } from "@/lib/prisma"
 import { sendPasswordResetEmail } from "@/lib/email"
+import { rateLimit, rateLimitKey } from "@/lib/rate-limit"
 
 const schema = z.object({ email: z.string().email() })
 
 export async function POST(req: NextRequest) {
+  // 3 reset emails per IP per hour
+  if (!rateLimit(rateLimitKey(req, "forgot"), 3, 60 * 60 * 1000)) {
+    return NextResponse.json({ ok: true }) // Don't reveal rate limit to avoid enumeration
+  }
+
   try {
     const { email } = schema.parse(await req.json())
     const normalised = email.toLowerCase().trim()
