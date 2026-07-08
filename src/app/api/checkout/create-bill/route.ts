@@ -100,8 +100,8 @@ export async function POST(req: NextRequest) {
       billExternalReferenceNo: order.id,
       // billTo:    session.user.name ?? undefined,
       billTo:    "",
-      billEmail: "ar.worldwide.biz@gmail.com",
-      billPhone: "0129190025",
+      billEmail: "",
+      billPhone: "",
     })
 
     await prisma.order.update({
