@@ -136,7 +136,7 @@ export default function HomePage() {
             </h1>
 
             <p className="text-[var(--tx-2)] text-[13px] lg:text-lg leading-relaxed max-w-sm lg:max-w-md mb-5 lg:mb-10">
-              Cipta kad jemputan digital yang memukau dalam minit. Tambah muzik, animasi skrol, dan kongsi pautan unik kepada tetamu.
+              Cipta kad jemputan digital dengan mudah. Tambah muzik, animasi skrol, dan kongsi pautan unik kepada tetamu.
             </p>
 
             {/* CTAs */}
