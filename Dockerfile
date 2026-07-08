@@ -46,7 +46,7 @@ RUN node -e "\
 const fs=require('fs');\
 let c=fs.readFileSync('next.config.ts','utf8');\
 if(!c.includes('ignoreBuildErrors: true'))\
-  c=c.replace('output: \"standalone\"','output: \"standalone\",\n  typescript: { ignoreBuildErrors: true },\n  eslint: { ignoreDuringBuilds: true },');\
+  c=c.replace('output: \"standalone\"','output: \"standalone\",\n  typescript: { ignoreBuildErrors: true },');\
 fs.writeFileSync('next.config.ts',c);"
 
 # Generate Prisma client matching the installed engine
