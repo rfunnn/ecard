@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 import { getToken } from "next-auth/jwt"
 
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? "")
@@ -6,11 +7,9 @@ const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? "")
   .map((e) => e.trim().toLowerCase())
   .filter(Boolean)
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
   const isAdminRoute = pathname.startsWith("/admin") || pathname.startsWith("/api/admin")
-
-  let response: NextResponse
 
   if (isAdminRoute) {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
@@ -34,7 +33,7 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  response = NextResponse.next()
+  const response = NextResponse.next()
   response.headers.set("X-Content-Type-Options", "nosniff")
   response.headers.set("X-Frame-Options", "SAMEORIGIN")
   response.headers.set("X-XSS-Protection", "1; mode=block")
@@ -44,5 +43,8 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon\\.ico).*)"],
+  matcher: [
+    // Run on everything except static assets and NextAuth's own routes
+    "/((?!api/auth|_next/static|_next/image|favicon\\.ico).*)",
+  ],
 }
