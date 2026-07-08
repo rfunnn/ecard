@@ -37,3 +37,9 @@ coverage
 # Documentation
 *.md
 !README.md
+
+# One-off scripts — not needed inside the image
+scripts
+
+# Prisma migration history (only schema.prisma is needed)
+prisma/migrations

@@ -4,6 +4,12 @@ const nextConfig: NextConfig = {
   // Required for Docker: copies only the minimal server files into .next/standalone
   output: "standalone",
 
+  // Skip type-checking and linting during `next build`.
+  // Run `tsc --noEmit` and `eslint` locally / in CI instead.
+  // Removing these checks cuts Docker build time from 30+ min → ~2 min on a VPS.
+  typescript: { ignoreBuildErrors: true },
+  eslint:     { ignoreDuringBuilds: true },
+
   serverExternalPackages: ["mariadb", "@prisma/adapter-mariadb"],
 
   images: {
