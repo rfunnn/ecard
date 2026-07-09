@@ -130,15 +130,22 @@ export function RSVPModal({ isOpen, onClose, card, onAnalytic, contained }: RSVP
         body: JSON.stringify({ ...data, guestCount: Number(data.guestCount) || 1 }),
       })
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}))
-        throw new Error(body?.error ?? "")
+        if (res.status === 403) {
+          setError(lang ? "Kad ini belum diterbitkan." : "This card is not published yet.")
+        } else if (res.status === 409) {
+          setError(lang ? "Kuota tetamu telah penuh." : "Guest limit has been reached.")
+        } else if (res.status === 429) {
+          setError(lang ? "Terlalu banyak percubaan. Cuba lagi selepas 1 jam." : "Too many attempts. Please try again in 1 hour.")
+        } else {
+          setError(lang ? "Ralat berlaku. Cuba lagi." : "An error occurred. Please try again.")
+        }
+        return
       }
       onAnalytic?.("RSVP_SUBMIT")
       setSubmittedAttendance(data.attendance)
       setSubmitted(true)
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : ""
-      setError(msg || (lang ? "Ralat berlaku. Cuba lagi." : "An error occurred. Please try again."))
+    } catch {
+      setError(lang ? "Ralat berlaku. Cuba lagi." : "An error occurred. Please try again.")
     } finally {
       setSubmitting(false)
     }
