@@ -363,28 +363,38 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
           const expiry = card.expiresAt ? new Date(card.expiresAt) : null
           const now = new Date()
           const daysLeft = expiry ? Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)) : null
-          const isExpiringSoon = daysLeft !== null && daysLeft <= 30
+          const isExpired = daysLeft !== null && daysLeft <= 0
+          const isExpiringSoon = !isExpired && daysLeft !== null && daysLeft <= 30
           const expiryLabel = expiry
             ? expiry.toLocaleDateString("ms-MY", { day: "numeric", month: "short", year: "numeric" })
             : null
           return (
             <div className="flex flex-col gap-1">
-              <span className={`inline-flex items-center gap-1 text-xs px-3 py-1 rounded-full font-medium w-fit ${
-                isExpiringSoon
-                  ? "text-amber-600 bg-amber-500/10 border border-amber-500/20"
-                  : "text-green-600 bg-green-500/10 border border-green-500/20"
-              }`}>
-                Active{expiryLabel ? ` · Luput ${expiryLabel}` : ""}
-              </span>
-              {isExpiringSoon && daysLeft !== null && daysLeft > 0 && (
+              {isExpired ? (
+                <span className="inline-flex items-center gap-1 text-xs px-3 py-1 rounded-full font-medium w-fit text-red-600 bg-red-500/10 border border-red-500/20">
+                  Luput{expiryLabel ? ` · ${expiryLabel}` : ""}
+                </span>
+              ) : (
+                <span className={`inline-flex items-center gap-1 text-xs px-3 py-1 rounded-full font-medium w-fit ${
+                  isExpiringSoon
+                    ? "text-amber-600 bg-amber-500/10 border border-amber-500/20"
+                    : "text-green-600 bg-green-500/10 border border-green-500/20"
+                }`}>
+                  Active{expiryLabel ? ` · Luput ${expiryLabel}` : ""}
+                </span>
+              )}
+              {isExpiringSoon && daysLeft !== null && (
                 <p className="text-[11px] text-amber-500">
                   Pautan tamat dalam {daysLeft} hari
                 </p>
               )}
-              {daysLeft !== null && daysLeft <= 0 && (
-                <p className="text-[11px] text-red-400">
-                  Pautan telah tamat tempoh
-                </p>
+              {isExpired && (
+                <Link
+                  href={`/checkout?slug=${card.slug}`}
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-red-500 hover:text-red-700 transition-colors underline underline-offset-2 w-fit"
+                >
+                  Perbaharui pautan →
+                </Link>
               )}
             </div>
           )

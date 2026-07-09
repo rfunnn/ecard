@@ -183,7 +183,9 @@ export function RSVPModal({ isOpen, onClose, card, onAnalytic, contained }: RSVP
                 style={{ borderBottom: `1px solid ${primaryColor}20` }}
               >
                 <p className="text-xs font-bold tracking-[0.2em]" style={{ color: primaryColor }}>
-                  {lang ? "PENGESAHAN KEHADIRAN" : "RSVP"}
+                  {isWishesOnly
+                    ? (lang ? "UCAPAN" : "WISHES")
+                    : (lang ? "PENGESAHAN KEHADIRAN" : "RSVP")}
                 </p>
                 <button
                   onClick={onClose}
@@ -270,6 +272,13 @@ export function RSVPModal({ isOpen, onClose, card, onAnalytic, contained }: RSVP
                   </div>
                 ) : (
                   <form onSubmit={handleSubmit(onSubmit)} className="px-5 py-4 space-y-3">
+                    {rsvpCfg?.note && (
+                      <p
+                        className="text-xs leading-relaxed italic pb-1"
+                        style={{ color: `${primaryColor}80` }}
+                        dangerouslySetInnerHTML={{ __html: rsvpCfg.note }}
+                      />
+                    )}
                     <div>
                       <label style={labelStyle}>{lang ? "Nama Anda" : "Your Name"}</label>
                       <input
