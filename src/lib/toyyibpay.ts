@@ -1,4 +1,18 @@
 const BASE_URL = process.env.TOYYIBPAY_BASE_URL ?? "https://toyyibpay.com"
+const MOCK_MODE = process.env.TOYYIBPAY_MOCK === "true"
+
+// ── Mock state (persists across hot reloads in Next.js dev) ──────────────────
+declare global {
+  // eslint-disable-next-line no-var
+  var __mockBillStatuses: Map<string, "paid" | "failed"> | undefined
+}
+function getMockBillStatuses(): Map<string, "paid" | "failed"> {
+  global.__mockBillStatuses ??= new Map()
+  return global.__mockBillStatuses
+}
+export function setMockBillStatus(billCode: string, status: "paid" | "failed"): void {
+  getMockBillStatuses().set(billCode, status)
+}
 
 interface CreateBillParams {
   billName: string
@@ -29,6 +43,20 @@ function sanitizeBillText(text: string, maxLen: number): string {
 }
 
 export async function createToyyibpayBill(params: CreateBillParams): Promise<CreateBillResult> {
+  if (MOCK_MODE) {
+    const billCode = `mock_${params.billExternalReferenceNo}`
+    const appUrl = process.env.NEXTAUTH_URL ?? "http://localhost:3000"
+    const qs = new URLSearchParams({
+      billCode,
+      orderId:   params.billExternalReferenceNo,
+      amount:    String(params.billAmount),
+      billName:  params.billName,
+      billTo:    params.billTo ?? "",
+      returnUrl: params.billReturnUrl,
+    })
+    return { billCode, paymentUrl: `${appUrl}/mock-payment?${qs}` }
+  }
+
   const secretKey = process.env.TOYYIBPAY_SECRET_KEY
   const categoryCode = process.env.TOYYIBPAY_CATEGORY_CODE
 
@@ -146,6 +174,9 @@ export async function getToyyibpayBillTransactions(billCode: string): Promise<Bi
 
 // Authoritative check that a bill has at least one successful transaction.
 export async function verifyToyyibpayBillPaid(billCode: string): Promise<boolean> {
+  if (MOCK_MODE) {
+    return getMockBillStatuses().get(billCode) === "paid"
+  }
   try {
     const txns = await getToyyibpayBillTransactions(billCode)
     return txns.some((t) => t.billpaymentStatus === "1")
