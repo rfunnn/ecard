@@ -5,7 +5,6 @@ import { Phone, CirclePlay, CirclePause, MapPin, Gift, Mail, Heart } from "lucid
 import { motion } from "framer-motion"
 import type { InvitationCardData } from "@/types/invitation"
 import type { WizardConfig } from "@/types/config"
-import { RSVPModal } from "./RSVPModal"
 import { GiftModal } from "./GiftModal"
 import { LocationModal } from "./LocationModal"
 import { ContactModal } from "./ContactModal"
@@ -16,6 +15,7 @@ interface ActionBarProps {
   onMusicToggle?: () => void
   isMusicMuted?: boolean
   hasMusicPlayer?: boolean
+  onRsvpOpen?: () => void
   contained?: boolean
 }
 
@@ -25,9 +25,9 @@ export function ActionBar({
   onMusicToggle,
   isMusicMuted = true,
   hasMusicPlayer = false,
+  onRsvpOpen,
   contained = false,
 }: ActionBarProps) {
-  const [rsvpOpen, setRsvpOpen] = useState(false)
   const [giftOpen, setGiftOpen] = useState(false)
   const [locationOpen, setLocationOpen] = useState(false)
   const [contactOpen, setContactOpen] = useState(false)
@@ -42,7 +42,8 @@ export function ActionBar({
   const hasGifts = (card.giftItems?.length ?? 0) > 0
   // Gift section visible only when there are wishlist items or explicit bank account details
   const hasGiftContent = hasGifts || !!(wCfg?.bankAccountNumber)
-  const hasRsvp = !wCfg || wCfg.rsvp?.mode !== "NONE"
+  const seg = wCfg?.segments
+  const hasRsvp = (seg?.attendance !== false) && (!wCfg || wCfg.rsvp?.mode !== "NONE")
   const { primaryColor, bgColor } = card.theme
 
   return (
@@ -123,10 +124,10 @@ export function ActionBar({
             </button>
           )}
 
-          {/* RSVP — only shown when RSVP/Wishes are enabled */}
+          {/* RSVP — only shown when attendance segment and RSVP mode are enabled */}
           {hasRsvp && (
             <button
-              onClick={() => { onAnalytic?.("RSVP_OPEN"); setRsvpOpen(true) }}
+              onClick={() => { onAnalytic?.("RSVP_OPEN"); onRsvpOpen?.() }}
               aria-label="RSVP"
               className="flex items-center justify-center w-10 h-10 transition-all active:scale-90"
               style={{ opacity: 0.85 }}
@@ -158,14 +159,6 @@ export function ActionBar({
       <LocationModal
         isOpen={locationOpen}
         onClose={() => setLocationOpen(false)}
-        card={card}
-        onAnalytic={onAnalytic}
-        contained={contained}
-      />
-
-      <RSVPModal
-        isOpen={rsvpOpen}
-        onClose={() => setRsvpOpen(false)}
         card={card}
         onAnalytic={onAnalytic}
         contained={contained}

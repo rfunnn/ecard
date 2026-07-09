@@ -24,9 +24,9 @@ function BirthdayDivider({ color }: { color: string }) {
   )
 }
 
-interface Props { card: InvitationCardData }
+interface Props { card: InvitationCardData; onRsvpOpen?: () => void }
 
-export function BirthdayTemplate({ card }: Props) {
+export function BirthdayTemplate({ card, onRsvpOpen }: Props) {
   const cfg = card.wizardConfig as WizardConfig | undefined
   const { theme } = card
 
@@ -328,7 +328,37 @@ export function BirthdayTemplate({ card }: Props) {
         </div>
       )}
 
-      {/* ══ WISHES ══════════════════════════════════════════════════════════ */}
+      {/* ══ KEHADIRAN CTA ════════════════════════════════════════════════════ */}
+      {seg.attendance && (
+        <div className="pb-4 text-center">
+          <BirthdayDivider color={primaryColor} />
+          <p className={`${headFont} text-[11px] tracking-[0.3em] uppercase opacity-40 mb-6`} style={{ color: bodyColor }}>
+            {isMs ? "Kehadiran" : "Attendance"}
+          </p>
+          <div className="flex flex-col items-center gap-3">
+            {seg.confirmBtn && (
+              <button
+                onClick={onRsvpOpen}
+                className="inline-flex items-center gap-2 px-7 py-2.5 rounded-full text-sm font-medium transition-all active:scale-95"
+                style={{ border: `1px solid ${primaryColor}70`, color: primaryColor }}
+              >
+                {isMs ? "Sahkan Kehadiran" : "Confirm Attendance"}
+              </button>
+            )}
+            {seg.writeWishBtn && (
+              <button
+                onClick={onRsvpOpen}
+                className="inline-flex items-center gap-2 px-7 py-2.5 rounded-full text-sm transition-all active:scale-95 opacity-70"
+                style={{ border: `1px solid ${bodyColor}40`, color: bodyColor }}
+              >
+                {isMs ? "Tulis Ucapan" : "Write a Wish"}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ══ UCAPAN WALL ══════════════════════════════════════════════════════ */}
       {seg.wishes && wishes.length > 0 && (
         <div className="pb-6 text-center">
           <BirthdayDivider color={primaryColor} />

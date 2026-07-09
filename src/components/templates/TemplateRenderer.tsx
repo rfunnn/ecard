@@ -4,13 +4,13 @@ import { BirthdayTemplate } from "./BirthdayTemplate"
 import { CorporateTemplate } from "./CorporateTemplate"
 import { GenericTemplate } from "./GenericTemplate"
 
-interface Props { card: InvitationCardData }
+interface Props { card: InvitationCardData; onRsvpOpen?: () => void }
 
-export function TemplateRenderer({ card }: Props) {
+export function TemplateRenderer({ card, onRsvpOpen }: Props) {
   switch (card.template.category) {
-    case "WEDDING":   return <WeddingTemplate card={card} />
-    case "BIRTHDAY":  return <BirthdayTemplate card={card} />
-    case "CORPORATE": return <CorporateTemplate card={card} />
-    default:          return <GenericTemplate card={card} />
+    case "WEDDING":   return <WeddingTemplate card={card} onRsvpOpen={onRsvpOpen} />
+    case "BIRTHDAY":  return <BirthdayTemplate card={card} onRsvpOpen={onRsvpOpen} />
+    case "CORPORATE": return <CorporateTemplate card={card} onRsvpOpen={onRsvpOpen} />
+    default:          return <GenericTemplate card={card} onRsvpOpen={onRsvpOpen} />
   }
 }

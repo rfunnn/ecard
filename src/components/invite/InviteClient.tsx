@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { TemplateRenderer } from "@/components/templates/TemplateRenderer"
 import { MusicPlayer } from "./MusicPlayer"
 import { ActionBar } from "./ActionBar"
+import { RSVPModal } from "./RSVPModal"
 import { EffectAnimation } from "./EffectAnimation"
 import type { InvitationCardData } from "@/types/invitation"
 import { SCROLL_SPEED_MS } from "@/types/invitation"
@@ -26,6 +27,7 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
   const isPausedRef = useRef<boolean>(false)
   const musicToggleRef = useRef<(() => void) | undefined>(undefined)
   const [isMusicMuted, setIsMusicMuted] = useState(true)
+  const [rsvpOpen, setRsvpOpen] = useState(false)
   const hasMusicPlayer = !!(card.media?.audioEnabled && card.media?.youtubeVideoId)
 
   const fireAnalytic = useCallback(async (event: string) => {
@@ -211,7 +213,7 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
 
             {/* ── Template content — overlaid on image1 (page 1), then on image2 (page 2+) ── */}
             <div className="relative z-10">
-              <TemplateRenderer card={card} />
+              <TemplateRenderer card={card} onRsvpOpen={() => setRsvpOpen(true)} />
 
               {hasMusicPlayer && (
                 <MusicPlayer
@@ -231,6 +233,15 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
             onMusicToggle={() => musicToggleRef.current?.()}
             isMusicMuted={isMusicMuted}
             hasMusicPlayer={hasMusicPlayer}
+            onRsvpOpen={() => setRsvpOpen(true)}
+            contained
+          />
+
+          <RSVPModal
+            isOpen={rsvpOpen}
+            onClose={() => setRsvpOpen(false)}
+            card={card}
+            onAnalytic={fireAnalytic}
             contained
           />
         </div>

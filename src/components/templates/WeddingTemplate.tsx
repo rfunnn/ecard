@@ -27,9 +27,9 @@ function WeddingDivider({ color }: { color: string }) {
   )
 }
 
-interface Props { card: InvitationCardData }
+interface Props { card: InvitationCardData; onRsvpOpen?: () => void }
 
-export function WeddingTemplate({ card }: Props) {
+export function WeddingTemplate({ card, onRsvpOpen }: Props) {
   const cfg = card.wizardConfig as WizardConfig | undefined
   const { theme } = card
 
@@ -433,6 +433,40 @@ export function WeddingTemplate({ card }: Props) {
       )}
 
       {/* â•â• SECTION 6 Â· WISHES â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
+      {/* ══ KEHADIRAN CTA ════════════════════════════════════════════════════ */}
+      {seg.attendance && (
+        <div className="pb-4 text-center">
+          <WeddingDivider color={bodyColor} />
+          <p
+            className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-45 mb-6`}
+            style={{ color: bodyColor }}
+          >
+            {card.language === "ms" ? "Kehadiran" : "Attendance"}
+          </p>
+          <div className="flex flex-col items-center gap-3">
+            {seg.confirmBtn && (
+              <button
+                onClick={onRsvpOpen}
+                className="inline-flex items-center gap-2 px-7 py-2.5 rounded-full text-sm font-medium transition-all active:scale-95"
+                style={{ border: `1px solid ${primaryColor}70`, color: primaryColor }}
+              >
+                {card.language === "ms" ? "Sahkan Kehadiran" : "Confirm Attendance"}
+              </button>
+            )}
+            {seg.writeWishBtn && (
+              <button
+                onClick={onRsvpOpen}
+                className="inline-flex items-center gap-2 px-7 py-2.5 rounded-full text-sm transition-all active:scale-95 opacity-70"
+                style={{ border: `1px solid ${bodyColor}40`, color: bodyColor }}
+              >
+                {card.language === "ms" ? "Tulis Ucapan" : "Write a Wish"}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ══ UCAPAN WALL ══════════════════════════════════════════════════════ */}
       {seg.wishes && wishes.length > 0 && (
         <div className="pb-4 text-center">
           <WeddingDivider color={bodyColor} />
@@ -440,7 +474,7 @@ export function WeddingTemplate({ card }: Props) {
             className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-45 mb-5`}
             style={{ color: bodyColor }}
           >
-            Ucapan
+            {card.language === "ms" ? "Ucapan" : "Wishes"}
           </p>
           <div className="space-y-5 max-w-sm mx-auto">
             {wishes.map((w, i) => (
