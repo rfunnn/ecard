@@ -339,7 +339,7 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
 
         <div className="flex items-center flex-wrap gap-1 mb-3">
           <Link href={`/builder/${card.slug}`} className={actionBtn}><Pencil className="w-3.5 h-3.5" /> Edit</Link>
-          <Link href={`/builder/${card.slug}?page=2`} className={actionBtn}><ImageIcon className="w-3.5 h-3.5" /> Gallery</Link>
+          <Link href={`/builder/${card.slug}?page=11`} className={actionBtn}><ImageIcon className="w-3.5 h-3.5" /> Gallery</Link>
           <Link href={`/builder/${card.slug}?page=10`} className={actionBtn}><Gift className="w-3.5 h-3.5" /> Gifts</Link>
           <Link href={`/builder/${card.slug}?page=7`} className={actionBtn}><Mail className="w-3.5 h-3.5" /> RSVP</Link>
           {card.isPublished && (

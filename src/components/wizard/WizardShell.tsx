@@ -276,11 +276,13 @@ export function WizardShell({ initialCard, guest = false }: Props) {
     setIsScrolling(false)
     const ph = desktopScrollRef.current?.clientHeight ?? 0
     const target =
-      currentPage <= 2  ? 0           // cover / names / date
-      : currentPage === 3 ? ph * 1.05  // invitation text
-      : currentPage === 4 ? ph * 1.65  // venue & date
-      : currentPage === 5 ? ph * 2.3   // event program
-      : currentPage === 7 ? ph * 3.0   // RSVP / wishes
+      currentPage <= 2  ? 0
+      : currentPage === 3 ? ph * 1.05
+      : currentPage === 4 ? ph * 1.65
+      : currentPage === 5 ? ph * 2.3
+      : currentPage === 7 ? ph * 3.0
+      : currentPage === 10 ? ph * 3.5   // gifts
+      : currentPage === 11 ? 999999      // photos — scroll to bottom
       : 0
 
     for (const ref of [desktopScrollRef, mobileScrollRef]) {
