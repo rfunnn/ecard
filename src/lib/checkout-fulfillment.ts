@@ -11,14 +11,18 @@ export async function fulfillPaidOrder(orderId: string, billCode?: string): Prom
   if (!order) return false
   if (order.status === "PAID") return true
 
+  const paidAt = new Date()
+  const expiresAt = new Date(paidAt)
+  expiresAt.setMonth(expiresAt.getMonth() + 6)
+
   await prisma.$transaction([
     prisma.order.update({
       where: { id: order.id },
-      data: { status: "PAID", paidAt: new Date(), billCode: billCode || order.billCode },
+      data: { status: "PAID", paidAt, billCode: billCode || order.billCode },
     }),
     prisma.invitationCard.updateMany({
       where: { id: { in: order.items.map((i) => i.cardId) } },
-      data: { isPublished: true },
+      data: { isPublished: true, expiresAt },
     }),
   ])
   return true

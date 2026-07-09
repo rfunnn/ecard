@@ -17,6 +17,7 @@ export async function GET() {
       groomName:    true,
       brideName:    true,
       isPublished:  true,
+      expiresAt:    true,
       language:     true,
       viewCount:    true,
       updatedAt:    true,

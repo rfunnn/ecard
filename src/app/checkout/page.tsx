@@ -383,6 +383,10 @@ function CheckoutInner() {
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                       RSVP dan respons tetamu berfungsi
                     </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      Pautan aktif selama <span className="font-semibold text-[var(--tx-1)]">6 bulan</span> dari tarikh bayaran
+                    </li>
                   </ul>
                 </div>
               )}

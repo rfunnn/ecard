@@ -2,6 +2,18 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { prisma } from "@/lib/prisma"
 
+function ExpiredPage() {
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center bg-neutral-950">
+      <p className="text-4xl mb-5">📅</p>
+      <h1 className="text-xl font-semibold text-white mb-2">Pautan Telah Tamat Tempoh</h1>
+      <p className="text-sm text-neutral-400 max-w-xs">
+        Tempoh sah pautan jemputan ini telah berakhir. Sila hubungi penganjur majlis untuk maklumat lanjut.
+      </p>
+    </div>
+  )
+}
+
 export const dynamic = 'force-dynamic'
 import { InviteClient } from "@/components/invite/InviteClient"
 import type { InvitationCardData } from "@/types/invitation"
@@ -248,6 +260,10 @@ export default async function InvitePage({ params, searchParams }: Props) {
     })
 
     if (!raw) return notFound()
+
+    if (raw.expiresAt && raw.expiresAt < new Date()) {
+      return <ExpiredPage />
+    }
 
     card = {
       id: raw.id,

@@ -21,6 +21,7 @@ type Card = {
   groomName: string | null
   brideName: string | null
   isPublished: boolean
+  expiresAt: string | null
   language: string
   viewCount: number
   updatedAt: string
@@ -358,11 +359,36 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
             PAY NOW
           </Link>
         )}
-        {card.isPublished && (
-          <span className="inline-flex items-center gap-1 text-xs text-green-600 bg-green-500/10 border border-green-500/20 px-3 py-1 rounded-full font-medium">
-            Active
-          </span>
-        )}
+        {card.isPublished && (() => {
+          const expiry = card.expiresAt ? new Date(card.expiresAt) : null
+          const now = new Date()
+          const daysLeft = expiry ? Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)) : null
+          const isExpiringSoon = daysLeft !== null && daysLeft <= 30
+          const expiryLabel = expiry
+            ? expiry.toLocaleDateString("ms-MY", { day: "numeric", month: "short", year: "numeric" })
+            : null
+          return (
+            <div className="flex flex-col gap-1">
+              <span className={`inline-flex items-center gap-1 text-xs px-3 py-1 rounded-full font-medium w-fit ${
+                isExpiringSoon
+                  ? "text-amber-600 bg-amber-500/10 border border-amber-500/20"
+                  : "text-green-600 bg-green-500/10 border border-green-500/20"
+              }`}>
+                Active{expiryLabel ? ` · Luput ${expiryLabel}` : ""}
+              </span>
+              {isExpiringSoon && daysLeft !== null && daysLeft > 0 && (
+                <p className="text-[11px] text-amber-500">
+                  Pautan tamat dalam {daysLeft} hari
+                </p>
+              )}
+              {daysLeft !== null && daysLeft <= 0 && (
+                <p className="text-[11px] text-red-400">
+                  Pautan telah tamat tempoh
+                </p>
+              )}
+            </div>
+          )
+        })()}
       </div>
     </div>
   )

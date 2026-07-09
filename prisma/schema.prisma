@@ -71,6 +71,7 @@ model InvitationCard {
   contactName    String?
 
   isPublished    Boolean        @default(false)
+  expiresAt      DateTime?
   passwordHash   String?
   language       String         @default("ms")
   viewCount      Int            @default(0)
