@@ -28,17 +28,38 @@ const ebGaramond = EB_Garamond({ subsets: ["latin"], weight: ["400", "500"], var
 const openSans = Open_Sans({ subsets: ["latin"], weight: ["300", "400", "500", "600"], variable: "--font-opensans", display: "swap" })
 
 export const metadata: Metadata = {
-  title: "ekadku.com — Kad Jemputan Digital",
-  description: "Cipta kad jemputan digital yang cantik dan mudah dikongsi. Wedding, hari jadi, korporat dan lebih lagi.",
-  keywords: ["kad jemputan", "digital invitation", "wedding card", "e-invite", "kad kahwin", "ekadku"],
+  metadataBase: new URL("https://ekadku.com"),
+  title: {
+    default: "ekadku.com — Kad Jemputan Digital Malaysia",
+    template: "%s | ekadku.com",
+  },
+  description: "Cipta kad jemputan digital yang cantik dan mudah dikongsi. Perkahwinan, hari jadi, korporat dan lebih lagi. Mulai RM30 sahaja.",
+  keywords: ["kad jemputan digital", "kad kahwin digital", "e-kad Malaysia", "digital invitation Malaysia", "kad jemputan online", "ekadku", "kad perkahwinan digital", "kad hari jadi digital"],
+  authors: [{ name: "ekadku.com", url: "https://ekadku.com" }],
+  creator: "ekadku.com",
+  alternates: { canonical: "https://ekadku.com" },
   icons: {
     icon: "/icon.png",
     apple: "/icon.png",
   },
   openGraph: {
-    title: "ekadku.com — Kad Jemputan Digital",
-    description: "Cipta kad jemputan digital yang cantik dan mudah dikongsi.",
+    title: "ekadku.com — Kad Jemputan Digital Malaysia",
+    description: "Cipta kad jemputan digital yang cantik dan mudah dikongsi. Perkahwinan, hari jadi, korporat dan lebih lagi. Mulai RM30 sahaja.",
+    url: "https://ekadku.com",
+    siteName: "ekadku.com",
+    locale: "ms_MY",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ekadku.com — Kad Jemputan Digital Malaysia",
+    description: "Cipta kad jemputan digital yang cantik. Perkahwinan, hari jadi, korporat. Mulai RM30.",
+    site: "@ekadku",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
 }
 
@@ -56,6 +77,33 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script dangerouslySetInnerHTML={{ __html: `try{if(localStorage.getItem('kad_theme')==='dark')document.documentElement.classList.add('dark')}catch{}` }} />
       </head>
       <body className="min-h-full flex flex-col font-lato">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "Organization",
+                "@id": "https://ekadku.com/#organization",
+                name: "ekadku.com",
+                url: "https://ekadku.com",
+                description: "Platform kad jemputan digital Malaysia — perkahwinan, hari jadi, dan korporat.",
+              },
+              {
+                "@type": "WebSite",
+                "@id": "https://ekadku.com/#website",
+                url: "https://ekadku.com",
+                name: "ekadku.com",
+                publisher: { "@id": "https://ekadku.com/#organization" },
+                potentialAction: {
+                  "@type": "SearchAction",
+                  target: { "@type": "EntryPoint", urlTemplate: "https://ekadku.com/templates" },
+                  "query-input": "required name=search_term_string",
+                },
+              },
+            ],
+          })}}
+        />
         <AuthProvider>
           <ThemeProvider>
             <ConditionalSiteNav />
