@@ -94,6 +94,24 @@ services:
       "
     restart: on-failure
 
+  # ── phpMyAdmin (DB admin UI) ─────────────────────────────────────────
+  # Access at http://YOUR_VPS_IP:8080  (or proxy via Nginx Proxy Manager)
+  # Remove or comment out this service if you don't need a DB UI on the VPS.
+  phpmyadmin:
+    image: phpmyadmin:latest
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: "${DB_USER:-kad_user}"
+      PMA_PASSWORD: "${DB_PASSWORD}"
+      UPLOAD_LIMIT: 64M
+    ports:
+      - "${PMA_PORT:-8080}:80"
+    depends_on:
+      db:
+        condition: service_healthy
+
   # ── Next.js application ──────────────────────────────────────────────
   app:
     build:
