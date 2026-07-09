@@ -93,7 +93,13 @@ export function RSVPModal({ isOpen, onClose, card, onAnalytic, contained }: RSVP
   const { primaryColor, bgColor } = card.theme
 
   const wCfg = card.wizardConfig as WizardConfig | undefined
-  const guestLimitPerRSVP = wCfg?.rsvp?.guestLimitPerRSVP ?? 5
+  const rsvpCfg = wCfg?.rsvp
+  const guestLimitPerRSVP = rsvpCfg?.guestLimitPerRSVP ?? 5
+  const rsvpMode = rsvpCfg?.mode ?? "RSVP_WISHES"
+  const isWishesOnly = rsvpMode === "WISHES_ONLY"
+  const showPhone = rsvpCfg?.showFields?.phone ?? true
+  const showWishes = rsvpCfg?.showFields?.wishes ?? true
+  const isClosed = !!(rsvpCfg?.closeDate && new Date(rsvpCfg.closeDate) < new Date())
   const hasEventDate = !!(wCfg?.startDateTime || card.eventDate)
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<FormData>({
@@ -123,12 +129,16 @@ export function RSVPModal({ isOpen, onClose, card, onAnalytic, contained }: RSVP
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...data, guestCount: Number(data.guestCount) || 1 }),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        throw new Error(body?.error ?? "")
+      }
       onAnalytic?.("RSVP_SUBMIT")
       setSubmittedAttendance(data.attendance)
       setSubmitted(true)
-    } catch {
-      setError(lang ? "Ralat berlaku. Cuba lagi." : "An error occurred. Please try again.")
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : ""
+      setError(msg || (lang ? "Ralat berlaku. Cuba lagi." : "An error occurred. Please try again."))
     } finally {
       setSubmitting(false)
     }
@@ -232,6 +242,25 @@ export function RSVPModal({ isOpen, onClose, card, onAnalytic, contained }: RSVP
                       {lang ? "Tutup" : "Close"}
                     </button>
                   </motion.div>
+                ) : isClosed ? (
+                  <div className="flex flex-col items-center justify-center py-8 px-6 text-center">
+                    <p className="text-2xl mb-3">🔒</p>
+                    <p className="text-sm font-semibold mb-1" style={{ color: primaryColor }}>
+                      {lang ? "RSVP Telah Ditutup" : "RSVP Closed"}
+                    </p>
+                    <p className="text-xs mb-5" style={{ color: `${primaryColor}70` }}>
+                      {lang
+                        ? "Tempoh pengesahan kehadiran telah tamat."
+                        : "The RSVP period has ended."}
+                    </p>
+                    <button
+                      onClick={onClose}
+                      className="px-6 py-2 rounded-full text-sm font-medium transition-all active:scale-95"
+                      style={{ border: `1.5px solid ${primaryColor}50`, color: `${primaryColor}80` }}
+                    >
+                      {lang ? "Tutup" : "Close"}
+                    </button>
+                  </div>
                 ) : (
                   <form onSubmit={handleSubmit(onSubmit)} className="px-5 py-4 space-y-3">
                     <div>
@@ -248,57 +277,69 @@ export function RSVPModal({ isOpen, onClose, card, onAnalytic, contained }: RSVP
                       )}
                     </div>
 
-                    <div>
-                      <label style={labelStyle}>{lang ? "Kehadiran" : "Attendance"}</label>
-                      <select style={inputStyle} {...register("attendance")}>
-                        <option value="ATTENDING">{lang ? "Ya, saya hadir" : "Yes, I'll attend"}</option>
-                        <option value="MAYBE">{lang ? "Mungkin hadir" : "Maybe"}</option>
-                        <option value="NOT_ATTENDING">{lang ? "Tidak dapat hadir" : "Unable to attend"}</option>
-                      </select>
-                    </div>
+                    {!isWishesOnly && (
+                      <>
+                        <div>
+                          <label style={labelStyle}>{lang ? "Kehadiran" : "Attendance"}</label>
+                          <select style={inputStyle} {...register("attendance")}>
+                            <option value="ATTENDING">{lang ? "Ya, saya hadir" : "Yes, I'll attend"}</option>
+                            <option value="MAYBE">{lang ? "Mungkin hadir" : "Maybe"}</option>
+                            <option value="NOT_ATTENDING">{lang ? "Tidak dapat hadir" : "Unable to attend"}</option>
+                          </select>
+                        </div>
 
-                    {attendance !== "NOT_ATTENDING" && (
-                      <div>
-                        <label style={labelStyle}>
-                          {lang ? "Bilangan Tetamu" : "Number of Guests"}
-                          <span style={{ opacity: 0.6 }}> (max {guestLimitPerRSVP})</span>
-                        </label>
-                        <input
-                          type="number"
-                          min={1}
-                          max={guestLimitPerRSVP}
-                          style={inputStyle}
-                          {...register("guestCount", {
-                            min: { value: 1, message: lang ? "Minimum 1 tetamu" : "Minimum 1 guest" },
-                            max: { value: guestLimitPerRSVP, message: lang ? `Maksimum ${guestLimitPerRSVP} tetamu` : `Maximum ${guestLimitPerRSVP} guests` },
-                          })}
-                        />
-                        {errors.guestCount && (
-                          <p className="text-[11px] mt-1" style={{ color: "#ef4444" }}>
-                            {errors.guestCount.message}
-                          </p>
+                        {attendance !== "NOT_ATTENDING" && (
+                          <div>
+                            <label style={labelStyle}>
+                              {lang ? "Bilangan Tetamu" : "Number of Guests"}
+                              <span style={{ opacity: 0.6 }}> (max {guestLimitPerRSVP})</span>
+                            </label>
+                            <input
+                              type="number"
+                              min={1}
+                              max={guestLimitPerRSVP}
+                              style={inputStyle}
+                              {...register("guestCount", {
+                                min: { value: 1, message: lang ? "Minimum 1 tetamu" : "Minimum 1 guest" },
+                                max: { value: guestLimitPerRSVP, message: lang ? `Maksimum ${guestLimitPerRSVP} tetamu` : `Maximum ${guestLimitPerRSVP} guests` },
+                              })}
+                            />
+                            {errors.guestCount && (
+                              <p className="text-[11px] mt-1" style={{ color: "#ef4444" }}>
+                                {errors.guestCount.message}
+                              </p>
+                            )}
+                          </div>
                         )}
+                      </>
+                    )}
+
+                    {showPhone && (
+                      <div>
+                        <label style={labelStyle}>{lang ? "No. WhatsApp (pilihan)" : "WhatsApp No. (optional)"}</label>
+                        <input
+                          style={inputStyle}
+                          placeholder="+601X-XXXXXXX"
+                          {...register("phone")}
+                        />
                       </div>
                     )}
 
-                    <div>
-                      <label style={labelStyle}>{lang ? "No. WhatsApp (pilihan)" : "WhatsApp No. (optional)"}</label>
-                      <input
-                        style={inputStyle}
-                        placeholder="+601X-XXXXXXX"
-                        {...register("phone")}
-                      />
-                    </div>
-
-                    <div>
-                      <label style={labelStyle}>{lang ? "Ucapan (pilihan)" : "Message (optional)"}</label>
-                      <textarea
-                        rows={2}
-                        style={{ ...inputStyle, resize: "none" }}
-                        placeholder={lang ? "Selamat pengantin baru!" : "Congratulations!"}
-                        {...register("message")}
-                      />
-                    </div>
+                    {showWishes && (
+                      <div>
+                        <label style={labelStyle}>
+                          {isWishesOnly
+                            ? (lang ? "Ucapan" : "Message")
+                            : (lang ? "Ucapan (pilihan)" : "Message (optional)")}
+                        </label>
+                        <textarea
+                          rows={2}
+                          style={{ ...inputStyle, resize: "none" }}
+                          placeholder={lang ? "Selamat pengantin baru!" : "Congratulations!"}
+                          {...register("message")}
+                        />
+                      </div>
+                    )}
 
                     {error && (
                       <p className="text-[11px] text-center" style={{ color: "#ef4444" }}>{error}</p>

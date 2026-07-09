@@ -29,8 +29,16 @@ export async function POST(
       return NextResponse.json({ error: "Terlalu banyak percubaan. Cuba lagi selepas 1 jam." }, { status: 429 })
     }
 
-    const wCfg = card.wizardConfig as { rsvp?: { guestLimitPerRSVP?: number } } | null
+    const wCfg = card.wizardConfig as {
+      rsvp?: { guestLimitPerRSVP?: number; totalGuestLimit?: number; closeDate?: string }
+    } | null
     const guestLimitPerRSVP = wCfg?.rsvp?.guestLimitPerRSVP ?? 5
+
+    // Enforce RSVP close date
+    const closeDate = wCfg?.rsvp?.closeDate
+    if (closeDate && new Date(closeDate) < new Date()) {
+      return NextResponse.json({ error: "RSVP telah ditutup." }, { status: 403 })
+    }
 
     const rsvpSchema = z.object({
       guestName: z.string().min(1).max(100),
@@ -42,6 +50,19 @@ export async function POST(
 
     const body = await req.json()
     const data = rsvpSchema.parse(body)
+
+    // Enforce total guest limit (only count ATTENDING + MAYBE)
+    const totalGuestLimit = wCfg?.rsvp?.totalGuestLimit
+    if (totalGuestLimit && data.attendance !== "NOT_ATTENDING") {
+      const existing = await prisma.rSVP.aggregate({
+        where: { cardId: card.id, attendance: { in: ["ATTENDING", "MAYBE"] } },
+        _sum: { guestCount: true },
+      })
+      const currentTotal = existing._sum.guestCount ?? 0
+      if (currentTotal + data.guestCount > totalGuestLimit) {
+        return NextResponse.json({ error: "Kuota tetamu telah penuh." }, { status: 409 })
+      }
+    }
 
     const rsvp = await prisma.rSVP.create({
       data: { cardId: card.id, ...data },

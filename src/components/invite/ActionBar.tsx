@@ -127,7 +127,7 @@ export function ActionBar({
           {/* RSVP — only shown when attendance segment and RSVP mode are enabled */}
           {hasRsvp && (
             <button
-              onClick={() => { onAnalytic?.("RSVP_OPEN"); onRsvpOpen?.() }}
+              onClick={() => { onRsvpOpen?.() }}
               aria-label="RSVP"
               className="flex items-center justify-center w-10 h-10 transition-all active:scale-90"
               style={{ opacity: 0.85 }}

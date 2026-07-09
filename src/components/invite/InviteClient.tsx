@@ -213,7 +213,7 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
 
             {/* ── Template content — overlaid on image1 (page 1), then on image2 (page 2+) ── */}
             <div className="relative z-10">
-              <TemplateRenderer card={card} onRsvpOpen={() => setRsvpOpen(true)} />
+              <TemplateRenderer card={card} onRsvpOpen={() => { fireAnalytic("RSVP_OPEN"); setRsvpOpen(true) }} />
 
               {hasMusicPlayer && (
                 <MusicPlayer
