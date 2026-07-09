@@ -76,6 +76,33 @@ const PACKAGES = [
   },
 ]
 
+const FAQS = [
+  {
+    q: "Berapa harga kad jemputan digital ekadku.com?",
+    a: "ekadku.com menawarkan tiga pakej: Bronze (RM30), Silver (RM40), dan Gold (RM60). Semua pakej adalah bayaran sekali sahaja — tiada langganan bulanan.",
+  },
+  {
+    q: "Berapa lama pautan kad jemputan saya aktif?",
+    a: "Pautan kad jemputan digital anda aktif selama 6 bulan dari tarikh pembelian. Selepas tempoh tersebut, anda boleh memperbaharui pautan.",
+  },
+  {
+    q: "Bolehkah saya tambah muzik latar dalam kad jemputan?",
+    a: "Ya! Anda boleh tambah muzik latar dari YouTube terus ke dalam kad jemputan digital anda. Muzik akan dimainkan secara automatik apabila tetamu membuka kad.",
+  },
+  {
+    q: "Adakah tetamu boleh hantar RSVP melalui kad digital?",
+    a: "Ya. Pakej Silver dan Gold menyokong RSVP dan ucapan. Tetamu boleh sahkan kehadiran, bilangan tetamu, dan tinggalkan ucapan terus dari pautan kad anda.",
+  },
+  {
+    q: "Bolehkah saya edit kad selepas bayar?",
+    a: "Ya, anda boleh edit kad bila-bila masa dalam tempoh aktif pautan — ubah teks, gambar, muzik, dan tetapan lain tanpa kos tambahan.",
+  },
+  {
+    q: "Apakah kaedah pembayaran yang diterima?",
+    a: "Kami menerima pembayaran melalui pelbagai kaedah termasuk FPX (perbankan dalam talian), kad kredit/debit, dan dompet digital melalui gateway pembayaran ToyyibPay.",
+  },
+]
+
 const PERKS = [
   "Tiada langganan",
   "Pautan unik",
@@ -279,6 +306,41 @@ export default function HomePage() {
             </p>
 
             {/* Add-ons — hidden until ready */}
+          </div>
+        </div>
+      </section>
+
+      {/* ── FAQ ── */}
+      <section className="py-10 lg:py-28 px-5 lg:px-10 border-t border-[var(--bd)]">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: FAQS.map(({ q, a }) => ({
+                "@type": "Question",
+                name: q,
+                acceptedAnswer: { "@type": "Answer", text: a },
+              })),
+            }),
+          }}
+        />
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-7 lg:mb-14">
+            <p className="text-gold/60 text-[10px] tracking-[0.3em] uppercase mb-2">Soalan Lazim</p>
+            <h2 className="font-playfair text-2xl lg:text-4xl text-[var(--tx-1)]">Ada soalan?</h2>
+          </div>
+          <div className="flex flex-col gap-2">
+            {FAQS.map(({ q, a }) => (
+              <details key={q} className="group border border-[var(--bd)] rounded-xl bg-[var(--pg-alt)] open:border-gold/25 transition-all">
+                <summary className="flex items-center justify-between gap-3 px-5 py-4 cursor-pointer list-none select-none">
+                  <span className="font-medium text-[13px] lg:text-[15px] text-[var(--tx-1)]">{q}</span>
+                  <span className="text-gold/50 text-lg shrink-0 group-open:rotate-45 transition-transform duration-200">+</span>
+                </summary>
+                <p className="px-5 pb-4 text-[13px] lg:text-[14px] text-[var(--tx-2)] leading-relaxed">{a}</p>
+              </details>
+            ))}
           </div>
         </div>
       </section>
