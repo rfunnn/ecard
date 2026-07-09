@@ -3,6 +3,16 @@ const store = global as typeof global & {
 }
 if (!store._rl) store._rl = new Map()
 
+// Prune expired entries every 5 minutes to prevent unbounded memory growth
+if (typeof setInterval !== "undefined") {
+  setInterval(() => {
+    const now = Date.now()
+    for (const [key, entry] of store._rl) {
+      if (now > entry.resetAt) store._rl.delete(key)
+    }
+  }, 5 * 60 * 1000).unref?.()
+}
+
 export function rateLimit(key: string, limit: number, windowMs: number): boolean {
   const now = Date.now()
   const entry = store._rl.get(key)
