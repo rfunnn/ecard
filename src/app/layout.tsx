@@ -79,7 +79,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="ms" className={`${fontVars} h-full antialiased`} suppressHydrationWarning>
       <head>
         {/* Apply saved theme before first paint to prevent flash */}
-        <script dangerouslySetInnerHTML={{ __html: `try{if(localStorage.getItem('kad_theme')==='dark')document.documentElement.classList.add('dark')}catch{}` }} />
+        <script dangerouslySetInnerHTML={{ __html: `try{if(localStorage.getItem('ekad_theme')==='dark')document.documentElement.classList.add('dark')}catch{}` }} />
       </head>
       <body className="min-h-full flex flex-col font-lato">
         <script
