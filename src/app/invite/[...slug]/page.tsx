@@ -29,18 +29,67 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug: slugParts } = await params
   const slug = slugParts[0]
+
+  if (slug === "demo") {
+    return {
+      title: "Contoh Kad Jemputan Digital | ekadku.com",
+      description: "Lihat contoh kad jemputan digital ekadku.com — perkahwinan, hari jadi, dan korporat. Cuba templat pilihan secara percuma.",
+      alternates: { canonical: "https://ekadku.com/invite/demo" },
+      openGraph: {
+        title: "Contoh Kad Jemputan Digital | ekadku.com",
+        description: "Lihat contoh kad jemputan digital yang cantik dari ekadku.com.",
+        url: "https://ekadku.com/invite/demo",
+        siteName: "ekadku.com",
+        locale: "ms_MY",
+        images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "ekadku.com — Kad Jemputan Digital Malaysia" }],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: "Contoh Kad Jemputan Digital | ekadku.com",
+        description: "Lihat contoh kad jemputan digital yang cantik dari ekadku.com.",
+        site: "@ekadku",
+        images: ["/opengraph-image"],
+      },
+    }
+  }
+
   try {
     const card = await prisma.invitationCard.findUnique({
       where: { slug },
-      select: { title: true, description: true },
+      select: { title: true, description: true, isPublished: true, expiresAt: true },
     })
-    if (!card) return { title: "Jemputan" }
+    if (!card) return { title: "Jemputan", robots: { index: false } }
+
+    const isExpired = card.expiresAt != null && card.expiresAt < new Date()
+    const shouldIndex = card.isPublished && !isExpired
+
+    const title = card.title || "Kad Jemputan Digital"
+    const description = card.description ?? "Anda dijemput! Buka pautan ini untuk melihat kad jemputan."
+
     return {
-      title: card.title || "Kad Jemputan Digital",
-      description: card.description ?? "Anda dijemput! Buka pautan ini untuk melihat jemputan.",
+      title,
+      description,
+      alternates: { canonical: `https://ekadku.com/invite/${slug}` },
+      robots: shouldIndex ? { index: true, follow: false } : { index: false, follow: false },
+      openGraph: {
+        title,
+        description,
+        url: `https://ekadku.com/invite/${slug}`,
+        siteName: "ekadku.com",
+        locale: "ms_MY",
+        type: "website",
+        images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: title }],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        site: "@ekadku",
+        images: ["/opengraph-image"],
+      },
     }
   } catch {
-    return { title: "Jemputan" }
+    return { title: "Jemputan", robots: { index: false } }
   }
 }
 
@@ -366,5 +415,42 @@ export default async function InvitePage({ params, searchParams }: Props) {
     }
   }
 
-  return <InviteClient card={card} />
+  const wc = card.wizardConfig as { startDateTime?: string; venueLine?: string; venueAddress?: string } | undefined
+  const eventLd = card.isPublished
+    ? {
+        "@context": "https://schema.org",
+        "@type": "Event",
+        name: card.title,
+        url: `https://ekadku.com/invite/${slug}`,
+        eventStatus: "https://schema.org/EventScheduled",
+        eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+        ...(card.eventDate || wc?.startDateTime
+          ? { startDate: card.eventDate ?? wc?.startDateTime }
+          : {}),
+        ...((card.venueName || wc?.venueLine)
+          ? {
+              location: {
+                "@type": "Place",
+                name: card.venueName ?? wc?.venueLine,
+                ...(card.venueAddress || wc?.venueAddress
+                  ? { address: card.venueAddress ?? wc?.venueAddress }
+                  : {}),
+              },
+            }
+          : {}),
+        organizer: { "@type": "Organization", name: "ekadku.com", url: "https://ekadku.com" },
+      }
+    : null
+
+  return (
+    <>
+      {eventLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(eventLd) }}
+        />
+      )}
+      <InviteClient card={card} />
+    </>
+  )
 }

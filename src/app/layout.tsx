@@ -49,12 +49,17 @@ export const metadata: Metadata = {
     siteName: "ekadku.com",
     locale: "ms_MY",
     type: "website",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "ekadku.com — Kad Jemputan Digital Malaysia" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "ekadku.com — Kad Jemputan Digital Malaysia",
     description: "Cipta kad jemputan digital yang cantik. Perkahwinan, hari jadi, korporat. Mulai RM30.",
     site: "@ekadku",
+    images: ["/opengraph-image"],
+  },
+  verification: {
+    google: "FsMFuM2EhLes5nhV5dR9Yc7yJJJ7UHctT_3ZOkExniI",
   },
   robots: {
     index: true,
