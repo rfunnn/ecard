@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { ThemeProvider } from "@/components/ThemeProvider"
 import AuthProvider from "@/components/AuthProvider"
 import { ConditionalSiteNav } from "@/components/ConditionalSiteNav"
+import { WhatsAppButton } from "@/components/WhatsAppButton"
 import {
   Playfair_Display,
   Lato,
@@ -126,6 +127,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <ThemeProvider>
             <ConditionalSiteNav />
             {children}
+            <WhatsAppButton />
           </ThemeProvider>
         </AuthProvider>
       </body>
