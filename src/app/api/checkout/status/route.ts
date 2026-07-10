@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
   // can be before Toyyibpay's callback lands (or if the callback was missed).
   // Verify server-to-server and fulfill so the card publishes without waiting.
   if (order.status === "PENDING" && order.billCode) {
-    const paid = await verifyToyyibpayBillPaid(order.billCode)
+    const paid = await verifyToyyibpayBillPaid(order.billCode, order.totalAmount)
     if (paid) {
       await fulfillPaidOrder(order.id, order.billCode)
       order = await prisma.order.findUnique({

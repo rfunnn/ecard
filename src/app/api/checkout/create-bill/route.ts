@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth-options"
 import { prisma } from "@/lib/prisma"
 import { createToyyibpayBill } from "@/lib/toyyibpay"
+import { rateLimit } from "@/lib/rate-limit"
 
 // Prices in sen (100 sen = RM1)
 const PACKAGE_PRICES: Record<string, number> = {
@@ -26,6 +27,11 @@ export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  // 5 bill-creation attempts per user per 15 minutes prevents API abuse
+  if (!rateLimit(`create-bill:${session.user.id}`, 5, 15 * 60 * 1000)) {
+    return NextResponse.json({ error: "Terlalu banyak permintaan. Cuba lagi sebentar." }, { status: 429 })
   }
 
   const { cardSlugs } = (await req.json()) as { cardSlugs: string[] }
@@ -90,13 +96,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Server misconfiguration: NEXTAUTH_URL is not set" }, { status: 500 })
   }
 
+  // Append the callback secret to the URL so the callback handler can reject
+  // unauthenticated POSTs. ToyyibPay echoes the full URL as-is on each callback.
+  const callbackSecret = process.env.TOYYIBPAY_CALLBACK_SECRET
+  const callbackUrl = callbackSecret
+    ? `${baseUrl}/api/checkout/callback?secret=${callbackSecret}`
+    : `${baseUrl}/api/checkout/callback`
+
   try {
     const bill = await createToyyibpayBill({
       billName,
       billDescription: billDesc,
       billAmount: totalAmount,
       billReturnUrl:  `${baseUrl}/checkout/success?orderId=${order.id}`,
-      billCallbackUrl: `${baseUrl}/api/checkout/callback`,
+      billCallbackUrl: callbackUrl,
       billExternalReferenceNo: order.id,
       // billTo:    session.user.name ?? undefined,
       billTo:    "",
@@ -111,10 +124,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ paymentUrl: bill.paymentUrl, orderId: order.id })
   } catch (err) {
-    const detail = err instanceof Error ? err.message : String(err)
-    console.error("[create-bill] Toyyibpay error:", detail)
+    console.error("[create-bill] Toyyibpay error:", err instanceof Error ? err.message : String(err))
     // Roll back the order so the user can retry
     await prisma.order.delete({ where: { id: order.id } }).catch(() => {})
-    return NextResponse.json({ error: "Failed to create payment bill. Please try again.", detail }, { status: 500 })
+    return NextResponse.json({ error: "Failed to create payment bill. Please try again." }, { status: 500 })
   }
 }

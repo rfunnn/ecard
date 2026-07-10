@@ -173,13 +173,23 @@ export async function getToyyibpayBillTransactions(billCode: string): Promise<Bi
 }
 
 // Authoritative check that a bill has at least one successful transaction.
-export async function verifyToyyibpayBillPaid(billCode: string): Promise<boolean> {
+// Pass expectedAmountSen (in sen, e.g. 3000 = RM30) to also verify the paid
+// amount matches — guards against partial-payment edge cases.
+export async function verifyToyyibpayBillPaid(billCode: string, expectedAmountSen?: number): Promise<boolean> {
   if (MOCK_MODE) {
     return getMockBillStatuses().get(billCode) === "paid"
   }
   try {
     const txns = await getToyyibpayBillTransactions(billCode)
-    return txns.some((t) => t.billpaymentStatus === "1")
+    return txns.some((t) => {
+      if (t.billpaymentStatus !== "1") return false
+      if (expectedAmountSen !== undefined) {
+        // ToyyibPay returns billpaymentAmount in RM (e.g. "30.00"); our amounts are in sen.
+        const paidSen = Math.round(parseFloat(t.billpaymentAmount ?? "0") * 100)
+        if (paidSen < expectedAmountSen) return false
+      }
+      return true
+    })
   } catch {
     // Network/API error — treat as "not verified" so we never publish on doubt.
     return false
