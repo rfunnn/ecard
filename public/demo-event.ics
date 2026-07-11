@@ -1,0 +1,16 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//ekadku.com//Digital Invitation//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:demo-event-20251214@ekadku.com
+DTSTART:20251214T020000Z
+DTEND:20251214T070000Z
+SUMMARY:Walimatul Urus – Ahmad Faris & Nur Aisyah
+DESCRIPTION:Majlis Walimatul Urus\nDianjurkan melalui ekadku.com – Kad Jemputan Digital
+LOCATION:Dewan Seri Murni\, Jalan Ampang\, 50450 Kuala Lumpur
+STATUS:CONFIRMED
+TRANSP:OPAQUE
+END:VEVENT
+END:VCALENDAR

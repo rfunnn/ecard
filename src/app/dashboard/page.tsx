@@ -58,34 +58,66 @@ function CardThumbnail({ card }: { card: Card }) {
   const bg     = card.theme?.bgColor      ?? "#1a0a00"
   const img    = card.template?.image1Url ?? null
 
+  const displayName = card.groomName && card.brideName
+    ? `${card.groomName} & ${card.brideName}`
+    : card.groomName ?? card.title ?? "–"
+
+  const category = card.template?.category === "WEDDING" ? "Walimatul Urus"
+    : card.template?.category === "BIRTHDAY" ? "Jemputan"
+    : card.template?.nameMs ?? "Jemputan"
+
   return (
-    <div
-      className="relative shrink-0 rounded-[14px] overflow-hidden shadow-lg"
-      style={{ width: "clamp(72px, 22vw, 96px)", aspectRatio: "9/19.5", background: bg, border: "4px solid #2a2a2a" }}
-    >
-      {/* notch */}
-      <div className="absolute top-0 left-0 right-0 flex justify-center z-10 pointer-events-none">
-        <div className="w-7 h-2 bg-[#2a2a2a] rounded-b-md" />
-      </div>
+    <div className="shrink-0 flex flex-col items-center gap-1.5" style={{ width: "clamp(72px, 22vw, 96px)" }}>
+      {/* Phone wrapper with side buttons */}
+      <div className="relative w-full select-none" style={{ aspectRatio: "9/19.5" }}>
+        {/* Phone body */}
+        <div
+          className="absolute inset-0 rounded-[22px] shadow-xl overflow-hidden"
+          style={{ border: "5px solid #2d2d2d", background: bg }}
+        >
+          {/* Notch */}
+          <div className="absolute top-0 left-0 right-0 flex justify-center z-10 pointer-events-none">
+            <div className="w-8 h-2.5 bg-[#2d2d2d] rounded-b-xl" />
+          </div>
 
-      {img ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={img} alt="" className="absolute inset-0 w-full h-full object-cover" draggable={false} />
-      ) : (
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-1 text-center">
-          <span className="text-[8px] tracking-widest mb-1 opacity-50" style={{ color: accent }}>
-            {card.template?.category === "WEDDING" ? "WALIMATUL URUS" : "JEMPUTAN"}
-          </span>
-          <span className="text-[9px] font-semibold leading-tight" style={{ color: accent }}>
-            {card.groomName ?? card.title ?? "–"}
-          </span>
+          {/* Screen */}
+          {img ? (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={img} alt="" className="absolute inset-0 w-full h-full object-cover" draggable={false} />
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-1.5 bg-black/30">
+                <span className="text-[7px] uppercase tracking-[0.2em] mb-1 text-white/70">{category}</span>
+                <span className="text-[9px] font-playfair leading-tight text-white drop-shadow-md">{displayName}</span>
+                <div className="mt-2 w-5 h-px bg-white/40" />
+              </div>
+            </>
+          ) : (
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-1.5">
+              <span className="text-[7px] uppercase tracking-[0.2em] mb-1 opacity-50" style={{ color: accent }}>{category}</span>
+              <span className="text-[9px] font-playfair leading-tight" style={{ color: accent }}>{displayName}</span>
+              <div className="mt-2 w-5 h-px opacity-25" style={{ background: accent }} />
+            </div>
+          )}
+
+          {/* Home bar */}
+          <div className="absolute bottom-1 left-0 right-0 flex justify-center z-10 pointer-events-none">
+            <div className="w-6 h-0.5 rounded-full bg-white/20" />
+          </div>
         </div>
-      )}
 
-      {/* home bar */}
-      <div className="absolute bottom-1 left-0 right-0 flex justify-center z-10 pointer-events-none">
-        <div className="w-5 h-0.5 rounded-full bg-white/20" />
+        {/* Side buttons */}
+        <div className="absolute left-[-2px] top-[18%] w-[2px] h-3 bg-gray-600 rounded-l-sm" />
+        <div className="absolute left-[-2px] top-[27%] w-[2px] h-4 bg-gray-600 rounded-l-sm" />
+        <div className="absolute left-[-2px] top-[38%] w-[2px] h-4 bg-gray-600 rounded-l-sm" />
+        <div className="absolute right-[-2px] top-[24%] w-[2px] h-5 bg-gray-600 rounded-r-sm" />
       </div>
+
+      {/* Template name below */}
+      {card.template && (
+        <p className="text-[9px] text-[var(--tx-2)] text-center leading-tight w-full truncate px-0.5">
+          {card.template.nameMs || card.template.name}
+        </p>
+      )}
     </div>
   )
 }

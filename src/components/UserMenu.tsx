@@ -3,7 +3,9 @@
 import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
 import { useState, useRef, useEffect } from "react"
-import { User, ShoppingBag, Sun, Moon, LogOut } from "lucide-react"
+import { User, ShoppingBag, Sun, Moon, LogOut, MessageCircle } from "lucide-react"
+
+const WA_URL = `https://wa.me/601164981201?text=${encodeURIComponent("Hello, saya ingin bertanya tentang ekadku.com")}`
 import { useTheme } from "@/components/ThemeProvider"
 
 export default function UserMenu() {
@@ -110,6 +112,20 @@ export default function UserMenu() {
                   </span>
                 )}
               </Link>
+            </div>
+
+            {/* Hubungi Kami */}
+            <div className="border-t border-[var(--bd)] py-1">
+              <a
+                href={WA_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--tx-2)] hover:text-[var(--tx-1)] hover:bg-[var(--sf)] transition-colors w-full"
+              >
+                <MessageCircle className="w-4 h-4 shrink-0 text-[#25D366]" />
+                Hubungi Kami
+              </a>
             </div>
 
             {/* Theme row */}
