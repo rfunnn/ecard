@@ -36,6 +36,9 @@ services:
   db:
     image: mariadb:11.4
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options: { max-size: "10m", max-file: "3" }
     environment:
       MARIADB_ROOT_PASSWORD: "${DB_ROOT_PASSWORD}"
       MARIADB_DATABASE:      "${DB_NAME:-kad_db}"
@@ -56,6 +59,9 @@ services:
   storage:
     image: minio/minio:latest
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options: { max-size: "10m", max-file: "3" }
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER:     "${MINIO_ROOT_USER:-minio_admin}"
@@ -102,6 +108,9 @@ services:
   phpmyadmin:
     image: phpmyadmin:latest
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options: { max-size: "5m", max-file: "2" }
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
@@ -120,6 +129,9 @@ services:
       context: .
       target: runner
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options: { max-size: "10m", max-file: "5" }
     ports:
       - "${APP_PORT:-3000}:3000"
     environment:
