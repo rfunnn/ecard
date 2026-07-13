@@ -22,11 +22,12 @@ export function SharePanel({ onPublishToggle, onPasswordSet }: SharePanelProps) 
   const [showPasswordField, setShowPasswordField] = useState(false)
   const lang = card.language === "ms"
 
-  const [shareUrl, setShareUrl] = useState(`/invite/${card.slug}`)
+  const invitePath = card.cardNum ? `/${card.cardNum}` : `/invite/${card.slug}`
+  const [shareUrl, setShareUrl] = useState(invitePath)
 
   useEffect(() => {
-    setShareUrl(`${window.location.origin}/invite/${card.slug}`)
-  }, [card.slug])
+    setShareUrl(`${window.location.origin}${card.cardNum ? `/${card.cardNum}` : `/invite/${card.slug}`}`)
+  }, [card.slug, card.cardNum])
 
   useEffect(() => {
     if (!canvasRef.current || !card.slug) return

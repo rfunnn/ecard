@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
     include: {
       items: {
         include: {
-          card: { select: { slug: true, groomName: true, brideName: true, title: true } },
+          card: { select: { slug: true, cardNum: true, groomName: true, brideName: true, title: true } },
         },
       },
     },
@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
         include: {
           items: {
             include: {
-              card: { select: { slug: true, groomName: true, brideName: true, title: true } },
+              card: { select: { slug: true, cardNum: true, groomName: true, brideName: true, title: true } },
             },
           },
         },
@@ -61,6 +61,7 @@ export async function GET(req: NextRequest) {
     paidAt: order.paidAt,
     cards: order.items.map((i) => ({
       slug:    i.card.slug,
+      cardNum: i.card.cardNum,
       name:    i.card.groomName && i.card.brideName
         ? `${i.card.groomName} & ${i.card.brideName}`
         : i.card.title,

@@ -26,16 +26,20 @@ export async function fulfillPaidOrder(orderId: string, billCode?: string): Prom
   const expiresAt = new Date(paidAt)
   expiresAt.setMonth(expiresAt.getMonth() + 6)
 
-  await prisma.$transaction([
-    prisma.order.update({
+  await prisma.$transaction(async (tx) => {
+    await tx.order.update({
       where: { id: order.id },
       data: { status: "PAID", paidAt, billCode: billCode || order.billCode },
-    }),
-    prisma.invitationCard.updateMany({
-      where: { id: { in: order.items.map((i) => i.cardId) } },
-      data: { isPublished: true, expiresAt },
-    }),
-  ])
+    })
+    const agg = await tx.invitationCard.aggregate({ _max: { cardNum: true } })
+    let nextNum = (agg._max.cardNum ?? 0) + 1
+    for (const item of order.items) {
+      await tx.invitationCard.updateMany({
+        where: { id: item.cardId, cardNum: null },
+        data: { isPublished: true, expiresAt, cardNum: nextNum++ },
+      })
+    }
+  })
 
   // Fire-and-forget — email failure must never block fulfillment
   sendOrderNotification({

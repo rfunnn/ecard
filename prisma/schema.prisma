@@ -72,6 +72,7 @@ model InvitationCard {
   whatsappNumber String?
   contactName    String?
 
+  cardNum        Int?           @unique
   isPublished    Boolean        @default(false)
   expiresAt      DateTime?
   passwordHash   String?

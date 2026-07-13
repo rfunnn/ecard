@@ -61,6 +61,7 @@ export interface ScrollConfig {
 export interface InvitationCardData {
   id: string
   slug: string
+  cardNum?: number | null
   templateId: string
   title: string
   groomName?: string

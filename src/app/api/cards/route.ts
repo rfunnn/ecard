@@ -22,6 +22,7 @@ export async function GET(req: NextRequest) {
       select: {
         id: true,
         slug: true,
+        cardNum: true,
         title: true,
         groomName: true,
         brideName: true,

@@ -15,7 +15,6 @@ import { MediaPanel } from "./MediaPanel"
 import { ScrollPanel } from "./ScrollPanel"
 import { GiftPanel } from "./GiftPanel"
 import { SharePanel } from "./SharePanel"
-import { CardPreview } from "./CardPreview"
 import { Button } from "@/components/ui/Button"
 import type { InvitationCardData } from "@/types/invitation"
 
@@ -84,6 +83,8 @@ export function BuilderPage({ initialCard }: BuilderPageProps) {
     })
   }
 
+  const inviteHref = card.cardNum ? `/${card.cardNum}` : `/invite/${card.slug}`
+
   return (
     <div className="flex h-screen bg-[#0a0a0a] overflow-hidden">
       {/* Sidebar */}
@@ -110,7 +111,6 @@ export function BuilderPage({ initialCard }: BuilderPageProps) {
             }`}
           >
             <Icon className="w-4.5 h-4.5" />
-            {/* Tooltip */}
             <span className="absolute left-12 bg-[#111] text-cream/80 text-xs px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap border border-white/10 z-50">
               {lang ? labelMs : label}
             </span>
@@ -137,39 +137,25 @@ export function BuilderPage({ initialCard }: BuilderPageProps) {
           </div>
         )}
 
-        {/* Preview link */}
-        {card.isPublished && (
+        {/* View invite page */}
+        {card.slug && (
           <a
-            href={`/invite/${card.slug}`}
+            href={inviteHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-cream/30 hover:text-cream/60 hover:bg-white/5 transition-colors"
-            title={lang ? "Buka kad" : "Open card"}
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-cream/30 hover:text-cream/60 hover:bg-white/5 transition-colors group relative"
+            title={lang ? "Lihat kad" : "View card"}
           >
             <Eye className="w-4 h-4" />
+            <span className="absolute left-12 bg-[#111] text-cream/80 text-xs px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap border border-white/10 z-50">
+              {lang ? "Lihat Kad" : "View Card"}
+            </span>
           </a>
         )}
       </div>
 
       {/* Panel */}
-      <div className="w-72 shrink-0 border-r border-white/5 bg-[#0d0d0d] flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-hidden">
-          {activePanel === "content" && <ContentPanel />}
-          {activePanel === "style"   && <StylePanel />}
-          {activePanel === "media"   && <MediaPanel />}
-          {activePanel === "scroll"  && <ScrollPanel />}
-          {activePanel === "gift"    && <GiftPanel />}
-          {activePanel === "share"   && (
-            <SharePanel
-              onPublishToggle={handlePublishToggle}
-              onPasswordSet={handlePasswordSet}
-            />
-          )}
-        </div>
-      </div>
-
-      {/* Preview */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 bg-[#0d0d0d] flex flex-col overflow-hidden">
         {/* Top bar */}
         <div className="h-12 border-b border-white/5 flex items-center justify-between px-4 bg-[#080808]">
           <div className="flex items-center gap-2">
@@ -193,7 +179,7 @@ export function BuilderPage({ initialCard }: BuilderPageProps) {
               {lang ? "Simpan" : "Save"}
             </Button>
             {card.isPublished && (
-              <a href={`/invite/${card.slug}`} target="_blank" rel="noopener noreferrer">
+              <a href={inviteHref} target="_blank" rel="noopener noreferrer">
                 <Button size="sm">
                   <Eye className="w-3.5 h-3.5" />
                   {lang ? "Lihat Kad" : "View Card"}
@@ -203,9 +189,19 @@ export function BuilderPage({ initialCard }: BuilderPageProps) {
           </div>
         </div>
 
-        {/* Preview area */}
+        {/* Panel content */}
         <div className="flex-1 overflow-hidden">
-          <CardPreview />
+          {activePanel === "content" && <ContentPanel />}
+          {activePanel === "style"   && <StylePanel />}
+          {activePanel === "media"   && <MediaPanel />}
+          {activePanel === "scroll"  && <ScrollPanel />}
+          {activePanel === "gift"    && <GiftPanel />}
+          {activePanel === "share"   && (
+            <SharePanel
+              onPublishToggle={handlePublishToggle}
+              onPasswordSet={handlePasswordSet}
+            />
+          )}
         </div>
       </div>
     </div>

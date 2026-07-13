@@ -13,6 +13,7 @@ export async function GET() {
     select: {
       id:           true,
       slug:         true,
+      cardNum:      true,
       title:        true,
       groomName:    true,
       brideName:    true,

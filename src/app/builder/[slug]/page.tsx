@@ -38,6 +38,7 @@ export default async function BuilderRoute({ params }: Props) {
     card = {
       id: raw.id,
       slug: raw.slug,
+      cardNum: raw.cardNum,
       templateId: raw.templateId,
       title: raw.title,
       groomName: raw.groomName ?? undefined,

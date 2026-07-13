@@ -18,6 +18,7 @@ import { removeFromCart } from "@/lib/cart"
 type Card = {
   id: string
   slug: string
+  cardNum: number | null
   title: string
   groomName: string | null
   brideName: string | null
@@ -156,7 +157,7 @@ function InviteLinkRow({ card }: { card: Card }) {
     } catch { /* ignore */ }
   }, [storageKey])
 
-  const baseUrl = `${origin}/invite/${card.slug}`
+  const baseUrl = card.cardNum ? `${origin}/${card.cardNum}` : `${origin}/invite/${card.slug}`
   const fullUrl = suffix ? `${baseUrl}/${suffix}` : baseUrl
   const error   = suffixError(draft)
 
@@ -227,7 +228,7 @@ function InviteLinkRow({ card }: { card: Card }) {
           </p>
           <div className="flex items-center gap-1 text-[11px] font-mono">
             <span className="text-[var(--tx-3)] shrink-0 truncate max-w-[140px]">
-              …/invite/{card.slug}/
+              {card.cardNum ? `…/${card.cardNum}/` : `…/invite/${card.slug}/`}
             </span>
             <input
               autoFocus
@@ -250,7 +251,7 @@ function InviteLinkRow({ card }: { card: Card }) {
             </p>
           ) : draft ? (
             <p className="text-[10px] text-[var(--tx-3)] font-mono truncate">
-              → …/invite/{card.slug}/{draft}
+              {card.cardNum ? `→ …/${card.cardNum}/${draft}` : `→ …/invite/${card.slug}/${draft}`}
             </p>
           ) : (
             <p className="text-[10px] text-[var(--tx-3)]">
@@ -344,7 +345,7 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
                   <Link href={`/builder/${card.slug}`} className="flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)]">
                     <Pencil className="w-3.5 h-3.5" /> Edit
                   </Link>
-                  <Link href={`/invite/${card.slug}`} target="_blank" className="flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)]">
+                  <Link href={card.cardNum ? `/${card.cardNum}` : `/invite/${card.slug}`} target="_blank" className="flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)]">
                     <Eye className="w-3.5 h-3.5" /> Preview
                   </Link>
                   <button onClick={() => { setMenuOpen(false); handlePrint() }} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)]">
@@ -379,7 +380,7 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
               <BarChart2 className="w-3.5 h-3.5" />{lang ? "Laporan" : "Report"}
             </Link>
           )}
-          <Link href={`/invite/${card.slug}`} target="_blank" className={actionBtn}><Eye className="w-3.5 h-3.5" /> Preview</Link>
+          <Link href={card.cardNum ? `/${card.cardNum}` : `/invite/${card.slug}`} target="_blank" className={actionBtn}><Eye className="w-3.5 h-3.5" /> Preview</Link>
           <button onClick={handlePrint} disabled={printing} className={`${actionBtn} text-amber-600 hover:text-amber-800`}>
             {printing ? <div className="w-3.5 h-3.5 border-2 border-amber-600 border-t-transparent rounded-full animate-spin" /> : <Printer className="w-3.5 h-3.5" />}
             Print Card

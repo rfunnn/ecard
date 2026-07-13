@@ -8,6 +8,7 @@ import { removeFromCart } from "@/lib/cart"
 
 interface OrderCard {
   slug:    string
+  cardNum: number | null
   name:    string | null
   package: string
   amount:  number
@@ -184,7 +185,7 @@ function CheckoutSuccessContent() {
                   <p className="text-xs text-[var(--tx-3)]">{card.package} — RM{(card.amount / 100).toFixed(0)}</p>
                 </div>
                 <Link
-                  href={`/invite/${card.slug}`}
+                  href={card.cardNum ? `/${card.cardNum}` : `/invite/${card.slug}`}
                   target="_blank"
                   className="shrink-0 flex items-center gap-1 text-[11px] text-gold hover:text-gold/80 transition-colors"
                 >
