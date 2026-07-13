@@ -180,14 +180,6 @@ export function BuilderPage({ initialCard }: BuilderPageProps) {
               <Save className="w-3.5 h-3.5" />
               {lang ? "Simpan" : "Save"}
             </Button>
-            {card.isPublished && (
-              <a href={inviteHref} target="_blank" rel="noopener noreferrer">
-                <Button size="sm">
-                  <Eye className="w-3.5 h-3.5" />
-                  {lang ? "Lihat Kad" : "View Card"}
-                </Button>
-              </a>
-            )}
           </div>
         </div>
 
