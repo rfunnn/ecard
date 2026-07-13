@@ -566,7 +566,7 @@ export function WizardShell({ initialCard, guest = false }: Props) {
               >
                 {cardPreview.template?.image1Url && (
                   <div className="absolute top-0 left-0 right-0 pointer-events-none z-0" style={{ height: "100svh" }}>
-                    <img src={cardPreview.template.image1Url} alt="" className="absolute top-0 left-0 w-full h-auto" draggable={false} />
+                    <img src={cardPreview.template.image1Url} alt="" className="absolute inset-0 w-full h-full object-cover" draggable={false} />
                   </div>
                 )}
                 <div className="relative z-10">
@@ -682,7 +682,7 @@ export function WizardShell({ initialCard, guest = false }: Props) {
                 >
                   {cardPreview.template?.image1Url && (
                     <div className="absolute top-0 left-0 right-0 pointer-events-none z-0" style={{ height: "100svh" }}>
-                      <img src={cardPreview.template.image1Url} alt="" className="absolute top-0 left-0 w-full h-auto" draggable={false} />
+                      <img src={cardPreview.template.image1Url} alt="" className="absolute inset-0 w-full h-full object-cover" draggable={false} />
                     </div>
                   )}
                   <div className="relative z-10">

@@ -132,7 +132,7 @@ export function TemplatePreview({ image1Url, image2Url, name = "", slug = "", ca
               <img
                 src={image2Url}
                 alt=""
-                className="absolute top-0 left-0 w-full h-auto"
+                className="absolute inset-0 w-full h-full object-cover"
                 draggable={false}
               />
             </div>
@@ -154,7 +154,7 @@ export function TemplatePreview({ image1Url, image2Url, name = "", slug = "", ca
                 <img
                   src={image1Url}
                   alt=""
-                  className="absolute top-0 left-0 w-full h-auto"
+                  className="absolute inset-0 w-full h-full object-cover"
                   draggable={false}
                 />
               </div>
