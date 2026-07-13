@@ -15,6 +15,7 @@ import { MediaPanel } from "./MediaPanel"
 import { ScrollPanel } from "./ScrollPanel"
 import { GiftPanel } from "./GiftPanel"
 import { SharePanel } from "./SharePanel"
+import { CardPreview } from "./CardPreview"
 import { Button } from "@/components/ui/Button"
 import type { InvitationCardData } from "@/types/invitation"
 
@@ -35,7 +36,7 @@ const TABS: { id: Panel; label: string; labelMs: string; icon: React.ElementType
 
 export function BuilderPage({ initialCard }: BuilderPageProps) {
   const router = useRouter()
-  const { card, isDirty, isSaving, setCard, setActivePanel, activePanel, markClean, setIsSaving, updateContent } =
+  const { card, isDirty, isSaving, setCard, setActivePanel, activePanel, previewMode, markClean, setIsSaving, updateContent } =
     useBuilderStore()
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const lang = initialCard.language === "ms"
@@ -136,26 +137,27 @@ export function BuilderPage({ initialCard }: BuilderPageProps) {
             )}
           </div>
         )}
-
-        {/* View invite page */}
-        {card.slug && (
-          <a
-            href={inviteHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-cream/30 hover:text-cream/60 hover:bg-white/5 transition-colors group relative"
-            title={lang ? "Lihat kad" : "View card"}
-          >
-            <Eye className="w-4 h-4" />
-            <span className="absolute left-12 bg-[#111] text-cream/80 text-xs px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap border border-white/10 z-50">
-              {lang ? "Lihat Kad" : "View Card"}
-            </span>
-          </a>
-        )}
       </div>
 
       {/* Panel */}
-      <div className="flex-1 bg-[#0d0d0d] flex flex-col overflow-hidden">
+      <div className="w-72 shrink-0 border-r border-white/5 bg-[#0d0d0d] flex flex-col overflow-hidden">
+        <div className="flex-1 overflow-hidden">
+          {activePanel === "content" && <ContentPanel />}
+          {activePanel === "style"   && <StylePanel />}
+          {activePanel === "media"   && <MediaPanel />}
+          {activePanel === "scroll"  && <ScrollPanel />}
+          {activePanel === "gift"    && <GiftPanel />}
+          {activePanel === "share"   && (
+            <SharePanel
+              onPublishToggle={handlePublishToggle}
+              onPasswordSet={handlePasswordSet}
+            />
+          )}
+        </div>
+      </div>
+
+      {/* Preview */}
+      <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top bar */}
         <div className="h-12 border-b border-white/5 flex items-center justify-between px-4 bg-[#080808]">
           <div className="flex items-center gap-2">
@@ -189,18 +191,20 @@ export function BuilderPage({ initialCard }: BuilderPageProps) {
           </div>
         </div>
 
-        {/* Panel content */}
-        <div className="flex-1 overflow-hidden">
-          {activePanel === "content" && <ContentPanel />}
-          {activePanel === "style"   && <StylePanel />}
-          {activePanel === "media"   && <MediaPanel />}
-          {activePanel === "scroll"  && <ScrollPanel />}
-          {activePanel === "gift"    && <GiftPanel />}
-          {activePanel === "share"   && (
-            <SharePanel
-              onPublishToggle={handlePublishToggle}
-              onPasswordSet={handlePasswordSet}
-            />
+        {/* Preview area */}
+        <div className="relative flex-1 overflow-hidden">
+          <CardPreview />
+          {/* Eye button — bottom-right, hidden in mobile preview mode */}
+          {previewMode === "desktop" && card.slug && (
+            <a
+              href={inviteHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 flex items-center justify-center text-cream/50 hover:text-cream transition-all z-20"
+              title={lang ? "Lihat kad" : "View card"}
+            >
+              <Eye className="w-4 h-4" />
+            </a>
           )}
         </div>
       </div>
