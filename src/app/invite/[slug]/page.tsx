@@ -440,7 +440,8 @@ export default async function InvitePage({ params, searchParams }: Props) {
       createdAt: raw.createdAt.toISOString(),
       updatedAt: raw.updatedAt.toISOString(),
     }
-  } catch {
+  } catch (err) {
+    console.error("[invite-page] failed to load card:", slug, err)
     return notFound()
   }
 
