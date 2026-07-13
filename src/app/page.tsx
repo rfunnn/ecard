@@ -355,10 +355,12 @@ export default function HomePage() {
 
       {/* ── Footer ── */}
       <footer className="border-t border-[var(--bd)] bg-[var(--pg-alt)]">
-        <div className="max-w-5xl mx-auto px-5 py-4 text-center">
-          <p className="text-[var(--tx-3)] text-[11px]">
-            © {new Date().getFullYear()} ekadku.com
-          </p>
+        <div className="max-w-5xl mx-auto px-5 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-[var(--tx-3)]">
+          <p>© {new Date().getFullYear()} ekadku.com</p>
+          <div className="flex gap-4">
+            <Link href="/privacy" className="hover:text-gold transition-colors">Dasar Privasi</Link>
+            <Link href="/terms" className="hover:text-gold transition-colors">Terma Perkhidmatan</Link>
+          </div>
         </div>
       </footer>
     </div>
