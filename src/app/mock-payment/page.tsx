@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic"
+
 import { redirect } from "next/navigation"
 import { CheckCircle2, XCircle, Clock, AlertTriangle, FlaskConical } from "lucide-react"
 import { simulateSuccess, simulateFailure, simulatePending } from "./actions"
