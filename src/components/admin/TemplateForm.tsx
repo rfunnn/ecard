@@ -61,10 +61,8 @@ export function TemplateForm({ initialData }: Props) {
   const handleSave = useCallback(async () => {
     setError(null)
     if (!name.trim()) { setError("Nama template diperlukan"); return }
-    if (!image1Url)                  { setError("Imej 1 diperlukan"); return }
-    if (image1Url.startsWith("blob:")) { setError("Sila tunggu muat naik Imej 1 selesai"); return }
-    if (!image2Url)                  { setError("Imej 2 diperlukan"); return }
-    if (image2Url.startsWith("blob:")) { setError("Sila tunggu muat naik Imej 2 selesai"); return }
+    if (image1Url?.startsWith("blob:")) { setError("Sila tunggu muat naik Imej 1 selesai"); return }
+    if (image2Url?.startsWith("blob:")) { setError("Sila tunggu muat naik Imej 2 selesai"); return }
 
     setSaving(true)
     try {
@@ -278,13 +276,11 @@ export function TemplateForm({ initialData }: Props) {
                 label="Imej 1 — Skrin Depan"
                 value={image1Url}
                 onChange={setImage1Url}
-                required
               />
               <ImageUploader
                 label="Imej 2 — Latar Tatal"
                 value={image2Url}
                 onChange={setImage2Url}
-                required
               />
             </div>
           </div>
