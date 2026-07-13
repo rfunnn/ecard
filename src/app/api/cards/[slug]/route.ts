@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth-options"
 import { prisma } from "@/lib/prisma"
 import { extractYoutubeVideoId } from "@/lib/youtube"
+import { rateLimit } from "@/lib/rate-limit"
 
 const updateSchema = z.object({
   title: z.string().optional(),
@@ -108,6 +109,11 @@ export async function PATCH(
 ) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+  // 120 updates per user per hour (editing is frequent)
+  if (!rateLimit(`card-update:${session.user.id}`, 120, 60 * 60 * 1000)) {
+    return NextResponse.json({ error: "Terlalu banyak percubaan. Cuba lagi selepas 1 jam." }, { status: 429 })
+  }
 
   const { slug } = await params
   try {

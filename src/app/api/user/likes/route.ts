@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth-options"
 import { prisma } from "@/lib/prisma"
 import { z } from "zod"
+import { rateLimit } from "@/lib/rate-limit"
 
 async function getSession() {
   return getServerSession(authOptions)
@@ -35,6 +36,11 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const session = await getSession()
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+  // 60 likes per user per hour
+  if (!rateLimit(`likes:${session.user.id}`, 60, 60 * 60 * 1000)) {
+    return NextResponse.json({ error: "Terlalu banyak percubaan. Cuba lagi selepas 1 jam." }, { status: 429 })
+  }
 
   const { templateId } = z.object({ templateId: z.string() }).parse(await req.json())
 

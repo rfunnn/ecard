@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma"
 import { generateSlug } from "@/lib/slug"
 import { DEFAULT_THEME, DEFAULT_MEDIA, DEFAULT_SCROLL } from "@/types/invitation"
 import { buildDemoWizardConfig, DEMO_YOUTUBE_URL, DEMO_YOUTUBE_VIDEO_ID, DEMO_GIFT_ITEMS } from "@/lib/demo-wizard-config"
+import { rateLimit } from "@/lib/rate-limit"
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
@@ -45,6 +46,14 @@ const createCardSchema = z.object({
 })
 
 export async function POST(req: NextRequest) {
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+  // 30 card creations per user per hour
+  if (!rateLimit(`card-create:${session.user.id}`, 30, 60 * 60 * 1000)) {
+    return NextResponse.json({ error: "Terlalu banyak percubaan. Cuba lagi selepas 1 jam." }, { status: 429 })
+  }
+
   try {
     const body = await req.json()
     const data = createCardSchema.parse(body)
@@ -73,8 +82,6 @@ export async function POST(req: NextRequest) {
       slug = generateSlug()
       attempts++
     }
-
-    const session = await getServerSession(authOptions)
 
     // A JWT session can outlive its User row — e.g. the DB was reset by
     // `prisma db push --accept-data-loss` on deploy while the browser kept a

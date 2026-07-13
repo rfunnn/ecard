@@ -3,6 +3,7 @@ import { z } from "zod"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth-options"
 import { prisma } from "@/lib/prisma"
+import { rateLimit } from "@/lib/rate-limit"
 
 const addSchema = z.object({
   imageUrl: z.string().min(1),
@@ -38,6 +39,11 @@ export async function POST(
 ) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+
+  // 60 photo additions per user per hour
+  if (!rateLimit(`photo-add:${session.user.id}`, 60, 60 * 60 * 1000)) {
+    return NextResponse.json({ error: "Terlalu banyak percubaan. Cuba lagi selepas 1 jam." }, { status: 429 })
+  }
 
   const { slug } = await params
   try {
