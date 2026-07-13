@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
+import { unstable_cache } from "next/cache"
 import { prisma } from "@/lib/prisma"
 
 function ExpiredPage() {
@@ -14,11 +15,35 @@ function ExpiredPage() {
   )
 }
 
-export const dynamic = 'force-dynamic'
 import { InviteClient } from "@/components/invite/InviteClient"
 import type { InvitationCardData } from "@/types/invitation"
 import { DEFAULT_THEME, DEFAULT_MEDIA, DEFAULT_SCROLL } from "@/types/invitation"
 import type { WizardConfig } from "@/types/config"
+
+const getCachedCard = unstable_cache(
+  async (slug: string) => prisma.invitationCard.findUnique({
+    where: { slug },
+    include: {
+      template: { select: { slug: true, name: true, category: true, image1Url: true, image2Url: true } },
+      theme: true,
+      media: true,
+      scrollConfig: true,
+      giftItems:  { orderBy: { sortOrder: "asc" } },
+      photoItems: { orderBy: { sortOrder: "asc" } },
+    },
+  }),
+  ["invite-card"],
+  { revalidate: 60 }
+)
+
+const getCachedCardMeta = unstable_cache(
+  async (slug: string) => prisma.invitationCard.findUnique({
+    where: { slug },
+    select: { title: true, description: true, isPublished: true, expiresAt: true },
+  }),
+  ["invite-card-meta"],
+  { revalidate: 60 }
+)
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -52,10 +77,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   try {
-    const card = await prisma.invitationCard.findUnique({
-      where: { slug },
-      select: { title: true, description: true, isPublished: true, expiresAt: true },
-    })
+    const card = await getCachedCardMeta(slug)
     if (!card) return { title: "Jemputan", robots: { index: false } }
 
     const isExpired = card.expiresAt != null && card.expiresAt < new Date()
@@ -332,17 +354,7 @@ export default async function InvitePage({ params, searchParams }: Props) {
   let card: InvitationCardData | null = null
 
   try {
-    const raw = await prisma.invitationCard.findUnique({
-      where: { slug },
-      include: {
-        template: { select: { slug: true, name: true, category: true, image1Url: true, image2Url: true } },
-        theme: true,
-        media: true,
-        scrollConfig: true,
-        giftItems:  { orderBy: { sortOrder: "asc" } },
-        photoItems: { orderBy: { sortOrder: "asc" } },
-      },
-    })
+    const raw = await getCachedCard(slug)
 
     if (!raw) return notFound()
 

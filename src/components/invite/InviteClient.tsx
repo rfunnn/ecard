@@ -1,8 +1,8 @@
-﻿/* eslint-disable @next/next/no-img-element */
-"use client"
+﻿"use client"
 
 import { useEffect, useRef, useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 import { TemplateRenderer } from "@/components/templates/TemplateRenderer"
 import { MusicPlayer } from "./MusicPlayer"
 import { ActionBar } from "./ActionBar"
@@ -179,11 +179,13 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
           {/* ── Image 2 — card-column-wide background, revealed as image1 scrolls away ── */}
           {image2 && (
             <div className="absolute inset-0 z-0 pointer-events-none">
-              <img
+              <Image
                 src={image2}
                 alt=""
-                className="absolute inset-0 w-full h-full object-cover select-none"
+                fill
+                className="object-cover select-none"
                 draggable={false}
+                sizes="(max-width: 448px) 100vw, 448px"
               />
             </div>
           )}
@@ -202,11 +204,14 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
                 className="absolute top-0 left-0 right-0 pointer-events-none z-0"
                 style={{ height: "100svh" }}
               >
-                <img
+                <Image
                   src={image1}
                   alt=""
-                  className="absolute inset-0 w-full h-full object-cover select-none"
+                  fill
+                  className="object-cover select-none"
                   draggable={false}
+                  priority
+                  sizes="(max-width: 448px) 100vw, 448px"
                 />
               </div>
             )}

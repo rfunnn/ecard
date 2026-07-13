@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useEffect, useState, useCallback } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import {
   Pencil, ImageIcon, Gift, Mail, Eye, Printer,
   MoreVertical, ExternalLink, Plus, ChevronDown, Trash2, Copy, Check, BarChart2,
@@ -83,8 +84,7 @@ function CardThumbnail({ card }: { card: Card }) {
           {/* Screen */}
           {img ? (
             <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={img} alt="" className="absolute inset-0 w-full h-full object-cover" draggable={false} />
+              <Image src={img} alt="" fill className="object-cover" draggable={false} sizes="96px" />
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-1.5 bg-black/30">
                 <span className="text-[7px] uppercase tracking-[0.2em] mb-1 text-white/70">{category}</span>
                 <span className="text-[9px] font-playfair leading-tight text-white drop-shadow-md">{displayName}</span>
@@ -610,8 +610,7 @@ function DashboardInner() {
                       style={{ aspectRatio: "9/19.5", background: "#1a1a1a" }}
                     >
                       {tpl.thumbnail && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={tpl.thumbnail} alt={tpl.nameMs} className="absolute inset-0 w-full h-full object-cover" />
+                        <Image src={tpl.thumbnail} alt={tpl.nameMs} fill className="object-cover" sizes="(max-width: 640px) 50vw, 25vw" />
                       )}
                     </div>
                     <p className="text-xs font-semibold text-[var(--tx-1)] text-center">{tpl.nameMs || tpl.name}</p>
