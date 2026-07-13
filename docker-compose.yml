@@ -13,6 +13,8 @@ x-app-env: &app-env
   TOYYIBPAY_SECRET_KEY:    "${TOYYIBPAY_SECRET_KEY:-}"
   TOYYIBPAY_CATEGORY_CODE: "${TOYYIBPAY_CATEGORY_CODE:-}"
   TOYYIBPAY_BASE_URL:      "${TOYYIBPAY_BASE_URL:-https://toyyibpay.com}"
+  TOYYIBPAY_MOCK:          "${TOYYIBPAY_MOCK:-false}"
+  TOYYIBPAY_CALLBACK_SECRET: "${TOYYIBPAY_CALLBACK_SECRET:-}"
   # Inside Docker the app reaches MinIO via the service name, not localhost
   STORAGE_ENDPOINT:        "http://storage:9000"
   STORAGE_ACCESS_KEY:      "${MINIO_ROOT_USER:-minio_admin}"
