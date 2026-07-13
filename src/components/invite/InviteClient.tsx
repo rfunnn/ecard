@@ -106,8 +106,9 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
           backgroundImage: hasBgImage
             ? `linear-gradient(rgba(0,0,0,${card.theme.bgOpacity}),rgba(0,0,0,${card.theme.bgOpacity})),url(${card.theme.bgImageUrl})`
             : "none",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
+          backgroundSize: hasBgImage ? "100% auto" : "cover",
+          backgroundPosition: "top center",
+          backgroundRepeat: "no-repeat",
         }}
       />
 

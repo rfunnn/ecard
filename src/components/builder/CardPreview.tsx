@@ -64,8 +64,9 @@ export function CardPreview() {
                   backgroundImage: card.theme?.bgImageUrl
                     ? `linear-gradient(rgba(0,0,0,${card.theme.bgOpacity}),rgba(0,0,0,${card.theme.bgOpacity})), url(${card.theme.bgImageUrl})`
                     : "none",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
+                  backgroundSize: card.theme?.bgImageUrl ? "100% auto" : "cover",
+                  backgroundPosition: "top center",
+                  backgroundRepeat: "no-repeat",
                 }}
               />
 
@@ -109,8 +110,9 @@ export function CardPreview() {
                 backgroundImage: card.theme?.bgImageUrl
                   ? `linear-gradient(rgba(0,0,0,${card.theme.bgOpacity}),rgba(0,0,0,${card.theme.bgOpacity})), url(${card.theme.bgImageUrl})`
                   : "none",
-                backgroundSize: "cover",
-                backgroundPosition: "center",
+                backgroundSize: card.theme?.bgImageUrl ? "100% auto" : "cover",
+                backgroundPosition: "top center",
+                backgroundRepeat: "no-repeat",
               }}
             />
             {/* Scrollable content over static background */}
