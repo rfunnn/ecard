@@ -50,7 +50,7 @@ export function TemplatePhoneFrame({ template, previewName = "", size = "md" }: 
             <img
               src={template.thumbnail}
               alt={template.nameMs}
-              className="absolute inset-0 w-full h-full object-cover"
+              className="absolute top-0 left-0 w-full h-auto"
             />
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-3 bg-black/30">
               <p className="text-[8px] uppercase tracking-[0.25em] mb-2 text-white/70">

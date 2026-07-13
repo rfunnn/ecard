@@ -535,8 +535,9 @@ export function WizardShell({ initialCard, guest = false }: Props) {
                     : cardPreview.theme?.bgImageUrl
                     ? `linear-gradient(rgba(0,0,0,${cardPreview.theme.bgOpacity}),rgba(0,0,0,${cardPreview.theme.bgOpacity})),url(${cardPreview.theme.bgImageUrl})`
                     : "none",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
+                  backgroundSize: cardPreview.template?.image2Url ? "cover" : "100% auto",
+                  backgroundPosition: cardPreview.template?.image2Url ? "center" : "top center",
+                  backgroundRepeat: cardPreview.template?.image2Url ? undefined : "no-repeat",
                 }}
               />
               {/* Particle effect — contained inside phone frame */}
@@ -565,7 +566,7 @@ export function WizardShell({ initialCard, guest = false }: Props) {
               >
                 {cardPreview.template?.image1Url && (
                   <div className="absolute top-0 left-0 right-0 pointer-events-none z-0" style={{ height: "100svh" }}>
-                    <img src={cardPreview.template.image1Url} alt="" className="absolute inset-0 w-full h-full object-cover" draggable={false} />
+                    <img src={cardPreview.template.image1Url} alt="" className="absolute top-0 left-0 w-full h-auto" draggable={false} />
                   </div>
                 )}
                 <div className="relative z-10">
@@ -651,8 +652,9 @@ export function WizardShell({ initialCard, guest = false }: Props) {
                       : cardPreview.theme?.bgImageUrl
                       ? `linear-gradient(rgba(0,0,0,${cardPreview.theme.bgOpacity}),rgba(0,0,0,${cardPreview.theme.bgOpacity})),url(${cardPreview.theme.bgImageUrl})`
                       : "none",
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
+                    backgroundSize: cardPreview.template?.image2Url ? "cover" : "100% auto",
+                    backgroundPosition: cardPreview.template?.image2Url ? "center" : "top center",
+                    backgroundRepeat: cardPreview.template?.image2Url ? undefined : "no-repeat",
                   }}
                 />
                 {/* Particle effect — contained inside mobile phone frame */}
@@ -680,7 +682,7 @@ export function WizardShell({ initialCard, guest = false }: Props) {
                 >
                   {cardPreview.template?.image1Url && (
                     <div className="absolute top-0 left-0 right-0 pointer-events-none z-0" style={{ height: "100svh" }}>
-                      <img src={cardPreview.template.image1Url} alt="" className="absolute inset-0 w-full h-full object-cover" draggable={false} />
+                      <img src={cardPreview.template.image1Url} alt="" className="absolute top-0 left-0 w-full h-auto" draggable={false} />
                     </div>
                   )}
                   <div className="relative z-10">
