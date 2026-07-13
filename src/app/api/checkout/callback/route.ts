@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
       if (paid) {
         await fulfillPaidOrder(order.id)
       } else {
-        console.warn(`[callback] Verification failed for order ${order.id} (billCode=${order.billCode})`)
+        console.warn(`[callback] Verification failed for order ${order.id}`)
       }
     } else if (status === "3") {
       // Unsuccessful — mark failed. A later successful callback can still flip it
