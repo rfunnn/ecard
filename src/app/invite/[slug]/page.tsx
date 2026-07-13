@@ -80,7 +80,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const card = await getCachedCardMeta(slug)
     if (!card) return { title: "Jemputan", robots: { index: false } }
 
-    const isExpired = card.expiresAt != null && card.expiresAt < new Date()
+    const isExpired = card.expiresAt != null && new Date(card.expiresAt) < new Date()
     const shouldIndex = card.isPublished && !isExpired
 
     const title = card.title || "Kad Jemputan Digital"
@@ -358,7 +358,7 @@ export default async function InvitePage({ params, searchParams }: Props) {
 
     if (!raw) return notFound()
 
-    if (raw.expiresAt && raw.expiresAt < new Date()) {
+    if (raw.expiresAt && new Date(raw.expiresAt) < new Date()) {
       return <ExpiredPage />
     }
 
@@ -370,7 +370,7 @@ export default async function InvitePage({ params, searchParams }: Props) {
       groomName: raw.groomName ?? undefined,
       brideName: raw.brideName ?? undefined,
       subtitle: raw.subtitle ?? undefined,
-      eventDate: raw.eventDate?.toISOString() ?? undefined,
+      eventDate: raw.eventDate ? new Date(raw.eventDate).toISOString() : undefined,
       eventTime: raw.eventTime ?? undefined,
       venueName: raw.venueName ?? undefined,
       venueAddress: raw.venueAddress ?? undefined,
@@ -437,8 +437,8 @@ export default async function InvitePage({ params, searchParams }: Props) {
         sortOrder: p.sortOrder,
       })),
       wizardConfig: (raw.wizardConfig ?? undefined) as import("@/types/config").WizardConfig | undefined,
-      createdAt: raw.createdAt.toISOString(),
-      updatedAt: raw.updatedAt.toISOString(),
+      createdAt: new Date(raw.createdAt).toISOString(),
+      updatedAt: new Date(raw.updatedAt).toISOString(),
     }
   } catch (err) {
     console.error("[invite-page] failed to load card:", slug, err)
