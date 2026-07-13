@@ -200,7 +200,7 @@ export function BuilderPage({ initialCard }: BuilderPageProps) {
               href={inviteHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 flex items-center justify-center text-cream/50 hover:text-cream transition-all z-20"
+              className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 hidden md:flex items-center justify-center text-cream/50 hover:text-cream transition-all z-20"
               title={lang ? "Lihat kad" : "View card"}
             >
               <Eye className="w-4 h-4" />
