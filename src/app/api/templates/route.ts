@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { rewriteStorageUrl } from "@/lib/storage"
 
+export const revalidate = 3600 // re-fetch templates from DB at most once per hour
+
 export async function GET() {
   try {
     const rows = await prisma.template.findMany({
