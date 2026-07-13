@@ -40,33 +40,41 @@ export function useLikes() {
     }
   }, [status, userId])
 
+  const syncLocalStorage = useCallback((ids: Set<string>) => {
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify([...ids]))
+      window.dispatchEvent(new Event("storage"))
+    } catch {}
+  }, [])
+
   const toggle = useCallback(
     async (templateId: string) => {
       const isLiked = liked.has(templateId)
+      const previous = liked
 
-      // Compute next set outside the updater to avoid side effects during render
+      // Optimistic update
       const next = new Set(liked)
       if (isLiked) next.delete(templateId)
       else next.add(templateId)
-
-      // Optimistic UI update
       setLiked(next)
-
-      // Mirror to localStorage for NavLikesButton count (must be outside state updater)
-      try {
-        localStorage.setItem(LS_KEY, JSON.stringify([...next]))
-        window.dispatchEvent(new Event("storage"))
-      } catch {}
+      syncLocalStorage(next)
 
       if (userId) {
-        await fetch("/api/user/likes", {
-          method: isLiked ? "DELETE" : "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ templateId }),
-        }).catch(() => {})
+        try {
+          const res = await fetch("/api/user/likes", {
+            method: isLiked ? "DELETE" : "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ templateId }),
+          })
+          if (!res.ok) throw new Error("Failed")
+        } catch {
+          // Revert on failure
+          setLiked(previous)
+          syncLocalStorage(previous)
+        }
       }
     },
-    [liked, userId]
+    [liked, userId, syncLocalStorage]
   )
 
   return { liked, toggle, loading }
