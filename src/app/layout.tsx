@@ -30,7 +30,7 @@ const openSans = Open_Sans({ subsets: ["latin"], weight: ["300", "400", "500", "
 export const metadata: Metadata = {
   metadataBase: new URL("https://ekadku.com"),
   title: {
-    default: "ekadku.com — Kad Jemputan Digital Malaysia",
+    default: "ekadku.com — Kad Jemputan Digital",
     template: "%s | ekadku.com",
   },
   description: "Cipta kad jemputan digital yang cantik dan mudah dikongsi. Perkahwinan, hari jadi, korporat dan lebih lagi. Mulai RM30 sahaja.",
@@ -43,17 +43,17 @@ export const metadata: Metadata = {
     apple: "/icon.png",
   },
   openGraph: {
-    title: "ekadku.com — Kad Jemputan Digital Malaysia",
+    title: "ekadku.com — Kad Jemputan Digital",
     description: "Cipta kad jemputan digital yang cantik dan mudah dikongsi. Perkahwinan, hari jadi, korporat dan lebih lagi. Mulai RM30 sahaja.",
     url: "https://ekadku.com",
     siteName: "ekadku.com",
     locale: "ms_MY",
     type: "website",
-    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "ekadku.com — Kad Jemputan Digital Malaysia" }],
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "ekadku.com — Kad Jemputan Digital" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "ekadku.com — Kad Jemputan Digital Malaysia",
+    title: "ekadku.com — Kad Jemputan Digital",
     description: "Cipta kad jemputan digital yang cantik. Perkahwinan, hari jadi, korporat. Mulai RM30.",
     site: "@ekadku",
     images: ["/opengraph-image"],
@@ -92,7 +92,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 "@id": "https://ekadku.com/#organization",
                 name: "ekadku.com",
                 url: "https://ekadku.com",
-                description: "Platform kad jemputan digital Malaysia — perkahwinan, hari jadi, dan korporat.",
+                description: "Platform Kad Jemputan Digital — perkahwinan, hari jadi, dan korporat.",
               },
               {
                 "@type": "WebSite",

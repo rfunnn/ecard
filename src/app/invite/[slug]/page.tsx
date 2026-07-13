@@ -64,7 +64,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         url: "https://ekadku.com/invite/demo",
         siteName: "ekadku.com",
         locale: "ms_MY",
-        images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "ekadku.com — Kad Jemputan Digital Malaysia" }],
+        images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "ekadku.com — Kad Jemputan Digital" }],
       },
       twitter: {
         card: "summary_large_image",

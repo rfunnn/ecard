@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og"
 
-export const alt = "ekadku.com — Kad Jemputan Digital Malaysia"
+export const alt = "ekadku.com — Kad Jemputan Digital"
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
@@ -34,7 +34,7 @@ export default function Image() {
         </div>
 
         <div style={{ fontSize: 28, color: "#8a7050", letterSpacing: "0.25em", textTransform: "uppercase" }}>
-          Kad Jemputan Digital Malaysia
+          Kad Jemputan Digital
         </div>
 
         <div style={{ display: "flex", gap: 36, fontSize: 22, color: "#5a4a30", marginTop: 4 }}>
