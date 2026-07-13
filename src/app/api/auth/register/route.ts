@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       where: { email: data.email.toLowerCase().trim() },
     })
     if (existing) {
-      return NextResponse.json({ error: "E-mel ini sudah didaftarkan" }, { status: 409 })
+      return NextResponse.json({ error: "Tidak dapat mendaftar dengan maklumat ini. Sila cuba log masuk." }, { status: 409 })
     }
 
     const passwordHash = await bcrypt.hash(data.password, 12)
