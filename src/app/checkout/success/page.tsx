@@ -185,7 +185,7 @@ function CheckoutSuccessContent() {
                   <p className="text-xs text-[var(--tx-3)]">{card.package} — RM{(card.amount / 100).toFixed(0)}</p>
                 </div>
                 <Link
-                  href={card.cardNum ? `/${card.cardNum}` : `/invite/${card.slug}`}
+                  href={card.cardNum ? `/${card.cardNum}` : `/${card.slug}`}
                   target="_blank"
                   className="shrink-0 flex items-center gap-1 text-[11px] text-gold hover:text-gold/80 transition-colors"
                 >

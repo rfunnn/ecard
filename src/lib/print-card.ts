@@ -270,7 +270,7 @@ export function generatePrintHTML(card: PrintCardInput): string {
   p4.push(
     `<div style="margin-top:6px;">` +
     `<p style="font-family:${SANS};font-size:6.5pt;letter-spacing:0.2em;color:${accent};text-transform:uppercase;opacity:0.42;margin-bottom:3px;">${lang ? "KAD DIGITAL" : "DIGITAL CARD"}</p>` +
-    `<p style="font-family:${SANS};font-size:8pt;color:${accent};opacity:0.58;">ekadku.com${card.cardNum ? `/${card.cardNum}` : `/invite/${esc(card.slug)}`}</p>` +
+    `<p style="font-family:${SANS};font-size:8pt;color:${accent};opacity:0.58;">ekadku.com${card.cardNum ? `/${card.cardNum}` : `/${esc(card.slug)}`}</p>` +
     `</div>`
   )
 

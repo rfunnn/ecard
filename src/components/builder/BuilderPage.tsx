@@ -84,7 +84,7 @@ export function BuilderPage({ initialCard }: BuilderPageProps) {
     })
   }
 
-  const inviteHref = card.cardNum ? `/${card.cardNum}` : `/invite/${card.slug}`
+  const inviteHref = card.cardNum ? `/${card.cardNum}` : `/${card.slug}`
 
   return (
     <div className="flex h-screen bg-[#0a0a0a] overflow-hidden">

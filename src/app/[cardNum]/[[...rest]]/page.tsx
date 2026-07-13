@@ -25,32 +25,56 @@ interface Props {
   searchParams: Promise<{ name?: string }>
 }
 
+async function findCard(id: string) {
+  const num = parseInt(id, 10)
+  if (!isNaN(num) && String(num) === id) {
+    return prisma.invitationCard.findUnique({
+      where: { cardNum: num },
+      include: {
+        template: { select: { slug: true, name: true, category: true, image1Url: true, image2Url: true } },
+        theme: true, media: true, scrollConfig: true,
+        giftItems:  { orderBy: { sortOrder: "asc" } },
+        photoItems: { orderBy: { sortOrder: "asc" } },
+      },
+    })
+  }
+  return prisma.invitationCard.findUnique({
+    where: { slug: id },
+    include: {
+      template: { select: { slug: true, name: true, category: true, image1Url: true, image2Url: true } },
+      theme: true, media: true, scrollConfig: true,
+      giftItems:  { orderBy: { sortOrder: "asc" } },
+      photoItems: { orderBy: { sortOrder: "asc" } },
+    },
+  })
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { cardNum: cardNumStr } = await params
-  const cardNum = parseInt(cardNumStr, 10)
-  if (isNaN(cardNum)) return { title: "Jemputan", robots: { index: false } }
+  const { cardNum: id } = await params
 
   try {
+    const num = parseInt(id, 10)
+    const where = !isNaN(num) && String(num) === id ? { cardNum: num } : { slug: id }
     const card = await prisma.invitationCard.findUnique({
-      where: { cardNum },
-      select: { title: true, description: true, isPublished: true, expiresAt: true },
+      where,
+      select: { slug: true, cardNum: true, title: true, description: true, isPublished: true, expiresAt: true },
     })
     if (!card) return { title: "Jemputan", robots: { index: false } }
 
     const isExpired = card.expiresAt != null && card.expiresAt < new Date()
     const shouldIndex = card.isPublished && !isExpired
+    const canonical = card.cardNum ? `https://ekadku.com/${card.cardNum}` : `https://ekadku.com/${card.slug}`
     const title = card.title || "Kad Jemputan Digital"
     const description = card.description ?? "Anda dijemput! Buka pautan ini untuk melihat kad jemputan."
 
     return {
       title,
       description,
-      alternates: { canonical: `https://ekadku.com/${cardNum}` },
+      alternates: { canonical },
       robots: shouldIndex ? { index: true, follow: false } : { index: false, follow: false },
       openGraph: {
-        title,
-        description,
-        url: `https://ekadku.com/${cardNum}`,
+        title, description,
+        url: canonical,
         siteName: "ekadku.com",
         locale: "ms_MY",
         type: "website",
@@ -58,8 +82,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
       twitter: {
         card: "summary_large_image",
-        title,
-        description,
+        title, description,
         site: "@ekadku",
         images: ["/opengraph-image"],
       },
@@ -69,29 +92,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function CardNumInvitePage({ params, searchParams }: Props) {
-  const { cardNum: cardNumStr } = await params
-  const cardNum = parseInt(cardNumStr, 10)
-  if (isNaN(cardNum)) return notFound()
-
+export default async function CardInvitePage({ params, searchParams }: Props) {
+  const { cardNum: id } = await params
   const sp = await searchParams
   const nameOverride = sp.name
 
   let card: InvitationCardData | null = null
 
   try {
-    const raw = await prisma.invitationCard.findUnique({
-      where: { cardNum },
-      include: {
-        template: { select: { slug: true, name: true, category: true, image1Url: true, image2Url: true } },
-        theme: true,
-        media: true,
-        scrollConfig: true,
-        giftItems:  { orderBy: { sortOrder: "asc" } },
-        photoItems: { orderBy: { sortOrder: "asc" } },
-      },
-    })
-
+    const raw = await findCard(id)
     if (!raw) return notFound()
 
     if (raw.expiresAt && raw.expiresAt < new Date()) {
@@ -200,13 +209,17 @@ export default async function CardNumInvitePage({ params, searchParams }: Props)
     }
   }
 
+  const canonicalUrl = card.cardNum
+    ? `https://ekadku.com/${card.cardNum}`
+    : `https://ekadku.com/${card.slug}`
+
   const wc = card.wizardConfig as { startDateTime?: string; venueLine?: string; venueAddress?: string } | undefined
   const eventLd = card.isPublished
     ? {
         "@context": "https://schema.org",
         "@type": "Event",
         name: card.title,
-        url: `https://ekadku.com/${cardNum}`,
+        url: canonicalUrl,
         eventStatus: "https://schema.org/EventScheduled",
         eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
         ...(card.eventDate || wc?.startDateTime

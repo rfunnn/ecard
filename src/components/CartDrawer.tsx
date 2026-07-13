@@ -194,7 +194,7 @@ export function CartDrawer({ isOpen, onClose }: Props) {
                               Edit
                             </Link>
                             <Link
-                              href={`/invite/${card.slug}`}
+                              href={`/${card.slug}`}
                               onClick={onClose}
                               className="flex items-center gap-1 text-[11px] text-cream/35 hover:text-cream/70 transition-colors"
                             >
