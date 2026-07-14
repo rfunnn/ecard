@@ -30,6 +30,7 @@ const createSchema = z.object({
   image1Url: z.string().optional(),
   image2Url: z.string().optional(),
   displayConfig: z.record(z.string(), z.unknown()).optional().nullable(),
+  defaultConfig: z.record(z.string(), z.unknown()).optional(),
 })
 
 export async function GET() {
@@ -68,7 +69,7 @@ export async function POST(req: NextRequest) {
         thumbnail: data.image1Url ?? "",
         isActive: data.isActive,
         sortOrder: data.sortOrder,
-        defaultConfig: {} as Prisma.InputJsonValue,
+        defaultConfig: (data.defaultConfig ?? {}) as Prisma.InputJsonValue,
         image1Url: data.image1Url,
         image2Url: data.image2Url,
         displayConfig: data.displayConfig ? (data.displayConfig as Prisma.InputJsonValue) : Prisma.DbNull,

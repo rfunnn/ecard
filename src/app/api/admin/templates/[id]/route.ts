@@ -13,6 +13,7 @@ const updateSchema = z.object({
   image1Url: z.string().optional().nullable(),
   image2Url: z.string().optional().nullable(),
   displayConfig: z.record(z.string(), z.unknown()).optional().nullable(),
+  defaultConfig: z.record(z.string(), z.unknown()).optional(),
 })
 
 export async function GET(
@@ -73,6 +74,9 @@ export async function PATCH(
         ...(data.image2Url !== undefined ? { image2Url: data.image2Url } : {}),
         ...(data.displayConfig !== undefined
           ? { displayConfig: data.displayConfig ? (data.displayConfig as Prisma.InputJsonValue) : Prisma.DbNull }
+          : {}),
+        ...(data.defaultConfig !== undefined
+          ? { defaultConfig: data.defaultConfig as Prisma.InputJsonValue }
           : {}),
         ...thumbnailUpdate,
       },

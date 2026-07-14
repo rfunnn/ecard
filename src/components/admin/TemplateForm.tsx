@@ -29,6 +29,12 @@ const CATEGORIES = [
   { value: "GENERIC",   label: "Umum" },
 ]
 
+const COLOR_SWATCHES = [
+  "#1a1a1a", "#B8960C", "#f9c5d1", "#9e9e9e",
+  "#ffffff", "#9c27b0", "#2196f3", "#4caf50",
+  "#e91e63", "#f48fb1", "#ff9800", "#ffeb3b",
+]
+
 export function TemplateForm({ initialData }: Props) {
   const router = useRouter()
   const isEdit = !!initialData
@@ -42,6 +48,9 @@ export function TemplateForm({ initialData }: Props) {
   const [isActive,      setIsActive]      = useState(initialData?.isActive ?? true)
   const [image1Url,     setImage1Url]     = useState(initialData?.image1Url ?? "")
   const [image2Url,     setImage2Url]     = useState(initialData?.image2Url ?? "")
+  const [primaryColor,  setPrimaryColor]  = useState(
+    (initialData?.defaultConfig?.primaryColor as string | undefined) ?? ""
+  )
   const [displayConfig, setDisplayConfig] = useState<TemplateDisplayConfig>(
     (initialData?.displayConfig as TemplateDisplayConfig | undefined) ?? DEFAULT_DISPLAY_CONFIG
   )
@@ -80,6 +89,7 @@ export function TemplateForm({ initialData }: Props) {
           image1Url: image1Url || undefined,
           image2Url: image2Url || undefined,
           displayConfig,
+          defaultConfig: { primaryColor: primaryColor || undefined },
         }),
       })
       const data = await res.json()
@@ -92,7 +102,7 @@ export function TemplateForm({ initialData }: Props) {
     } finally {
       setSaving(false)
     }
-  }, [name, nameMs, slug, category, isActive, sortOrder, image1Url, image2Url, displayConfig, isEdit, initialData, router])
+  }, [name, nameMs, slug, category, isActive, sortOrder, image1Url, image2Url, primaryColor, displayConfig, isEdit, initialData, router])
 
   const handleDelete = async (force = false) => {
     if (!initialData) return
@@ -247,6 +257,41 @@ export function TemplateForm({ initialData }: Props) {
                   min={0}
                 />
               </div>
+            </div>
+
+            <div>
+              <label className={labelCls}>Warna Utama</label>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {COLOR_SWATCHES.map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    onClick={() => setPrimaryColor(primaryColor === color ? "" : color)}
+                    className={`w-7 h-7 rounded-full transition-all ${
+                      primaryColor === color
+                        ? "ring-2 ring-offset-2 ring-amber-500 scale-110"
+                        : "hover:scale-105"
+                    }`}
+                    style={{
+                      background: color,
+                      border: color === "#ffffff" ? "1px solid #d1d5db" : "none",
+                    }}
+                    title={color}
+                  />
+                ))}
+                {primaryColor && (
+                  <button
+                    type="button"
+                    onClick={() => setPrimaryColor("")}
+                    className="text-xs text-gray-400 hover:text-gray-600 px-1 self-center"
+                  >
+                    Kosongkan
+                  </button>
+                )}
+              </div>
+              {primaryColor && (
+                <p className="text-[11px] text-gray-400 mt-1 font-mono">{primaryColor}</p>
+              )}
             </div>
 
             <div className="flex items-center gap-3">
