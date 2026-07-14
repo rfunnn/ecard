@@ -40,7 +40,6 @@ export function TemplateForm({ initialData }: Props) {
   const isEdit = !!initialData
 
   const [name,          setName]          = useState(initialData?.name ?? "")
-  const [nameMs,        setNameMs]        = useState(initialData?.nameMs ?? "")
   const [slug,          setSlug]          = useState(initialData?.slug ?? "")
   const [slugLocked,    setSlugLocked]    = useState(isEdit)
   const [category,      setCategory]      = useState(initialData?.category ?? "WEDDING")
@@ -81,7 +80,7 @@ export function TemplateForm({ initialData }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: name.trim(),
-          nameMs: nameMs.trim() || name.trim(),
+          nameMs: name.trim(),
           slug: slug.trim() || undefined,
           category,
           isActive,
@@ -102,7 +101,7 @@ export function TemplateForm({ initialData }: Props) {
     } finally {
       setSaving(false)
     }
-  }, [name, nameMs, slug, category, isActive, sortOrder, image1Url, image2Url, primaryColor, displayConfig, isEdit, initialData, router])
+  }, [name, slug, category, isActive, sortOrder, image1Url, image2Url, primaryColor, displayConfig, isEdit, initialData, router])
 
   const handleDelete = async (force = false) => {
     if (!initialData) return
@@ -191,24 +190,13 @@ export function TemplateForm({ initialData }: Props) {
             <h2 className={sectionHeadingCls}>A · Maklumat Asas</h2>
 
             <div>
-              <label className={labelCls}>Nama Template (EN)</label>
+              <label className={labelCls}>Nama Template</label>
               <input
                 type="text"
                 className={inputCls}
-                placeholder="Wedding Classic"
+                placeholder="Perkahwinan Klasik"
                 value={name}
                 onChange={(e) => handleNameChange(e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label className={labelCls}>Nama Template (MS)</label>
-              <input
-                type="text"
-                className={inputCls}
-                placeholder="Perkahwinan Klasik (kosongkan = sama seperti EN)"
-                value={nameMs}
-                onChange={(e) => setNameMs(e.target.value)}
               />
             </div>
 
