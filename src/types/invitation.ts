@@ -153,7 +153,7 @@ export const SCROLL_SPEED_MS: Record<ScrollSpeed, number> = {
 }
 
 export const SCROLL_SPEED_CFG: Record<ScrollSpeed, { intervalMs: number; px: number }> = {
-  SLOW:   { intervalMs: 50, px: 1 },   //  ~20 px/s
-  MEDIUM: { intervalMs: 25, px: 2 },   //  ~80 px/s
-  FAST:   { intervalMs: 16, px: 4 },   // ~250 px/s
+  SLOW:   { intervalMs: 60, px: 1 },  //  ~17 px/s
+  MEDIUM: { intervalMs: 35, px: 1 },  //  ~29 px/s
+  FAST:   { intervalMs: 20, px: 1 },  //  ~50 px/s
 }
