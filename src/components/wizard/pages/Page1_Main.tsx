@@ -94,7 +94,7 @@ export function Page1_Main() {
     <div className="space-y-6">
       {/* Language */}
       <div>
-        <FieldLabel label={isMs ? "Bahasa Kad" : "Card Language"} />
+        <FieldLabel label={isMs ? "Pilih Bahasa" : "Select Language"} />
         <div className="flex gap-6 mt-1">
           {(["en", "ms"] as const).map((lang) => (
             <label key={lang} className="flex items-center gap-2 cursor-pointer">
