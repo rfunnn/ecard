@@ -20,9 +20,9 @@ function CorporateRule({ color }: { color: string }) {
   )
 }
 
-interface Props { card: InvitationCardData; onRsvpOpen?: () => void }
+interface Props { card: InvitationCardData; onRsvpOpen?: () => void; previewPage?: number }
 
-export function CorporateTemplate({ card, onRsvpOpen }: Props) {
+export function CorporateTemplate({ card, onRsvpOpen, previewPage: p }: Props) {
   const cfg = card.wizardConfig as WizardConfig | undefined
   const { theme } = card
 
@@ -84,13 +84,22 @@ export function CorporateTemplate({ card, onRsvpOpen }: Props) {
   const formatTime = (d: Date) =>
     d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })
 
+  const all          = !p || p === 12
+  const showCover      = all || [1, 2, 6, 8, 9, 10].includes(p!)
+  const showInvitation = all || p === 3
+  const showVenueDate  = all || p === 4
+  const showProgramme  = all || p === 5
+  const showCountdown  = all || p === 5
+  const showAttendance = all || p === 7
+  const showPhotos     = all || p === 11
+
   return (
     <div className="min-h-screen w-full overflow-x-hidden" style={{ paddingLeft: `${sideMargin}rem`, paddingRight: `${sideMargin}rem` }}>
       {/* top accent bar */}
       <div className="h-1 w-full" style={{ background: primaryColor }} />
 
       {/* ══ COVER (Page 2) ══════════════════════════════════════════════════ */}
-      <motion.div
+      {showCover && <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
@@ -147,10 +156,9 @@ export function CorporateTemplate({ card, onRsvpOpen }: Props) {
             {venueName}
           </p>
         )}
-      </motion.div>
+      </motion.div>}
 
-      {/* ══ INVITATION TEXT (Page 3) ════════════════════════════════════════ */}
-      {(cfg?.openingSpeech || cfg?.organizer1?.name || card.description || cfg?.fullNames) && (
+      {showInvitation && (cfg?.openingSpeech || cfg?.organizer1?.name || card.description || cfg?.fullNames) && (
         <div className="pb-4">
           <CorporateRule color={primaryColor} />
 
@@ -193,7 +201,7 @@ export function CorporateTemplate({ card, onRsvpOpen }: Props) {
       )}
 
       {/* ══ VENUE + DATE (Page 4) ══════════════════════════════════════════ */}
-      {(seg.venue || seg.date) && (venueName || address || startDT) && (
+      {showVenueDate && (seg.venue || seg.date) && (venueName || address || startDT) && (
         <div className="pb-6">
           <CorporateRule color={primaryColor} />
 
@@ -277,7 +285,7 @@ export function CorporateTemplate({ card, onRsvpOpen }: Props) {
       )}
 
       {/* ══ EVENT PROGRAM (Page 5) ══════════════════════════════════════════ */}
-      {seg.eventProgram && cfg?.eventProgram && (
+      {showProgramme && seg.eventProgram && cfg?.eventProgram && (
         <div className="pb-6">
           <CorporateRule color={primaryColor} />
           <p className={`${headFont} text-[10px] tracking-[0.3em] uppercase opacity-40 mb-5`} style={{ color: bodyColor }}>
@@ -296,7 +304,7 @@ export function CorporateTemplate({ card, onRsvpOpen }: Props) {
       )}
 
       {/* ══ COUNTDOWN ══════════════════════════════════════════════════════ */}
-      {(cfg?.additionalInfo2 || (seg.countdown && cfg?.startDateTime && !eventPassed)) && (
+      {showCountdown && (cfg?.additionalInfo2 || (seg.countdown && cfg?.startDateTime && !eventPassed)) && (
         <div className="pb-6 text-center">
           <CorporateRule color={primaryColor} />
 
@@ -337,7 +345,7 @@ export function CorporateTemplate({ card, onRsvpOpen }: Props) {
       )}
 
       {/* ══ KEHADIRAN CTA ════════════════════════════════════════════════════ */}
-      {seg.attendance && (
+      {showAttendance && seg.attendance && (
         <div className="pb-4">
           <CorporateRule color={primaryColor} />
           <p className={`${headFont} text-[10px] tracking-[0.3em] uppercase opacity-40 mb-6`} style={{ color: bodyColor }}>
@@ -367,7 +375,7 @@ export function CorporateTemplate({ card, onRsvpOpen }: Props) {
       )}
 
       {/* ══ UCAPAN WALL ══════════════════════════════════════════════════════ */}
-      {seg.wishes && wishes.length > 0 && (
+      {showAttendance && seg.wishes && wishes.length > 0 && (
         <div className="pb-6">
           <CorporateRule color={primaryColor} />
           <p className={`${headFont} text-[10px] tracking-[0.3em] uppercase opacity-40 mb-6`} style={{ color: bodyColor }}>
@@ -389,7 +397,7 @@ export function CorporateTemplate({ card, onRsvpOpen }: Props) {
       )}
 
       {/* ══ PHOTO GALLERY ════════════════════════════════════════════════════ */}
-      {seg.photoGallery && card.photoItems?.length > 0 && (
+      {showPhotos && seg.photoGallery && card.photoItems?.length > 0 && (
         <div className="pb-6 text-center px-2">
           <CorporateRule color={primaryColor} />
           <PhotoGallery

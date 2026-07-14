@@ -223,7 +223,6 @@ export function WizardShell({ initialCard, guest = false }: Props) {
   const [cartOpen, setCartOpen] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
-  const [isScrolling, setIsScrolling] = useState(false)
   const [previewGateOpen, setPreviewGateOpen] = useState(
     () => (config.openingStyle ?? "Tiada") !== "Tiada"
   )
@@ -239,24 +238,6 @@ export function WizardShell({ initialCard, guest = false }: Props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Auto-scroll both preview panes — only runs when isScrolling is true
-  useEffect(() => {
-    if (!isScrolling) return
-    const intervalMs = config.scrollDelay > 0 ? Math.round(config.scrollDelay * 20) : 60
-    const id = setInterval(() => {
-      for (const ref of [desktopScrollRef, mobileScrollRef]) {
-        const el = ref.current
-        if (!el) continue
-        if (el.scrollTop + el.clientHeight >= el.scrollHeight - 10) {
-          el.scrollTop = 0
-        } else {
-          el.scrollTop += 1
-        }
-      }
-    }, intervalMs)
-    return () => clearInterval(id)
-  }, [config.scrollDelay, isScrolling])
-
   // Load config when opening a card for the first time or switching cards.
   // Keeps in-memory edits intact when navigating within the same card.
   useEffect(() => {
@@ -270,23 +251,11 @@ export function WizardShell({ initialCard, guest = false }: Props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialCard.slug])
 
-  // When the wizard page changes: stop auto-scroll and jump to the relevant section
-  // so the user immediately sees what they're editing.
+  // Reset scroll to top whenever the user switches config pages.
+  // Each page now renders only its own sections so there is nothing above to scroll into.
   useEffect(() => {
-    setIsScrolling(false)
-    const ph = desktopScrollRef.current?.clientHeight ?? 0
-    const target =
-      currentPage <= 2  ? 0
-      : currentPage === 3 ? ph * 1.05
-      : currentPage === 4 ? ph * 1.65
-      : currentPage === 5 ? ph * 2.3
-      : currentPage === 7 ? ph * 3.0
-      : currentPage === 10 ? ph * 3.5   // gifts
-      : currentPage === 11 ? 999999      // photos — scroll to bottom
-      : 0
-
     for (const ref of [desktopScrollRef, mobileScrollRef]) {
-      if (ref.current) ref.current.scrollTop = target
+      if (ref.current) ref.current.scrollTop = 0
     }
   }, [currentPage])
 
@@ -333,18 +302,10 @@ export function WizardShell({ initialCard, guest = false }: Props) {
 
   const openMobilePreview = useCallback(() => {
     setShowMobilePreview(true)
-    const hasGate = (config.openingStyle ?? "Tiada") !== "Tiada"
-    if (hasGate) {
-      setPreviewGateOpen(true)   // show the opening animation first
-      setIsScrolling(false)      // don't scroll until gate is dismissed
-    } else {
-      setIsScrolling(true)       // no gate — start scrolling immediately
-    }
-  }, [config.openingStyle])
+  }, [])
 
   const closeMobilePreview = useCallback(() => {
     setShowMobilePreview(false)
-    setIsScrolling(false)
   }, [])
 
   const previewEffect      = config.effectAnimation ?? "Tiada"
@@ -543,14 +504,14 @@ export function WizardShell({ initialCard, guest = false }: Props) {
               {/* Particle effect — contained inside phone frame */}
               <EffectAnimation effect={previewEffect} color={previewEffectColor} sizeScale={previewEffectScale} contained />
 
-              {/* Opening gate — pointer-events-auto overrides the parent's pointer-events-none */}
-              {previewOpenStyle !== "Tiada" && previewGateOpen && (
+              {/* Opening gate — only shown on config page 1 */}
+              {previewOpenStyle !== "Tiada" && previewGateOpen && currentPage === 1 && (
                 <div style={{ pointerEvents: "auto" }}>
                   <OpeningGate
                     key={previewOpenStyle}
                     style={previewOpenStyle}
                     color={previewOpenColor}
-                    onOpen={() => { setPreviewGateOpen(false); if (config.scrollDelay > 0) setIsScrolling(true) }}
+                    onOpen={() => setPreviewGateOpen(false)}
                     displayName={config.displayName}
                     eventType={config.eventType}
                     eventDate={config.dayAndDate}
@@ -561,8 +522,7 @@ export function WizardShell({ initialCard, guest = false }: Props) {
               <div
                 ref={(el) => { if (el) desktopScrollRef.current = el }}
                 className="absolute inset-0 overflow-y-auto overflow-x-hidden z-10"
-                style={{ scrollbarWidth: "none", pointerEvents: isScrolling ? "none" : "auto" }}
-                onClick={() => { if (config.scrollDelay > 0 && !isScrolling) setIsScrolling(true) }}
+                style={{ scrollbarWidth: "none", pointerEvents: "auto" }}
               >
                 {cardPreview.template?.image1Url && (
                   <div className="absolute top-0 left-0 right-0 pointer-events-none z-0" style={{ height: "100svh" }}>
@@ -570,7 +530,7 @@ export function WizardShell({ initialCard, guest = false }: Props) {
                   </div>
                 )}
                 <div className="relative z-10">
-                  <TemplateRenderer card={cardPreview} />
+                  <TemplateRenderer card={cardPreview} previewPage={currentPage} />
                 </div>
               </div>
 
@@ -660,14 +620,14 @@ export function WizardShell({ initialCard, guest = false }: Props) {
                 {/* Particle effect — contained inside mobile phone frame */}
                 <EffectAnimation effect={previewEffect} color={previewEffectColor} sizeScale={previewEffectScale} contained />
 
-                {/* Opening gate */}
-                {previewOpenStyle !== "Tiada" && previewGateOpen && (
+                {/* Opening gate — only shown on config page 1 */}
+                {previewOpenStyle !== "Tiada" && previewGateOpen && currentPage === 1 && (
                   <div style={{ pointerEvents: "auto" }}>
                     <OpeningGate
                       key={previewOpenStyle}
                       style={previewOpenStyle}
                       color={previewOpenColor}
-                      onOpen={() => { setPreviewGateOpen(false); setIsScrolling(true) }}
+                      onOpen={() => setPreviewGateOpen(false)}
                       displayName={config.displayName}
                       eventType={config.eventType}
                       eventDate={config.dayAndDate}
@@ -678,7 +638,7 @@ export function WizardShell({ initialCard, guest = false }: Props) {
                 <div
                   ref={(el) => { if (el) mobileScrollRef.current = el }}
                   className="absolute inset-0 overflow-y-auto overflow-x-hidden z-10"
-                  style={{ scrollbarWidth: "none", pointerEvents: isScrolling ? "none" : "auto" }}
+                  style={{ scrollbarWidth: "none", pointerEvents: "auto" }}
                 >
                   {cardPreview.template?.image1Url && (
                     <div className="absolute top-0 left-0 right-0 pointer-events-none z-0" style={{ height: "100svh" }}>
@@ -686,7 +646,7 @@ export function WizardShell({ initialCard, guest = false }: Props) {
                     </div>
                   )}
                   <div className="relative z-10">
-                    <TemplateRenderer card={cardPreview} />
+                    <TemplateRenderer card={cardPreview} previewPage={currentPage} />
                   </div>
                 </div>
 
