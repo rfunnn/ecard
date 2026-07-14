@@ -221,19 +221,17 @@ export function WizardShell({ initialCard, guest = false }: Props) {
   const isMs = config.language === "ms"
   const pageNames = isMs ? PAGE_NAMES_MS : PAGE_NAMES_EN
 
-  const [showMobilePreview, setShowMobilePreview] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
-  const [saveError, setSaveError] = useState<string | null>(null)
   const [toast, setToast] = useState<{ type: "success" | "error"; msg: string } | null>(null)
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const [previewGateOpen, setPreviewGateOpen] = useState(
     () => (config.openingStyle ?? "Tiada") !== "Tiada"
   )
+  const [modalGateOpen, setModalGateOpen] = useState(false)
 
   const searchParams = useSearchParams()
   const desktopScrollRef = useRef<HTMLDivElement | undefined>(undefined)
-  const mobileScrollRef  = useRef<HTMLDivElement | undefined>(undefined)
 
   // Jump to a specific wizard page when ?page=N is in the URL (e.g. from dashboard quick-links)
   useEffect(() => {
@@ -258,9 +256,7 @@ export function WizardShell({ initialCard, guest = false }: Props) {
   // Reset scroll to top whenever the user switches config pages.
   // Each page now renders only its own sections so there is nothing above to scroll into.
   useEffect(() => {
-    for (const ref of [desktopScrollRef, mobileScrollRef]) {
-      if (ref.current) ref.current.scrollTop = 0
-    }
+    if (desktopScrollRef.current) desktopScrollRef.current.scrollTop = 0
   }, [currentPage])
 
   const cardPreview = useMemo(
@@ -283,7 +279,6 @@ export function WizardShell({ initialCard, guest = false }: Props) {
       return
     }
     setIsSaving(true)
-    setSaveError(null)
     try {
       const { theme, media, scrollConfig, ...rest } = cardPreview
       const payload: Record<string, unknown> = { ...rest, theme, media, scrollConfig, wizardConfig: config }
@@ -294,18 +289,14 @@ export function WizardShell({ initialCard, guest = false }: Props) {
         body: JSON.stringify(payload),
       })
       if (!res.ok) {
-        const msg = isMs ? "Gagal menyimpan. Cuba semula." : "Failed to save. Please try again."
-        setSaveError(msg)
-        showToast("error", msg)
+        showToast("error", isMs ? "Gagal menyimpan. Cuba semula." : "Failed to save. Please try again.")
         return
       }
       if (!initialCard.isPublished) addToCart(initialCard.slug)
       markClean()
       showToast("success", isMs ? "Berjaya disimpan!" : "Saved successfully!")
     } catch {
-      const msg = isMs ? "Tiada sambungan. Cuba semula." : "No connection. Please try again."
-      setSaveError(msg)
-      showToast("error", msg)
+      showToast("error", isMs ? "Tiada sambungan. Cuba semula." : "No connection. Please try again.")
     } finally {
       setIsSaving(false)
     }
@@ -315,13 +306,6 @@ export function WizardShell({ initialCard, guest = false }: Props) {
     setPreviewOpen(true)
   }, [])
 
-  const openMobilePreview = useCallback(() => {
-    setShowMobilePreview(true)
-  }, [])
-
-  const closeMobilePreview = useCallback(() => {
-    setShowMobilePreview(false)
-  }, [])
 
   const previewEffect      = config.effectAnimation ?? "Tiada"
   const previewEffectColor = config.effectColor ?? "#ffffff"
@@ -334,14 +318,15 @@ export function WizardShell({ initialCard, guest = false }: Props) {
     setPreviewGateOpen(previewOpenStyle !== "Tiada")
   }, [previewOpenStyle])
 
+  // Reset modal gate when modal opens
+  useEffect(() => {
+    if (previewOpen) setModalGateOpen(previewOpenStyle !== "Tiada")
+  }, [previewOpen, previewOpenStyle])
+
   const isLastPage = currentPage === TOTAL_PAGES
   const CurrentPage = PAGE_COMPONENTS[currentPage - 1]
   const pageName = pageNames[currentPage - 1]
   const showWarning = WARNING_PAGES.has(currentPage)
-
-  if (previewOpen) {
-    return <InviteClient card={cardPreview} onClose={() => setPreviewOpen(false)} />
-  }
 
   return (
     <div className="flex h-screen bg-white overflow-hidden">
@@ -495,7 +480,7 @@ export function WizardShell({ initialCard, guest = false }: Props) {
             {/* Mobile preview toggle (hidden on desktop which already shows preview) */}
             <button
               type="button"
-              onClick={openMobilePreview}
+              onClick={() => setPreviewOpen(true)}
               className="w-9 h-9 flex items-center justify-center rounded-full border border-amber-300 text-amber-600 hover:bg-amber-50 lg:hidden"
               title={isMs ? "Pratonton" : "Preview"}
             >
@@ -623,96 +608,105 @@ export function WizardShell({ initialCard, guest = false }: Props) {
         </div>
       </div>
 
-      {/* ── Mobile Live Preview Overlay ── */}
-      {showMobilePreview && (
-        <div className="fixed inset-0 z-50 lg:hidden bg-gray-100 flex flex-col">
-          <div className="shrink-0 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-100 shadow-sm">
-            <div>
-              <p className="text-sm font-semibold text-gray-900">{isMs ? "Pratonton Langsung" : "Live Preview"}</p>
-              <p className="text-xs text-amber-600 mt-0.5">{pageName}</p>
-            </div>
-            <button
-              type="button"
-              onClick={closeMobilePreview}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors"
+      {/* ── Preview Modal (pratonton) ── */}
+      <AnimatePresence>
+        {previewOpen && (
+          <>
+            <motion.div
+              key="preview-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[150] bg-black/75 backdrop-blur-sm"
+              onClick={() => setPreviewOpen(false)}
+            />
+            <motion.div
+              key="preview-modal"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 320, damping: 28 }}
+              className="fixed inset-0 z-[151] flex flex-col items-center justify-center p-4 pointer-events-none"
             >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-          <div className="flex-1 flex items-center justify-center p-6 overflow-hidden">
-            <div className="relative h-full" style={{ aspectRatio: "9/19.5", maxHeight: "100%" }}>
-              <div className="absolute inset-0 rounded-[44px] border-[8px] border-gray-800 shadow-2xl overflow-hidden z-10 pointer-events-none">
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    backgroundColor: cardPreview.theme?.bgColor ?? "#0a0a0a",
-                    backgroundImage: cardPreview.template?.image2Url
-                      ? `url(${cardPreview.template.image2Url})`
-                      : cardPreview.theme?.bgImageUrl
-                      ? `linear-gradient(rgba(0,0,0,${cardPreview.theme.bgOpacity}),rgba(0,0,0,${cardPreview.theme.bgOpacity})),url(${cardPreview.theme.bgImageUrl})`
-                      : "none",
-                    backgroundSize: cardPreview.template?.image2Url ? "cover" : "100% auto",
-                    backgroundPosition: cardPreview.template?.image2Url ? "center" : "top center",
-                    backgroundRepeat: cardPreview.template?.image2Url ? undefined : "no-repeat",
-                  }}
-                />
-                {/* Particle effect — contained inside mobile phone frame */}
-                <EffectAnimation effect={previewEffect} color={previewEffectColor} sizeScale={previewEffectScale} contained />
-
-                {/* Opening gate — only shown on config page 1 */}
-                {previewOpenStyle !== "Tiada" && previewGateOpen && currentPage === 1 && (
-                  <div style={{ pointerEvents: "auto" }}>
-                    <OpeningGate
-                      key={previewOpenStyle}
-                      style={previewOpenStyle}
-                      color={previewOpenColor}
-                      onOpen={() => setPreviewGateOpen(false)}
-                      displayName={config.displayName}
-                      eventType={config.eventType}
-                      eventDate={config.dayAndDate}
-                    />
-                  </div>
-                )}
-
-                <div
-                  ref={(el) => { if (el) mobileScrollRef.current = el }}
-                  className="absolute inset-0 overflow-y-auto overflow-x-hidden z-10"
-                  style={{ scrollbarWidth: "none", pointerEvents: "auto" }}
+              {/* Close button row */}
+              <div className="w-full max-w-xs flex justify-end mb-2 pointer-events-auto">
+                <button
+                  type="button"
+                  onClick={() => setPreviewOpen(false)}
+                  className="flex items-center gap-1.5 text-sm text-white/80 hover:text-white transition-colors px-2 py-1 rounded-lg hover:bg-white/10"
                 >
-                  {cardPreview.template?.image1Url && (
-                    <div className="absolute top-0 left-0 right-0 pointer-events-none z-0" style={{ height: "100svh" }}>
-                      <img src={cardPreview.template.image1Url} alt="" className="absolute inset-0 w-full h-full object-cover" draggable={false} />
+                  <X className="w-4 h-4" />
+                  {isMs ? "Tutup" : "Close"}
+                </button>
+              </div>
+
+              {/* Phone frame */}
+              <div
+                className="relative pointer-events-auto"
+                style={{ height: "calc(100dvh - 80px)", maxHeight: "780px", aspectRatio: "9/19.5" }}
+              >
+                <div className="absolute inset-0 rounded-[44px] border-[8px] border-gray-800 shadow-2xl overflow-hidden z-10">
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      backgroundColor: cardPreview.theme?.bgColor ?? "#0a0a0a",
+                      backgroundImage: cardPreview.template?.image2Url
+                        ? `url(${cardPreview.template.image2Url})`
+                        : cardPreview.theme?.bgImageUrl
+                        ? `linear-gradient(rgba(0,0,0,${cardPreview.theme.bgOpacity}),rgba(0,0,0,${cardPreview.theme.bgOpacity})),url(${cardPreview.theme.bgImageUrl})`
+                        : "none",
+                      backgroundSize: cardPreview.template?.image2Url ? "cover" : "100% auto",
+                      backgroundPosition: cardPreview.template?.image2Url ? "center" : "top center",
+                      backgroundRepeat: cardPreview.template?.image2Url ? undefined : "no-repeat",
+                    }}
+                  />
+                  <EffectAnimation effect={previewEffect} color={previewEffectColor} sizeScale={previewEffectScale} contained />
+
+                  {previewOpenStyle !== "Tiada" && modalGateOpen && (
+                    <div style={{ pointerEvents: "auto" }}>
+                      <OpeningGate
+                        key={previewOpenStyle}
+                        style={previewOpenStyle}
+                        color={previewOpenColor}
+                        onOpen={() => setModalGateOpen(false)}
+                        displayName={config.displayName}
+                        eventType={config.eventType}
+                        eventDate={config.dayAndDate}
+                      />
                     </div>
                   )}
-                  <div className="relative z-10">
-                    <TemplateRenderer card={cardPreview} previewPage={currentPage} />
+
+                  <div
+                    className="absolute inset-0 overflow-y-auto overflow-x-hidden z-10"
+                    style={{ scrollbarWidth: "none", pointerEvents: "auto" }}
+                  >
+                    {cardPreview.template?.image1Url && (
+                      <div className="absolute top-0 left-0 right-0 pointer-events-none z-0" style={{ height: "100svh" }}>
+                        <img src={cardPreview.template.image1Url} alt="" className="absolute inset-0 w-full h-full object-cover" draggable={false} />
+                      </div>
+                    )}
+                    <div className="relative z-10">
+                      <TemplateRenderer card={cardPreview} />
+                    </div>
+                  </div>
+
+                  <div style={{ pointerEvents: "auto" }}>
+                    <ActionBar card={cardPreview} contained />
                   </div>
                 </div>
-
-                {/* Action bar — contained inside phone screen */}
-                <div style={{ pointerEvents: "auto" }}>
-                  <ActionBar card={cardPreview} contained />
+                {/* Notch */}
+                <div className="absolute top-1.5 left-0 right-0 flex justify-center z-20 pointer-events-none">
+                  <div className="w-24 h-5 bg-gray-800 rounded-b-xl" />
+                </div>
+                {/* Home indicator */}
+                <div className="absolute bottom-2 left-0 right-0 flex justify-center z-20 pointer-events-none">
+                  <div className="w-16 h-1 bg-gray-600 rounded-full opacity-60" />
                 </div>
               </div>
-              <div className="absolute top-1.5 left-0 right-0 flex justify-center z-20 pointer-events-none">
-                <div className="w-24 h-5 bg-gray-800 rounded-b-xl" />
-              </div>
-              <div className="absolute bottom-2 left-0 right-0 flex justify-center z-20 pointer-events-none">
-                <div className="w-16 h-1 bg-gray-600 rounded-full opacity-60" />
-              </div>
-            </div>
-          </div>
-          <div className="shrink-0 px-4 pb-4">
-            <button
-              type="button"
-              onClick={closeMobilePreview}
-              className="w-full py-2.5 rounded-xl bg-gray-800 text-white text-sm font-medium"
-            >
-              Kembali ke Editor
-            </button>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
     </div>
