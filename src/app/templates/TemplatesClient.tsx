@@ -19,6 +19,7 @@ interface Template {
   category: TemplateCategory
   thumbnail: string
   previewUrl?: string
+  createdAt?: string
   defaultConfig: {
     primaryColor?: string
     bgColor?: string
@@ -300,11 +301,21 @@ export function TemplatesClient() {
 
   const filtered = templates.filter((t) => {
     const themeOk = activeThemes.has("ALL") || activeThemes.has(t.category) || activeThemes.size === 0
-    return themeOk
+    const colorOk = !activeColor || t.defaultConfig?.primaryColor === activeColor
+    return themeOk && colorOk
   })
 
   const sorted = [...filtered].sort((a, b) => {
     if (sort === "name") return a.nameMs.localeCompare(b.nameMs)
+    if (sort === "latest") {
+      if (a.createdAt && b.createdAt) return b.createdAt.localeCompare(a.createdAt)
+      return 0
+    }
+    if (sort === "popular") {
+      const aLiked = liked.has(a.id) ? 1 : 0
+      const bLiked = liked.has(b.id) ? 1 : 0
+      return bLiked - aLiked
+    }
     return 0
   })
 

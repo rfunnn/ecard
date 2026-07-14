@@ -43,7 +43,6 @@ export function TemplateForm({ initialData }: Props) {
   const [slug,          setSlug]          = useState(initialData?.slug ?? "")
   const [slugLocked,    setSlugLocked]    = useState(isEdit)
   const [category,      setCategory]      = useState(initialData?.category ?? "WEDDING")
-  const [sortOrder,     setSortOrder]     = useState(initialData?.sortOrder ?? 0)
   const [isActive,      setIsActive]      = useState(initialData?.isActive ?? true)
   const [image1Url,     setImage1Url]     = useState(initialData?.image1Url ?? "")
   const [image2Url,     setImage2Url]     = useState(initialData?.image2Url ?? "")
@@ -84,7 +83,6 @@ export function TemplateForm({ initialData }: Props) {
           slug: slug.trim() || undefined,
           category,
           isActive,
-          sortOrder,
           image1Url: image1Url || undefined,
           image2Url: image2Url || undefined,
           displayConfig,
@@ -101,7 +99,7 @@ export function TemplateForm({ initialData }: Props) {
     } finally {
       setSaving(false)
     }
-  }, [name, slug, category, isActive, sortOrder, image1Url, image2Url, primaryColor, displayConfig, isEdit, initialData, router])
+  }, [name, slug, category, isActive, image1Url, image2Url, primaryColor, displayConfig, isEdit, initialData, router])
 
   const handleDelete = async (force = false) => {
     if (!initialData) return
@@ -222,29 +220,17 @@ export function TemplateForm({ initialData }: Props) {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className={labelCls}>Kategori</label>
-                <select
-                  className={inputCls}
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value as typeof category)}
-                >
-                  {CATEGORIES.map((c) => (
-                    <option key={c.value} value={c.value}>{c.label}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className={labelCls}>Susunan</label>
-                <input
-                  type="number"
-                  className={inputCls}
-                  value={sortOrder}
-                  onChange={(e) => setSortOrder(parseInt(e.target.value) || 0)}
-                  min={0}
-                />
-              </div>
+            <div>
+              <label className={labelCls}>Kategori</label>
+              <select
+                className={inputCls}
+                value={category}
+                onChange={(e) => setCategory(e.target.value as typeof category)}
+              >
+                {CATEGORIES.map((c) => (
+                  <option key={c.value} value={c.value}>{c.label}</option>
+                ))}
+              </select>
             </div>
 
             <div>
