@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
-import { Heart, Eye, Loader2, SlidersHorizontal, X, Search, AlertTriangle } from "lucide-react"
+import { Heart, Eye, Loader2, SlidersHorizontal, X, Search, AlertTriangle, ChevronLeft, ChevronRight } from "lucide-react"
 import Link from "next/link"
 import type { TemplateCategory } from "@/types/invitation"
 import { TemplatePhoneFrame } from "@/components/TemplatePhoneFrame"
@@ -48,6 +48,8 @@ const COLOR_SWATCHES = [
   "#ffffff", "#9c27b0", "#2196f3", "#4caf50",
   "#e91e63", "#f48fb1", "#ff9800", "#ffeb3b",
 ]
+
+const ITEMS_PER_PAGE = 12
 
 const FALLBACK_TEMPLATES: Template[] = [
   { id: "wedding-classic",  slug: "wedding-classic",  name: "Wedding Classic",   nameMs: "Perkahwinan Klasik",  category: "WEDDING",   thumbnail: "", defaultConfig: { primaryColor: "#D4AF37", bgColor: "#1a0a00", titleFont: "Playfair Display" } },
@@ -273,6 +275,7 @@ export function TemplatesClient() {
   const [creating,        setCreating]        = useState<string | null>(null)
   const [draftLimitError, setDraftLimitError] = useState(false)
   const [mobileFilter,    setMobileFilter]    = useState(false)
+  const [currentPage,     setCurrentPage]     = useState(1)
 
   useEffect(() => {
     fetch("/api/templates")
@@ -299,13 +302,13 @@ export function TemplatesClient() {
     return ""
   }
 
-  const filtered = templates.filter((t) => {
+  const filtered = useMemo(() => templates.filter((t) => {
     const themeOk = activeThemes.has("ALL") || activeThemes.has(t.category) || activeThemes.size === 0
     const colorOk = !activeColor || t.defaultConfig?.primaryColor === activeColor
     return themeOk && colorOk
-  })
+  }), [templates, activeThemes, activeColor])
 
-  const sorted = [...filtered].sort((a, b) => {
+  const sorted = useMemo(() => [...filtered].sort((a, b) => {
     if (sort === "name") return a.nameMs.localeCompare(b.nameMs)
     if (sort === "latest") {
       if (a.createdAt && b.createdAt) return b.createdAt.localeCompare(a.createdAt)
@@ -317,7 +320,27 @@ export function TemplatesClient() {
       return bLiked - aLiked
     }
     return 0
-  })
+  }), [filtered, sort, liked])
+
+  // Reset to page 1 whenever filters or sort change
+  useEffect(() => { setCurrentPage(1) }, [sort, activeThemes, activeColor])
+
+  const totalPages = Math.max(1, Math.ceil(sorted.length / ITEMS_PER_PAGE))
+  const paginated  = sorted.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
+
+  const pageNumbers = useMemo(() => {
+    const pages: (number | "…")[] = []
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i)
+    } else {
+      pages.push(1)
+      if (currentPage > 3) pages.push("…")
+      for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) pages.push(i)
+      if (currentPage < totalPages - 2) pages.push("…")
+      pages.push(totalPages)
+    }
+    return pages
+  }, [totalPages, currentPage])
 
   const handleTryNow = useCallback(async (template: Template) => {
     if (creating) return
@@ -492,7 +515,11 @@ export function TemplatesClient() {
 
           {/* Result count */}
           <p className="text-[12px] text-[var(--tx-3)] px-0.5">
-            {sorted.length} templat dijumpai
+            {sorted.length === 0 ? "0 templat dijumpai" : (
+              <>
+                {(currentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, sorted.length)} daripada {sorted.length} templat
+              </>
+            )}
           </p>
 
           {/* Grid */}
@@ -512,20 +539,61 @@ export function TemplatesClient() {
               <p className="text-sm text-[var(--tx-3)]">Cuba tukar penapis anda</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 pb-8">
-              {sorted.map((t) => (
-                <TemplateCard
-                  key={t.id}
-                  template={t}
-                  previewName={previewName}
-                  liked={liked.has(t.id)}
-                  onLike={() => handleLike(t.id)}
-                  onTryNow={() => handleTryNow(t)}
-                  onView={() => handleView(t)}
-                  creating={creating === t.id}
-                />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2">
+                {paginated.map((t) => (
+                  <TemplateCard
+                    key={t.id}
+                    template={t}
+                    previewName={previewName}
+                    liked={liked.has(t.id)}
+                    onLike={() => handleLike(t.id)}
+                    onTryNow={() => handleTryNow(t)}
+                    onView={() => handleView(t)}
+                    creating={creating === t.id}
+                  />
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-1 py-6">
+                  <button
+                    onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: "smooth" }) }}
+                    disabled={currentPage === 1}
+                    className="w-8 h-8 flex items-center justify-center rounded-full border border-[var(--bd)] text-[var(--tx-3)] hover:border-gold/40 hover:text-[var(--tx-1)] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+
+                  {pageNumbers.map((p, i) =>
+                    p === "…" ? (
+                      <span key={`ellipsis-${i}`} className="w-8 text-center text-[var(--tx-3)] text-sm">…</span>
+                    ) : (
+                      <button
+                        key={p}
+                        onClick={() => { setCurrentPage(p); window.scrollTo({ top: 0, behavior: "smooth" }) }}
+                        className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium transition-all ${
+                          currentPage === p
+                            ? "bg-gold text-ink shadow-sm shadow-gold/20"
+                            : "border border-[var(--bd)] text-[var(--tx-2)] hover:border-gold/40 hover:text-[var(--tx-1)]"
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    )
+                  )}
+
+                  <button
+                    onClick={() => { setCurrentPage(p => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: "smooth" }) }}
+                    disabled={currentPage === totalPages}
+                    className="w-8 h-8 flex items-center justify-center rounded-full border border-[var(--bd)] text-[var(--tx-3)] hover:border-gold/40 hover:text-[var(--tx-1)] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
