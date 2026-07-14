@@ -15,7 +15,7 @@ export function getYoutubeThumbnail(videoId: string): string {
   return `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`
 }
 
-export function getYoutubeEmbedUrl(videoId: string, autoplay = false, loop = true, muted = false, origin = ""): string {
+export function getYoutubeEmbedUrl(videoId: string, autoplay = false, loop = true, muted = false, origin = "", startSeconds = 0): string {
   const params = new URLSearchParams({
     enablejsapi: "1",
     autoplay: autoplay ? "1" : "0",
@@ -29,5 +29,6 @@ export function getYoutubeEmbedUrl(videoId: string, autoplay = false, loop = tru
     modestbranding: "1",
   })
   if (origin) params.set("origin", origin)
+  if (startSeconds > 0) params.set("start", String(Math.floor(startSeconds)))
   return `https://www.youtube.com/embed/${videoId}?${params.toString()}`
 }

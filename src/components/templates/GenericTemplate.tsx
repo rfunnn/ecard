@@ -20,9 +20,9 @@ function GenericSep({ color }: { color: string }) {
   )
 }
 
-interface Props { card: InvitationCardData; onRsvpOpen?: () => void; previewPage?: number }
+interface Props { card: InvitationCardData; onRsvpOpen?: () => void; previewPage?: number; revealed?: boolean }
 
-export function GenericTemplate({ card, onRsvpOpen, previewPage: p }: Props) {
+export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = true }: Props) {
   const cfg = card.wizardConfig as WizardConfig | undefined
   const { theme } = card
 

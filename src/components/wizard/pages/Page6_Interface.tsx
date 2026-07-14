@@ -22,6 +22,7 @@ export function Page6_Interface() {
             value={config.generalFont}
             onChange={(font) => updateConfig("generalFont", font)}
             className="flex-1"
+            sampleText="Dengan penuh rasa syukur"
           />
           <ColorField value={config.generalColor} onChange={(v) => updateConfig("generalColor", v)} />
         </div>
@@ -37,6 +38,7 @@ export function Page6_Interface() {
           value={config.headingFont}
           onChange={(font) => updateConfig("headingFont", font)}
           className="w-full"
+          sampleText="Walimatul Urus"
         />
         <SliderField value={config.headingSize} onChange={(v) => updateConfig("headingSize", v)} min={16} max={80} />
       </div>
@@ -68,6 +70,43 @@ export function Page6_Interface() {
           step={0.05}
           unit=" rem"
         />
+      </div>
+
+      {DIVIDER}
+
+      {/* Footer Bar */}
+      <div>
+        <FieldLabel label={isMs ? "Bar Menu (Bawah)" : "Footer Bar"} />
+        <div className="space-y-3 mt-1">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-600">{isMs ? "Warna Latar" : "Background"}</span>
+            <ColorField
+              value={config.footerBgColor || "#ffffff"}
+              onChange={(v) => updateConfig("footerBgColor", v)}
+            />
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-sm text-gray-600">{isMs ? "Kelegapan" : "Opacity"}</span>
+              <span className="text-xs text-gray-400">{config.footerBgOpacity ?? 70}%</span>
+            </div>
+            <SliderField
+              value={config.footerBgOpacity ?? 70}
+              onChange={(v) => updateConfig("footerBgOpacity", v)}
+              min={10}
+              max={100}
+              step={5}
+              unit="%"
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-600">{isMs ? "Warna Ikon" : "Icon Color"}</span>
+            <ColorField
+              value={config.footerIconColor || "#c4a265"}
+              onChange={(v) => updateConfig("footerIconColor", v)}
+            />
+          </div>
+        </div>
       </div>
     </div>
   )

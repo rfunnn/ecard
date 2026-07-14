@@ -15,6 +15,8 @@ export function Page1_Main() {
   const [templates, setTemplates] = useState<TemplateInfo[]>([])
   const [designDropdownOpen, setDesignDropdownOpen] = useState(false)
   const designDropdownRef = useRef<HTMLDivElement>(null)
+  const [scrollAnimDropdownOpen, setScrollAnimDropdownOpen] = useState(false)
+  const scrollAnimDropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!designDropdownOpen) return
@@ -24,6 +26,15 @@ export function Page1_Main() {
     document.addEventListener("mousedown", handler)
     return () => document.removeEventListener("mousedown", handler)
   }, [designDropdownOpen])
+
+  useEffect(() => {
+    if (!scrollAnimDropdownOpen) return
+    const handler = (e: MouseEvent) => {
+      if (!scrollAnimDropdownRef.current?.contains(e.target as Node)) setScrollAnimDropdownOpen(false)
+    }
+    document.addEventListener("mousedown", handler)
+    return () => document.removeEventListener("mousedown", handler)
+  }, [scrollAnimDropdownOpen])
 
   useEffect(() => {
     fetch("/api/templates")
@@ -278,40 +289,63 @@ export function Page1_Main() {
         )}
       </div>
 
-      {/* Footer Bar */}
-      <div>
-        <FieldLabel label={isMs ? "Bar Menu (Bawah)" : "Footer Bar"} />
-        <div className="space-y-3 mt-1">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">{isMs ? "Warna Latar" : "Background"}</span>
-            <ColorField
-              value={config.footerBgColor || "#ffffff"}
-              onChange={(v) => updateConfig("footerBgColor", v)}
-            />
-          </div>
+      {/* Scroll Animation */}
+      {(() => {
+        const SCROLL_ANIMS = [
+          { key: "Naik",   ms: "Naik",        en: "Rise",    msDesc: "Naik perlahan dari bawah",    enDesc: "Rises from below",      icon: "↑" },
+          { key: "Timbul", ms: "Timbul",       en: "Pop",     msDesc: "Muncul dengan kesan timbul",  enDesc: "Pops in with bounce",   icon: "✦" },
+          { key: "Turun",  ms: "Turun Masuk",  en: "Fall In", msDesc: "Jatuh masuk dari atas",       enDesc: "Falls from above",      icon: "↓" },
+          { key: "Pudar",  ms: "Pudar",        en: "Fade",    msDesc: "Pudar masuk perlahan sahaja", enDesc: "Fades in, no movement", icon: "◎" },
+        ] as const
+        const currentKey = config.scrollAnimation ?? "Naik"
+        const current = SCROLL_ANIMS.find((a) => a.key === currentKey) ?? SCROLL_ANIMS[0]
+        return (
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-sm text-gray-600">{isMs ? "Kelegapan" : "Opacity"}</span>
-              <span className="text-xs text-gray-400">{config.footerBgOpacity ?? 70}%</span>
+            <FieldLabel label={isMs ? "Animasi Skrol" : "Scroll Animation"} />
+            <div className="relative mt-1" ref={scrollAnimDropdownRef}>
+              <button
+                type="button"
+                onClick={() => setScrollAnimDropdownOpen((o) => !o)}
+                className="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-white border border-gray-200 rounded-lg text-sm hover:border-gray-300 transition-colors"
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-base leading-none shrink-0">{current.icon}</span>
+                  <div className="flex flex-col items-start min-w-0">
+                    <span className="font-medium text-gray-800">{isMs ? current.ms : current.en}</span>
+                    <span className="text-[10px] text-gray-400 truncate">{isMs ? current.msDesc : current.enDesc}</span>
+                  </div>
+                </div>
+                <ChevronDown className={`w-4 h-4 text-gray-400 shrink-0 transition-transform ${scrollAnimDropdownOpen ? "rotate-180" : ""}`} />
+              </button>
+
+              {scrollAnimDropdownOpen && (
+                <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+                  {SCROLL_ANIMS.map(({ key, ms, en, msDesc, enDesc, icon }) => {
+                    const selected = currentKey === key
+                    return (
+                      <button
+                        key={key}
+                        type="button"
+                        onClick={() => { updateConfig("scrollAnimation", key); setScrollAnimDropdownOpen(false) }}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-amber-50 ${selected ? "bg-amber-50" : ""}`}
+                      >
+                        <span className="text-base leading-none shrink-0">{icon}</span>
+                        <div className="flex flex-col min-w-0">
+                          <span className={`text-sm font-medium ${selected ? "text-amber-700" : "text-gray-800"}`}>
+                            {isMs ? ms : en}
+                          </span>
+                          <span className="text-[10px] text-gray-400">{isMs ? msDesc : enDesc}</span>
+                        </div>
+                        {selected && <span className="ml-auto text-amber-500 text-xs">✓</span>}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
             </div>
-            <SliderField
-              value={config.footerBgOpacity ?? 70}
-              onChange={(v) => updateConfig("footerBgOpacity", v)}
-              min={10}
-              max={100}
-              step={5}
-              unit="%"
-            />
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">{isMs ? "Warna Ikon" : "Icon Color"}</span>
-            <ColorField
-              value={config.footerIconColor || "#c4a265"}
-              onChange={(v) => updateConfig("footerIconColor", v)}
-            />
-          </div>
-        </div>
-      </div>
+        )
+      })()}
     </div>
   )
 }

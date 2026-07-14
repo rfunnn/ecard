@@ -9,9 +9,10 @@ interface MusicPlayerProps {
   onAnalytic?: (event: string) => void
   toggleRef?: React.MutableRefObject<(() => void) | undefined>
   onMuteChange?: (muted: boolean) => void
+  startSeconds?: number
 }
 
-export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange }: MusicPlayerProps) {
+export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange, startSeconds = 0 }: MusicPlayerProps) {
   const [isMuted, setIsMuted] = useState(true)
   const [playerReady, setPlayerReady] = useState(false)
   const [interacted, setInteracted] = useState(false)
@@ -109,7 +110,7 @@ export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange }: Musi
   if (!mounted || !youtubeVideoId || !audioEnabled) return null
 
   // autoplay=1 + mute=1 → browser allows playback; we unmute after first user gesture
-  const embedUrl = getYoutubeEmbedUrl(youtubeVideoId, true, loopAudio, true, origin)
+  const embedUrl = getYoutubeEmbedUrl(youtubeVideoId, true, loopAudio, true, origin, startSeconds)
 
   return (
     <iframe

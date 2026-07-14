@@ -145,8 +145,15 @@ export const GOOGLE_FONTS = [
   "Raleway",
 ]
 
+/** @deprecated use SCROLL_SPEED_CFG */
 export const SCROLL_SPEED_MS: Record<ScrollSpeed, number> = {
-  SLOW: 80,
-  MEDIUM: 40,
-  FAST: 20,
+  SLOW: 50,
+  MEDIUM: 25,
+  FAST: 16,
+}
+
+export const SCROLL_SPEED_CFG: Record<ScrollSpeed, { intervalMs: number; px: number }> = {
+  SLOW:   { intervalMs: 50, px: 1 },   //  ~20 px/s
+  MEDIUM: { intervalMs: 25, px: 2 },   //  ~80 px/s
+  FAST:   { intervalMs: 16, px: 4 },   // ~250 px/s
 }

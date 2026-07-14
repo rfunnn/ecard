@@ -142,6 +142,7 @@ export default async function InvitePage({ params, searchParams }: Props) {
       footerBgColor: "",
       footerBgOpacity: 70,
       footerIconColor: "",
+      scrollAnimation: "Naik",
       eventType: "Walimatul Urus",
       eventTypeSize: 13,
       displayName: "Ahmad Faris & Nur Aisyah",

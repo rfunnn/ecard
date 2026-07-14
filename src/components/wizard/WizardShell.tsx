@@ -189,6 +189,7 @@ function buildCardPreview(
     scrollConfig: {
       ...initialCard.scrollConfig,
       autoScroll: config.scrollDelay > 0,
+      speed: config.scrollDelay <= 2 ? "FAST" : config.scrollDelay <= 5 ? "MEDIUM" : "SLOW",
     },
   }
 }

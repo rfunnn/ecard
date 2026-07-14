@@ -9,7 +9,7 @@ import { ActionBar } from "./ActionBar"
 import { RSVPModal } from "./RSVPModal"
 import { EffectAnimation } from "./EffectAnimation"
 import type { InvitationCardData } from "@/types/invitation"
-import { SCROLL_SPEED_MS } from "@/types/invitation"
+import { SCROLL_SPEED_CFG } from "@/types/invitation"
 import type { WizardConfig } from "@/types/config"
 import { ChevronLeft } from "lucide-react"
 import { OpeningGate } from "./OpeningGate"
@@ -22,7 +22,7 @@ interface InviteClientProps {
 
 export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
   const router = useRouter()
-  const scrollRef = useRef<HTMLDivElement | undefined>(undefined)
+  const scrollRef = useRef<HTMLDivElement | null>(null)
   const scrollIntervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined)
   const isPausedRef = useRef<boolean>(false)
   const musicToggleRef = useRef<(() => void) | undefined>(undefined)
@@ -48,6 +48,11 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
   }, [fireAnalytic])
 
   const wCfg            = card.wizardConfig as WizardConfig | undefined
+  const musicStartSeconds = (() => {
+    const t = wCfg?.musicStartTime ?? "00:00"
+    const [m, s] = t.split(":").map(Number)
+    return (m || 0) * 60 + (s || 0)
+  })()
   const effectAnimation = wCfg?.effectAnimation   ?? "Tiada"
   const effectColor     = wCfg?.effectColor       ?? "#ffffff"
   const effectSizeScale = (wCfg?.effectSize ?? 100) / 100
@@ -64,15 +69,14 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
     const el = scrollRef.current
     if (!el) return
 
-    const speed = SCROLL_SPEED_MS[cfg.speed]
+    const { intervalMs, px } = SCROLL_SPEED_CFG[cfg.speed ?? "MEDIUM"]
+    const startDelayMs = ((card.wizardConfig as { scrollDelay?: number } | undefined)?.scrollDelay ?? 3.5) * 1000
 
     const scroll = () => {
       if (isPausedRef.current) return
       if (el.scrollTop + el.clientHeight >= el.scrollHeight - 2) return
-      el.scrollTop += 1
+      el.scrollTop += px
     }
-
-    scrollIntervalRef.current = setInterval(scroll, speed)
 
     const handleInteraction = () => {
       if (!cfg.pauseOnHover) return
@@ -83,12 +87,17 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
     el.addEventListener("touchstart", handleInteraction, { passive: true })
     el.addEventListener("mousedown", handleInteraction)
 
+    const startTimeout = setTimeout(() => {
+      scrollIntervalRef.current = setInterval(scroll, intervalMs)
+    }, startDelayMs)
+
     return () => {
+      clearTimeout(startTimeout)
       if (scrollIntervalRef.current) clearInterval(scrollIntervalRef.current)
       el.removeEventListener("touchstart", handleInteraction)
       el.removeEventListener("mousedown", handleInteraction)
     }
-  }, [card.scrollConfig, gateOpen])
+  }, [card.scrollConfig, card.wizardConfig, gateOpen])
 
   const image1 = card.template.image1Url
   const image2 = card.template.image2Url
@@ -193,7 +202,7 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
 
           {/* ── Scrollable content layer ── */}
           <div
-            ref={(el) => { if (el) scrollRef.current = el }}
+            ref={(el) => { scrollRef.current = el }}
             className="absolute inset-0 overflow-y-auto overscroll-none z-10"
             style={{ scrollbarWidth: "none" }}
           >
@@ -219,13 +228,14 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
 
             {/* ── Template content — overlaid on image1 (page 1), then on image2 (page 2+) ── */}
             <div className="relative z-10">
-              <TemplateRenderer card={card} onRsvpOpen={() => { fireAnalytic("RSVP_OPEN"); setRsvpOpen(true) }} />
+              <TemplateRenderer card={card} onRsvpOpen={() => { fireAnalytic("RSVP_OPEN"); setRsvpOpen(true) }} revealed={!gateOpen} scrollContainerRef={scrollRef} />
 
               {hasMusicPlayer && (
                 <MusicPlayer
                   media={card.media}
                   onAnalytic={fireAnalytic}
                   toggleRef={musicToggleRef}
+                  startSeconds={musicStartSeconds}
                   onMuteChange={setIsMusicMuted}
                 />
               )}

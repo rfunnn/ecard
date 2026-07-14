@@ -1,6 +1,6 @@
 ﻿"use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, type RefObject } from "react"
 import { motion } from "framer-motion"
 import { MapPin, Navigation, Calendar } from "lucide-react"
 import type { InvitationCardData } from "@/types/invitation"
@@ -27,9 +27,45 @@ function WeddingDivider({ color }: { color: string }) {
   )
 }
 
-interface Props { card: InvitationCardData; onRsvpOpen?: () => void; previewPage?: number }
+// ── Scroll-animation helper ───────────────────────────────────────────────────
+// Returns { initial, target, transition } for a given scrollAnimation key.
+// Used for both animate (cover, gated on `revealed`) and whileInView (sections below fold).
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function sectionAnim(type = "Naik"): { initial: any; target: any; transition: any } {
+  switch (type) {
+    case "Timbul": return {
+      initial:    { opacity: 0, scale: 0.82, y: 32 },
+      target:     { opacity: 1, scale: 1,    y: 0  },
+      transition: { type: "spring", stiffness: 55, damping: 15 },
+    }
+    case "Turun": return {
+      initial:    { opacity: 0, y: -40 },
+      target:     { opacity: 1, y: 0   },
+      transition: { duration: 0.72, ease: [0.34, 1.4, 0.64, 1] },
+    }
+    case "Pudar": return {
+      initial:    { opacity: 0 },
+      target:     { opacity: 1 },
+      transition: { duration: 1.1 },
+    }
+    default: // "Naik"
+      return {
+        initial:    { opacity: 0, y: 55 },
+        target:     { opacity: 1, y: 0  },
+        transition: { duration: 0.85, ease: [0.22, 1, 0.36, 1] },
+      }
+  }
+}
 
-export function WeddingTemplate({ card, onRsvpOpen, previewPage: p }: Props) {
+interface Props {
+  card: InvitationCardData
+  onRsvpOpen?: () => void
+  previewPage?: number
+  revealed?: boolean
+  scrollContainerRef?: RefObject<HTMLDivElement | null>
+}
+
+export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = true, scrollContainerRef }: Props) {
   const cfg = card.wizardConfig as WizardConfig | undefined
   const { theme } = card
 
@@ -99,6 +135,9 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p }: Props) {
   const formatTime = (d: Date) =>
     d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })
 
+  // Scroll animation — derived once and reused for both cover (animate) and sections (whileInView)
+  const anim = sectionAnim(cfg?.scrollAnimation)
+
   // Section visibility — when previewPage is set only the relevant sections render.
   const all          = !p || p === 12
   const showCover      = all || [1, 2, 6, 8, 9, 10].includes(p!)
@@ -114,9 +153,9 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p }: Props) {
 
       {/* â•â• SECTION 1 Â· COVER (Config Page 2) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {showCover && <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.2 }}
+        initial={anim.initial}
+        animate={revealed ? anim.target : anim.initial}
+        transition={anim.transition}
         className="min-h-screen flex flex-col items-center justify-center text-center py-10"
       >
         {/* event type */}
@@ -133,7 +172,8 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p }: Props) {
         <div className="mb-6">
           {groomName && (
             <motion.div
-              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0 }}
+              animate={revealed ? { opacity: 1 } : { opacity: 0 }}
               transition={{ delay: 0.3, duration: 0.8 }}
               className={`${displayFont} leading-none`}
               style={{ fontSize: `${displaySize}px`, color: displayColor }}
@@ -143,7 +183,8 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p }: Props) {
           )}
           {(groomName || brideName) && (
             <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              initial={{ opacity: 0 }}
+              animate={revealed ? { opacity: 1 } : { opacity: 0 }}
               transition={{ delay: 0.6, duration: 0.8 }}
               className={`${bodyFont} my-4 opacity-40`}
               style={{ color: bodyColor, fontSize: "22px" }}
@@ -153,7 +194,8 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p }: Props) {
           )}
           {brideName && (
             <motion.div
-              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0 }}
+              animate={revealed ? { opacity: 1 } : { opacity: 0 }}
               transition={{ delay: 0.9, duration: 0.8 }}
               className={`${displayFont} leading-none`}
               style={{ fontSize: `${displaySize}px`, color: displayColor }}
@@ -166,7 +208,8 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p }: Props) {
         {/* day & date text */}
         {cfg?.dayAndDate && (
           <motion.p
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            initial={{ opacity: 0 }}
+            animate={revealed ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 1.2, duration: 0.8 }}
             className={`${bodyFont} mt-6 opacity-70`}
             style={{ color: bodyColor, fontSize: `${cfg.dayAndDateSize ?? 18}px`, whiteSpace: "pre-line" }}
@@ -188,7 +231,11 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p }: Props) {
 
       {/* â•â• SECTION 2 Â· INVITATION TEXT (Config Page 3) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {showInvitation && (cfg?.openingSpeech || cfg?.organizer1?.name || card.description || cfg?.fullNames) && (
-        <div className="pb-3 text-center">
+        <motion.div
+          initial={anim.initial} whileInView={anim.target}
+          viewport={{ root: scrollContainerRef, once: true, margin: "0px 0px -200px 0px" }} transition={anim.transition}
+          className="pb-3 text-center"
+        >
           <WeddingDivider color={bodyColor} />
 
           {/* opening speech / bismillah */}
@@ -249,12 +296,16 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p }: Props) {
               {multiLine(cfg.fullNames)}
             </div>
           )}
-        </div>
+        </motion.div>
       )}
 
       {/* â•â• SECTION 3 Â· VENUE + DATE + DRESS CODE (Config Page 4) â•â•â•â•â•â•â• */}
       {showVenueDate && (seg.venue || seg.date) && (venueName || address || startDT) && (
-        <div className="pb-4 text-center">
+        <motion.div
+          initial={anim.initial} whileInView={anim.target}
+          viewport={{ root: scrollContainerRef, once: true, margin: "0px 0px -200px 0px" }} transition={anim.transition}
+          className="pb-4 text-center"
+        >
           <WeddingDivider color={bodyColor} />
 
           {/* TEMPAT */}
@@ -356,12 +407,16 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p }: Props) {
               Simpan Tarikh
             </a>
           )}
-        </div>
+        </motion.div>
       )}
 
       {/* â•â• SECTION 4 Â· EVENT PROGRAM (Config Page 5) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {showProgramme && seg.eventProgram && cfg?.eventProgram && (
-        <div className="pb-4">
+        <motion.div
+          initial={anim.initial} whileInView={anim.target}
+          viewport={{ root: scrollContainerRef, once: true, margin: "0px 0px -200px 0px" }} transition={anim.transition}
+          className="pb-4"
+        >
           <WeddingDivider color={bodyColor} />
           <p
             className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-45 text-center mb-4`}
@@ -387,12 +442,16 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p }: Props) {
               </div>
             ))}
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* â•â• SECTION 5 Â· PRAYER + COUNTDOWN â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {showCountdown && (cfg?.additionalInfo2 || (seg.countdown && cfg?.startDateTime && !eventPassed)) && (
-        <div className="pb-4 text-center">
+        <motion.div
+          initial={anim.initial} whileInView={anim.target}
+          viewport={{ root: scrollContainerRef, once: true, margin: "0px 0px -200px 0px" }} transition={anim.transition}
+          className="pb-4 text-center"
+        >
           <WeddingDivider color={bodyColor} />
 
           {/* prayer / dua */}
@@ -439,13 +498,17 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p }: Props) {
               </div>
             </div>
           )}
-        </div>
+        </motion.div>
       )}
 
       {/* â•â• SECTION 6 Â· WISHES â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {/* ══ KEHADIRAN CTA ════════════════════════════════════════════════════ */}
       {showAttendance && seg.attendance && (
-        <div className="pb-4 text-center">
+        <motion.div
+          initial={anim.initial} whileInView={anim.target}
+          viewport={{ root: scrollContainerRef, once: true, margin: "0px 0px -200px 0px" }} transition={anim.transition}
+          className="pb-4 text-center"
+        >
           <WeddingDivider color={bodyColor} />
           <p
             className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-45 mb-6`}
@@ -473,12 +536,16 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p }: Props) {
               </button>
             )}
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* ══ UCAPAN WALL ══════════════════════════════════════════════════════ */}
       {showAttendance && seg.wishes && wishes.length > 0 && (
-        <div className="pb-4 text-center">
+        <motion.div
+          initial={anim.initial} whileInView={anim.target}
+          viewport={{ root: scrollContainerRef, once: true, margin: "0px 0px -200px 0px" }} transition={anim.transition}
+          className="pb-4 text-center"
+        >
           <WeddingDivider color={bodyColor} />
           <p
             className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-45 mb-5`}
@@ -492,7 +559,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p }: Props) {
                 key={i}
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                viewport={{ root: scrollContainerRef, once: true }}
                 transition={{ delay: i * 0.05 }}
               >
                 <p className={`${orgFont} text-base mb-1`} style={{ color: displayColor }}>
@@ -507,12 +574,16 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p }: Props) {
               </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* ══ PHOTO GALLERY ════════════════════════════════════════════════════ */}
       {showPhotos && seg.photoGallery && card.photoItems?.length > 0 && (
-        <div className="pb-6 text-center px-2">
+        <motion.div
+          initial={anim.initial} whileInView={anim.target}
+          viewport={{ root: scrollContainerRef, once: true, margin: "0px 0px -200px 0px" }} transition={anim.transition}
+          className="pb-6 text-center px-2"
+        >
           <WeddingDivider color={bodyColor} />
           <PhotoGallery
             photos={card.photoItems}
@@ -521,7 +592,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p }: Props) {
             bodyFont={bodyFont}
             isMs={card.language === "ms"}
           />
-        </div>
+        </motion.div>
       )}
 
       {/* footer spacer clears action bar */}

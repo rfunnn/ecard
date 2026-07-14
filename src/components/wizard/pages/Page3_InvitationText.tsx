@@ -125,6 +125,7 @@ export function Page3_InvitationText() {
             value={config.fullNamesFont}
             onChange={(font) => updateConfig("fullNamesFont", font)}
             className="w-full"
+            sampleText={config.fullNames?.split("\n")[0] || "Ahmad bin Ali & Nurul binti Hassan"}
           />
         </div>
         <SliderField value={config.fullNamesSize} onChange={(v) => updateConfig("fullNamesSize", v)} min={8} max={48} />

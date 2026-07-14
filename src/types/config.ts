@@ -61,6 +61,7 @@ export interface WizardConfig {
   footerBgColor: string
   footerBgOpacity: number
   footerIconColor: string
+  scrollAnimation: string
 
   // Page 2 — Muka Depan
   eventType: string
@@ -145,6 +146,7 @@ export const DEFAULT_WIZARD_CONFIG: WizardConfig = {
   footerBgColor: "",
   footerBgOpacity: 70,
   footerIconColor: "",
+  scrollAnimation: "Naik",
 
   eventType: "Walimatul Urus",
   eventTypeSize: 14,
