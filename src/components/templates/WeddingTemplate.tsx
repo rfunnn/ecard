@@ -431,15 +431,12 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
           </div>
 
           {/* Bordered programme list */}
-          <div
-            className="max-w-xs mx-auto rounded-sm overflow-hidden"
-            style={{ border: `1px solid ${bodyColor}60`, backgroundColor: `${bodyColor}18` }}
-          >
-            {parseProgramText(cfg.eventProgram).map((item, i, arr) => (
+          <div className="max-w-xs mx-auto space-y-2">
+            {parseProgramText(cfg.eventProgram).map((item, i) => (
               <div
                 key={i}
-                className="flex justify-between items-center gap-3 px-4 py-3"
-                style={{ borderBottom: i < arr.length - 1 ? `1px solid ${bodyColor}40` : "none" }}
+                className="flex justify-between items-center gap-3 px-4 py-3 rounded-sm"
+                style={{ border: `1px solid ${bodyColor}60`, backgroundColor: `${bodyColor}18` }}
               >
                 <span
                   className={`${bodyFont} opacity-90`}

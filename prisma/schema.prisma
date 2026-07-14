@@ -145,17 +145,24 @@ model ScrollConfig {
 }
 
 model RSVP {
-  id         String           @id @default(cuid())
-  cardId     String
-  card       InvitationCard   @relation(fields: [cardId], references: [id])
+  id             String           @id @default(cuid())
+  cardId         String
+  card           InvitationCard   @relation(fields: [cardId], references: [id])
 
-  guestName  String
-  attendance AttendanceStatus
-  guestCount Int              @default(1)
-  message    String?
-  phone      String?
+  guestName      String
+  attendance     AttendanceStatus
+  guestCount     Int              @default(1)
+  childrenCount  Int?
+  message        String?
+  phone          String?
+  email          String?
+  address        String?
+  company        String?
+  jobTitle       String?
+  vehiclePlate   String?
+  notes          String?
 
-  createdAt  DateTime         @default(now())
+  createdAt      DateTime         @default(now())
 
   @@index([cardId, createdAt])
 }

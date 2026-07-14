@@ -94,6 +94,7 @@ export function Page3_InvitationText() {
         value={config.organizerFont}
         onChange={(font) => updateConfig("organizerFont", font)}
         className="w-full"
+        sampleText={config.organizer1.name?.split("\n")[0] || "Azman bin Ahmad & Norazrina binti Jaalam"}
       />
       <SliderField value={config.organizerSize} onChange={(v) => updateConfig("organizerSize", v)} min={8} max={48} />
 

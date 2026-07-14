@@ -177,26 +177,6 @@ export function Page7_RSVP() {
         </div>
       </div>
 
-      <div className="border-t border-gray-100" />
-
-      {/* Slots */}
-      <div>
-        <FieldLabel label={isMs ? "Slot / Kategori" : "Slots / Categories"} required />
-        <div className="flex gap-6 mt-1">
-          {([true, false] as const).map((val) => (
-            <label key={String(val)} className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="radio"
-                name="hasSlots"
-                checked={rsvp.hasSlots === val}
-                onChange={() => updateRSVP({ hasSlots: val })}
-                className="accent-[#2563eb]"
-              />
-              <span className="text-sm text-gray-700">{val ? (isMs ? "Ada" : "Yes") : (isMs ? "Tiada" : "None")}</span>
-            </label>
-          ))}
-        </div>
-      </div>
     </div>
   )
 }

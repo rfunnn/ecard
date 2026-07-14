@@ -41,11 +41,18 @@ export async function POST(
     }
 
     const rsvpSchema = z.object({
-      guestName: z.string().min(1).max(100),
-      attendance: z.enum(["ATTENDING", "NOT_ATTENDING", "MAYBE"]),
-      guestCount: z.number().int().min(1).max(guestLimitPerRSVP).default(1),
-      message: z.string().max(500).optional(),
-      phone: z.string().max(20).optional(),
+      guestName:     z.string().min(1).max(100),
+      attendance:    z.enum(["ATTENDING", "NOT_ATTENDING", "MAYBE"]),
+      guestCount:    z.number().int().min(1).max(guestLimitPerRSVP).default(1),
+      childrenCount: z.number().int().min(0).max(50).optional(),
+      message:       z.string().max(500).optional(),
+      phone:         z.string().max(20).optional(),
+      email:         z.string().max(200).optional(),
+      address:       z.string().max(300).optional(),
+      company:       z.string().max(150).optional(),
+      jobTitle:      z.string().max(100).optional(),
+      vehiclePlate:  z.string().max(20).optional(),
+      notes:         z.string().max(500).optional(),
     })
 
     const body = await req.json()

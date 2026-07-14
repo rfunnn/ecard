@@ -9,11 +9,18 @@ import type { WizardConfig } from "@/types/config"
 import { InviteBottomSheet } from "./InviteBottomSheet"
 
 interface FormData {
-  guestName: string
-  attendance: "ATTENDING" | "NOT_ATTENDING" | "MAYBE"
-  guestCount: number
-  message?: string
-  phone?: string
+  guestName:     string
+  attendance:    "ATTENDING" | "NOT_ATTENDING" | "MAYBE"
+  guestCount:    number
+  childrenCount?: number
+  message?:      string
+  phone?:        string
+  email?:        string
+  address?:      string
+  company?:      string
+  jobTitle?:     string
+  vehiclePlate?: string
+  notes?:        string
 }
 
 interface RSVPModalProps {
@@ -97,13 +104,21 @@ export function RSVPModal({ isOpen, onClose, card, onAnalytic, contained }: RSVP
   const guestLimitPerRSVP = rsvpCfg?.guestLimitPerRSVP ?? 5
   const rsvpMode = rsvpCfg?.mode ?? "RSVP_WISHES"
   const isWishesOnly = rsvpMode === "WISHES_ONLY"
-  const showPhone = rsvpCfg?.showFields?.phone ?? true
-  const showWishes = rsvpCfg?.showFields?.wishes ?? true
+  const sf = rsvpCfg?.showFields
+  const showPhone        = sf?.phone        ?? true
+  const showWishes       = sf?.wishes       ?? true
+  const showEmail        = sf?.email        ?? false
+  const showAddress      = sf?.address      ?? false
+  const showCompany      = sf?.company      ?? false
+  const showJobTitle     = sf?.jobTitle     ?? false
+  const showVehiclePlate = sf?.vehiclePlate ?? false
+  const showNotes        = sf?.notes        ?? false
+  const separateChildren = rsvpCfg?.separateChildren ?? false
   const isClosed = !!(rsvpCfg?.closeDate && new Date(rsvpCfg.closeDate) < new Date())
   const hasEventDate = !!(wCfg?.startDateTime || card.eventDate)
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<FormData>({
-    defaultValues: { attendance: "ATTENDING", guestCount: 1 },
+    defaultValues: { attendance: "ATTENDING", guestCount: 1, childrenCount: 0 },
   })
 
   const attendance = watch("attendance")
@@ -305,27 +320,46 @@ export function RSVPModal({ isOpen, onClose, card, onAnalytic, contained }: RSVP
                         </div>
 
                         {attendance !== "NOT_ATTENDING" && (
-                          <div>
-                            <label style={labelStyle}>
-                              {lang ? "Bilangan Tetamu" : "Number of Guests"}
-                              <span style={{ opacity: 0.6 }}> (max {guestLimitPerRSVP})</span>
-                            </label>
-                            <input
-                              type="number"
-                              min={1}
-                              max={guestLimitPerRSVP}
-                              style={inputStyle}
-                              {...register("guestCount", {
-                                min: { value: 1, message: lang ? "Minimum 1 tetamu" : "Minimum 1 guest" },
-                                max: { value: guestLimitPerRSVP, message: lang ? `Maksimum ${guestLimitPerRSVP} tetamu` : `Maximum ${guestLimitPerRSVP} guests` },
-                              })}
-                            />
-                            {errors.guestCount && (
-                              <p className="text-[11px] mt-1" style={{ color: "#ef4444" }}>
-                                {errors.guestCount.message}
-                              </p>
+                          <>
+                            <div>
+                              <label style={labelStyle}>
+                                {separateChildren
+                                  ? (lang ? "Bilangan Tetamu Dewasa" : "Number of Adults")
+                                  : (lang ? "Bilangan Tetamu" : "Number of Guests")}
+                                <span style={{ opacity: 0.6 }}> (max {guestLimitPerRSVP})</span>
+                              </label>
+                              <input
+                                type="number"
+                                min={1}
+                                max={guestLimitPerRSVP}
+                                style={inputStyle}
+                                {...register("guestCount", {
+                                  min: { value: 1, message: lang ? "Minimum 1 tetamu" : "Minimum 1 guest" },
+                                  max: { value: guestLimitPerRSVP, message: lang ? `Maksimum ${guestLimitPerRSVP} tetamu` : `Maximum ${guestLimitPerRSVP} guests` },
+                                })}
+                              />
+                              {errors.guestCount && (
+                                <p className="text-[11px] mt-1" style={{ color: "#ef4444" }}>
+                                  {errors.guestCount.message}
+                                </p>
+                              )}
+                            </div>
+
+                            {separateChildren && (
+                              <div>
+                                <label style={labelStyle}>
+                                  {lang ? "Bilangan Kanak-kanak (bawah 12 tahun)" : "Children Count (under 12)"}
+                                </label>
+                                <input
+                                  type="number"
+                                  min={0}
+                                  max={50}
+                                  style={inputStyle}
+                                  {...register("childrenCount", { min: 0, max: 50 })}
+                                />
+                              </div>
                             )}
-                          </div>
+                          </>
                         )}
                       </>
                     )}
@@ -337,6 +371,75 @@ export function RSVPModal({ isOpen, onClose, card, onAnalytic, contained }: RSVP
                           style={inputStyle}
                           placeholder="+601X-XXXXXXX"
                           {...register("phone")}
+                        />
+                      </div>
+                    )}
+
+                    {showEmail && (
+                      <div>
+                        <label style={labelStyle}>{lang ? "Alamat Emel (pilihan)" : "Email Address (optional)"}</label>
+                        <input
+                          type="email"
+                          style={inputStyle}
+                          placeholder="example@email.com"
+                          {...register("email")}
+                        />
+                      </div>
+                    )}
+
+                    {showAddress && (
+                      <div>
+                        <label style={labelStyle}>{lang ? "Alamat Rumah (pilihan)" : "Home Address (optional)"}</label>
+                        <textarea
+                          rows={2}
+                          style={{ ...inputStyle, resize: "none" }}
+                          placeholder={lang ? "No. 12, Jalan Mawar, 50000 Kuala Lumpur" : "123 Main St, City"}
+                          {...register("address")}
+                        />
+                      </div>
+                    )}
+
+                    {showCompany && (
+                      <div>
+                        <label style={labelStyle}>{lang ? "Nama Syarikat (pilihan)" : "Company Name (optional)"}</label>
+                        <input
+                          style={inputStyle}
+                          placeholder={lang ? "Syarikat ABC Sdn Bhd" : "ABC Company"}
+                          {...register("company")}
+                        />
+                      </div>
+                    )}
+
+                    {showJobTitle && (
+                      <div>
+                        <label style={labelStyle}>{lang ? "Jawatan (pilihan)" : "Job Title (optional)"}</label>
+                        <input
+                          style={inputStyle}
+                          placeholder={lang ? "Pengurus Kanan" : "Senior Manager"}
+                          {...register("jobTitle")}
+                        />
+                      </div>
+                    )}
+
+                    {showVehiclePlate && (
+                      <div>
+                        <label style={labelStyle}>{lang ? "No. Plat Kenderaan (pilihan)" : "Vehicle Plate No. (optional)"}</label>
+                        <input
+                          style={inputStyle}
+                          placeholder="WXX 1234"
+                          {...register("vehiclePlate")}
+                        />
+                      </div>
+                    )}
+
+                    {showNotes && (
+                      <div>
+                        <label style={labelStyle}>{lang ? "Catatan (pilihan)" : "Notes (optional)"}</label>
+                        <textarea
+                          rows={2}
+                          style={{ ...inputStyle, resize: "none" }}
+                          placeholder={lang ? "Sebarang maklumat tambahan..." : "Any additional info..."}
+                          {...register("notes")}
                         />
                       </div>
                     )}

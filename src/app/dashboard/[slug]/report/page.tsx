@@ -62,20 +62,29 @@ export default async function ReportPage({ params }: Props) {
   const attending    = rsvps.filter(r => r.attendance === "ATTENDING")
   const maybe        = rsvps.filter(r => r.attendance === "MAYBE")
   const notAttending = rsvps.filter(r => r.attendance === "NOT_ATTENDING")
-  const totalGuests  = attending.reduce((s, r) => s + r.guestCount, 0)
-                     + maybe.reduce((s, r) => s + r.guestCount, 0)
+  const totalGuests    = attending.reduce((s, r) => s + r.guestCount, 0)
+                       + maybe.reduce((s, r) => s + r.guestCount, 0)
+  const totalChildren  = attending.reduce((s, r) => s + (r.childrenCount ?? 0), 0)
+                       + maybe.reduce((s, r) => s + (r.childrenCount ?? 0), 0)
 
   const analytics: Record<string, number> = {}
   for (const row of analyticRows) analytics[row.event] = row._count
 
   const serialised = rsvps.map(r => ({
-    id:         r.id,
-    guestName:  r.guestName,
-    attendance: r.attendance,
-    guestCount: r.guestCount,
-    message:    r.message ?? null,
-    phone:      r.phone   ?? null,
-    createdAt:  r.createdAt.toISOString(),
+    id:            r.id,
+    guestName:     r.guestName,
+    attendance:    r.attendance,
+    guestCount:    r.guestCount,
+    childrenCount: r.childrenCount ?? null,
+    message:       r.message      ?? null,
+    phone:         r.phone        ?? null,
+    email:         r.email        ?? null,
+    address:       r.address      ?? null,
+    company:       r.company      ?? null,
+    jobTitle:      r.jobTitle     ?? null,
+    vehiclePlate:  r.vehiclePlate ?? null,
+    notes:         r.notes        ?? null,
+    createdAt:     r.createdAt.toISOString(),
   }))
 
   return (
@@ -90,6 +99,7 @@ export default async function ReportPage({ params }: Props) {
       rsvps={serialised}
       counts={{ attending: attending.length, maybe: maybe.length, notAttending: notAttending.length, totalGuests }}
       analytics={analytics}
+      totalChildren={totalChildren}
     />
   )
 }

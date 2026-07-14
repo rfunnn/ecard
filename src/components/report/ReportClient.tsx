@@ -9,13 +9,20 @@ import {
 } from "lucide-react"
 
 interface RSVP {
-  id: string
-  guestName: string
-  attendance: "ATTENDING" | "NOT_ATTENDING" | "MAYBE"
-  guestCount: number
-  message: string | null
-  phone: string | null
-  createdAt: string
+  id:            string
+  guestName:     string
+  attendance:    "ATTENDING" | "NOT_ATTENDING" | "MAYBE"
+  guestCount:    number
+  childrenCount: number | null
+  message:       string | null
+  phone:         string | null
+  email:         string | null
+  address:       string | null
+  company:       string | null
+  jobTitle:      string | null
+  vehiclePlate:  string | null
+  notes:         string | null
+  createdAt:     string
 }
 
 interface Props {
@@ -29,6 +36,7 @@ interface Props {
   rsvps: RSVP[]
   counts: { attending: number; maybe: number; notAttending: number; totalGuests: number }
   analytics: Record<string, number>
+  totalChildren: number
 }
 
 const ATTENDANCE_LABEL: Record<string, string> = {
@@ -61,7 +69,7 @@ function AttendanceBadge({ status, lang }: { status: string; lang: boolean }) {
 
 export function ReportClient({
   slug, displayName, eventDate, primaryColor, language,
-  viewCount, rsvps, counts, analytics,
+  viewCount, rsvps, counts, analytics, totalChildren,
 }: Props) {
   const lang = language === "ms"
   const [search,     setSearch]     = useState("")
@@ -78,17 +86,25 @@ export function ReportClient({
   const wishes = useMemo(() => rsvps.filter(r => r.message?.trim()), [rsvps])
 
   const exportCsv = useCallback(() => {
-    const header = ["Name", "Attendance", "Guests", "Phone", "Message", "Date"]
+    const q = (s: string | null) => `"${(s ?? "").replace(/"/g, '""')}"`
+    const header = ["Name","Attendance","Adults","Children","Phone","Email","Address","Company","Job Title","Vehicle Plate","Notes","Message","Date"]
     const rows = rsvps.map(r => [
-      `"${r.guestName.replace(/"/g, '""')}"`,
+      q(r.guestName),
       r.attendance,
       String(r.guestCount),
-      r.phone ?? "",
-      `"${(r.message ?? "").replace(/"/g, '""')}"`,
+      String(r.childrenCount ?? ""),
+      r.phone        ?? "",
+      r.email        ?? "",
+      q(r.address),
+      q(r.company),
+      q(r.jobTitle),
+      r.vehiclePlate ?? "",
+      q(r.notes),
+      q(r.message),
       new Date(r.createdAt).toLocaleDateString("en-MY"),
     ])
     const csv = [header, ...rows].map(r => r.join(",")).join("\n")
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" })
+    const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" })
     const url  = URL.createObjectURL(blob)
     const a    = document.createElement("a")
     a.href     = url
@@ -145,7 +161,12 @@ export function ReportClient({
         {/* ── Stats ── */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {statCard(lang ? "Jumlah Paparan" : "Total Views", viewCount)}
-          {statCard(lang ? "Hadir" : "Attending", counts.attending, `+${counts.totalGuests} ${lang ? "tetamu" : "guests"}`, "text-emerald-700")}
+          {statCard(
+            lang ? "Hadir" : "Attending",
+            counts.attending,
+            `+${counts.totalGuests} ${lang ? "dewasa" : "adults"}${totalChildren > 0 ? `, ${totalChildren} ${lang ? "kanak-kanak" : "children"}` : ""}`,
+            "text-emerald-700"
+          )}
           {statCard(lang ? "Mungkin" : "Maybe", counts.maybe, undefined, "text-amber-700")}
           {statCard(lang ? "Tidak Hadir" : "Not Attending", counts.notAttending, undefined, "text-red-600")}
         </div>
@@ -245,15 +266,39 @@ export function ReportClient({
                         <AttendanceBadge status={r.attendance} lang={lang} />
                         {r.attendance !== "NOT_ATTENDING" && (
                           <span className="text-[11px] text-gray-400 flex items-center gap-0.5">
-                            <Users className="w-3 h-3" />{r.guestCount}
+                            <Users className="w-3 h-3" />
+                            {r.guestCount}{lang ? " dewasa" : " adult(s)"}
+                            {r.childrenCount != null && r.childrenCount > 0 && (
+                              <>, {r.childrenCount}{lang ? " kanak-kanak" : " child(ren)"}</>
+                            )}
                           </span>
                         )}
                       </div>
-                      {r.phone && (
-                        <p className="text-xs text-gray-400 flex items-center gap-1 mb-0.5">
-                          <Phone className="w-3 h-3" />{r.phone}
-                        </p>
-                      )}
+                      <div className="space-y-0.5">
+                        {r.phone && (
+                          <p className="text-xs text-gray-400 flex items-center gap-1">
+                            <Phone className="w-3 h-3 shrink-0" />{r.phone}
+                          </p>
+                        )}
+                        {r.email && (
+                          <p className="text-xs text-gray-400 truncate">✉ {r.email}</p>
+                        )}
+                        {r.company && (
+                          <p className="text-xs text-gray-400 truncate">🏢 {r.company}{r.jobTitle ? ` · ${r.jobTitle}` : ""}</p>
+                        )}
+                        {!r.company && r.jobTitle && (
+                          <p className="text-xs text-gray-400 truncate">💼 {r.jobTitle}</p>
+                        )}
+                        {r.vehiclePlate && (
+                          <p className="text-xs text-gray-400">🚗 {r.vehiclePlate}</p>
+                        )}
+                        {r.address && (
+                          <p className="text-xs text-gray-400 truncate">📍 {r.address}</p>
+                        )}
+                        {r.notes && (
+                          <p className="text-xs text-gray-400 italic truncate">📝 {r.notes}</p>
+                        )}
+                      </div>
                       {r.message && (
                         <p className="text-xs text-gray-500 italic mt-1 leading-relaxed">
                           &ldquo;{r.message}&rdquo;

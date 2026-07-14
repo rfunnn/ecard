@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
+import { ChevronDown } from "lucide-react"
 
 interface Props {
   value: string
@@ -21,6 +22,24 @@ const TOOLBAR_BUTTONS = [
   { cmd: "justifyRight",        label: "➡" },
 ]
 
+const FONT_FAMILIES = [
+  { label: "Lato",          cssVar: "var(--font-lato)",        cls: "font-lato" },
+  { label: "Montserrat",    cssVar: "var(--font-montserrat)",   cls: "font-montserrat" },
+  { label: "Raleway",       cssVar: "var(--font-raleway)",      cls: "font-raleway" },
+  { label: "Open Sans",     cssVar: "var(--font-opensans)",     cls: "font-opensans" },
+  { label: "Cormorant",     cssVar: "var(--font-cormorant)",    cls: "font-cormorant" },
+  { label: "Cinzel",        cssVar: "var(--font-cinzel)",       cls: "font-cinzel" },
+  { label: "Playfair",      cssVar: "var(--font-playfair)",     cls: "font-playfair" },
+  { label: "Garamond",      cssVar: "var(--font-garamond)",     cls: "font-garamond" },
+  { label: "Great Vibes",   cssVar: "var(--font-great-vibes)",  cls: "font-great-vibes" },
+  { label: "Dancing Script",cssVar: "var(--font-dancing)",      cls: "font-dancing" },
+  { label: "Sacramento",    cssVar: "var(--font-sacramento)",   cls: "font-sacramento" },
+  { label: "Alex Brush",    cssVar: "var(--font-alex-brush)",   cls: "font-alex-brush" },
+  { label: "Allura",        cssVar: "var(--font-allura)",       cls: "font-allura" },
+  { label: "Parisienne",    cssVar: "var(--font-parisienne)",   cls: "font-parisienne" },
+  { label: "Pinyon Script", cssVar: "var(--font-pinyon)",       cls: "font-pinyon" },
+]
+
 // Convert a legacy plain-text value to HTML for initialising the editor.
 function toHtml(v: string): string {
   if (/<[a-z]/i.test(v)) return v          // already HTML
@@ -35,8 +54,11 @@ function isEmptyHtml(html: string): boolean {
 export function SimpleRichText({ value, onChange, placeholder, rows = 4 }: Props) {
   const editorRef      = useRef<HTMLDivElement>(null)
   const lastEmittedRef = useRef<string>(value)
-  // Saved selection range — needed because clicking a <select> blurs the editor.
+  // Saved selection range — needed because clicking a button blurs the editor.
   const savedRangeRef  = useRef<Range | null>(null)
+
+  const [fontPickerOpen, setFontPickerOpen] = useState(false)
+  const fontPickerRef  = useRef<HTMLDivElement>(null)
 
   // Initialise innerHTML once on mount.
   useEffect(() => {
@@ -55,6 +77,15 @@ export function SimpleRichText({ value, onChange, placeholder, rows = 4 }: Props
     }
   }, [value])
 
+  useEffect(() => {
+    if (!fontPickerOpen) return
+    const handler = (e: MouseEvent) => {
+      if (!fontPickerRef.current?.contains(e.target as Node)) setFontPickerOpen(false)
+    }
+    document.addEventListener("mousedown", handler)
+    return () => document.removeEventListener("mousedown", handler)
+  }, [fontPickerOpen])
+
   function emit() {
     if (!editorRef.current) return
     const html = isEmptyHtml(editorRef.current.innerHTML) ? "" : editorRef.current.innerHTML
@@ -62,16 +93,12 @@ export function SimpleRichText({ value, onChange, placeholder, rows = 4 }: Props
     onChange(html)
   }
 
-  // Toolbar button: execCommand keeps focus & selection because onMouseDown
-  // calls preventDefault(), so this is safe to call without restoring.
   function execCmd(cmd: string) {
     editorRef.current?.focus()
     document.execCommand(cmd, false)
     emit()
   }
 
-  // Save the current selection when the editor is blurred so it can be
-  // restored before a <select> onChange fires (clicking a select blurs editor).
   function handleBlur() {
     const sel = window.getSelection()
     if (sel && sel.rangeCount > 0) {
@@ -82,18 +109,24 @@ export function SimpleRichText({ value, onChange, placeholder, rows = 4 }: Props
     }
   }
 
-  // Wrap the saved selection in a span with a CSS property. Used for font-size
-  // and font-family because execCommand("fontSize") only accepts the archaic
-  // 1–7 scale and doesn't support pixel values.
+  function saveSelectionNow() {
+    const sel = window.getSelection()
+    if (sel && sel.rangeCount > 0) {
+      const range = sel.getRangeAt(0)
+      if (editorRef.current?.contains(range.commonAncestorContainer)) {
+        savedRangeRef.current = range.cloneRange()
+      }
+    }
+  }
+
   function applySpanStyle(cssProp: "fontSize" | "fontFamily", val: string) {
     if (!val) return
     const ed = editorRef.current
     if (!ed) return
 
     const range = savedRangeRef.current
-    if (!range || range.collapsed) return   // nothing was selected
+    if (!range || range.collapsed) return
 
-    // Restore focus + selection
     ed.focus()
     const sel = window.getSelection()
     if (!sel) return
@@ -104,8 +137,6 @@ export function SimpleRichText({ value, onChange, placeholder, rows = 4 }: Props
     if (cssProp === "fontSize") span.style.fontSize = val + "px"
     else span.style.fontFamily = val
 
-    // surroundContents fails when the selection crosses element boundaries;
-    // extractContents + insertNode is the reliable fallback.
     try {
       range.surroundContents(span)
     } catch {
@@ -114,7 +145,6 @@ export function SimpleRichText({ value, onChange, placeholder, rows = 4 }: Props
       range.insertNode(span)
     }
 
-    // Leave the newly wrapped text selected
     sel.removeAllRanges()
     const newRange = document.createRange()
     newRange.selectNodeContents(span)
@@ -139,7 +169,7 @@ export function SimpleRichText({ value, onChange, placeholder, rows = 4 }: Props
           </button>
         ))}
 
-        {/* Font size — pixel values, applied via span style */}
+        {/* Font size */}
         <select
           className="text-xs border border-gray-200 rounded px-1 py-0.5 text-gray-600 ml-1 bg-white"
           onChange={(e) => { applySpanStyle("fontSize", e.target.value); e.target.value = "" }}
@@ -150,17 +180,40 @@ export function SimpleRichText({ value, onChange, placeholder, rows = 4 }: Props
           ))}
         </select>
 
-        {/* Font family — applied via span style */}
-        <select
-          className="text-xs border border-gray-200 rounded px-1 py-0.5 text-gray-600 ml-1 bg-white"
-          onChange={(e) => { applySpanStyle("fontFamily", e.target.value); e.target.value = "" }}
-        >
-          <option value="">Fon</option>
-          <option value="serif">Serif</option>
-          <option value="sans-serif">Sans</option>
-          <option value="Cormorant Garamond">Cormorant</option>
-          <option value="Cinzel">Cinzel</option>
-        </select>
+        {/* Custom font family picker */}
+        <div className="relative ml-1" ref={fontPickerRef}>
+          <button
+            type="button"
+            onMouseDown={(e) => {
+              e.preventDefault()
+              saveSelectionNow()
+              setFontPickerOpen((o) => !o)
+            }}
+            className="flex items-center gap-1 text-xs border border-gray-200 rounded px-2 h-[22px] text-gray-600 bg-white hover:border-gray-400 transition-colors"
+          >
+            Fon
+            <ChevronDown className={`w-3 h-3 transition-transform ${fontPickerOpen ? "rotate-180" : ""}`} />
+          </button>
+
+          {fontPickerOpen && (
+            <div className="absolute left-0 top-full mt-0.5 z-50 bg-white border border-gray-200 rounded-lg shadow-lg w-44 max-h-56 overflow-y-auto">
+              {FONT_FAMILIES.map(({ label, cssVar, cls }) => (
+                <button
+                  key={cssVar}
+                  type="button"
+                  onMouseDown={(e) => {
+                    e.preventDefault()
+                    applySpanStyle("fontFamily", cssVar)
+                    setFontPickerOpen(false)
+                  }}
+                  className={`w-full text-left px-3 py-2 hover:bg-amber-50 text-sm text-gray-800 ${cls}`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Editable area */}
