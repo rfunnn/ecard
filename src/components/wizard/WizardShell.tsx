@@ -4,7 +4,8 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
-import { ChevronLeft, ChevronRight, Save, Eye, X, ShoppingBag, ExternalLink } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { ChevronLeft, ChevronRight, Save, Eye, X, ShoppingBag, ExternalLink, CheckCircle, AlertCircle } from "lucide-react"
 import { useWizardStore, TOTAL_PAGES } from "@/store/wizardStore"
 import type { TemplateInfo } from "@/store/wizardStore"
 import type { WizardConfig } from "@/types/config"
@@ -224,6 +225,8 @@ export function WizardShell({ initialCard, guest = false }: Props) {
   const [cartOpen, setCartOpen] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
+  const [toast, setToast] = useState<{ type: "success" | "error"; msg: string } | null>(null)
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const [previewGateOpen, setPreviewGateOpen] = useState(
     () => (config.openingStyle ?? "Tiada") !== "Tiada"
   )
@@ -266,6 +269,12 @@ export function WizardShell({ initialCard, guest = false }: Props) {
     [config, templateOverride, giftItems, photoItems],
   )
 
+  const showToast = useCallback((type: "success" | "error", msg: string) => {
+    clearTimeout(toastTimerRef.current)
+    setToast({ type, msg })
+    toastTimerRef.current = setTimeout(() => setToast(null), 3500)
+  }, [])
+
   const save = useCallback(async () => {
     // Guests have no card to save to — send them to register. Their in-memory
     // edits are intentionally discarded (a fresh account starts clean).
@@ -285,17 +294,22 @@ export function WizardShell({ initialCard, guest = false }: Props) {
         body: JSON.stringify(payload),
       })
       if (!res.ok) {
-        setSaveError(config.language === "ms" ? "Gagal menyimpan. Cuba semula." : "Failed to save. Please try again.")
+        const msg = isMs ? "Gagal menyimpan. Cuba semula." : "Failed to save. Please try again."
+        setSaveError(msg)
+        showToast("error", msg)
         return
       }
       if (!initialCard.isPublished) addToCart(initialCard.slug)
       markClean()
+      showToast("success", isMs ? "Berjaya disimpan!" : "Saved successfully!")
     } catch {
-      setSaveError(config.language === "ms" ? "Tiada sambungan. Cuba semula." : "No connection. Please try again.")
+      const msg = isMs ? "Tiada sambungan. Cuba semula." : "No connection. Please try again."
+      setSaveError(msg)
+      showToast("error", msg)
     } finally {
       setIsSaving(false)
     }
-  }, [guest, router, cardPreview, config, initialCard.isPublished, initialCard.slug, markClean, setIsSaving, templateOverride])
+  }, [guest, router, cardPreview, config, isMs, initialCard.isPublished, initialCard.slug, markClean, setIsSaving, templateOverride, showToast])
 
   const handlePreviewOpen = useCallback(() => {
     setPreviewOpen(true)
@@ -331,6 +345,37 @@ export function WizardShell({ initialCard, guest = false }: Props) {
 
   return (
     <div className="flex h-screen bg-white overflow-hidden">
+
+      {/* ── Toast notification (top-right) ── */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            key={toast.msg + toast.type}
+            initial={{ opacity: 0, y: -16, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0,   scale: 1    }}
+            exit={{    opacity: 0, y: -16, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 300, damping: 28 }}
+            className="fixed top-4 right-4 z-[9999] flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-lg border text-sm font-medium max-w-xs"
+            style={toast.type === "success"
+              ? { background: "#f0fdf4", borderColor: "#bbf7d0", color: "#15803d" }
+              : { background: "#fef2f2", borderColor: "#fecaca", color: "#b91c1c" }
+            }
+          >
+            {toast.type === "success"
+              ? <CheckCircle className="w-4 h-4 shrink-0" />
+              : <AlertCircle  className="w-4 h-4 shrink-0" />
+            }
+            <span>{toast.msg}</span>
+            <button
+              type="button"
+              onClick={() => setToast(null)}
+              className="ml-1 opacity-50 hover:opacity-100 transition-opacity"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Left: Form ── */}
       <div className="flex flex-col w-full lg:max-w-lg xl:max-w-xl bg-white border-r border-gray-100 overflow-hidden">
@@ -466,15 +511,8 @@ export function WizardShell({ initialCard, guest = false }: Props) {
             </div>
           )}
 
-          {/* Save error */}
-          {saveError && !isSaving && (
-            <div className="px-4 py-1.5 bg-red-50 border-t border-red-100 text-center">
-              <p className="text-[11px] text-red-600">{saveError}</p>
-            </div>
-          )}
-
           {/* Unsaved indicator */}
-          {isDirty && !isSaving && !saveError && (
+          {isDirty && !isSaving && (
             <div className="px-4 py-1.5 bg-blue-50 border-t border-blue-100 text-center">
               <p className="text-[11px] text-blue-600">{isMs ? "Terdapat perubahan yang belum disimpan" : "You have unsaved changes"}</p>
             </div>
