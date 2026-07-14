@@ -279,6 +279,7 @@ export const OPENING_STYLES = [
 
 export const EFFECT_ANIMATIONS = [
   "Tiada", "Salji #1", "Salji #2", "Bunga #1", "Bunga #2", "Confetti",
+  "Buih #1", "Buih #2", "Buih #3",
 ]
 
 export const DESIGN_CODES = [

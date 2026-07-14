@@ -20,6 +20,11 @@ interface Particle {
   rotation: number     // radians
   rotationSpeed: number
   colorIndex: number   // for multi-colour effects
+  // Bubble-specific
+  angleWander?: number  // current free-movement angle (radians)
+  blinkPhase?: number   // sin phase for opacity pulse
+  blinkSpeed?: number   // how fast the blink cycles
+  blinks?: boolean      // whether this particle blinks
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -43,27 +48,43 @@ const COLOR_OFFSETS: [number, number, number][] = [
 ]
 
 function spawn(effect: string, w: number, h: number, spreadY = true, sizeScale = 1): Particle {
-  const iSnow  = effect.startsWith("Salji")
-  const isConf = effect === "Confetti"
+  const iSnow   = effect.startsWith("Salji")
+  const isConf  = effect === "Confetti"
+  const isBuih  = effect.startsWith("Buih")
+  const isBuih2 = effect === "Buih #2"
+  const isBuih13 = effect === "Buih #1" || effect === "Buih #3"
   const baseSize =
-    isConf    ? 3  + Math.random() * 5
+    isConf            ? 3  + Math.random() * 5
     : effect === "Salji #1" ? 2  + Math.random() * 4
     : effect === "Salji #2" ? 4  + Math.random() * 9
+    : isBuih          ? 3  + Math.random() * 13
     : 6  + Math.random() * 10
   return {
     x: Math.random() * w,
-    y: spreadY ? Math.random() * h : -(5 + Math.random() * 20),
+    y: spreadY
+      ? Math.random() * h
+      : isBuih2
+        ? h + baseSize * sizeScale + 10
+        : -(5 + Math.random() * 20),
     size: baseSize * sizeScale,
     speed:
       isConf   ? 1.8 + Math.random() * 2.2
       : iSnow  ? (effect === "Salji #1" ? 0.55 + Math.random() * 1.1 : 0.4 + Math.random() * 0.85)
+      : isBuih ? 0.18 + Math.random() * 0.52
       : 0.65 + Math.random() * 0.95,
-    opacity:  0.35 + Math.random() * 0.55,
-    drift:    (Math.random() - 0.5) * (isConf ? 2.2 : 1.4),
+    opacity:    isBuih ? 0.22 + Math.random() * 0.52 : 0.35 + Math.random() * 0.55,
+    drift:      (Math.random() - 0.5) * (isConf ? 2.2 : isBuih ? 0.7 : 1.4),
     driftPhase: Math.random() * Math.PI * 2,
-    rotation: Math.random() * Math.PI * 2,
+    rotation:   Math.random() * Math.PI * 2,
     rotationSpeed: (Math.random() - 0.5) * (isConf ? 0.11 : 0.035),
     colorIndex: Math.floor(Math.random() * COLOR_OFFSETS.length),
+    angleWander: isBuih13 ? Math.random() * Math.PI * 2 : undefined,
+    blinkPhase:  isBuih   ? Math.random() * Math.PI * 2 : undefined,
+    blinkSpeed:  isBuih   ? 0.007 + Math.random() * 0.016 : undefined,
+    blinks:
+      isBuih2         ? Math.random() > 0.48
+      : effect === "Buih #3" ? Math.random() > 0.32
+      : false,
   }
 }
 
@@ -72,6 +93,9 @@ function makeParticles(effect: string, w: number, h: number, sizeScale = 1): Par
     effect === "Confetti"  ? 80
     : effect === "Salji #1" ? 55
     : effect === "Salji #2" ? 38
+    : effect === "Buih #1"  ? 32
+    : effect === "Buih #2"  ? 28
+    : effect === "Buih #3"  ? 30
     : 24
   // First batch: scattered across screen so it doesn't start empty
   return Array.from({ length: count }, (_, i) =>
@@ -176,6 +200,31 @@ function drawConfetti(
   ctx.restore()
 }
 
+function drawBubble(
+  ctx: CanvasRenderingContext2D,
+  p: Particle,
+  r: number, g: number, b: number
+) {
+  let op = p.opacity
+  if (p.blinks && p.blinkPhase !== undefined) {
+    op = p.opacity * (0.25 + 0.75 * Math.abs(Math.sin(p.blinkPhase)))
+  }
+  // Translucent fill
+  ctx.beginPath()
+  ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
+  ctx.fillStyle = `rgba(${r},${g},${b},${op * 0.13})`
+  ctx.fill()
+  // Ring
+  ctx.strokeStyle = `rgba(${r},${g},${b},${op * 0.65})`
+  ctx.lineWidth = Math.max(0.7, p.size * 0.09)
+  ctx.stroke()
+  // Specular highlight
+  ctx.beginPath()
+  ctx.arc(p.x - p.size * 0.27, p.y - p.size * 0.27, p.size * 0.17, 0, Math.PI * 2)
+  ctx.fillStyle = `rgba(255,255,255,${op * 0.55})`
+  ctx.fill()
+}
+
 // ── Component ────────────────────────────────────────────────────────────────
 
 export function EffectAnimation({ effect, color, contained, sizeScale = 1 }: Props) {
@@ -232,20 +281,45 @@ export function EffectAnimation({ effect, color, contained, sizeScale = 1 }: Pro
       ctx.clearRect(0, 0, w, h)
 
       for (const p of particles) {
-        p.driftPhase += 0.02
-        p.x         += Math.sin(p.driftPhase) * p.drift
-        p.y         += p.speed
-        p.rotation  += p.rotationSpeed
+        if (effect === "Buih #1" || effect === "Buih #3") {
+          // Free wandering movement
+          p.angleWander = ((p.angleWander ?? 0) + (Math.random() - 0.5) * 0.04)
+          p.x += Math.cos(p.angleWander) * p.speed
+          p.y += Math.sin(p.angleWander) * p.speed
+          if (p.blinkPhase !== undefined) p.blinkPhase += (p.blinkSpeed ?? 0.012)
+          // Wrap all edges
+          if (p.x < -p.size)     p.x = w + p.size
+          if (p.x > w + p.size)  p.x = -p.size
+          if (p.y < -p.size)     p.y = h + p.size
+          if (p.y > h + p.size)  p.y = -p.size
+          drawBubble(ctx, p, r, g, b)
+        } else if (effect === "Buih #2") {
+          // Rise upward with gentle sway
+          p.driftPhase += 0.014
+          p.x += Math.sin(p.driftPhase) * p.drift
+          p.y -= p.speed
+          if (p.blinkPhase !== undefined) p.blinkPhase += (p.blinkSpeed ?? 0.012)
+          if (p.x < -p.size)    p.x = w + p.size
+          if (p.x > w + p.size) p.x = -p.size
+          if (p.y < -p.size * 2) Object.assign(p, spawn(effect, w, h, false, sizeScale))
+          drawBubble(ctx, p, r, g, b)
+        } else {
+          // Existing fall-down behaviour
+          p.driftPhase += 0.02
+          p.x         += Math.sin(p.driftPhase) * p.drift
+          p.y         += p.speed
+          p.rotation  += p.rotationSpeed
 
-        if (p.y  >  h + p.size * 2) Object.assign(p, spawn(effect, w, h, false, sizeScale))
-        if (p.x  >  w + p.size * 2) p.x = -p.size * 2
-        if (p.x  < -p.size * 2)     p.x =  w + p.size * 2
+          if (p.y  >  h + p.size * 2) Object.assign(p, spawn(effect, w, h, false, sizeScale))
+          if (p.x  >  w + p.size * 2) p.x = -p.size * 2
+          if (p.x  < -p.size * 2)     p.x =  w + p.size * 2
 
-        if      (effect === "Salji #1")  drawSnow1(ctx, p, r, g, b)
-        else if (effect === "Salji #2")  drawSnow2(ctx, p, r, g, b)
-        else if (effect === "Bunga #1")  drawPetal1(ctx, p, r, g, b)
-        else if (effect === "Bunga #2")  drawPetal2(ctx, p, r, g, b)
-        else if (effect === "Confetti") drawConfetti(ctx, p, r, g, b)
+          if      (effect === "Salji #1")  drawSnow1(ctx, p, r, g, b)
+          else if (effect === "Salji #2")  drawSnow2(ctx, p, r, g, b)
+          else if (effect === "Bunga #1")  drawPetal1(ctx, p, r, g, b)
+          else if (effect === "Bunga #2")  drawPetal2(ctx, p, r, g, b)
+          else if (effect === "Confetti") drawConfetti(ctx, p, r, g, b)
+        }
       }
 
       animId = requestAnimationFrame(tick)
