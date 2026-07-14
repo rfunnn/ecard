@@ -11,6 +11,9 @@ export function wizardFont(name = "Default"): string {
     DancingScript:  "font-dancing",
     Montserrat:     "font-montserrat",
     Lato:           "font-lato",
+    Garamond:       "font-garamond",
+    Raleway:        "font-raleway",
+    OpenSans:       "font-opensans",
     Default:        "font-lato",
   }
   return map[name] ?? "font-lato"

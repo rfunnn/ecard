@@ -282,4 +282,5 @@ export const DESIGN_CODES = [
 export const WIZARD_FONTS = [
   "Default", "PlayfairScript", "Cormorant", "Spartan",
   "Cinzel", "GreatVibes", "DancingScript", "Montserrat", "Lato",
+  "Garamond", "Raleway", "OpenSans",
 ]

@@ -4,7 +4,7 @@ import { useWizardStore } from "@/store/wizardStore"
 import { FieldLabel } from "../shared/FieldLabel"
 import { SliderField } from "../shared/SliderField"
 import { ColorField } from "../shared/ColorField"
-import { FontSelect } from "../shared/FontSelect"
+import { DisplayFontPicker } from "../shared/DisplayFontPicker"
 import { WizardInput } from "../shared/WizardInput"
 import { WizardTextarea } from "../shared/WizardTextarea"
 
@@ -39,12 +39,13 @@ export function Page2_FrontPage() {
           onChange={(e) => updateConfig("displayName", e.target.value)}
           placeholder="Arfan & Rafeka"
         />
-        <div className="flex gap-2 mt-2">
-          <FontSelect
-            value={config.displayNameFont}
-            onChange={(font) => updateConfig("displayNameFont", font)}
-            className="flex-1"
-          />
+        <DisplayFontPicker
+          value={config.displayNameFont}
+          onChange={(font) => updateConfig("displayNameFont", font)}
+          sampleText={config.displayName || "Ahmad & Nurul"}
+        />
+        <div className="flex items-center justify-between mt-3">
+          <FieldLabel label={isMs ? "Warna" : "Color"} />
           <ColorField value={config.displayNameColor} onChange={(v) => updateConfig("displayNameColor", v)} />
         </div>
         <SliderField value={config.displayNameSize} onChange={(v) => updateConfig("displayNameSize", v)} min={16} max={80} />
