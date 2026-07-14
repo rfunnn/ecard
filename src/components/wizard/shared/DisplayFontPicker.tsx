@@ -1,16 +1,24 @@
 "use client"
 
 const FONTS = [
-  { key: "GreatVibes",     css: "font-great-vibes", label: "Great Vibes" },
-  { key: "DancingScript",  css: "font-dancing",      label: "Dancing Script" },
-  { key: "PlayfairScript", css: "font-playfair",     label: "Playfair" },
-  { key: "Cormorant",      css: "font-cormorant",    label: "Cormorant" },
-  { key: "Garamond",       css: "font-garamond",     label: "Garamond" },
-  { key: "Cinzel",         css: "font-cinzel",       label: "Cinzel" },
-  { key: "Montserrat",     css: "font-montserrat",   label: "Montserrat" },
-  { key: "Raleway",        css: "font-raleway",      label: "Raleway" },
-  { key: "OpenSans",       css: "font-opensans",     label: "Open Sans" },
-  { key: "Lato",           css: "font-lato",         label: "Lato" },
+  // Handwriting / script
+  { key: "Sacramento",    css: "font-sacramento",  label: "Sacramento" },
+  { key: "AlexBrush",     css: "font-alex-brush",  label: "Alex Brush" },
+  { key: "PinyonScript",  css: "font-pinyon",       label: "Pinyon Script" },
+  { key: "Allura",        css: "font-allura",       label: "Allura" },
+  { key: "Parisienne",    css: "font-parisienne",   label: "Parisienne" },
+  { key: "GreatVibes",    css: "font-great-vibes",  label: "Great Vibes" },
+  { key: "DancingScript", css: "font-dancing",      label: "Dancing Script" },
+  // Serif
+  { key: "PlayfairScript", css: "font-playfair",   label: "Playfair" },
+  { key: "Cormorant",     css: "font-cormorant",    label: "Cormorant" },
+  { key: "Garamond",      css: "font-garamond",     label: "Garamond" },
+  { key: "Cinzel",        css: "font-cinzel",       label: "Cinzel" },
+  // Sans-serif
+  { key: "Montserrat",    css: "font-montserrat",   label: "Montserrat" },
+  { key: "Raleway",       css: "font-raleway",      label: "Raleway" },
+  { key: "OpenSans",      css: "font-opensans",     label: "Open Sans" },
+  { key: "Lato",          css: "font-lato",         label: "Lato" },
 ]
 
 interface Props {

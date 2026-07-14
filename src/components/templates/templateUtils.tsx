@@ -14,6 +14,11 @@ export function wizardFont(name = "Default"): string {
     Garamond:       "font-garamond",
     Raleway:        "font-raleway",
     OpenSans:       "font-opensans",
+    Sacramento:     "font-sacramento",
+    AlexBrush:      "font-alex-brush",
+    PinyonScript:   "font-pinyon",
+    Allura:         "font-allura",
+    Parisienne:     "font-parisienne",
     Default:        "font-lato",
   }
   return map[name] ?? "font-lato"

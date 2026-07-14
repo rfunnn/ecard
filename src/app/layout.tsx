@@ -13,6 +13,11 @@ import {
   Raleway,
   EB_Garamond,
   Open_Sans,
+  Sacramento,
+  Alex_Brush,
+  Pinyon_Script,
+  Allura,
+  Parisienne,
 } from "next/font/google"
 import "./globals.css"
 
@@ -26,6 +31,11 @@ const montserrat = Montserrat({ subsets: ["latin"], weight: ["300", "400", "500"
 const raleway = Raleway({ subsets: ["latin"], weight: ["300", "400", "500", "600"], variable: "--font-raleway", display: "swap" })
 const ebGaramond = EB_Garamond({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-garamond", display: "swap" })
 const openSans = Open_Sans({ subsets: ["latin"], weight: ["300", "400", "500", "600"], variable: "--font-opensans", display: "swap" })
+const sacramento = Sacramento({ subsets: ["latin"], weight: "400", variable: "--font-sacramento", display: "swap" })
+const alexBrush = Alex_Brush({ subsets: ["latin"], weight: "400", variable: "--font-alex-brush", display: "swap" })
+const pinyonScript = Pinyon_Script({ subsets: ["latin"], weight: "400", variable: "--font-pinyon", display: "swap" })
+const allura = Allura({ subsets: ["latin"], weight: "400", variable: "--font-allura", display: "swap" })
+const parisienne = Parisienne({ subsets: ["latin"], weight: "400", variable: "--font-parisienne", display: "swap" })
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://ekadku.com"),
@@ -72,6 +82,7 @@ const fontVars = [
   playfair.variable, lato.variable, greatVibes.variable, cormorant.variable,
   cinzel.variable, dancing.variable, montserrat.variable, raleway.variable,
   ebGaramond.variable, openSans.variable,
+  sacramento.variable, alexBrush.variable, pinyonScript.variable, allura.variable, parisienne.variable,
 ].join(" ")
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

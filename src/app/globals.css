@@ -64,6 +64,11 @@ body {
 .font-montserrat { font-family: var(--font-montserrat), "Montserrat", sans-serif; }
 .font-opensans   { font-family: var(--font-opensans), "Open Sans", sans-serif; }
 .font-raleway    { font-family: var(--font-raleway), "Raleway", sans-serif; }
+.font-sacramento { font-family: var(--font-sacramento), "Sacramento", cursive; }
+.font-alex-brush { font-family: var(--font-alex-brush), "Alex Brush", cursive; }
+.font-pinyon     { font-family: var(--font-pinyon), "Pinyon Script", cursive; }
+.font-allura     { font-family: var(--font-allura), "Allura", cursive; }
+.font-parisienne { font-family: var(--font-parisienne), "Parisienne", cursive; }
 
 * {
   scrollbar-width: thin;

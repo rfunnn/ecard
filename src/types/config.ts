@@ -283,4 +283,5 @@ export const WIZARD_FONTS = [
   "Default", "PlayfairScript", "Cormorant", "Spartan",
   "Cinzel", "GreatVibes", "DancingScript", "Montserrat", "Lato",
   "Garamond", "Raleway", "OpenSans",
+  "Sacramento", "AlexBrush", "PinyonScript", "Allura", "Parisienne",
 ]
