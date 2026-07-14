@@ -384,14 +384,15 @@ export function WizardShell({ initialCard, guest = false }: Props) {
                   LIVE
                 </span>
               )}
-              <button
-                type="button"
-                onClick={handlePreviewOpen}
+              <Link
+                href={`/invite/${initialCard.slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center gap-1.5 text-xs text-amber-600 hover:text-amber-700 font-medium transition-colors px-2 py-1 rounded-md hover:bg-amber-50"
               >
                 <Eye className="w-3.5 h-3.5" />
                 {isMs ? "Lihat Kad" : "View Card"}
-              </button>
+              </Link>
               {!guest && !initialCard.isPublished && (
                 <button
                   type="button"
