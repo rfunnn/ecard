@@ -58,6 +58,9 @@ export interface WizardConfig {
   effectAnimation: string
   effectColor: string
   effectSize: number
+  footerBgColor: string
+  footerBgOpacity: number
+  footerIconColor: string
 
   // Page 2 — Muka Depan
   eventType: string
@@ -139,6 +142,9 @@ export const DEFAULT_WIZARD_CONFIG: WizardConfig = {
   effectAnimation: "Tiada",
   effectColor: "#8999ab",
   effectSize: 100,
+  footerBgColor: "",
+  footerBgOpacity: 70,
+  footerIconColor: "",
 
   eventType: "Walimatul Urus",
   eventTypeSize: 14,

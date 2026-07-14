@@ -46,6 +46,11 @@ export function ActionBar({
   const hasRsvp = (seg?.attendance !== false) && (!wCfg || wCfg.rsvp?.mode !== "NONE")
   const { primaryColor, bgColor } = card.theme
 
+  const footerRawBg = wCfg?.footerBgColor || bgColor || "#ffffff"
+  const footerOpacity = (wCfg?.footerBgOpacity ?? 70) / 100
+  const footerIconCol = wCfg?.footerIconColor || primaryColor
+  const footerBg = hexToRgba(footerRawBg, footerOpacity)
+
   return (
     <>
       <motion.div
@@ -54,8 +59,9 @@ export function ActionBar({
         transition={{ delay: 0.8, type: "spring", damping: 20 }}
         className={`${contained ? "absolute" : "fixed"} bottom-0 left-0 right-0 z-50`}
         style={{
-          background: bgColor,
-          borderTop: `1px solid ${primaryColor}30`,
+          background: footerBg,
+          borderTop: `1px solid ${footerIconCol}30`,
+          backdropFilter: "blur(8px)",
         }}
       >
         <div className="flex items-center justify-around px-3 py-2 max-w-md mx-auto">
@@ -70,7 +76,7 @@ export function ActionBar({
           >
             <Phone
               className="w-5 h-5"
-              style={{ color: primaryColor, strokeWidth: 1.5 }}
+              style={{ color: footerIconCol, strokeWidth: 1.5 }}
             />
           </button>
 
@@ -85,12 +91,12 @@ export function ActionBar({
             {isMusicMuted ? (
               <CirclePlay
                 className="w-5 h-5"
-                style={{ color: primaryColor, strokeWidth: 1.5 }}
+                style={{ color: footerIconCol, strokeWidth: 1.5 }}
               />
             ) : (
               <CirclePause
                 className="w-5 h-5"
-                style={{ color: primaryColor, strokeWidth: 1.5 }}
+                style={{ color: footerIconCol, strokeWidth: 1.5 }}
               />
             )}
           </button>
@@ -105,7 +111,7 @@ export function ActionBar({
           >
             <MapPin
               className="w-5 h-5"
-              style={{ color: primaryColor, strokeWidth: 1.5 }}
+              style={{ color: footerIconCol, strokeWidth: 1.5 }}
             />
           </button>
 
@@ -119,7 +125,7 @@ export function ActionBar({
             >
               <Gift
                 className="w-5 h-5"
-                style={{ color: primaryColor, strokeWidth: 1.5 }}
+                style={{ color: footerIconCol, strokeWidth: 1.5 }}
               />
             </button>
           )}
@@ -135,11 +141,11 @@ export function ActionBar({
               <div className="relative">
                 <Mail
                   className="w-5 h-5"
-                  style={{ color: primaryColor, strokeWidth: 1.5 }}
+                  style={{ color: footerIconCol, strokeWidth: 1.5 }}
                 />
                 <Heart
                   className="absolute -top-1 -right-1 w-3 h-3"
-                  style={{ color: primaryColor, fill: primaryColor }}
+                  style={{ color: footerIconCol, fill: footerIconCol }}
                 />
               </div>
             </button>
@@ -173,4 +179,13 @@ export function ActionBar({
       />
     </>
   )
+}
+
+function hexToRgba(hex: string, alpha: number): string {
+  const h = hex.replace("#", "")
+  if (h.length < 6) return `rgba(255,255,255,${alpha})`
+  const r = parseInt(h.slice(0, 2), 16)
+  const g = parseInt(h.slice(2, 4), 16)
+  const b = parseInt(h.slice(4, 6), 16)
+  return `rgba(${r},${g},${b},${alpha})`
 }

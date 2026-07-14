@@ -157,6 +157,9 @@ export default async function InvitePage({ params, searchParams }: Props) {
       effectAnimation: "Bunga #1",
       effectColor: demoPrimary,
       effectSize: 100,
+      footerBgColor: "",
+      footerBgOpacity: 70,
+      footerIconColor: "",
 
       // Cover
       eventType: "Walimatul Urus",
