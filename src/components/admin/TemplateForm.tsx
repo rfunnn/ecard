@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Save, Trash2, Lock, Unlock, Loader2, AlertCircle } from "lucide-react"
 import { ImageUploader } from "./ImageUploader"
-import { ScrollConfigEditor } from "./ScrollConfigEditor"
 import { TemplatePreview } from "./TemplatePreview"
 import type { AdminTemplate, TemplateDisplayConfig } from "@/types/template-admin"
 import { DEFAULT_DISPLAY_CONFIG } from "@/types/template-admin"
@@ -283,12 +282,6 @@ export function TemplateForm({ initialData }: Props) {
                 onChange={setImage2Url}
               />
             </div>
-          </div>
-
-          {/* C. Display Config */}
-          <div className={sectionCls}>
-            <h2 className={sectionHeadingCls}>C · Tetapan Tatal &amp; Kandungan</h2>
-            <ScrollConfigEditor value={displayConfig} onChange={setDisplayConfig} />
           </div>
 
           {/* Footer actions */}
