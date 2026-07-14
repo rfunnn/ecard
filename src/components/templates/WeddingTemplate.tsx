@@ -17,12 +17,12 @@ interface WishEntry { guestName: string; message: string }
 function WeddingDivider({ color }: { color: string }) {
   return (
     <div className="flex items-center justify-center gap-3 my-5">
-      <div className="h-px flex-1 opacity-15" style={{ background: color }} />
-      <svg width="10" height="10" viewBox="0 0 20 20" fill={color} opacity="0.25">
+      <div className="h-px flex-1 opacity-30" style={{ background: color }} />
+      <svg width="10" height="10" viewBox="0 0 20 20" fill={color} opacity="0.5">
         <circle cx="10" cy="10" r="3" />
         <path d="M10 2v4M10 14v4M2 10h4M14 10h4" stroke={color} strokeWidth="1.2" fill="none" />
       </svg>
-      <div className="h-px flex-1 opacity-15" style={{ background: color }} />
+      <div className="h-px flex-1 opacity-30" style={{ background: color }} />
     </div>
   )
 }
@@ -186,7 +186,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
               initial={{ opacity: 0 }}
               animate={revealed ? { opacity: 1 } : { opacity: 0 }}
               transition={{ delay: 0.6, duration: 0.8 }}
-              className={`${bodyFont} my-4 opacity-40`}
+              className={`${bodyFont} my-4 opacity-65`}
               style={{ color: bodyColor, fontSize: "22px" }}
             >
               &amp;
@@ -211,7 +211,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
             initial={{ opacity: 0 }}
             animate={revealed ? { opacity: 1 } : { opacity: 0 }}
             transition={{ delay: 1.2, duration: 0.8 }}
-            className={`${bodyFont} mt-6 opacity-70`}
+            className={`${bodyFont} mt-6 opacity-90`}
             style={{ color: bodyColor, fontSize: `${cfg.dayAndDateSize ?? 18}px`, whiteSpace: "pre-line" }}
           >
             {cfg.dayAndDate}
@@ -221,7 +221,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
         {/* venue line */}
         {venueName && (
           <p
-            className={`${bodyFont} mt-3 opacity-45`}
+            className={`${bodyFont} mt-3 opacity-70`}
             style={{ color: bodyColor, fontSize: `${cfg?.venueLineSize ?? 13}px`, whiteSpace: "pre-line" }}
           >
             {venueName}
@@ -255,20 +255,20 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
                 {cfg.organizer1.name}
               </p>
               {cfg.organizer1.relationship && (
-                <p className={`${bodyFont} text-xs opacity-50`} style={{ color: bodyColor }}>
+                <p className={`${bodyFont} text-xs opacity-75`} style={{ color: bodyColor }}>
                   {cfg.organizer1.relationship}
                 </p>
               )}
               {cfg.organizerCount === 2 && cfg.organizer2?.name && (
                 <>
-                  <p className={`${bodyFont} opacity-35 pt-1`} style={{ color: bodyColor, fontSize: "16px" }}>
+                  <p className={`${bodyFont} opacity-60 pt-1`} style={{ color: bodyColor, fontSize: "16px" }}>
                     &amp;
                   </p>
                   <p className={`${orgFont}`} style={{ color: bodyColor, fontSize: `${orgSize}px` }}>
                     {cfg.organizer2.name}
                   </p>
                   {cfg.organizer2.relationship && (
-                    <p className={`${bodyFont} text-xs opacity-50`} style={{ color: bodyColor }}>
+                    <p className={`${bodyFont} text-xs opacity-75`} style={{ color: bodyColor }}>
                       {cfg.organizer2.relationship}
                     </p>
                   )}
@@ -280,7 +280,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
           {/* invitation speech */}
           {(cfg?.invitationSpeech || card.description) && (
             <div
-              className={`${bodyFont} leading-relaxed mb-4 opacity-70 italic`}
+              className={`${bodyFont} leading-relaxed mb-4 opacity-85 italic`}
               style={{ color: bodyColor, fontSize: `${bodySize}px` }}
             >
               {multiLine(cfg?.invitationSpeech || card.description || "")}
@@ -312,7 +312,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
           {seg.venue && (venueName || address) && (
             <div className="mb-5">
               <p
-                className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-45 mb-2`}
+                className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-70 mb-2`}
                 style={{ color: bodyColor }}
               >
                 Tempat
@@ -324,7 +324,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
               )}
               {address && (
                 <div
-                  className={`${bodyFont} text-xs opacity-55 mt-2 leading-relaxed`}
+                  className={`${bodyFont} text-xs opacity-80 mt-2 leading-relaxed`}
                   style={{ color: bodyColor, fontSize: `${Math.max(bodySize - 2, 11)}px` }}
                 >
                   {multiLine(address)}
@@ -337,7 +337,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
                   {mapsUrl && (
                     <a
                       href={mapsUrl} target="_blank" rel="noopener noreferrer"
-                      className={`${bodyFont} inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs border opacity-65 hover:opacity-100 transition-opacity`}
+                      className={`${bodyFont} inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs border opacity-85 hover:opacity-100 transition-opacity`}
                       style={{ color: bodyColor, borderColor: `${bodyColor}35` }}
                     >
                       <MapPin className="w-3 h-3" />
@@ -347,7 +347,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
                   {wazeUrl && (
                     <a
                       href={wazeUrl} target="_blank" rel="noopener noreferrer"
-                      className={`${bodyFont} inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs border opacity-65 hover:opacity-100 transition-opacity`}
+                      className={`${bodyFont} inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs border opacity-85 hover:opacity-100 transition-opacity`}
                       style={{ color: bodyColor, borderColor: `${bodyColor}35` }}
                     >
                       <Navigation className="w-3 h-3" />
@@ -363,7 +363,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
           {seg.date && startDT && (
             <div className="mb-5">
               <p
-                className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-45 mb-2`}
+                className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-70 mb-2`}
                 style={{ color: bodyColor }}
               >
                 Tarikh
@@ -372,13 +372,13 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
                 {formatDate(startDT)}
               </p>
               {seg.time && (
-                <p className={`${bodyFont} text-sm opacity-65 mt-1`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
+                <p className={`${bodyFont} text-sm opacity-85 mt-1`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
                   {formatTime(startDT)}
                   {seg.endTime && endDT && ` â€“ ${formatTime(endDT)}`}
                 </p>
               )}
               {cfg?.hijriDate && (
-                <p className={`${bodyFont} text-xs opacity-45 mt-1`} style={{ color: bodyColor }}>
+                <p className={`${bodyFont} text-xs opacity-70 mt-1`} style={{ color: bodyColor }}>
                   {cfg.hijriDate}
                 </p>
               )}
@@ -388,7 +388,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
           {/* additionalInfo1 â€” dress code / extra info */}
           {cfg?.additionalInfo1 && (
             <div
-              className={`${bodyFont} text-sm opacity-65 mb-4 leading-relaxed`}
+              className={`${bodyFont} text-sm opacity-85 mb-4 leading-relaxed`}
               style={{ color: bodyColor, fontSize: `${bodySize}px` }}
             >
               {multiLine(cfg.additionalInfo1)}
@@ -400,7 +400,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
             <a
               href={calendarUrl(cfg, address || venueName)}
               target="_blank" rel="noopener noreferrer"
-              className={`${bodyFont} inline-flex items-center gap-2 px-6 py-2 rounded-full text-sm font-medium mt-2 transition-opacity opacity-75 hover:opacity-100`}
+              className={`${bodyFont} inline-flex items-center gap-2 px-6 py-2 rounded-full text-sm font-medium mt-2 transition-opacity opacity-90 hover:opacity-100`}
               style={{ background: `${primaryColor}18`, color: primaryColor, border: `1px solid ${primaryColor}35` }}
             >
               <Calendar className="w-3.5 h-3.5" />
@@ -418,23 +418,37 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
           className="pb-4"
         >
           <WeddingDivider color={bodyColor} />
-          <p
-            className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-45 text-center mb-4`}
-            style={{ color: bodyColor }}
+          {/* Title with decorative side lines */}
+          <div className="flex items-center gap-3 mb-4 px-6">
+            <div className="flex-1 h-px opacity-40" style={{ backgroundColor: bodyColor }} />
+            <p
+              className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-70 shrink-0`}
+              style={{ color: bodyColor }}
+            >
+              Atur Cara
+            </p>
+            <div className="flex-1 h-px opacity-40" style={{ backgroundColor: bodyColor }} />
+          </div>
+
+          {/* Bordered programme list */}
+          <div
+            className="max-w-xs mx-auto rounded-sm overflow-hidden"
+            style={{ border: `1px solid ${bodyColor}60`, backgroundColor: `${bodyColor}18` }}
           >
-            Atur Cara Majlis
-          </p>
-          <div className="space-y-3 max-w-xs mx-auto">
-            {parseProgramText(cfg.eventProgram).map((item, i) => (
-              <div key={i} className="flex justify-between items-baseline gap-3">
+            {parseProgramText(cfg.eventProgram).map((item, i, arr) => (
+              <div
+                key={i}
+                className="flex justify-between items-center gap-3 px-4 py-3"
+                style={{ borderBottom: i < arr.length - 1 ? `1px solid ${bodyColor}40` : "none" }}
+              >
                 <span
-                  className={`${bodyFont} opacity-75`}
+                  className={`${bodyFont} opacity-90`}
                   style={{ color: bodyColor, fontSize: `${bodySize}px` }}
                 >
                   {item.label}
                 </span>
                 <span
-                  className={`${bodyFont} opacity-50 text-right shrink-0`}
+                  className={`${bodyFont} opacity-80 text-right shrink-0`}
                   style={{ color: bodyColor, fontSize: `${Math.max(bodySize - 1, 12)}px` }}
                 >
                   {item.time}
@@ -457,7 +471,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
           {/* prayer / dua */}
           {cfg?.additionalInfo2 && (
             <div
-              className={`${orgFont} leading-relaxed mb-6 opacity-70 italic`}
+              className={`${orgFont} leading-relaxed mb-6 opacity-85 italic`}
               style={{ color: bodyColor, fontSize: `${orgSize - 2}px` }}
             >
               {multiLine(cfg.additionalInfo2)}
@@ -468,7 +482,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
           {seg.countdown && cfg?.startDateTime && !eventPassed && (
             <div>
               <p
-                className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-45 mb-4`}
+                className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-70 mb-4`}
                 style={{ color: bodyColor }}
               >
                 Menghitung Hari
@@ -488,7 +502,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
                       {String(val).padStart(2, "0")}
                     </span>
                     <span
-                      className={`${bodyFont} text-[10px] uppercase tracking-wider opacity-45 mt-1.5`}
+                      className={`${bodyFont} text-[10px] uppercase tracking-wider opacity-70 mt-1.5`}
                       style={{ color: bodyColor }}
                     >
                       {label}
@@ -511,7 +525,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
         >
           <WeddingDivider color={bodyColor} />
           <p
-            className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-45 mb-6`}
+            className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-70 mb-6`}
             style={{ color: bodyColor }}
           >
             {card.language === "ms" ? "Kehadiran" : "Attendance"}
@@ -529,7 +543,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
             {seg.writeWishBtn && (
               <button
                 onClick={onRsvpOpen}
-                className="inline-flex items-center gap-2 px-7 py-2.5 rounded-full text-sm transition-all active:scale-95 opacity-70"
+                className="inline-flex items-center gap-2 px-7 py-2.5 rounded-full text-sm transition-all active:scale-95 opacity-90"
                 style={{ border: `1px solid ${bodyColor}40`, color: bodyColor }}
               >
                 {card.language === "ms" ? "Tulis Ucapan" : "Write a Wish"}
@@ -548,7 +562,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
         >
           <WeddingDivider color={bodyColor} />
           <p
-            className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-45 mb-5`}
+            className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-70 mb-5`}
             style={{ color: bodyColor }}
           >
             {card.language === "ms" ? "Ucapan" : "Wishes"}
@@ -566,7 +580,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
                   {w.guestName}
                 </p>
                 <p
-                  className={`${bodyFont} text-sm opacity-60 italic leading-relaxed`}
+                  className={`${bodyFont} text-sm opacity-85 italic leading-relaxed`}
                   style={{ color: bodyColor, fontSize: `${bodySize}px` }}
                 >
                   &ldquo;{w.message}&rdquo;
