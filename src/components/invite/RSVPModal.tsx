@@ -142,7 +142,7 @@ export function RSVPModal({ isOpen, onClose, card, onAnalytic, contained }: RSVP
       const res = await fetch(`/api/rsvp/${card.slug}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, guestCount: Number(data.guestCount) || 1 }),
+        body: JSON.stringify({ ...data, guestCount: Number(data.guestCount) || 1, childrenCount: Number(data.childrenCount ?? 0) }),
       })
       if (!res.ok) {
         if (res.status === 403) {

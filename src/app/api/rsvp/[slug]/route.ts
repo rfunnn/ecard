@@ -44,7 +44,7 @@ export async function POST(
       guestName:     z.string().min(1).max(100),
       attendance:    z.enum(["ATTENDING", "NOT_ATTENDING", "MAYBE"]),
       guestCount:    z.number().int().min(1).max(guestLimitPerRSVP).default(1),
-      childrenCount: z.number().int().min(0).max(50).optional(),
+      childrenCount: z.coerce.number().int().min(0).max(50).optional(),
       message:       z.string().max(500).optional(),
       phone:         z.string().max(20).optional(),
       email:         z.string().max(200).optional(),
