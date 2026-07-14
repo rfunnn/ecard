@@ -662,7 +662,7 @@ export function WizardShell({ initialCard, guest = false }: Props) {
                   />
                   <EffectAnimation effect={previewEffect} color={previewEffectColor} sizeScale={previewEffectScale} contained />
 
-                  {previewOpenStyle !== "Tiada" && modalGateOpen && (
+                  {previewOpenStyle !== "Tiada" && modalGateOpen && currentPage === 1 && (
                     <div style={{ pointerEvents: "auto" }}>
                       <OpeningGate
                         key={previewOpenStyle}
@@ -686,7 +686,7 @@ export function WizardShell({ initialCard, guest = false }: Props) {
                       </div>
                     )}
                     <div className="relative z-10">
-                      <TemplateRenderer card={cardPreview} />
+                      <TemplateRenderer card={cardPreview} previewPage={currentPage} />
                     </div>
                   </div>
 
