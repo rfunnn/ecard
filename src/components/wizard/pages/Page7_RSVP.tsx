@@ -128,17 +128,24 @@ export function Page7_RSVP() {
       <div>
         <FieldLabel label={isMs ? "Tunjukkan Input" : "Show Fields"} />
         <div className="space-y-2 mt-1">
-          {showFields.map(({ key, label }) => (
-            <label key={key} className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={rsvp.showFields[key]}
-                onChange={() => toggleField(key)}
-                className="w-4 h-4 accent-[#2563eb] rounded"
-              />
-              <span className="text-sm text-gray-700">{label}</span>
-            </label>
-          ))}
+          {showFields.map(({ key, label }) => {
+            const isLocked = key === "name"
+            return (
+              <label key={key} className={`flex items-center gap-2 ${isLocked ? "cursor-not-allowed" : "cursor-pointer"}`}>
+                <input
+                  type="checkbox"
+                  checked={isLocked ? true : rsvp.showFields[key]}
+                  onChange={() => { if (!isLocked) toggleField(key) }}
+                  disabled={isLocked}
+                  className="w-4 h-4 accent-[#2563eb] rounded disabled:opacity-60"
+                />
+                <span className={`text-sm ${isLocked ? "text-gray-400" : "text-gray-700"}`}>
+                  {label}
+                  {isLocked && <span className="ml-1 text-[11px] text-gray-400">(wajib)</span>}
+                </span>
+              </label>
+            )
+          })}
         </div>
       </div>
 
