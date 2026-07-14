@@ -152,27 +152,6 @@ export function Page1_Main() {
         )}
       </div>
 
-      {/* Add-ons */}
-      <div>
-        <FieldLabel label={isMs ? "Add-On" : "Add-Ons"} info />
-        <div className="space-y-2">
-          {[
-            { key: "addOnCustomDesign" as const, label: isMs ? "Muatnaik Rekaan Sendiri (+RM10)" : "Upload Custom Design (+RM10)" },
-            { key: "addOnCoverVideo" as const,   label: isMs ? "Muatnaik Cover Video (+RM10)" : "Upload Cover Video (+RM10)" },
-          ].map(({ key, label }) => (
-            <label key={key} className="flex items-center gap-3 cursor-pointer">
-              <span
-                onClick={() => updateConfig(key, !config[key])}
-                className={`relative w-11 h-6 rounded-full transition-colors cursor-pointer ${config[key] ? "bg-blue-500" : "bg-gray-300"}`}
-              >
-                <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${config[key] ? "translate-x-5" : ""}`} />
-              </span>
-              <span className="text-sm text-gray-700">{label}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
       <div className="border-t border-gray-100" />
 
       {/* Design Code — driven by real DB templates */}
