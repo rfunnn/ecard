@@ -69,6 +69,7 @@ function BankQrUpload({ onUploaded }: { onUploaded: (url: string) => void }) {
 
 export function Page10_Gift() {
   const cardSlug       = useWizardStore((s) => s.cardSlug)
+  const authoringMode  = useWizardStore((s) => s.authoringMode)
   const giftItems      = useWizardStore((s) => s.giftItems)
   const setGiftItems   = useWizardStore((s) => s.setGiftItems)
   const addGiftItem    = useWizardStore((s) => s.addGiftItem)
@@ -86,7 +87,8 @@ export function Page10_Gift() {
   const imgInputRef = useRef<HTMLInputElement | undefined>(undefined)
 
   useEffect(() => {
-    if (!cardSlug) return
+    // Authoring a template (or no card yet): items live only in the store.
+    if (authoringMode || !cardSlug) { setLoading(false); return }
     setLoading(true)
     fetch(`/api/gifts/${cardSlug}`)
       .then((r) => r.json())
@@ -95,7 +97,7 @@ export function Page10_Gift() {
       })
       .catch(() => {})
       .finally(() => setLoading(false))
-  }, [cardSlug, setGiftItems])
+  }, [cardSlug, authoringMode, setGiftItems])
 
   async function handleImageFile(file: File) {
     if (form.imageUrl.startsWith("blob:")) URL.revokeObjectURL(form.imageUrl)
@@ -141,6 +143,19 @@ export function Page10_Gift() {
     let linkUrl = form.link.trim()
     if (!/^https?:\/\//i.test(linkUrl)) linkUrl = "https://" + linkUrl
 
+    // Authoring a template: keep the item in-memory (seeded onto cards later).
+    if (authoringMode) {
+      addGiftItem({
+        id: crypto.randomUUID(),
+        imageUrl: form.imageUrl.trim(),
+        link: linkUrl,
+        label: form.label.trim() || undefined,
+        sortOrder: giftItems.length,
+      })
+      setForm({ imageUrl: "", link: "", label: "" })
+      return
+    }
+
     setAdding(true)
     try {
       const res = await fetch(`/api/gifts/${cardSlug}`, {
@@ -165,6 +180,7 @@ export function Page10_Gift() {
 
   async function handleDelete(id: string) {
     removeGiftItem(id)
+    if (authoringMode) return
     try {
       await fetch(`/api/gifts/${cardSlug}`, {
         method: "DELETE",

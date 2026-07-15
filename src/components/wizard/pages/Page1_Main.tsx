@@ -11,7 +11,7 @@ import { OPENING_STYLES, EFFECT_ANIMATIONS, getPackageTier } from "@/types/confi
 import type { WizardConfig } from "@/types/config"
 
 export function Page1_Main() {
-  const { config, updateConfig, setConfig, setTemplateOverride, isPublished } = useWizardStore()
+  const { config, updateConfig, setConfig, setTemplateOverride, isPublished, authoringMode } = useWizardStore()
   const [templates, setTemplates] = useState<TemplateInfo[]>([])
   const [designDropdownOpen, setDesignDropdownOpen] = useState(false)
   const designDropdownRef = useRef<HTMLDivElement>(null)
@@ -154,8 +154,9 @@ export function Page1_Main() {
 
       <div className="border-t border-gray-100" />
 
-      {/* Design Code — driven by real DB templates */}
-      <div>
+      {/* Design Code — driven by real DB templates. Hidden while authoring a
+          template (the design is fixed to the template being edited). */}
+      {!authoringMode && <div>
         <FieldLabel label={isMs ? "Kod Rekaan" : "Design Code"} required />
         <div className="relative mt-1" ref={designDropdownRef}>
           <button
@@ -209,7 +210,7 @@ export function Page1_Main() {
             </div>
           )}
         </div>
-      </div>
+      </div>}
 
       {/* Opening Style */}
       <div>

@@ -35,6 +35,9 @@ interface Props {
   // Guest mode: the card is ephemeral (not in the DB). Saving is disabled and
   // instead sends the visitor to register so their work can be persisted.
   guest?: boolean
+  // Authoring mode (admin): the wizard edits a Template's default invite rather
+  // than a real card. Save targets the template; gifts/photos stay in-memory.
+  authoring?: { templateId: string }
 }
 
 const PAGE_NAMES_MS = [
@@ -195,7 +198,7 @@ function buildCardPreview(
   }
 }
 
-export function WizardShell({ initialCard, guest = false }: Props) {
+export function WizardShell({ initialCard, guest = false, authoring }: Props) {
   const router = useRouter()
   const {
     config,
@@ -212,6 +215,7 @@ export function WizardShell({ initialCard, guest = false }: Props) {
     setCardSlug,
     setIsPublished,
     setIsSaving,
+    setAuthoringMode,
     markClean,
     loadConfig,
     setGiftItems,
@@ -239,6 +243,14 @@ export function WizardShell({ initialCard, guest = false }: Props) {
     if (p >= 1 && p <= TOTAL_PAGES) setPage(p)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Flag the store so gift/photo pages stay in-memory and skip card-scoped APIs.
+  // Reset on unmount so a later real-builder session isn't left in authoring mode.
+  useEffect(() => {
+    setAuthoringMode(!!authoring)
+    return () => setAuthoringMode(false)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authoring])
 
   // Load config when opening a card for the first time or switching cards.
   // Keeps in-memory edits intact when navigating within the same card.
@@ -278,6 +290,44 @@ export function WizardShell({ initialCard, guest = false }: Props) {
       router.push(`/register?callbackUrl=${encodeURIComponent("/templates")}`)
       return
     }
+    // Authoring mode: persist the full invite onto the template as its default.
+    if (authoring) {
+      setIsSaving(true)
+      try {
+        const { theme, media, scrollConfig } = cardPreview
+        const payload = {
+          authoredConfig: {
+            version: 1,
+            wizardConfig: config,
+            theme,
+            media,
+            scrollConfig,
+            giftItems: giftItems.map((g, i) => ({
+              imageUrl: g.imageUrl, link: g.link, label: g.label, sortOrder: g.sortOrder ?? i,
+            })),
+            photoItems: photoItems.map((p, i) => ({
+              imageUrl: p.imageUrl, caption: p.caption, sortOrder: p.sortOrder ?? i,
+            })),
+          },
+        }
+        const res = await fetch(`/api/admin/templates/${authoring.templateId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        })
+        if (!res.ok) {
+          showToast("error", isMs ? "Gagal menyimpan templat." : "Failed to save template.")
+          return
+        }
+        markClean()
+        showToast("success", isMs ? "Templat disimpan!" : "Template saved!")
+      } catch {
+        showToast("error", isMs ? "Tiada sambungan. Cuba semula." : "No connection. Please try again.")
+      } finally {
+        setIsSaving(false)
+      }
+      return
+    }
     setIsSaving(true)
     try {
       const { theme, media, scrollConfig, ...rest } = cardPreview
@@ -300,7 +350,7 @@ export function WizardShell({ initialCard, guest = false }: Props) {
     } finally {
       setIsSaving(false)
     }
-  }, [guest, router, cardPreview, config, isMs, initialCard.isPublished, initialCard.slug, markClean, setIsSaving, templateOverride, showToast])
+  }, [guest, authoring, router, cardPreview, config, giftItems, photoItems, isMs, initialCard.isPublished, initialCard.slug, markClean, setIsSaving, templateOverride, showToast])
 
   const handlePreviewOpen = useCallback(() => {
     setPreviewOpen(true)
@@ -368,12 +418,17 @@ export function WizardShell({ initialCard, guest = false }: Props) {
         {/* Header */}
         <div className="shrink-0 border-b border-gray-100 px-4 pt-3 pb-2">
           <div className="flex items-center justify-between mb-2">
-            <Link href={guest ? "/templates" : "/dashboard"} className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1">
+            <Link href={authoring ? "/admin/templates" : guest ? "/templates" : "/dashboard"} className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1">
               <ChevronLeft className="w-4 h-4" />
-              {guest ? (isMs ? "Templat" : "Templates") : "Dashboard"}
+              {authoring ? "Admin" : guest ? (isMs ? "Templat" : "Templates") : "Dashboard"}
             </Link>
             <div className="flex items-center gap-1">
-              {guest && (
+              {authoring && (
+                <span className="text-[10px] font-bold tracking-widest text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-full">
+                  TEMPLAT
+                </span>
+              )}
+              {!authoring && guest && (
                 <span className="text-[10px] font-bold tracking-widest text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
                   {isMs ? "CUBAAN" : "TRIAL"}
                 </span>
@@ -384,16 +439,18 @@ export function WizardShell({ initialCard, guest = false }: Props) {
                   LIVE
                 </span>
               )}
-              <Link
-                href={`/invite/${initialCard.slug}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-xs text-amber-600 hover:text-amber-700 font-medium transition-colors px-2 py-1 rounded-md hover:bg-amber-50"
-              >
-                <Eye className="w-3.5 h-3.5" />
-                {isMs ? "Lihat Kad" : "View Card"}
-              </Link>
-              {!guest && !initialCard.isPublished && (
+              {!authoring && (
+                <Link
+                  href={`/invite/${initialCard.slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-xs text-amber-600 hover:text-amber-700 font-medium transition-colors px-2 py-1 rounded-md hover:bg-amber-50"
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  {isMs ? "Lihat Kad" : "View Card"}
+                </Link>
+              )}
+              {!authoring && !guest && !initialCard.isPublished && (
                 <button
                   type="button"
                   onClick={() => setCartOpen(true)}
@@ -406,7 +463,9 @@ export function WizardShell({ initialCard, guest = false }: Props) {
             </div>
           </div>
           <div className="text-center pb-1">
-            <h1 className="text-base font-bold tracking-wide text-gray-900">EDIT CARD</h1>
+            <h1 className="text-base font-bold tracking-wide text-gray-900">
+              {authoring ? (isMs ? "REKA TEMPLAT" : "AUTHOR TEMPLATE") : "EDIT CARD"}
+            </h1>
             <p className="text-sm text-amber-600 underline decoration-amber-600/50 mt-0.5">{pageName}</p>
           </div>
         </div>
@@ -451,7 +510,7 @@ export function WizardShell({ initialCard, guest = false }: Props) {
                 disabled={isSaving}
                 className="px-5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-md disabled:opacity-60 transition-colors"
               >
-                {isSaving ? "..." : guest ? (isMs ? "DAFTAR" : "SIGN UP") : "SAVE"}
+                {isSaving ? "..." : authoring ? (isMs ? "SIMPAN" : "SAVE") : guest ? (isMs ? "DAFTAR" : "SIGN UP") : "SAVE"}
               </button>
             ) : (
               <button

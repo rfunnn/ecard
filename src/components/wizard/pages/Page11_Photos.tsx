@@ -11,6 +11,7 @@ import type { PhotoItem } from "@/types/invitation"
 
 export function Page11_Photos() {
   const cardSlug        = useWizardStore((s) => s.cardSlug)
+  const authoringMode   = useWizardStore((s) => s.authoringMode)
   const photoItems      = useWizardStore((s) => s.photoItems)
   const setPhotoItems   = useWizardStore((s) => s.setPhotoItems)
   const addPhotoItem    = useWizardStore((s) => s.addPhotoItem)
@@ -28,14 +29,15 @@ export function Page11_Photos() {
   const fileInputRef = useRef<HTMLInputElement | undefined>(undefined)
 
   useEffect(() => {
-    if (!cardSlug) return
+    // Authoring a template (or no card yet): photos live only in the store.
+    if (authoringMode || !cardSlug) { setLoading(false); return }
     setLoading(true)
     fetch(`/api/photos/${cardSlug}`)
       .then((r) => r.json())
       .then((d) => setPhotoItems(d.items ?? []))
       .catch(() => {})
       .finally(() => setLoading(false))
-  }, [cardSlug, setPhotoItems])
+  }, [cardSlug, authoringMode, setPhotoItems])
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -63,7 +65,8 @@ export function Page11_Photos() {
   }
 
   async function confirmUpload() {
-    if (!pendingFile || !cardSlug) return
+    if (!pendingFile) return
+    if (!authoringMode && !cardSlug) return
     setUploading(true)
     setUploadError(null)
     try {
@@ -73,14 +76,19 @@ export function Page11_Photos() {
       if (!upRes.ok) throw new Error("upload")
       const { url } = await upRes.json() as { url: string }
 
-      const saveRes = await fetch(`/api/photos/${cardSlug}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageUrl: url, caption: caption.trim() || undefined }),
-      })
-      if (!saveRes.ok) throw new Error("save")
-      const { item } = await saveRes.json() as { item: PhotoItem }
-      addPhotoItem(item)
+      if (authoringMode) {
+        // Authoring a template: keep the photo in-memory (seeded onto cards later).
+        addPhotoItem({ id: crypto.randomUUID(), imageUrl: url, caption: caption.trim() || undefined, sortOrder: photoItems.length })
+      } else {
+        const saveRes = await fetch(`/api/photos/${cardSlug}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imageUrl: url, caption: caption.trim() || undefined }),
+        })
+        if (!saveRes.ok) throw new Error("save")
+        const { item } = await saveRes.json() as { item: PhotoItem }
+        addPhotoItem(item)
+      }
 
       if (preview) URL.revokeObjectURL(preview)
       setPreview(null)
@@ -94,8 +102,8 @@ export function Page11_Photos() {
   }
 
   async function handleDelete(id: string) {
-    if (!cardSlug) return
     removePhotoItem(id)
+    if (authoringMode || !cardSlug) return
     await fetch(`/api/photos/${cardSlug}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },

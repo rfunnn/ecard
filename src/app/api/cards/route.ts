@@ -6,6 +6,8 @@ import { prisma } from "@/lib/prisma"
 import { generateSlug } from "@/lib/slug"
 import { DEFAULT_THEME, DEFAULT_MEDIA, DEFAULT_SCROLL } from "@/types/invitation"
 import { buildDemoWizardConfig, DEMO_YOUTUBE_URL, DEMO_YOUTUBE_VIDEO_ID, DEMO_GIFT_ITEMS } from "@/lib/demo-wizard-config"
+import { mergeWizardConfig } from "@/lib/wizard-merge"
+import type { AuthoredInvite } from "@/types/template-admin"
 import { rateLimit } from "@/lib/rate-limit"
 
 export async function GET(req: NextRequest) {
@@ -67,13 +69,42 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Template not found" }, { status: 404 })
     }
 
-    const tmplCfg = (template.defaultConfig ?? {}) as { primaryColor?: string; bgColor?: string; titleFont?: string }
-    const wizardConfig = buildDemoWizardConfig(
-      tmplCfg.primaryColor ?? "#9b4d5e",
-      tmplCfg.bgColor      ?? "#faf7f4",
-      tmplCfg.titleFont,
-      template.slug,
-    )
+    const tmplCfg = (template.defaultConfig ?? {}) as {
+      primaryColor?: string; bgColor?: string; titleFont?: string; authored?: AuthoredInvite
+    }
+    const authored = tmplCfg.authored
+
+    // When an admin has fully authored this template's invite, clone it as the
+    // new card's starting point. Otherwise fall back to the hardcoded demo.
+    const wizardConfig = authored?.wizardConfig
+      ? mergeWizardConfig(authored.wizardConfig)
+      : buildDemoWizardConfig(
+          tmplCfg.primaryColor ?? "#9b4d5e",
+          tmplCfg.bgColor      ?? "#faf7f4",
+          tmplCfg.titleFont,
+          template.slug,
+        )
+
+    const themeData  = { ...DEFAULT_THEME,  ...(authored?.theme ?? {}) }
+    const mediaData  = authored?.media
+      ? { ...DEFAULT_MEDIA, ...authored.media }
+      : { ...DEFAULT_MEDIA, youtubeUrl: DEMO_YOUTUBE_URL, youtubeVideoId: DEMO_YOUTUBE_VIDEO_ID }
+    const scrollData = { ...DEFAULT_SCROLL, ...(authored?.scrollConfig ?? {}) }
+
+    const giftSeed = authored
+      ? (authored.giftItems ?? [])
+      : DEMO_GIFT_ITEMS
+    const giftCreate = giftSeed.map((g, i) => ({
+      imageUrl: g.imageUrl,
+      link: g.link,
+      label: g.label,
+      sortOrder: g.sortOrder ?? i,
+    }))
+    const photoCreate = (authored?.photoItems ?? []).map((p, i) => ({
+      imageUrl: p.imageUrl,
+      caption: p.caption,
+      sortOrder: p.sortOrder ?? i,
+    }))
 
     let slug = generateSlug()
     let attempts = 0
@@ -115,10 +146,11 @@ export async function POST(req: NextRequest) {
         language: data.language,
         wizardConfig: wizardConfig as object,
         ...(userId ? { userId } : {}),
-        theme: { create: { ...DEFAULT_THEME } },
-        media: { create: { ...DEFAULT_MEDIA, youtubeUrl: DEMO_YOUTUBE_URL, youtubeVideoId: DEMO_YOUTUBE_VIDEO_ID } },
-        scrollConfig: { create: { ...DEFAULT_SCROLL } },
-        giftItems: { create: DEMO_GIFT_ITEMS.map((item) => ({ ...item })) },
+        theme: { create: themeData },
+        media: { create: mediaData },
+        scrollConfig: { create: scrollData },
+        ...(giftCreate.length  ? { giftItems:  { create: giftCreate  } } : {}),
+        ...(photoCreate.length ? { photoItems: { create: photoCreate } } : {}),
       },
       include: {
         template: { select: { slug: true, name: true, category: true } },

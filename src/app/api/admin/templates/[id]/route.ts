@@ -14,6 +14,8 @@ const updateSchema = z.object({
   image2Url: z.string().optional().nullable(),
   displayConfig: z.record(z.string(), z.unknown()).optional().nullable(),
   defaultConfig: z.record(z.string(), z.unknown()).optional(),
+  // Full authored invite (WizardShell authoring mode). Merged into defaultConfig.authored.
+  authoredConfig: z.record(z.string(), z.unknown()).optional(),
 })
 
 export async function GET(
@@ -61,6 +63,27 @@ export async function PATCH(
     // Always keep thumbnail in sync with image1Url (thumbnail is the display field read by /templates)
     const thumbnailUpdate = data.image1Url !== undefined ? { thumbnail: data.image1Url ?? "" } : {}
 
+    // Authoring save: fold the full authored invite into defaultConfig.authored,
+    // preserving existing keys (e.g. primaryColors) and refreshing the legacy
+    // color/font hints that thumbnails and the /templates color filter still read.
+    let defaultConfigUpdate: Record<string, unknown> | undefined =
+      data.defaultConfig as Record<string, unknown> | undefined
+    if (data.authoredConfig) {
+      const prev = (existing.defaultConfig as Record<string, unknown> | null) ?? {}
+      const authored = data.authoredConfig as {
+        theme?: { primaryColor?: string }
+        wizardConfig?: { backgroundColor?: string; headingFont?: string }
+      }
+      defaultConfigUpdate = {
+        ...prev,
+        ...(defaultConfigUpdate ?? {}),
+        authored: data.authoredConfig,
+        primaryColor: authored.theme?.primaryColor ?? (prev as { primaryColor?: string }).primaryColor,
+        bgColor: authored.wizardConfig?.backgroundColor ?? (prev as { bgColor?: string }).bgColor,
+        titleFont: authored.wizardConfig?.headingFont ?? (prev as { titleFont?: string }).titleFont,
+      }
+    }
+
     const template = await prisma.template.update({
       where: { id },
       data: {
@@ -75,8 +98,8 @@ export async function PATCH(
         ...(data.displayConfig !== undefined
           ? { displayConfig: data.displayConfig ? (data.displayConfig as Prisma.InputJsonValue) : Prisma.DbNull }
           : {}),
-        ...(data.defaultConfig !== undefined
-          ? { defaultConfig: data.defaultConfig as Prisma.InputJsonValue }
+        ...(defaultConfigUpdate !== undefined
+          ? { defaultConfig: defaultConfigUpdate as Prisma.InputJsonValue }
           : {}),
         ...thumbnailUpdate,
       },

@@ -2,6 +2,7 @@ import { create } from "zustand"
 import { immer } from "zustand/middleware/immer"
 import type { WizardConfig, ContactConfig } from "@/types/config"
 import { DEFAULT_WIZARD_CONFIG } from "@/types/config"
+import { mergeWizardConfig } from "@/lib/wizard-merge"
 import type { GiftItem, PhotoItem } from "@/types/invitation"
 
 export interface TemplateInfo {
@@ -24,6 +25,9 @@ interface WizardState {
   templateOverride: TemplateInfo | null
   giftItems: GiftItem[]
   photoItems: PhotoItem[]
+  // When true the wizard is authoring a Template's default invite (admin), not a
+  // real card. Gift/photo edits stay in-memory and Save targets the template.
+  authoringMode: boolean
 }
 
 interface WizardActions {
@@ -36,6 +40,7 @@ interface WizardActions {
   setCardSlug: (slug: string) => void
   setIsPublished: (published: boolean) => void
   setIsSaving: (saving: boolean) => void
+  setAuthoringMode: (on: boolean) => void
   markClean: () => void
   setTemplateOverride: (t: TemplateInfo | null) => void
   addContact: () => void
@@ -64,6 +69,7 @@ export const useWizardStore = create<WizardState & WizardActions>()(
     templateOverride: null,
     giftItems: [],
     photoItems: [],
+    authoringMode: false,
 
     setConfig: (partial) =>
       set((state) => {
@@ -75,17 +81,7 @@ export const useWizardStore = create<WizardState & WizardActions>()(
     // get any new default fields that were added to the schema after the card was first saved.
     loadConfig: (saved) =>
       set((state) => {
-        const merged: WizardConfig = { ...DEFAULT_WIZARD_CONFIG, ...saved }
-        if (saved.rsvp) {
-          merged.rsvp = { ...DEFAULT_WIZARD_CONFIG.rsvp, ...saved.rsvp }
-          if (saved.rsvp.showFields) {
-            merged.rsvp.showFields = { ...DEFAULT_WIZARD_CONFIG.rsvp.showFields, ...saved.rsvp.showFields }
-          }
-        }
-        if (saved.organizer1) merged.organizer1 = { ...DEFAULT_WIZARD_CONFIG.organizer1, ...saved.organizer1 }
-        if (saved.organizer2) merged.organizer2 = { ...DEFAULT_WIZARD_CONFIG.organizer2, ...saved.organizer2 }
-        if (saved.segments)   merged.segments   = { ...DEFAULT_WIZARD_CONFIG.segments,   ...saved.segments   }
-        state.config = merged
+        state.config = mergeWizardConfig(saved)
         state.templateOverride = null
         state.isDirty = false
       }),
@@ -129,6 +125,11 @@ export const useWizardStore = create<WizardState & WizardActions>()(
     setIsSaving: (saving) =>
       set((state) => {
         state.isSaving = saving
+      }),
+
+    setAuthoringMode: (on) =>
+      set((state) => {
+        state.authoringMode = on
       }),
 
     markClean: () =>

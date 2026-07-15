@@ -2,7 +2,7 @@
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { rewriteStorageUrl } from "@/lib/storage"
-import { PlusCircle, Pencil, CheckCircle2, XCircle, Image as ImageIcon } from "lucide-react"
+import { PlusCircle, Pencil, CheckCircle2, XCircle, Image as ImageIcon, ChevronLeft, ChevronRight } from "lucide-react"
 
 const CATEGORY_LABELS: Record<string, string> = {
   WEDDING: "Perkahwinan",
@@ -11,18 +11,34 @@ const CATEGORY_LABELS: Record<string, string> = {
   GENERIC: "Umum",
 }
 
-export default async function AdminTemplatesPage() {
-  const templates = await prisma.template.findMany({
-    orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
-    include: { _count: { select: { cards: true } } },
-  })
+const PER_PAGE = 20
+
+interface Props {
+  searchParams: Promise<{ page?: string }>
+}
+
+export default async function AdminTemplatesPage({ searchParams }: Props) {
+  const { page: pageParam } = await searchParams
+  const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1)
+
+  const [total, templates] = await Promise.all([
+    prisma.template.count(),
+    prisma.template.findMany({
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+      include: { _count: { select: { cards: true } } },
+      skip: (page - 1) * PER_PAGE,
+      take: PER_PAGE,
+    }),
+  ])
+
+  const totalPages = Math.max(1, Math.ceil(total / PER_PAGE))
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-bold text-gray-900">Templates</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{templates.length} template{templates.length !== 1 ? "s" : ""}</p>
+          <p className="text-sm text-gray-500 mt-0.5">{total} template{total !== 1 ? "s" : ""}</p>
         </div>
         <Link
           href="/admin/templates/new"
@@ -48,6 +64,7 @@ export default async function AdminTemplatesPage() {
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
           <table className="w-full text-sm min-w-[420px]">
+
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50">
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
@@ -138,6 +155,60 @@ export default async function AdminTemplatesPage() {
               ))}
             </tbody>
           </table>
+
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
+              <p className="text-xs text-gray-500">
+                {(page - 1) * PER_PAGE + 1}–{Math.min(page * PER_PAGE, total)} daripada {total}
+              </p>
+              <div className="flex items-center gap-1">
+                <Link
+                  href={`/admin/templates?page=${page - 1}`}
+                  aria-disabled={page <= 1}
+                  className={`p-1.5 rounded-lg border border-gray-200 text-gray-500 transition-colors ${
+                    page <= 1 ? "pointer-events-none opacity-40" : "hover:bg-gray-50 hover:text-gray-900"
+                  }`}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </Link>
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+                  .reduce<(number | "…")[]>((acc, p, idx, arr) => {
+                    if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push("…")
+                    acc.push(p)
+                    return acc
+                  }, [])
+                  .map((item, idx) =>
+                    item === "…" ? (
+                      <span key={`gap-${idx}`} className="px-1 text-xs text-gray-400">…</span>
+                    ) : (
+                      <Link
+                        key={item}
+                        href={`/admin/templates?page=${item}`}
+                        className={`min-w-[2rem] h-8 flex items-center justify-center rounded-lg text-xs font-medium transition-colors ${
+                          item === page
+                            ? "bg-amber-500 text-white"
+                            : "border border-gray-200 text-gray-600 hover:bg-gray-50"
+                        }`}
+                      >
+                        {item}
+                      </Link>
+                    )
+                  )}
+
+                <Link
+                  href={`/admin/templates?page=${page + 1}`}
+                  aria-disabled={page >= totalPages}
+                  className={`p-1.5 rounded-lg border border-gray-200 text-gray-500 transition-colors ${
+                    page >= totalPages ? "pointer-events-none opacity-40" : "hover:bg-gray-50 hover:text-gray-900"
+                  }`}
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Save, Trash2, Lock, Unlock, Loader2, AlertCircle } from "lucide-react"
+import { Save, Trash2, Lock, Unlock, Loader2, AlertCircle, Wand2 } from "lucide-react"
 import { ImageUploader } from "./ImageUploader"
 import { TemplatePreview } from "./TemplatePreview"
 import type { AdminTemplate, TemplateDisplayConfig } from "@/types/template-admin"
@@ -314,6 +314,28 @@ export function TemplateForm({ initialData }: Props) {
                 onChange={setImage2Url}
               />
             </div>
+          </div>
+
+          {/* C. Invite authoring */}
+          <div className={sectionCls}>
+            <h2 className={sectionHeadingCls}>C · Kandungan & Reka Bentuk Kad</h2>
+            <p className="text-sm text-gray-500 -mt-2">
+              Reka bentuk kad jemputan penuh (teks, warna, fon, animasi, bar menu, hadiah, foto) menggunakan pembina yang sama seperti pengguna. Kad baharu yang dibuat daripada templat ini akan mewarisi reka bentuk ini.
+            </p>
+            {isEdit ? (
+              <Link
+                href={`/admin/templates/${initialData.id}/author`}
+                className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-5 py-2.5 rounded-lg text-sm transition-colors"
+              >
+                <Wand2 className="w-4 h-4" />
+                Reka Bentuk Kandungan Kad
+              </Link>
+            ) : (
+              <div className="flex items-center gap-2 text-sm text-gray-400 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                Simpan template dahulu, kemudian buka semula untuk mereka bentuk kandungan kad.
+              </div>
+            )}
           </div>
 
           {/* Footer actions */}
