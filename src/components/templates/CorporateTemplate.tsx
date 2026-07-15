@@ -103,7 +103,7 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="min-h-screen flex flex-col justify-center py-16"
+        className="min-h-screen flex flex-col justify-center pt-12 pb-32"
       >
         <div className="mb-6 inline-flex items-center justify-center w-12 h-12 rounded-lg"
           style={{ background: `${primaryColor}12`, border: `1px solid ${primaryColor}20` }}>
