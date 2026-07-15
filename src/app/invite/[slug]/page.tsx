@@ -356,6 +356,7 @@ export default async function InvitePage({ params, searchParams }: Props) {
   }
 
   let card: InvitationCardData | null = null
+  let expired = false
 
   try {
     const raw = await getCachedCard(slug)
@@ -363,9 +364,8 @@ export default async function InvitePage({ params, searchParams }: Props) {
     if (!raw) return notFound()
 
     if (raw.expiresAt && new Date(raw.expiresAt) < new Date()) {
-      return <ExpiredPage />
-    }
-
+      expired = true
+    } else {
     card = {
       id: raw.id,
       slug: raw.slug,
@@ -444,11 +444,13 @@ export default async function InvitePage({ params, searchParams }: Props) {
       createdAt: new Date(raw.createdAt).toISOString(),
       updatedAt: new Date(raw.updatedAt).toISOString(),
     }
+    }
   } catch (err) {
     console.error("[invite-page] failed to load card:", slug, err)
     return notFound()
   }
 
+  if (expired) return <ExpiredPage />
   if (!card) return notFound()
 
   // Preview name override — passed from the template picker via ?name=

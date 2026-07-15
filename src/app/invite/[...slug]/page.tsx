@@ -298,6 +298,7 @@ export default async function InvitePage({ params, searchParams }: Props) {
 
   // ── Real card lookup — only the first path segment is the slug ──────────────
   let card: InvitationCardData | null = null
+  let expired = false
 
   try {
     const raw = await prisma.invitationCard.findUnique({
@@ -315,9 +316,8 @@ export default async function InvitePage({ params, searchParams }: Props) {
     if (!raw) return notFound()
 
     if (raw.expiresAt && raw.expiresAt < new Date()) {
-      return <ExpiredPage />
-    }
-
+      expired = true
+    } else {
     card = {
       id: raw.id,
       slug: raw.slug,
@@ -396,10 +396,12 @@ export default async function InvitePage({ params, searchParams }: Props) {
       createdAt: raw.createdAt.toISOString(),
       updatedAt: raw.updatedAt.toISOString(),
     }
+    }
   } catch {
     return notFound()
   }
 
+  if (expired) return <ExpiredPage />
   if (!card) return notFound()
 
   if (nameOverride) {

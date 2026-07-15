@@ -98,15 +98,15 @@ export default async function CardInvitePage({ params, searchParams }: Props) {
   const nameOverride = sp.name
 
   let card: InvitationCardData | null = null
+  let expired = false
 
   try {
     const raw = await findCard(id)
     if (!raw) return notFound()
 
     if (raw.expiresAt && raw.expiresAt < new Date()) {
-      return <ExpiredPage />
-    }
-
+      expired = true
+    } else {
     card = {
       id: raw.id,
       slug: raw.slug,
@@ -186,10 +186,12 @@ export default async function CardInvitePage({ params, searchParams }: Props) {
       createdAt: raw.createdAt.toISOString(),
       updatedAt: raw.updatedAt.toISOString(),
     }
+    }
   } catch {
     return notFound()
   }
 
+  if (expired) return <ExpiredPage />
   if (!card) return notFound()
 
   if (nameOverride) {
