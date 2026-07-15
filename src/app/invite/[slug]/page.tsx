@@ -136,9 +136,72 @@ export default async function InvitePage({ params, searchParams }: Props) {
       select: { slug: true, name: true, category: true, image1Url: true, image2Url: true, defaultConfig: true },
     })
 
-    const tmplCfg    = (demoTemplate?.defaultConfig ?? {}) as { primaryColor?: string; bgColor?: string; titleFont?: string }
-    const demoPrimary = tmplCfg.primaryColor ?? "#9b4d5e"
-    const demoBg      = tmplCfg.bgColor      ?? "#faf7f4"
+    const tmplCfgRaw  = (demoTemplate?.defaultConfig ?? {}) as Record<string, unknown>
+    const authored    = tmplCfgRaw.authored as import("@/types/template-admin").AuthoredInvite | undefined
+    const tmplCfg    = tmplCfgRaw as { primaryColor?: string; bgColor?: string; titleFont?: string }
+    const isTemplatePreview = !!templateSlug
+    const demoPrimary = isTemplatePreview ? (tmplCfg.primaryColor ?? "#9b4d5e") : "#9b4d5e"
+    const demoBg      = isTemplatePreview ? (tmplCfg.bgColor      ?? "#faf7f4") : "#faf7f4"
+
+    // When admin previews a template that has been authored, use the full
+    // authored config so animation, animation colour, and text colour changes
+    // are reflected — not the hardcoded demo defaults.
+    if (isTemplatePreview && authored?.wizardConfig) {
+      let wc: WizardConfig = { ...authored.wizardConfig }
+
+      if (nameOverride) {
+        wc = { ...wc, displayName: nameOverride }
+        const parts = nameOverride.split(/\s*&\s*/).map((s) => s.trim())
+        if (parts.length > 1 && wc.fullNames !== undefined) {
+          wc = { ...wc, fullNames: `${parts[0]}\n&\n${parts[1]}` }
+        }
+      }
+
+      if (packageParam === "bronze") {
+        wc = {
+          ...wc, effectAnimation: "Tiada",
+          rsvp: { ...wc.rsvp, mode: "NONE" },
+          segments: { ...wc.segments, attendance: false, wishes: false, confirmBtn: false, writeWishBtn: false },
+        }
+      } else if (packageParam === "gold" && !wc.bankName) {
+        wc = { ...wc, bankName: "Maybank", bankAccountName: "Ahmad Faris bin Ahmad", bankAccountNumber: "1234567890" }
+      }
+
+      const pkgMeta2 = PACKAGE_META[packageParam] ?? PACKAGE_META.gold
+      const authoredTheme = authored.theme ?? DEFAULT_THEME
+      const authoredGiftItems = packageParam !== "bronze"
+        ? (authored.giftItems ?? []).map((g, i) => ({ id: `demo-gift-${i}`, imageUrl: g.imageUrl, link: g.link, label: g.label, sortOrder: g.sortOrder ?? i }))
+        : []
+      const authoredPhotoItems = (authored.photoItems ?? []).map((p, i) => ({ id: `demo-photo-${i}`, imageUrl: p.imageUrl, caption: p.caption, sortOrder: p.sortOrder ?? i }))
+
+      const authoredDemoCard: InvitationCardData = {
+        id: "demo", slug: "demo", templateId: "demo",
+        title: wc.eventType || "Demo",
+        groomName: nameOverride ? nameOverride.split(/\s*&\s*/)[0]?.trim() : wc.displayName?.split(/\s*&\s*/)[0]?.trim(),
+        brideName:  nameOverride ? nameOverride.split(/\s*&\s*/)[1]?.trim() : wc.displayName?.split(/\s*&\s*/)[1]?.trim(),
+        whatsappNumber: wc.contacts?.[0]?.phone || "60123456789",
+        contactName:    wc.contacts?.[0]?.name  || "Ali",
+        isPublished: true, language: wc.language || "ms", viewCount: 0,
+        template: {
+          slug:      demoTemplate?.slug     ?? "wedding-classic",
+          name:      demoTemplate?.name     ?? "Wedding Classic",
+          category:  (demoTemplate?.category ?? "WEDDING") as "WEDDING" | "BIRTHDAY" | "CORPORATE" | "GENERIC",
+          image1Url: demoTemplate?.image1Url ?? null,
+          image2Url: demoTemplate?.image2Url ?? null,
+        },
+        theme: { ...DEFAULT_THEME, ...authoredTheme },
+        media: authored.media
+          ? { ...DEFAULT_MEDIA, ...authored.media }
+          : { ...DEFAULT_MEDIA, audioEnabled: true, youtubeUrl: "https://www.youtube.com/watch?v=Tf_zS_ES_7k", youtubeVideoId: "Tf_zS_ES_7k" },
+        scrollConfig: authored.scrollConfig ?? { autoScroll: true, speed: "MEDIUM", pauseOnHover: true },
+        wizardConfig: wc,
+        giftItems: authoredGiftItems,
+        photoItems: authoredPhotoItems,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }
+      return <InviteClient card={authoredDemoCard} demoBadge={`${pkgMeta2.emoji} ${pkgMeta2.label} · ${pkgMeta2.price}`} />
+    }
 
     // Future event date — 60 days from now
     // eslint-disable-next-line react-hooks/purity
