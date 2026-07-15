@@ -383,13 +383,9 @@ export function TemplatesClient() {
   }, [creating, status, router])
 
   const handleView = (template: Template) => {
-    if (template.previewUrl) {
-      const url = previewName
-        ? `${template.previewUrl}?name=${encodeURIComponent(previewName)}`
-        : template.previewUrl
-      window.open(url, "_blank", "noopener noreferrer")
-      return
-    }
+    // Always use /invite/demo so the eye button reflects the latest authored
+    // config (animation, colours, text) saved by admin — previewUrl is a
+    // legacy field that bypasses the authored config entirely.
     const params = new URLSearchParams({ template: template.slug })
     if (previewName) params.set("name", previewName)
     window.open(`/invite/demo?${params.toString()}`, "_blank", "noopener noreferrer")
