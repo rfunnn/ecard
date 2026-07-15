@@ -53,7 +53,7 @@ export function TemplateForm({ initialData }: Props) {
     if (typeof cfg.primaryColor === "string" && cfg.primaryColor) return [cfg.primaryColor as string]
     return []
   })
-  const [displayConfig, setDisplayConfig] = useState<TemplateDisplayConfig>(
+  const [displayConfig] = useState<TemplateDisplayConfig>(
     (initialData?.displayConfig as TemplateDisplayConfig | undefined) ?? DEFAULT_DISPLAY_CONFIG
   )
 
