@@ -22,6 +22,7 @@ interface Template {
   createdAt?: string
   defaultConfig: {
     primaryColor?: string
+    primaryColors?: string[]
     bgColor?: string
     titleFont?: string
   }
@@ -304,7 +305,10 @@ export function TemplatesClient() {
 
   const filtered = useMemo(() => templates.filter((t) => {
     const themeOk = activeThemes.has("ALL") || activeThemes.has(t.category) || activeThemes.size === 0
-    const colorOk = !activeColor || t.defaultConfig?.primaryColor === activeColor
+    const colorOk = !activeColor || (
+      t.defaultConfig?.primaryColors?.includes(activeColor) ||
+      t.defaultConfig?.primaryColor === activeColor
+    )
     return themeOk && colorOk
   }), [templates, activeThemes, activeColor])
 
