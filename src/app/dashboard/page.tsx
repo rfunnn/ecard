@@ -8,8 +8,8 @@ import Link from "next/link"
 import Image from "next/image"
 import {
   Pencil, ImageIcon, Gift, Mail, Eye, Printer,
-  MoreVertical, ExternalLink, Plus, ChevronDown, Trash2, Copy, Check, BarChart2,
-  Link2, AlertCircle,
+  MoreVertical, ExternalLink, Plus, Trash2, Copy, Check, BarChart2,
+  Link2, AlertCircle, Loader2,
 } from "lucide-react"
 import type { WizardConfig } from "@/types/config"
 import { generatePrintHTML } from "@/lib/print-card"
@@ -364,7 +364,6 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
         {eventDateStr && (
           <div className="flex items-center gap-1 mb-2">
             <span className="text-xs text-amber-600 font-medium">{eventDateStr}</span>
-            <ChevronDown className="w-3 h-3 text-amber-600" />
           </div>
         )}
 
@@ -437,6 +436,137 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
   )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function ProfileTab({ session }: { session: any }) {
+  const [name,            setName]            = useState(session.user.name ?? "")
+  const [currentPassword, setCurrentPassword] = useState("")
+  const [newPassword,     setNewPassword]     = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [saving,          setSaving]          = useState(false)
+  const [message,         setMessage]         = useState<{ type: "ok" | "err"; text: string } | null>(null)
+
+  const handleSave = async () => {
+    setMessage(null)
+    if (newPassword && newPassword !== confirmPassword) {
+      setMessage({ type: "err", text: "Kata laluan baharu tidak sepadan" })
+      return
+    }
+    setSaving(true)
+    try {
+      const res = await fetch("/api/user/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim() !== session.user.name ? name.trim() : undefined,
+          currentPassword: currentPassword || undefined,
+          newPassword: newPassword || undefined,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? "Ralat tidak diketahui")
+      setMessage({ type: "ok", text: "Profil berjaya dikemas kini" })
+      setCurrentPassword("")
+      setNewPassword("")
+      setConfirmPassword("")
+    } catch (e) {
+      setMessage({ type: "err", text: e instanceof Error ? e.message : "Gagal" })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const inputCls = "w-full border border-[var(--bd)] bg-[var(--pg)] rounded-xl px-3 py-2.5 text-sm text-[var(--tx-1)] focus:outline-none focus:border-gold/40 placeholder-[var(--tx-3)] transition-colors"
+  const labelCls = "block text-[11px] font-bold text-[var(--tx-3)] uppercase tracking-widest mb-1.5"
+
+  return (
+    <div className="max-w-sm space-y-5">
+      {message && (
+        <div className={`text-sm px-4 py-3 rounded-xl border ${
+          message.type === "ok"
+            ? "bg-green-500/10 border-green-500/20 text-green-600"
+            : "bg-red-500/10 border-red-500/20 text-red-500"
+        }`}>
+          {message.text}
+        </div>
+      )}
+
+      <div className="rounded-2xl border border-[var(--bd)] bg-[var(--pg-alt)] p-5 space-y-4">
+        <p className="text-xs font-bold text-[var(--tx-3)] uppercase tracking-widest">Maklumat Akaun</p>
+
+        <div>
+          <label className={labelCls}>Nama</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className={inputCls}
+            placeholder="Nama anda"
+          />
+        </div>
+
+        <div>
+          <label className={labelCls}>Emel</label>
+          <input
+            type="email"
+            value={session.user.email ?? ""}
+            disabled
+            className={`${inputCls} opacity-50 cursor-not-allowed`}
+          />
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-[var(--bd)] bg-[var(--pg-alt)] p-5 space-y-4">
+        <p className="text-xs font-bold text-[var(--tx-3)] uppercase tracking-widest">Tukar Kata Laluan</p>
+
+        <div>
+          <label className={labelCls}>Kata Laluan Semasa</label>
+          <input
+            type="password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            className={inputCls}
+            placeholder="••••••••"
+            autoComplete="current-password"
+          />
+        </div>
+
+        <div>
+          <label className={labelCls}>Kata Laluan Baharu</label>
+          <input
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            className={inputCls}
+            placeholder="Sekurang-kurangnya 8 aksara"
+            autoComplete="new-password"
+          />
+        </div>
+
+        <div>
+          <label className={labelCls}>Sahkan Kata Laluan Baharu</label>
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className={inputCls}
+            placeholder="••••••••"
+            autoComplete="new-password"
+          />
+        </div>
+      </div>
+
+      <button
+        onClick={handleSave}
+        disabled={saving}
+        className="inline-flex items-center gap-2 bg-[var(--tx-1)] text-[var(--pg)] text-xs font-bold tracking-widest uppercase px-6 py-2.5 rounded-lg hover:opacity-80 transition-opacity disabled:opacity-50"
+      >
+        {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+        Simpan Perubahan
+      </button>
+    </div>
+  )
+}
+
 function DashboardInner() {
   const { data: session, status } = useSession()
   const router  = useRouter()
@@ -447,6 +577,7 @@ function DashboardInner() {
   const [likes,        setLikes]        = useState<LikedTemplate[]>([])
   const [cardsLoading, setCardsLoading] = useState(false)
   const [likesLoading, setLikesLoading] = useState(false)
+  const [creatingFav,  setCreatingFav]  = useState<string | null>(null)
 
   useEffect(() => {
     if (status === "unauthenticated") router.push("/login?callbackUrl=/dashboard")
@@ -484,6 +615,33 @@ function DashboardInner() {
       alert("Gagal memadam kad. Sila cuba lagi.")
     }
   }, [])
+
+  const handleUseFav = useCallback(async (tpl: LikedTemplate) => {
+    if (creatingFav) return
+    setCreatingFav(tpl.id)
+    try {
+      const res = await fetch("/api/cards", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ templateId: tpl.id, title: "Jemputan", language: "ms" }),
+      })
+      if (res.status === 403) {
+        const body = await res.json().catch(() => ({}))
+        if (body.error === "DRAFT_LIMIT_EXCEEDED") {
+          alert("Anda sudah mempunyai 3 draf. Sila selesaikan atau padamkan salah satu draf dahulu.")
+          setCreatingFav(null)
+          return
+        }
+      }
+      if (!res.ok) throw new Error(`Create failed (${res.status})`)
+      const { card } = await res.json()
+      router.push(`/builder/${card.slug}`)
+    } catch (err) {
+      console.error("handleUseFav failed:", err)
+      alert("Gagal membuka pembina kad. Sila cuba lagi.")
+      setCreatingFav(null)
+    }
+  }, [creatingFav, router])
 
   useEffect(() => {
     if (status !== "authenticated") return
@@ -616,14 +774,18 @@ function DashboardInner() {
                     </div>
                     <p className="text-xs font-semibold text-[var(--tx-1)] text-center">{tpl.nameMs || tpl.name}</p>
                     <div className="flex gap-2 w-full">
-                      <Link
-                        href={`/templates?template=${tpl.slug}`}
-                        className="flex-1 text-center text-xs font-bold bg-[var(--tx-1)] text-[var(--pg)] py-2 rounded-lg hover:opacity-80 transition-opacity"
+                      <button
+                        onClick={() => handleUseFav(tpl)}
+                        disabled={!!creatingFav}
+                        className="flex-1 flex items-center justify-center gap-1 text-xs font-bold bg-[var(--tx-1)] text-[var(--pg)] py-2 rounded-lg hover:opacity-80 transition-opacity disabled:opacity-50"
                       >
-                        Use
-                      </Link>
+                        {creatingFav === tpl.id
+                          ? <Loader2 className="w-3 h-3 animate-spin" />
+                          : "Guna"
+                        }
+                      </button>
                       <Link
-                        href={tpl.previewUrl ?? `/invite/${tpl.slug}`}
+                        href={tpl.previewUrl ?? `/invite/demo?template=${tpl.slug}`}
                         target="_blank"
                         className="flex-1 text-center text-xs font-bold border border-[var(--bd)] text-[var(--tx-2)] py-2 rounded-lg hover:bg-[var(--sf)] transition-colors"
                       >
@@ -638,18 +800,7 @@ function DashboardInner() {
         )}
 
         {/* ── PROFILE tab ── */}
-        {tab === "profile" && (
-          <div className="max-w-sm space-y-4">
-            <div className="rounded-2xl border border-[var(--bd)] bg-[var(--pg-alt)] p-5">
-              <p className="text-xs text-[var(--tx-3)] mb-1">Name</p>
-              <p className="font-semibold text-[var(--tx-1)]">{session.user.name ?? "–"}</p>
-            </div>
-            <div className="rounded-2xl border border-[var(--bd)] bg-[var(--pg-alt)] p-5">
-              <p className="text-xs text-[var(--tx-3)] mb-1">Email</p>
-              <p className="font-semibold text-[var(--tx-1)]">{session.user.email ?? "–"}</p>
-            </div>
-          </div>
-        )}
+        {tab === "profile" && <ProfileTab session={session} />}
       </main>
     </div>
   )
