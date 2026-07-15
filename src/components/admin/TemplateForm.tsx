@@ -46,9 +46,13 @@ export function TemplateForm({ initialData }: Props) {
   const [isActive,      setIsActive]      = useState(initialData?.isActive ?? true)
   const [image1Url,     setImage1Url]     = useState(initialData?.image1Url ?? "")
   const [image2Url,     setImage2Url]     = useState(initialData?.image2Url ?? "")
-  const [primaryColor,  setPrimaryColor]  = useState(
-    (initialData?.defaultConfig?.primaryColor as string | undefined) ?? ""
-  )
+  const [primaryColors, setPrimaryColors] = useState<string[]>(() => {
+    const cfg = initialData?.defaultConfig
+    if (!cfg) return []
+    if (Array.isArray(cfg.primaryColors)) return cfg.primaryColors as string[]
+    if (typeof cfg.primaryColor === "string" && cfg.primaryColor) return [cfg.primaryColor as string]
+    return []
+  })
   const [displayConfig, setDisplayConfig] = useState<TemplateDisplayConfig>(
     (initialData?.displayConfig as TemplateDisplayConfig | undefined) ?? DEFAULT_DISPLAY_CONFIG
   )
@@ -86,7 +90,7 @@ export function TemplateForm({ initialData }: Props) {
           image1Url: image1Url || undefined,
           image2Url: image2Url || undefined,
           displayConfig,
-          defaultConfig: { primaryColor: primaryColor || undefined },
+          defaultConfig: { primaryColors: primaryColors.length ? primaryColors : undefined },
         }),
       })
       const data = await res.json()
@@ -99,7 +103,7 @@ export function TemplateForm({ initialData }: Props) {
     } finally {
       setSaving(false)
     }
-  }, [name, slug, category, isActive, image1Url, image2Url, primaryColor, displayConfig, isEdit, initialData, router])
+  }, [name, slug, category, isActive, image1Url, image2Url, primaryColors, displayConfig, isEdit, initialData, router])
 
   const handleDelete = async (force = false) => {
     if (!initialData) return
@@ -236,35 +240,44 @@ export function TemplateForm({ initialData }: Props) {
             <div>
               <label className={labelCls}>Warna Utama</label>
               <div className="flex flex-wrap gap-2 mt-1">
-                {COLOR_SWATCHES.map((color) => (
+                {COLOR_SWATCHES.map((color) => {
+                  const selected = primaryColors.includes(color)
+                  return (
+                    <button
+                      key={color}
+                      type="button"
+                      onClick={() =>
+                        setPrimaryColors((prev) =>
+                          selected ? prev.filter((c) => c !== color) : [...prev, color]
+                        )
+                      }
+                      className={`w-7 h-7 rounded-full transition-all ${
+                        selected
+                          ? "ring-2 ring-offset-2 ring-amber-500 scale-110"
+                          : "hover:scale-105"
+                      }`}
+                      style={{
+                        background: color,
+                        border: color === "#ffffff" ? "1px solid #d1d5db" : "none",
+                      }}
+                      title={color}
+                    />
+                  )
+                })}
+                {primaryColors.length > 0 && (
                   <button
-                    key={color}
                     type="button"
-                    onClick={() => setPrimaryColor(primaryColor === color ? "" : color)}
-                    className={`w-7 h-7 rounded-full transition-all ${
-                      primaryColor === color
-                        ? "ring-2 ring-offset-2 ring-amber-500 scale-110"
-                        : "hover:scale-105"
-                    }`}
-                    style={{
-                      background: color,
-                      border: color === "#ffffff" ? "1px solid #d1d5db" : "none",
-                    }}
-                    title={color}
-                  />
-                ))}
-                {primaryColor && (
-                  <button
-                    type="button"
-                    onClick={() => setPrimaryColor("")}
+                    onClick={() => setPrimaryColors([])}
                     className="text-xs text-gray-400 hover:text-gray-600 px-1 self-center"
                   >
                     Kosongkan
                   </button>
                 )}
               </div>
-              {primaryColor && (
-                <p className="text-[11px] text-gray-400 mt-1 font-mono">{primaryColor}</p>
+              {primaryColors.length > 0 && (
+                <p className="text-[11px] text-gray-400 mt-1 font-mono">
+                  {primaryColors.join(", ")}
+                </p>
               )}
             </div>
 
