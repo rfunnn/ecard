@@ -1,7 +1,8 @@
 ﻿import Link from "next/link"
-import { ArrowRight, Music, Share2, Sparkles, Heart, Check, Eye } from "lucide-react"
+import { ArrowRight, Music, Share2, Sparkles, Heart, Check, Eye, Clock } from "lucide-react"
 import UserMenu from "@/components/UserMenu"
 import { HomepagePhoneMockup } from "@/components/HomepagePhoneMockup"
+import { AnimatedWord } from "@/components/AnimatedWord"
 
 
 const FEATURES = [
@@ -19,6 +20,11 @@ const FEATURES = [
     icon: Share2,
     title: "Kongsi Mudah",
     desc: "Jana pautan unik dan kod QR. Hantar kepada sesiapa sahaja dalam saat.",
+  },
+  {
+    icon: Clock,
+    title: "Pautan Aktif 6 Bulan",
+    desc: "Kemaskini maklumat kad & pantau laporan RSVP bila-bila masa.",
   },
 ]
 
@@ -134,23 +140,21 @@ export default function HomePage() {
       </nav>
 
       {/* ── Hero ── */}
-      <section className="min-h-[100svh] flex items-center pt-14 pb-10 lg:pt-0 lg:pb-0">
+      <section className="relative min-h-[100svh] flex items-center pt-14 pb-10 lg:pt-0 lg:pb-0 overflow-hidden">
+        {/* ambient glow */}
+        <div className="absolute top-[38%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[560px] h-[560px] rounded-full blur-[140px] opacity-[0.07] pointer-events-none" style={{ background: "#D4AF37" }} />
         <div className="w-full max-w-3xl mx-auto px-5 lg:px-10 flex flex-col items-center text-center gap-8 py-8 lg:py-0">
 
           {/* Text block */}
           <div className="flex flex-col items-center text-center">
-            <div className="inline-flex items-center gap-1.5 text-gold/60 text-[10px] tracking-[0.3em] uppercase mb-5 border border-gold/20 rounded-full px-3.5 py-1.5 bg-gold/5">
+            <div className="inline-flex items-center gap-1.5 text-gold/60 text-[10px] tracking-[0.3em] uppercase mb-3 border border-gold/20 rounded-full px-3.5 py-1.5 bg-gold/5">
               <Sparkles className="w-2.5 h-2.5" />
               Kad Jemputan Digital
             </div>
-
-            <h1 className="font-playfair text-[2rem] leading-[1.1] sm:text-5xl lg:text-7xl xl:text-8xl text-[var(--tx-1)] mb-3 lg:mb-6">
-              Jemput dengan<br />
-              <span className="shimmer">Penuh Gaya</span>
-            </h1>
+            <AnimatedWord />
 
             <p className="text-[var(--tx-2)] text-[13px] lg:text-lg leading-relaxed max-w-sm lg:max-w-md mb-5 lg:mb-10">
-              Cipta kad jemputan digital dengan mudah. Tambah muzik, animasi skrol, dan kongsi pautan unik kepada tetamu.
+              Cipta kad jemputan digital dengan mudah. Tambah muzik, animasi, RSVP dan kongsi pautan unik kepada tetamu.
             </p>
 
             {/* CTAs */}
@@ -204,8 +208,10 @@ export default function HomePage() {
 
           <div className="flex flex-col md:grid md:grid-cols-3 gap-5 lg:gap-10">
             {STEPS.map(({ num, label, desc }) => (
-              <div key={num} className="flex flex-col items-center text-center gap-3">
-                <div className="font-playfair text-[52px] leading-none text-gold/12 font-bold">{num}</div>
+              <div key={num} className="flex flex-col items-center text-center gap-4">
+                <div className="w-12 h-12 rounded-full border border-gold/25 bg-gold/5 flex items-center justify-center shrink-0">
+                  <span className="font-playfair text-lg text-gold/70 font-bold leading-none">{num}</span>
+                </div>
                 <div>
                   <h3 className="font-playfair text-lg text-[var(--tx-1)] mb-1.5">{label}</h3>
                   <p className="text-[var(--tx-2)] text-sm leading-relaxed">{desc}</p>
@@ -223,12 +229,13 @@ export default function HomePage() {
             <p className="text-gold/60 text-[10px] tracking-[0.3em] uppercase mb-2">Ciri-ciri</p>
             <h2 className="font-playfair text-2xl lg:text-4xl text-[var(--tx-1)]">Semua yang anda perlukan</h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
             {FEATURES.map(({ icon: Icon, title, desc }) => (
               <div
                 key={title}
-                className="flex flex-col items-center text-center gap-3 p-3.5 lg:p-7 rounded-xl lg:rounded-2xl border border-[var(--bd)] bg-[var(--pg)] hover:border-gold/30 transition-all group"
+                className="relative flex flex-col items-center text-center gap-3 p-3.5 lg:p-7 rounded-xl lg:rounded-2xl border border-[var(--bd)] bg-[var(--pg)] hover:border-gold/30 transition-all group overflow-hidden"
               >
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center group-hover:bg-gold/20 transition-colors mb-1">
                   <Icon className="w-4 h-4 text-gold" />
                 </div>
@@ -336,10 +343,16 @@ export default function HomePage() {
       <section className="py-10 lg:py-28 px-5 lg:px-10 bg-[var(--pg-alt)]">
         <div
           className="max-w-2xl mx-auto text-center rounded-3xl p-6 lg:p-16 border border-gold/15 relative overflow-hidden bg-[var(--pg)]"
-          style={{ boxShadow: "0 0 60px rgba(212,175,55,0.05)" }}
+          style={{ boxShadow: "0 0 80px rgba(212,175,55,0.07)" }}
         >
           <div className="absolute top-0 left-0 right-0 h-px"
             style={{ background: "linear-gradient(90deg, transparent, #D4AF37, transparent)" }} />
+          <div className="absolute bottom-0 left-0 right-0 h-px"
+            style={{ background: "linear-gradient(90deg, transparent, #D4AF37, transparent)" }} />
+          <Sparkles className="absolute top-5 left-5 w-3 h-3 text-gold/15" />
+          <Sparkles className="absolute top-5 right-5 w-3 h-3 text-gold/15" />
+          <Sparkles className="absolute bottom-5 left-5 w-2.5 h-2.5 text-gold/10" />
+          <Sparkles className="absolute bottom-5 right-5 w-2.5 h-2.5 text-gold/10" />
           <h2 className="font-playfair text-2xl lg:text-4xl text-[var(--tx-1)] mb-2 lg:mb-4">Sedia untuk memulakan?</h2>
           <p className="text-[var(--tx-2)] text-[14px] lg:text-base mb-7 lg:mb-8 leading-relaxed">
             Buat kad jemputan pertama anda secara percuma hari ini.
