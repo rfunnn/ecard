@@ -140,10 +140,10 @@ export default function HomePage() {
       </nav>
 
       {/* ── Hero ── */}
-      <section className="relative min-h-[100svh] flex items-center pt-14 pb-10 lg:pt-0 lg:pb-0 overflow-hidden">
+      <section className="relative min-h-[100svh] flex items-center pt-14 pb-10 overflow-x-hidden">
         {/* ambient glow */}
         <div className="absolute top-[38%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[560px] h-[560px] rounded-full blur-[140px] opacity-[0.07] pointer-events-none" style={{ background: "#D4AF37" }} />
-        <div className="w-full max-w-3xl mx-auto px-5 lg:px-10 flex flex-col items-center text-center gap-8 py-8 lg:py-0">
+        <div className="w-full max-w-3xl mx-auto px-5 lg:px-10 flex flex-col items-center text-center gap-8 py-8">
 
           {/* Text block */}
           <div className="flex flex-col items-center text-center">
