@@ -198,7 +198,7 @@ export default async function InvitePage({ params, searchParams }: Props) {
       designCode: "",
       openingStyle: "Tingkap A",
       openingStyleColor: "#f2f2f2",
-      effectAnimation: "Bunga #1",
+      effectAnimation: "Bunga 1",
       effectColor: demoPrimary,
       effectSize: 100,
       footerBgColor: "",

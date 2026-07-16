@@ -1,4 +1,4 @@
-import type { WizardConfig } from "@/types/config"
+﻿import type { WizardConfig } from "@/types/config"
 import { DEFAULT_WIZARD_CONFIG } from "@/types/config"
 
 export const DEMO_YOUTUBE_URL      = "https://www.youtube.com/watch?v=Tf_zS_ES_7k"
@@ -29,7 +29,7 @@ export function buildDemoWizardConfig(
     designCode: templateSlug,
     openingStyle: "Tingkap A",
     openingStyleColor: "#f2f2f2",
-    effectAnimation: "Bunga #1",
+    effectAnimation: "Bunga 1",
     effectColor: primaryColor,
     effectSize: 100,
 
@@ -46,7 +46,7 @@ export function buildDemoWizardConfig(
     venueLine: "Dewan Seri Murni, Kuala Lumpur",
     venueLineSize: 13,
 
-    openingSpeech: "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ\n\nWalimatul Urus",
+    openingSpeech: "Ø¨ÙØ³Ù’Ù…Ù Ø§Ù„Ù„ÙŽÙ‘Ù‡Ù Ø§Ù„Ø±ÙŽÙ‘Ø­Ù’Ù…ÙŽÙ†Ù Ø§Ù„Ø±ÙŽÙ‘Ø­ÙÙŠÙ…Ù\n\nWalimatul Urus",
     organizerCount: 2,
     organizer1: { name: "Hj. Ahmad bin Abdul Razak", relationship: "Bapa Lelaki" },
     organizer2: { name: "Hjh. Fatimah binti Ismail", relationship: "Ibu Perempuan" },
@@ -70,7 +70,7 @@ export function buildDemoWizardConfig(
 
     additionalInfo1: "Kod Pakaian: Baju Melayu / Kurung / Kebaya",
     eventProgram: "Ketibaan Tetamu\n8:30 pagi\n\nAkad Nikah\n10:00 pagi\n\nMajlis Resepsi\n12:00 tengah hari\n\nMajlis Berakhir\n3:00 petang",
-    additionalInfo2: "\"Dan di antara tanda-tanda kekuasaanNya ialah Dia menciptakan untukmu pasangan dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikanNya di antaramu rasa kasih dan sayang.\"\n\n— Surah Ar-Rum (30:21)",
+    additionalInfo2: "\"Dan di antara tanda-tanda kekuasaanNya ialah Dia menciptakan untukmu pasangan dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikanNya di antaramu rasa kasih dan sayang.\"\n\nâ€” Surah Ar-Rum (30:21)",
 
     generalFont: "Cormorant",
     generalColor: primaryColor,
