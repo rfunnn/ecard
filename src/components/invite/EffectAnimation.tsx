@@ -54,10 +54,12 @@ function spawn(effect: string, w: number, h: number, spreadY = true, sizeScale =
   const isBuih2 = effect === "Buih #2"
   const isBuih13 = effect === "Buih #1" || effect === "Buih #3"
   const baseSize =
-    isConf            ? 3  + Math.random() * 5
-    : effect === "Salji #1" ? 2  + Math.random() * 4
-    : effect === "Salji #2" ? 4  + Math.random() * 9
-    : isBuih          ? 3  + Math.random() * 13
+    isConf                        ? 3  + Math.random() * 5
+    : effect === "Salji #1"       ? 2  + Math.random() * 4
+    : effect === "Salji #2"       ? 4  + Math.random() * 9
+    : effect === "Salji Perlahan" ? 5  + Math.random() * 10
+    : effect === "Salji Berkelip" ? 2  + Math.random() * 5
+    : isBuih                      ? 3  + Math.random() * 13
     : 6  + Math.random() * 10
   return {
     x: Math.random() * w,
@@ -68,9 +70,12 @@ function spawn(effect: string, w: number, h: number, spreadY = true, sizeScale =
         : -(5 + Math.random() * 20),
     size: baseSize * sizeScale,
     speed:
-      isConf   ? 1.8 + Math.random() * 2.2
-      : iSnow  ? (effect === "Salji #1" ? 0.55 + Math.random() * 1.1 : 0.4 + Math.random() * 0.85)
-      : isBuih ? 0.18 + Math.random() * 0.52
+      isConf                        ? 1.8  + Math.random() * 2.2
+      : effect === "Salji #1"       ? 0.55 + Math.random() * 1.1
+      : effect === "Salji #2"       ? 0.4  + Math.random() * 0.85
+      : effect === "Salji Perlahan" ? 0.12 + Math.random() * 0.22
+      : effect === "Salji Berkelip" ? 0.10 + Math.random() * 0.20
+      : isBuih                      ? 0.18 + Math.random() * 0.52
       : 0.65 + Math.random() * 0.95,
     opacity:    isBuih ? 0.22 + Math.random() * 0.52 : 0.35 + Math.random() * 0.55,
     drift:      (Math.random() - 0.5) * (isConf ? 2.2 : isBuih ? 0.7 : 1.4),
@@ -79,8 +84,8 @@ function spawn(effect: string, w: number, h: number, spreadY = true, sizeScale =
     rotationSpeed: (Math.random() - 0.5) * (isConf ? 0.11 : 0.035),
     colorIndex: Math.floor(Math.random() * COLOR_OFFSETS.length),
     angleWander: isBuih13 ? Math.random() * Math.PI * 2 : undefined,
-    blinkPhase:  isBuih   ? Math.random() * Math.PI * 2 : undefined,
-    blinkSpeed:  isBuih   ? 0.007 + Math.random() * 0.016 : undefined,
+    blinkPhase:  (isBuih || effect === "Salji Berkelip") ? Math.random() * Math.PI * 2 : undefined,
+    blinkSpeed:  isBuih ? 0.007 + Math.random() * 0.016 : effect === "Salji Berkelip" ? 0.018 + Math.random() * 0.025 : undefined,
     blinks:
       isBuih2         ? Math.random() > 0.48
       : effect === "Buih #3" ? Math.random() > 0.32
@@ -90,12 +95,14 @@ function spawn(effect: string, w: number, h: number, spreadY = true, sizeScale =
 
 function makeParticles(effect: string, w: number, h: number, sizeScale = 1): Particle[] {
   const count =
-    effect === "Confetti"  ? 80
-    : effect === "Salji #1" ? 55
-    : effect === "Salji #2" ? 38
-    : effect === "Buih #1"  ? 32
-    : effect === "Buih #2"  ? 28
-    : effect === "Buih #3"  ? 30
+    effect === "Confetti"         ? 80
+    : effect === "Salji #1"       ? 55
+    : effect === "Salji #2"       ? 38
+    : effect === "Salji Perlahan" ? 40
+    : effect === "Salji Berkelip" ? 60
+    : effect === "Buih #1"        ? 32
+    : effect === "Buih #2"        ? 28
+    : effect === "Buih #3"        ? 30
     : 24
   // First batch: scattered across screen so it doesn't start empty
   return Array.from({ length: count }, (_, i) =>
@@ -314,8 +321,16 @@ export function EffectAnimation({ effect, color, contained, sizeScale = 1 }: Pro
           if (p.x  >  w + p.size * 2) p.x = -p.size * 2
           if (p.x  < -p.size * 2)     p.x =  w + p.size * 2
 
-          if      (effect === "Salji #1")  drawSnow1(ctx, p, r, g, b)
-          else if (effect === "Salji #2")  drawSnow2(ctx, p, r, g, b)
+          if      (effect === "Salji #1")        drawSnow1(ctx, p, r, g, b)
+          else if (effect === "Salji #2")        drawSnow2(ctx, p, r, g, b)
+          else if (effect === "Salji Perlahan")  drawSnow2(ctx, p, r, g, b)
+          else if (effect === "Salji Berkelip") {
+            if (p.blinkPhase !== undefined) p.blinkPhase += (p.blinkSpeed ?? 0.02)
+            const savedOp = p.opacity
+            if (p.blinkPhase !== undefined) p.opacity = savedOp * (0.1 + 0.9 * Math.abs(Math.sin(p.blinkPhase)))
+            drawSnow1(ctx, p, r, g, b)
+            p.opacity = savedOp
+          }
           else if (effect === "Bunga #1")  drawPetal1(ctx, p, r, g, b)
           else if (effect === "Bunga #2")  drawPetal2(ctx, p, r, g, b)
           else if (effect === "Confetti") drawConfetti(ctx, p, r, g, b)
