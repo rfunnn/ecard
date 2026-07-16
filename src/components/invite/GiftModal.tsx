@@ -17,13 +17,14 @@ interface GiftModalProps {
 
 export function GiftModal({ isOpen, onClose, card, onAnalytic, contained }: GiftModalProps) {
   const lang = card.language === "ms"
-  const { primaryColor, bgColor } = card.theme
+  const { primaryColor: _primaryColor, bgColor } = card.theme
   const items = card.giftItems ?? []
   const [copiedAccount, setCopiedAccount] = useState(false)
   const [qrOpen, setQrOpen] = useState(false)
   const [selectedItem, setSelectedItem] = useState<GiftItem | null>(null)
 
   const wizardConfig = card.wizardConfig as WizardConfig | undefined
+  const primaryColor = wizardConfig?.footerIconColor || _primaryColor
   const bgImage = card.template.image2Url || card.template.image1Url || card.theme.bgImageUrl
 
   const bankName          = wizardConfig?.bankName || ""

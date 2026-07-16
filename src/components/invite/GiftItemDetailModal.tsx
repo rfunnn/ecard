@@ -17,8 +17,9 @@ interface GiftItemDetailModalProps {
 
 export function GiftItemDetailModal({ item, onClose, card, onAnalytic, contained }: GiftItemDetailModalProps) {
   const lang = card.language === "ms"
-  const { primaryColor, bgColor } = card.theme
   const cfg = card.wizardConfig as WizardConfig | undefined
+  const { primaryColor: _primaryColor, bgColor } = card.theme
+  const primaryColor = cfg?.footerIconColor || _primaryColor
 
   const bgImage = card.template.image2Url || card.template.image1Url || card.theme.bgImageUrl
 

@@ -97,9 +97,10 @@ export function RSVPModal({ isOpen, onClose, card, onAnalytic, contained }: RSVP
   const [submittedAttendance, setSubmittedAttendance] = useState<string>("")
   const [error, setError] = useState("")
   const lang = card.language === "ms"
-  const { primaryColor, bgColor } = card.theme
+  const { primaryColor: _primaryColor, bgColor } = card.theme
 
   const wCfg = card.wizardConfig as WizardConfig | undefined
+  const primaryColor = wCfg?.footerIconColor || _primaryColor
   const rsvpCfg = wCfg?.rsvp
   const guestLimitPerRSVP = rsvpCfg?.guestLimitPerRSVP ?? 5
   const rsvpMode = rsvpCfg?.mode ?? "RSVP_WISHES"

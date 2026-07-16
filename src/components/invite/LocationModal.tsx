@@ -34,7 +34,8 @@ const WAZE_ICON = (
 
 export function LocationModal({ isOpen, onClose, card, onAnalytic, contained }: LocationModalProps) {
   const wizardConfig = card.wizardConfig as WizardConfig | undefined
-  const { primaryColor, bgColor } = card.theme
+  const { primaryColor: _primaryColor, bgColor } = card.theme
+  const primaryColor = wizardConfig?.footerIconColor || _primaryColor
 
   const mapsUrl = wizardConfig?.googleMapsUrl || card.venueMapUrl || ""
   const wazeUrl = wizardConfig?.wazeUrl || ""
