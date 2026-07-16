@@ -34,13 +34,6 @@ function textOn(hex: string): string {
   return (r * 299 + g * 587 + b * 114) / 1000 > 130 ? "#111111" : "#f5f5f5"
 }
 
-function getLum(hex: string): number {
-  const h = (hex.replace("#", "") + "000000").slice(0, 6)
-  const r = parseInt(h.slice(0, 2), 16) || 0
-  const g = parseInt(h.slice(2, 4), 16) || 0
-  const b = parseInt(h.slice(4, 6), 16) || 0
-  return (r * 299 + g * 587 + b * 114) / 1000
-}
 
 // ── Shared: Circular wax-seal badge ─────────────────────────────────────────
 
@@ -91,25 +84,6 @@ function SealBadge({ displayName, visible }: { displayName?: string; visible: bo
   )
 }
 
-// ── Shared: Ribbon bow SVG ───────────────────────────────────────────────────
-
-function BowSvg({ color }: { color: string }) {
-  return (
-    <svg
-      viewBox="0 0 200 120"
-      style={{ width: 148, height: 89, filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.14))" }}
-    >
-      <ellipse cx="68" cy="52" rx="58" ry="36" fill={color} opacity="0.92" />
-      <ellipse cx="68" cy="46" rx="40" ry="22" fill="white" opacity="0.22" />
-      <ellipse cx="132" cy="52" rx="58" ry="36" fill={color} opacity="0.92" />
-      <ellipse cx="132" cy="46" rx="40" ry="22" fill="white" opacity="0.22" />
-      <path d="M 90 68 Q 65 100 48 112 Q 62 93 80 75" fill={color} opacity="0.87" />
-      <path d="M 110 68 Q 135 100 152 112 Q 138 93 120 75" fill={color} opacity="0.87" />
-      <ellipse cx="100" cy="56" rx="16" ry="12" fill={color} />
-      <ellipse cx="100" cy="52" rx="10" ry="7" fill="white" opacity="0.32" />
-    </svg>
-  )
-}
 
 // ── Tingkap A: Clean left-right split with seal ──────────────────────────────
 
@@ -134,187 +108,126 @@ function TingkapA({ color, opening, openingRef, onOpen, tap, displayName }: Styl
   )
 }
 
-// ── Tingkap B: Decorative panels + arch window + bow ────────────────────────
+// ── Tingkap B: Same as Tingkap A with 30% transparent panels ────────────────
 
 function TingkapB({ color, opening, openingRef, onOpen, tap, displayName }: StyleProps) {
-  const lum = getLum(color)
-  const bowColor = lum > 200 ? "#e8a0b4" : color
-  return (
-    <div className="absolute inset-0 z-40 cursor-pointer select-none" onClick={tap}>
-      <motion.div
-        className="absolute inset-y-0 left-0 w-1/2"
-        style={{ background: color, boxShadow: "2px 0 8px rgba(0,0,0,0.05)" }}
-        animate={{ x: opening ? "-100%" : "0%" }}
-        transition={{ duration: DUR, ease: EASE }}
-        onAnimationComplete={() => { if (openingRef.current) onOpen() }}
-      />
-      <motion.div
-        className="absolute inset-y-0 right-0 w-1/2"
-        style={{ background: color }}
-        animate={{ x: opening ? "100%" : "0%" }}
-        transition={{ duration: DUR, ease: EASE }}
-      />
-
-      {/* Arch window overlay */}
-      <AnimatePresence>
-        {!opening && (
-          <motion.div
-            key="arch"
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
-            className="absolute z-10 pointer-events-none"
-            style={{
-              left: "14%", right: "14%",
-              top: "7%", bottom: "10%",
-              background: "rgba(255,255,255,0.18)",
-              borderRadius: "50% 50% 8px 8px / 28% 28% 8px 8px",
-              border: "1px solid rgba(255,255,255,0.40)",
-            }}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Bow */}
-      <AnimatePresence>
-        {!opening && (
-          <motion.div
-            key="bow"
-            exit={{ opacity: 0, y: -14 }}
-            transition={{ duration: 0.18 }}
-            className="absolute top-2 left-0 right-0 flex justify-center z-30 pointer-events-none"
-          >
-            <BowSvg color={bowColor} />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <SealBadge displayName={displayName} visible={!opening} />
-    </div>
-  )
-}
-
-// ── Tingkap C: Frosted-glass panels + bow ───────────────────────────────────
-
-function TingkapC({ color, opening, openingRef, onOpen, tap, displayName }: StyleProps) {
-  const lum = getLum(color)
-  const bowColor = lum > 200 ? "#e8a0b4" : color
   const h = (color.replace("#", "") + "000000").slice(0, 6)
   const r = parseInt(h.slice(0, 2), 16) || 240
   const g = parseInt(h.slice(2, 4), 16) || 240
   const b = parseInt(h.slice(4, 6), 16) || 240
-  const glass = `rgba(${r},${g},${b},0.52)`
+  const panel = `rgba(${r},${g},${b},0.70)`
 
   return (
     <div className="absolute inset-0 z-40 cursor-pointer select-none" onClick={tap}>
       <motion.div
         className="absolute inset-y-0 left-0 w-1/2"
-        style={{
-          background: glass,
-          backdropFilter: "blur(22px)",
-          WebkitBackdropFilter: "blur(22px)",
-        }}
+        style={{ background: panel, boxShadow: "2px 0 12px rgba(0,0,0,0.07)" }}
         animate={{ x: opening ? "-100%" : "0%" }}
         transition={{ duration: DUR, ease: EASE }}
         onAnimationComplete={() => { if (openingRef.current) onOpen() }}
       />
       <motion.div
         className="absolute inset-y-0 right-0 w-1/2"
-        style={{
-          background: glass,
-          backdropFilter: "blur(22px)",
-          WebkitBackdropFilter: "blur(22px)",
-        }}
+        style={{ background: panel }}
         animate={{ x: opening ? "100%" : "0%" }}
         transition={{ duration: DUR, ease: EASE }}
       />
-
-      {/* Arch frame */}
-      <AnimatePresence>
-        {!opening && (
-          <motion.div
-            key="arch"
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
-            className="absolute z-10 pointer-events-none"
-            style={{
-              left: "14%", right: "14%",
-              top: "7%", bottom: "10%",
-              borderRadius: "50% 50% 8px 8px / 28% 28% 8px 8px",
-              border: "1px solid rgba(255,255,255,0.45)",
-            }}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Bow */}
-      <AnimatePresence>
-        {!opening && (
-          <motion.div
-            key="bow"
-            exit={{ opacity: 0, y: -14 }}
-            transition={{ duration: 0.18 }}
-            className="absolute top-2 left-0 right-0 flex justify-center z-30 pointer-events-none"
-          >
-            <BowSvg color={bowColor} />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <SealBadge displayName={displayName} visible={!opening} />
     </div>
   )
 }
 
-// ── Sampul A: Envelope with fold lines and opening flap ──────────────────────
+// ── Tingkap C: 4-corner frosted glass panels ─────────────────────────────────
+
+function TingkapC({ color, opening, openingRef, onOpen, tap, displayName }: StyleProps) {
+  const h = (color.replace("#", "") + "000000").slice(0, 6)
+  const r = parseInt(h.slice(0, 2), 16) || 240
+  const g = parseInt(h.slice(2, 4), 16) || 240
+  const b = parseInt(h.slice(4, 6), 16) || 240
+  const glass = `rgba(${r},${g},${b},0.62)`
+  const panel = {
+    background: glass,
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
+  }
+
+  return (
+    <div className="absolute inset-0 z-40 cursor-pointer select-none" onClick={tap}>
+      {/* Top-left */}
+      <motion.div
+        className="absolute top-0 left-0 w-1/2 h-1/2"
+        style={panel}
+        animate={{ x: opening ? "-100%" : "0%", y: opening ? "-100%" : "0%" }}
+        transition={{ duration: DUR, ease: EASE }}
+        onAnimationComplete={() => { if (openingRef.current) onOpen() }}
+      />
+      {/* Top-right */}
+      <motion.div
+        className="absolute top-0 right-0 w-1/2 h-1/2"
+        style={panel}
+        animate={{ x: opening ? "100%" : "0%", y: opening ? "-100%" : "0%" }}
+        transition={{ duration: DUR, ease: EASE }}
+      />
+      {/* Bottom-left */}
+      <motion.div
+        className="absolute bottom-0 left-0 w-1/2 h-1/2"
+        style={panel}
+        animate={{ x: opening ? "-100%" : "0%", y: opening ? "100%" : "0%" }}
+        transition={{ duration: DUR, ease: EASE }}
+      />
+      {/* Bottom-right */}
+      <motion.div
+        className="absolute bottom-0 right-0 w-1/2 h-1/2"
+        style={panel}
+        animate={{ x: opening ? "100%" : "0%", y: opening ? "100%" : "0%" }}
+        transition={{ duration: DUR, ease: EASE }}
+      />
+      <SealBadge displayName={displayName} visible={!opening} />
+    </div>
+  )
+}
+
+// ── Sampul A: Envelope-style left-right doors with diamond fold lines ─────────
 
 function SampulA({ color, opening, openingRef, onOpen, tap, displayName }: StyleProps) {
+  const tc = textOn(color)
+
   return (
-    <div
-      className="absolute inset-0 z-40 cursor-pointer select-none"
-      style={{ perspective: "1200px" }}
-      onClick={tap}
-    >
-      {/* Envelope body — slides down after flap opens */}
+    <div className="absolute inset-0 z-40 cursor-pointer select-none" onClick={tap}>
+      {/* Left envelope door */}
       <motion.div
-        className="absolute inset-0"
-        style={{ background: color }}
-        animate={{ y: opening ? "100%" : "0%" }}
-        transition={{ duration: DUR, ease: EASE, delay: opening ? 0.28 : 0 }}
+        className="absolute inset-y-0 left-0 w-1/2 overflow-hidden"
+        style={{ background: color, boxShadow: "2px 0 12px rgba(0,0,0,0.08)" }}
+        animate={{ x: opening ? "-100%" : "0%" }}
+        transition={{ duration: DUR, ease: EASE }}
         onAnimationComplete={() => { if (openingRef.current) onOpen() }}
       >
-        {/* Diagonal fold lines creating envelope X pattern */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `
-              linear-gradient(to bottom right, transparent 49.7%, rgba(0,0,0,0.055) 49.7%, rgba(0,0,0,0.055) 50.3%, transparent 50.3%),
-              linear-gradient(to bottom left,  transparent 49.7%, rgba(0,0,0,0.055) 49.7%, rgba(0,0,0,0.055) 50.3%, transparent 50.3%)
-            `,
-          }}
-        />
-        {/* Bottom shadow */}
-        <div
-          className="absolute bottom-0 left-0 right-0 pointer-events-none"
-          style={{
-            height: "45%",
-            background: "linear-gradient(to top, rgba(0,0,0,0.04) 0%, transparent 60%)",
-          }}
-        />
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+          {/* Top-right and bottom-right triangles (envelope flap shading) */}
+          <polygon points="0,0 100,0 100,50"   fill={tc} fillOpacity="0.05" />
+          <polygon points="0,100 100,100 100,50" fill={tc} fillOpacity="0.03" />
+          {/* Fold lines from top-left and bottom-left converging to right-center */}
+          <line x1="0" y1="0"   x2="100" y2="50" stroke={tc} strokeOpacity="0.18" strokeWidth="0.6" />
+          <line x1="0" y1="100" x2="100" y2="50" stroke={tc} strokeOpacity="0.18" strokeWidth="0.6" />
+        </svg>
       </motion.div>
 
-      {/* Top flap triangle — folds open before body slides */}
+      {/* Right envelope door */}
       <motion.div
-        className="absolute top-0 left-0 right-0 z-10"
-        style={{
-          height: "50%",
-          transformOrigin: "top center",
-          clipPath: "polygon(0 0, 100% 0, 50% 100%)",
-          background: color,
-          filter: "drop-shadow(0 6px 14px rgba(0,0,0,0.08))",
-        }}
-        animate={{ rotateX: opening ? -140 : 0 }}
-        transition={{ duration: DUR * 0.85, ease: EASE }}
-      />
+        className="absolute inset-y-0 right-0 w-1/2 overflow-hidden"
+        style={{ background: color }}
+        animate={{ x: opening ? "100%" : "0%" }}
+        transition={{ duration: DUR, ease: EASE }}
+      >
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+          {/* Top-left and bottom-left triangles (mirrored flap shading) */}
+          <polygon points="100,0 0,0 0,50"     fill={tc} fillOpacity="0.05" />
+          <polygon points="100,100 0,100 0,50" fill={tc} fillOpacity="0.03" />
+          {/* Fold lines from top-right and bottom-right converging to left-center */}
+          <line x1="100" y1="0"   x2="0" y2="50" stroke={tc} strokeOpacity="0.18" strokeWidth="0.6" />
+          <line x1="100" y1="100" x2="0" y2="50" stroke={tc} strokeOpacity="0.18" strokeWidth="0.6" />
+        </svg>
+      </motion.div>
 
       <SealBadge displayName={displayName} visible={!opening} />
     </div>
@@ -325,8 +238,6 @@ function SampulA({ color, opening, openingRef, onOpen, tap, displayName }: Style
 
 function Menaik({ color, opening, openingRef, onOpen, tap, displayName, eventType, eventDate }: StyleProps) {
   const tc = textOn(color)
-  const lum = getLum(color)
-  const accent = lum > 150 ? "#c4829a" : lum < 80 ? "#f0d0d8" : tc
 
   return (
     <motion.div
@@ -337,27 +248,22 @@ function Menaik({ color, opening, openingRef, onOpen, tap, displayName, eventTyp
       onClick={tap}
       onAnimationComplete={() => { if (openingRef.current) onOpen() }}
     >
-      {/* Bow */}
-      <div className="flex justify-center pt-4 pointer-events-none">
-        <BowSvg color={accent} />
-      </div>
-
       {/* Content area */}
-      <div className="flex-1 flex flex-col items-center justify-center px-10 gap-3 relative">
+      <div className="flex-1 flex flex-col items-center justify-center px-8 gap-2 relative overflow-hidden">
         {/* Arch border frame */}
         <div
           className="absolute pointer-events-none"
           style={{
             left: "8%", right: "8%",
-            top: "-8%", bottom: "8%",
+            top: "4%", bottom: "4%",
             borderRadius: "50% 50% 6px 6px / 22% 22% 6px 6px",
-            border: `1px solid ${accent}38`,
+            border: `1px solid ${tc}38`,
           }}
         />
 
         {eventType && (
           <p
-            className="text-[11px] tracking-[0.22em] uppercase z-10"
+            className="text-[10px] tracking-[0.22em] uppercase z-10"
             style={{ color: `${tc}72` }}
           >
             {eventType}
@@ -366,8 +272,8 @@ function Menaik({ color, opening, openingRef, onOpen, tap, displayName, eventTyp
 
         {displayName ? (
           <p
-            className="text-4xl text-center z-10 leading-snug"
-            style={{ fontFamily: "'Dancing Script','Brush Script MT',cursive", color: accent }}
+            className="text-2xl text-center z-10 leading-snug"
+            style={{ fontFamily: "'Dancing Script','Brush Script MT',cursive", color: tc }}
           >
             {displayName}
           </p>
@@ -378,14 +284,14 @@ function Menaik({ color, opening, openingRef, onOpen, tap, displayName, eventTyp
         )}
 
         {eventDate && (
-          <p className="text-[11px] tracking-widest z-10" style={{ color: `${tc}62` }}>
+          <p className="text-[10px] tracking-widest z-10" style={{ color: `${tc}62` }}>
             {eventDate}
           </p>
         )}
       </div>
 
       {/* BUKA button */}
-      <div className="flex justify-center pb-10 z-10">
+      <div className="flex justify-center pb-6 z-10">
         <div
           className="px-7 py-1.5 rounded text-[10px] tracking-[0.3em] uppercase"
           style={{ border: `1px solid ${tc}38`, color: `${tc}80` }}

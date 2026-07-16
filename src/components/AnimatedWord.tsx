@@ -21,7 +21,7 @@ export function AnimatedWord() {
       {/* cycling word - letter-by-letter rise */}
       <div
         className="overflow-hidden flex items-end justify-center w-full"
-        style={{ height: "clamp(3rem, 10vw, 6.5rem)" }}
+        style={{ height: "clamp(2.5rem, 6vw, 4rem)" }}
       >
         <AnimatePresence mode="wait">
           <motion.div
@@ -46,7 +46,7 @@ export function AnimatedWord() {
                     ease: "easeOut" as const,
                   }}
                   className="font-playfair shimmer leading-none"
-                  style={{ fontSize: "clamp(2.4rem, 9vw, 6rem)", letterSpacing: "0.05em" }}
+                  style={{ fontSize: "clamp(2rem, 5vw, 3.2rem)", letterSpacing: "0.05em" }}
                 >
                   {letter}
                 </motion.span>

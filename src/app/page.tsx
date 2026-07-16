@@ -147,7 +147,7 @@ export default function HomePage() {
 
           {/* Text block */}
           <div className="flex flex-col items-center text-center">
-            <div className="inline-flex items-center gap-1.5 text-gold/60 text-[10px] tracking-[0.3em] uppercase mb-3 border border-gold/20 rounded-full px-3.5 py-1.5 bg-gold/5">
+            <div className="inline-flex items-center gap-1.5 text-gold text-[10px] tracking-[0.3em] uppercase mb-3 border border-gold/50 rounded-full px-3.5 py-1.5 bg-gold/10">
               <Sparkles className="w-2.5 h-2.5" />
               Kad Jemputan Digital
             </div>
