@@ -105,7 +105,7 @@ export function BirthdayTemplate({ card, onRsvpOpen, previewPage: p, revealed = 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
-        className="min-h-screen flex flex-col items-center justify-center text-center pt-12 pb-32"
+        className="min-h-screen flex flex-col items-center justify-center text-center pt-12 pb-44"
       >
         {/* event type */}
         {(cfg?.eventType || card.subtitle) && (

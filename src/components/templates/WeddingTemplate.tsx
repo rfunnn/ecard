@@ -156,7 +156,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
         initial={anim.initial}
         animate={revealed ? anim.target : anim.initial}
         transition={anim.transition}
-        className="min-h-screen flex flex-col items-center justify-center text-center pt-8 pb-24"
+        className="min-h-screen flex flex-col items-center justify-center text-center pt-12 pb-44"
       >
         {/* event type */}
         {(cfg?.eventType || card.subtitle) && (
