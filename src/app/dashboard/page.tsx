@@ -292,8 +292,11 @@ function ShareModal({ card, onClose }: { card: Card; onClose: () => void }) {
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
-    const url = `${window.location.origin}${card.cardNum ? `/${card.cardNum}` : `/${card.slug}`}`
-    setShareUrl(url)
+    const origin = window.location.origin
+    const base = card.cardNum ? `${origin}/${card.cardNum}` : `${origin}/${card.slug}`
+    let suffix = ""
+    try { suffix = localStorage.getItem(`invite-suffix-${card.slug}`) ?? "" } catch { /* ignore */ }
+    setShareUrl(suffix ? `${base}/${suffix}` : base)
     setCanNativeShare(typeof navigator !== "undefined" && !!navigator.share)
   }, [card.cardNum, card.slug])
 
@@ -316,13 +319,7 @@ function ShareModal({ card, onClose }: { card: Card; onClose: () => void }) {
 
   async function handleShare() {
     try {
-      await navigator.share({
-        title: card.title || "Kad Jemputan",
-        text: card.groomName && card.brideName
-          ? `Jemput hadir ke majlis ${card.groomName} & ${card.brideName}`
-          : `Jemput hadir ke majlis ${card.title}`,
-        url: shareUrl,
-      })
+      await navigator.share({ url: shareUrl })
     } catch { /* user cancelled */ }
   }
 
