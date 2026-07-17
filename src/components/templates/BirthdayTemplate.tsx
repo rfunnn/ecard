@@ -376,15 +376,17 @@ export function BirthdayTemplate({ card, onRsvpOpen, previewPage: p, revealed = 
           <p className={`${headFont} text-[11px] tracking-[0.3em] uppercase opacity-85 mb-8`} style={{ color: bodyColor }}>
             {isMs ? "Ucapan" : "Wishes"}
           </p>
-          <div className="space-y-7 max-w-sm mx-auto">
-            {wishes.map((w, i) => (
-              <motion.div key={i} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}>
-                <p className={`${orgFont} text-base mb-1`} style={{ color: displayColor }}>{w.guestName}</p>
-                <p className={`${bodyFont} text-sm font-medium italic leading-relaxed`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
-                  &ldquo;{w.message}&rdquo;
-                </p>
-              </motion.div>
-            ))}
+          <div className="max-h-[50vh] overflow-y-auto max-w-sm mx-auto pr-1">
+            <div className="space-y-7">
+              {wishes.map((w, i) => (
+                <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                  <p className={`${orgFont} text-base mb-1`} style={{ color: displayColor }}>{w.guestName}</p>
+                  <p className={`${bodyFont} text-sm font-medium italic leading-relaxed`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
+                    &ldquo;{w.message}&rdquo;
+                  </p>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       )}

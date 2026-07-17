@@ -567,26 +567,27 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
           >
             {card.language === "ms" ? "Ucapan" : "Wishes"}
           </p>
-          <div className="space-y-5 max-w-sm mx-auto">
-            {wishes.map((w, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ root: scrollContainerRef, once: true }}
-                transition={{ delay: i * 0.05 }}
-              >
-                <p className={`${orgFont} text-base mb-1`} style={{ color: displayColor }}>
-                  {w.guestName}
-                </p>
-                <p
-                  className={`${bodyFont} text-sm font-medium italic leading-relaxed`}
-                  style={{ color: bodyColor, fontSize: `${bodySize}px` }}
+          <div className="max-h-[50vh] overflow-y-auto max-w-sm mx-auto pr-1">
+            <div className="space-y-5">
+              {wishes.map((w, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
                 >
-                  &ldquo;{w.message}&rdquo;
-                </p>
-              </motion.div>
-            ))}
+                  <p className={`${orgFont} text-base mb-1`} style={{ color: displayColor }}>
+                    {w.guestName}
+                  </p>
+                  <p
+                    className={`${bodyFont} text-sm font-medium italic leading-relaxed`}
+                    style={{ color: bodyColor, fontSize: `${bodySize}px` }}
+                  >
+                    &ldquo;{w.message}&rdquo;
+                  </p>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </motion.div>
       )}

@@ -384,17 +384,19 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
           <p className={`${headFont} text-[10px] tracking-[0.3em] uppercase opacity-40 mb-6`} style={{ color: bodyColor }}>
             {isMs ? "Ucapan" : "Messages"}
           </p>
-          <div className="space-y-5 max-w-sm">
-            {wishes.map((w, i) => (
-              <motion.div key={i} initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.04 }}
-                className="p-4 rounded-lg"
-                style={{ background: `${primaryColor}06`, border: `1px solid ${primaryColor}10` }}>
-                <p className={`${orgFont} text-sm font-medium mb-1`} style={{ color: displayColor }}>{w.guestName}</p>
-                <p className={`${bodyFont} text-xs opacity-60 italic leading-relaxed`} style={{ color: bodyColor, fontSize: `${Math.max(bodySize - 1, 12)}px` }}>
-                  &ldquo;{w.message}&rdquo;
-                </p>
-              </motion.div>
-            ))}
+          <div className="max-h-[50vh] overflow-y-auto max-w-sm pr-1">
+            <div className="space-y-5">
+              {wishes.map((w, i) => (
+                <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+                  className="p-4 rounded-lg"
+                  style={{ background: `${primaryColor}06`, border: `1px solid ${primaryColor}10` }}>
+                  <p className={`${orgFont} text-sm font-medium mb-1`} style={{ color: displayColor }}>{w.guestName}</p>
+                  <p className={`${bodyFont} text-xs opacity-60 italic leading-relaxed`} style={{ color: bodyColor, fontSize: `${Math.max(bodySize - 1, 12)}px` }}>
+                    &ldquo;{w.message}&rdquo;
+                  </p>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       )}
