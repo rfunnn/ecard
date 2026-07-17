@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { MapPin, Navigation, Calendar } from "lucide-react"
 import type { InvitationCardData } from "@/types/invitation"
@@ -47,15 +47,18 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
   const countdown = useCountdown(cfg?.startDateTime ?? card.eventDate ?? "")
 
   const [wishes, setWishes] = useState<WishEntry[]>([])
-  useState(() => {
-    if (!seg.wishes || !card.isPublished || !card.slug) return
+  const [attendingCount, setAttendingCount] = useState(0)
+  useEffect(() => {
+    if ((!seg.attendance && !seg.wishes) || !card.isPublished || !card.slug) return
     fetch(`/api/rsvp/${card.slug}`)
       .then((r) => r.json())
-      .then((d) => setWishes(
-        (d.rsvps ?? []).filter((r: { message?: string }) => r.message?.trim())
-      ))
+      .then((d) => {
+        setWishes((d.rsvps ?? []).filter((r: { message?: string }) => r.message?.trim()))
+        const attending = (d.counts ?? []).find((c: { attendance: string }) => c.attendance === "ATTENDING")
+        setAttendingCount(attending?._sum?.guestCount ?? 0)
+      })
       .catch(() => {})
-  })
+  }, [card.slug, card.isPublished, seg.attendance, seg.wishes])
 
   const venueName  = cfg?.venueLine    || card.venueName   || ""
   const address    = cfg?.venueAddress || card.venueAddress || ""
@@ -335,9 +338,14 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
       {showAttendance && seg.attendance && (
         <div className="pb-4 text-center">
           <GenericSep color={primaryColor} />
-          <p className={`${headFont} text-[10px] uppercase tracking-[0.4em] opacity-85 mb-6`} style={{ color: bodyColor }}>
+          <p className={`${headFont} text-[10px] uppercase tracking-[0.4em] opacity-85 mb-3`} style={{ color: bodyColor }}>
             {isMs ? "Kehadiran" : "Attendance"}
           </p>
+          {attendingCount > 0 && (
+            <p className={`${bodyFont} text-sm opacity-60 mb-4`} style={{ color: bodyColor }}>
+              {attendingCount} {isMs ? "tetamu akan hadir" : "guests attending"}
+            </p>
+          )}
           <div className="flex flex-col items-center gap-3">
             {seg.confirmBtn && (
               <button

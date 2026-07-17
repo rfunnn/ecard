@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { MapPin, Navigation, Calendar, Building2 } from "lucide-react"
 import type { InvitationCardData } from "@/types/invitation"
@@ -47,15 +47,18 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
   const countdown = useCountdown(cfg?.startDateTime ?? card.eventDate ?? "")
 
   const [wishes, setWishes] = useState<WishEntry[]>([])
-  useState(() => {
-    if (!seg.wishes || !card.isPublished || !card.slug) return
+  const [attendingCount, setAttendingCount] = useState(0)
+  useEffect(() => {
+    if ((!seg.attendance && !seg.wishes) || !card.isPublished || !card.slug) return
     fetch(`/api/rsvp/${card.slug}`)
       .then((r) => r.json())
-      .then((d) => setWishes(
-        (d.rsvps ?? []).filter((r: { message?: string }) => r.message?.trim())
-      ))
+      .then((d) => {
+        setWishes((d.rsvps ?? []).filter((r: { message?: string }) => r.message?.trim()))
+        const attending = (d.counts ?? []).find((c: { attendance: string }) => c.attendance === "ATTENDING")
+        setAttendingCount(attending?._sum?.guestCount ?? 0)
+      })
       .catch(() => {})
-  })
+  }, [card.slug, card.isPublished, seg.attendance, seg.wishes])
 
   const venueName  = cfg?.venueLine    || card.venueName   || ""
   const address    = cfg?.venueAddress || card.venueAddress || ""
@@ -351,9 +354,14 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
       {showAttendance && seg.attendance && (
         <div className="pb-4">
           <CorporateRule color={primaryColor} />
-          <p className={`${headFont} text-[10px] tracking-[0.3em] uppercase opacity-40 mb-6`} style={{ color: bodyColor }}>
+          <p className={`${headFont} text-[10px] tracking-[0.3em] uppercase opacity-40 mb-3`} style={{ color: bodyColor }}>
             {isMs ? "Kehadiran" : "Attendance"}
           </p>
+          {attendingCount > 0 && (
+            <p className={`${bodyFont} text-sm opacity-50 mb-4`} style={{ color: bodyColor }}>
+              {attendingCount} {isMs ? "tetamu akan hadir" : "guests attending"}
+            </p>
+          )}
           <div className="flex flex-col items-start gap-3">
             {seg.confirmBtn && (
               <button

@@ -93,17 +93,20 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
   // countdown
   const countdown = useCountdown(cfg?.startDateTime ?? card.eventDate ?? "")
 
-  // wishes
+  // wishes + attendance count
   const [wishes, setWishes] = useState<WishEntry[]>([])
+  const [attendingCount, setAttendingCount] = useState(0)
   useEffect(() => {
-    if (!seg.wishes || !card.isPublished || !card.slug) return
+    if ((!seg.attendance && !seg.wishes) || !card.isPublished || !card.slug) return
     fetch(`/api/rsvp/${card.slug}`)
       .then((r) => r.json())
-      .then((d) => setWishes(
-        (d.rsvps ?? []).filter((r: { message?: string }) => r.message?.trim())
-      ))
+      .then((d) => {
+        setWishes((d.rsvps ?? []).filter((r: { message?: string }) => r.message?.trim()))
+        const attending = (d.counts ?? []).find((c: { attendance: string }) => c.attendance === "ATTENDING")
+        setAttendingCount(attending?._sum?.guestCount ?? 0)
+      })
       .catch(() => {})
-  }, [card.slug, card.isPublished, seg.wishes])
+  }, [card.slug, card.isPublished, seg.attendance, seg.wishes])
 
   // venue / navigation
   const venueName  = cfg?.venueLine    || card.venueName   || ""
@@ -525,11 +528,16 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
         >
           <WeddingDivider color={bodyColor} />
           <p
-            className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-90 mb-6`}
+            className={`${headFont} text-[10px] tracking-[0.35em] uppercase opacity-90 mb-3`}
             style={{ color: bodyColor }}
           >
             {card.language === "ms" ? "Kehadiran" : "Attendance"}
           </p>
+          {attendingCount > 0 && (
+            <p className={`${bodyFont} text-sm opacity-60 mb-4`} style={{ color: bodyColor }}>
+              {attendingCount} {card.language === "ms" ? "tetamu akan hadir" : "guests attending"}
+            </p>
+          )}
           <div className="flex flex-col items-center gap-3">
             {seg.confirmBtn && (
               <button
