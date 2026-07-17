@@ -440,7 +440,9 @@ export function WizardShell({ initialCard, guest = false, authoring }: Props) {
               )}
               {!authoring && (
                 <Link
-                  href={`/invite/${initialCard.slug}`}
+                  href={initialCard.isPublished
+                    ? (initialCard.cardNum ? `/${initialCard.cardNum}` : `/${initialCard.slug}`)
+                    : `/invite/${initialCard.slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-1.5 text-xs text-amber-600 hover:text-amber-700 font-medium transition-colors px-2 py-1 rounded-md hover:bg-amber-50"
