@@ -66,6 +66,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const canonical = card.cardNum ? `https://ekadku.com/${card.cardNum}` : `https://ekadku.com/${card.slug}`
     const title = card.title || "Kad Jemputan Digital"
     const description = card.description ?? "Anda dijemput! Buka pautan ini untuk melihat kad jemputan."
+    const ogImage = `https://ekadku.com/api/og/${card.slug}`
 
     return {
       title,
@@ -78,13 +79,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         siteName: "ekadku.com",
         locale: "ms_MY",
         type: "website",
-        images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: title }],
+        images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
       },
       twitter: {
         card: "summary_large_image",
         title, description,
         site: "@ekadku",
-        images: ["/opengraph-image"],
+        images: [ogImage],
       },
     }
   } catch {
