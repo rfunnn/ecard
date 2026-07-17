@@ -378,7 +378,7 @@ export function WizardShell({ initialCard, guest = false, authoring }: Props) {
   const showWarning = WARNING_PAGES.has(currentPage)
 
   return (
-    <div className="flex h-screen bg-white overflow-hidden">
+    <div className="flex h-dvh bg-white overflow-hidden">
 
       {/* ── Toast notification (top-right) ── */}
       <AnimatePresence>
@@ -470,7 +470,7 @@ export function WizardShell({ initialCard, guest = false, authoring }: Props) {
         </div>
 
         {/* Page content */}
-        <div className="flex-1 overflow-y-auto px-4 py-5">
+        <div className="flex-1 min-h-0 overflow-y-auto px-4 py-5">
           <CurrentPage />
         </div>
 

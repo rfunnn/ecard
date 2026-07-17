@@ -85,8 +85,11 @@ export function BirthdayTemplate({ card, onRsvpOpen, previewPage: p, revealed = 
   const isMs = card.language === "ms"
   const formatDate = (d: Date) =>
     d.toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long", year: "numeric" })
-  const formatTime = (d: Date) =>
-    d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })
+  const formatTime = (d: Date) => {
+    const h = d.getHours()
+    const m = d.getMinutes().toString().padStart(2, "0")
+    return `${String(h % 12 || 12).padStart(2, "0")}:${m}${h >= 12 ? "pm" : "am"}`
+  }
 
   const all          = !p || p === 12
   const showCover      = all || [1, 2, 6, 8, 9, 10].includes(p!)
@@ -98,7 +101,7 @@ export function BirthdayTemplate({ card, onRsvpOpen, previewPage: p, revealed = 
   const showPhotos     = all || p === 11
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden" style={{ paddingLeft: `${sideMargin}rem`, paddingRight: `${sideMargin}rem` }}>
+    <div className="relative z-10 min-h-screen w-full overflow-x-hidden" style={{ paddingLeft: `${sideMargin}rem`, paddingRight: `${sideMargin}rem` }}>
 
       {/* ══ COVER (Page 2) ══════════════════════════════════════════════════ */}
       {showCover && <motion.div
@@ -169,7 +172,7 @@ export function BirthdayTemplate({ card, onRsvpOpen, previewPage: p, revealed = 
           <BirthdayDivider color={primaryColor} />
 
           {cfg?.openingSpeech && (
-            <div className={`${orgFont} leading-relaxed mb-8 opacity-80`} style={{ color: bodyColor, fontSize: `${orgSize}px` }}>
+            <div className={`${orgFont} leading-relaxed mb-8 font-medium`} style={{ color: bodyColor, fontSize: `${orgSize}px` }}>
               {multiLine(cfg.openingSpeech)}
             </div>
           )}
@@ -178,14 +181,14 @@ export function BirthdayTemplate({ card, onRsvpOpen, previewPage: p, revealed = 
             <div className="mb-6 space-y-1">
               <p className={`${orgFont}`} style={{ color: bodyColor, fontSize: `${orgSize}px` }}>{cfg.organizer1.name}</p>
               {cfg.organizer1.relationship && (
-                <p className={`${bodyFont} text-xs opacity-50`} style={{ color: bodyColor }}>{cfg.organizer1.relationship}</p>
+                <p className={`${bodyFont} text-xs opacity-85`} style={{ color: bodyColor }}>{cfg.organizer1.relationship}</p>
               )}
               {cfg.organizerCount === 2 && cfg.organizer2?.name && (
                 <>
                   <p className={`${bodyFont} opacity-30 pt-1`} style={{ color: bodyColor, fontSize: "16px" }}>&amp;</p>
                   <p className={`${orgFont}`} style={{ color: bodyColor, fontSize: `${orgSize}px` }}>{cfg.organizer2.name}</p>
                   {cfg.organizer2.relationship && (
-                    <p className={`${bodyFont} text-xs opacity-50`} style={{ color: bodyColor }}>{cfg.organizer2.relationship}</p>
+                    <p className={`${bodyFont} text-xs opacity-85`} style={{ color: bodyColor }}>{cfg.organizer2.relationship}</p>
                   )}
                 </>
               )}
@@ -193,7 +196,7 @@ export function BirthdayTemplate({ card, onRsvpOpen, previewPage: p, revealed = 
           )}
 
           {(cfg?.invitationSpeech || card.description) && (
-            <div className={`${bodyFont} leading-relaxed mb-6 opacity-70 italic`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
+            <div className={`${bodyFont} leading-relaxed mb-6 font-medium italic`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
               {multiLine(cfg?.invitationSpeech || card.description || "")}
             </div>
           )}
@@ -213,12 +216,12 @@ export function BirthdayTemplate({ card, onRsvpOpen, previewPage: p, revealed = 
 
           {seg.venue && (venueName || address) && (
             <div className="mb-8">
-              <p className={`${headFont} text-[11px] tracking-[0.3em] uppercase opacity-40 mb-3`} style={{ color: bodyColor }}>
+              <p className={`${headFont} text-[11px] tracking-[0.3em] uppercase opacity-85 mb-3`} style={{ color: bodyColor }}>
                 {isMs ? "Tempat" : "Venue"}
               </p>
               {venueName && <p className={`${orgFont} text-lg`} style={{ color: bodyColor, whiteSpace: "pre-line" }}>{venueName}</p>}
               {address && (
-                <div className={`${bodyFont} text-xs opacity-55 mt-2 leading-relaxed`} style={{ color: bodyColor, fontSize: `${Math.max(bodySize - 2, 11)}px` }}>
+                <div className={`${bodyFont} text-xs font-medium mt-2 leading-relaxed`} style={{ color: bodyColor, fontSize: `${Math.max(bodySize - 2, 11)}px` }}>
                   {multiLine(address)}
                 </div>
               )}
@@ -245,16 +248,16 @@ export function BirthdayTemplate({ card, onRsvpOpen, previewPage: p, revealed = 
 
           {seg.date && startDT && (
             <div className="mb-8">
-              <p className={`${headFont} text-[11px] tracking-[0.3em] uppercase opacity-40 mb-3`} style={{ color: bodyColor }}>
+              <p className={`${headFont} text-[11px] tracking-[0.3em] uppercase opacity-85 mb-3`} style={{ color: bodyColor }}>
                 {isMs ? "Tarikh" : "Date"}
               </p>
-              <p className={`${bodyFont} text-sm opacity-80`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
+              <p className={`${bodyFont} text-sm font-medium`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
                 {formatDate(startDT)}
               </p>
               {seg.time && (
-                <p className={`${bodyFont} text-sm opacity-65 mt-1`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
+                <p className={`${bodyFont} text-sm font-medium mt-1`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
                   {formatTime(startDT)}
-                  {seg.endTime && endDT && ` – ${formatTime(endDT)}`}
+                  {seg.endTime && endDT && ` - ${formatTime(endDT)}`}
                 </p>
               )}
               {cfg?.hijriDate && (
@@ -264,7 +267,7 @@ export function BirthdayTemplate({ card, onRsvpOpen, previewPage: p, revealed = 
           )}
 
           {cfg?.additionalInfo1 && (
-            <div className={`${bodyFont} text-sm opacity-65 mb-6 leading-relaxed`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
+            <div className={`${bodyFont} text-sm font-medium mb-6 leading-relaxed`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
               {multiLine(cfg.additionalInfo1)}
             </div>
           )}
@@ -284,14 +287,14 @@ export function BirthdayTemplate({ card, onRsvpOpen, previewPage: p, revealed = 
       {showProgramme && seg.eventProgram && cfg?.eventProgram && (
         <div className="pb-6">
           <BirthdayDivider color={primaryColor} />
-          <p className={`${headFont} text-[11px] tracking-[0.3em] uppercase opacity-40 text-center mb-6`} style={{ color: bodyColor }}>
+          <p className={`${headFont} text-[11px] tracking-[0.3em] uppercase opacity-85 text-center mb-6`} style={{ color: bodyColor }}>
             {isMs ? "Atur Cara" : "Programme"}
           </p>
           <div className="space-y-4 max-w-xs mx-auto">
             {parseProgramText(cfg.eventProgram).map((item, i) => (
               <div key={i} className="flex justify-between items-baseline gap-3">
-                <span className={`${bodyFont} opacity-75`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>{item.label}</span>
-                <span className={`${bodyFont} opacity-50 text-right shrink-0`} style={{ color: bodyColor, fontSize: `${Math.max(bodySize - 1, 12)}px` }}>{item.time}</span>
+                <span className={`${bodyFont} font-medium`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>{item.label}</span>
+                <span className={`${bodyFont} opacity-85 text-right shrink-0`} style={{ color: bodyColor, fontSize: `${Math.max(bodySize - 1, 12)}px` }}>{item.time}</span>
               </div>
             ))}
           </div>
@@ -304,14 +307,14 @@ export function BirthdayTemplate({ card, onRsvpOpen, previewPage: p, revealed = 
           <BirthdayDivider color={primaryColor} />
 
           {cfg?.additionalInfo2 && (
-            <div className={`${orgFont} leading-relaxed mb-10 opacity-70 italic`} style={{ color: bodyColor, fontSize: `${orgSize - 2}px` }}>
+            <div className={`${orgFont} leading-relaxed mb-10 font-medium italic`} style={{ color: bodyColor, fontSize: `${orgSize - 2}px` }}>
               {multiLine(cfg.additionalInfo2)}
             </div>
           )}
 
           {seg.countdown && cfg?.startDateTime && !eventPassed && (
             <div>
-              <p className={`${headFont} text-[11px] tracking-[0.3em] uppercase opacity-40 mb-6`} style={{ color: bodyColor }}>
+              <p className={`${headFont} text-[11px] tracking-[0.3em] uppercase opacity-85 mb-6`} style={{ color: bodyColor }}>
                 {isMs ? "Menghitung Hari" : "Countdown"}
               </p>
               <div className="flex items-start justify-center gap-5">
@@ -325,7 +328,7 @@ export function BirthdayTemplate({ card, onRsvpOpen, previewPage: p, revealed = 
                     <span className={`${headFont} text-3xl font-bold leading-none`} style={{ color: primaryColor }}>
                       {String(val).padStart(2, "0")}
                     </span>
-                    <span className={`${bodyFont} text-[10px] uppercase tracking-wider opacity-40 mt-1.5`} style={{ color: bodyColor }}>
+                    <span className={`${bodyFont} text-[10px] uppercase tracking-wider opacity-85 mt-1.5`} style={{ color: bodyColor }}>
                       {label}
                     </span>
                   </div>
@@ -340,7 +343,7 @@ export function BirthdayTemplate({ card, onRsvpOpen, previewPage: p, revealed = 
       {showAttendance && seg.attendance && (
         <div className="pb-4 text-center">
           <BirthdayDivider color={primaryColor} />
-          <p className={`${headFont} text-[11px] tracking-[0.3em] uppercase opacity-40 mb-6`} style={{ color: bodyColor }}>
+          <p className={`${headFont} text-[11px] tracking-[0.3em] uppercase opacity-85 mb-6`} style={{ color: bodyColor }}>
             {isMs ? "Kehadiran" : "Attendance"}
           </p>
           <div className="flex flex-col items-center gap-3">
@@ -370,14 +373,14 @@ export function BirthdayTemplate({ card, onRsvpOpen, previewPage: p, revealed = 
       {showAttendance && seg.wishes && wishes.length > 0 && (
         <div className="pb-6 text-center">
           <BirthdayDivider color={primaryColor} />
-          <p className={`${headFont} text-[11px] tracking-[0.3em] uppercase opacity-40 mb-8`} style={{ color: bodyColor }}>
+          <p className={`${headFont} text-[11px] tracking-[0.3em] uppercase opacity-85 mb-8`} style={{ color: bodyColor }}>
             {isMs ? "Ucapan" : "Wishes"}
           </p>
           <div className="space-y-7 max-w-sm mx-auto">
             {wishes.map((w, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}>
                 <p className={`${orgFont} text-base mb-1`} style={{ color: displayColor }}>{w.guestName}</p>
-                <p className={`${bodyFont} text-sm opacity-60 italic leading-relaxed`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
+                <p className={`${bodyFont} text-sm font-medium italic leading-relaxed`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
                   &ldquo;{w.message}&rdquo;
                 </p>
               </motion.div>
@@ -399,6 +402,16 @@ export function BirthdayTemplate({ card, onRsvpOpen, previewPage: p, revealed = 
           />
         </div>
       )}
+
+      {/* ekadku.com brand */}
+      <div className="flex justify-center items-center py-8">
+        <span className="font-playfair text-[17px] tracking-wide leading-none">
+          <span className="text-[var(--tx-1)]">e</span>
+          <span style={{ color: "#D4AF37" }}>kad</span>
+          <span className="text-[var(--tx-1)]">ku</span>
+          <span className="text-gold/50 text-[10px] font-sans tracking-normal align-baseline">.com</span>
+        </span>
+      </div>
 
       <div className="h-28" />
     </div>

@@ -192,7 +192,7 @@ export function HomepagePhoneMockup() {
                   </div>
                   <div className="flex items-center justify-center gap-1 text-[6.5px]" style={{ color: TEXT_MUT }}>
                     <Clock className="w-2 h-2 shrink-0" style={{ color: MAROON_A }} />
-                    10:00 Pagi – 3:00 Petang
+                    10:00am - 3:00pm
                   </div>
                   <div className="flex items-center justify-center gap-1 text-[6.5px]" style={{ color: TEXT_MUT }}>
                     <MapPin className="w-2 h-2 shrink-0" style={{ color: MAROON_A }} />

@@ -81,8 +81,11 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
   const isMs = card.language === "ms"
   const formatDate = (d: Date) =>
     d.toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long", year: "numeric" })
-  const formatTime = (d: Date) =>
-    d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })
+  const formatTime = (d: Date) => {
+    const h = d.getHours()
+    const m = d.getMinutes().toString().padStart(2, "0")
+    return `${String(h % 12 || 12).padStart(2, "0")}:${m}${h >= 12 ? "pm" : "am"}`
+  }
 
   const all          = !p || p === 12
   const showCover      = all || [1, 2, 6, 8, 9, 10].includes(p!)
@@ -94,7 +97,7 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
   const showPhotos     = all || p === 11
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden" style={{ paddingLeft: `${sideMargin}rem`, paddingRight: `${sideMargin}rem` }}>
+    <div className="relative z-10 min-h-screen w-full overflow-x-hidden" style={{ paddingLeft: `${sideMargin}rem`, paddingRight: `${sideMargin}rem` }}>
       {/* top accent bar */}
       <div className="h-1 w-full" style={{ background: primaryColor }} />
 
@@ -163,7 +166,7 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
           <CorporateRule color={primaryColor} />
 
           {cfg?.openingSpeech && (
-            <div className={`${orgFont} leading-relaxed mb-6 opacity-75`} style={{ color: bodyColor, fontSize: `${orgSize}px` }}>
+            <div className={`${orgFont} leading-relaxed mb-6 font-medium`} style={{ color: bodyColor, fontSize: `${orgSize}px` }}>
               {multiLine(cfg.openingSpeech)}
             </div>
           )}
@@ -172,14 +175,14 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
             <div className="mb-5 space-y-0.5">
               <p className={`${orgFont} font-semibold`} style={{ color: bodyColor, fontSize: `${orgSize}px` }}>{cfg.organizer1.name}</p>
               {cfg.organizer1.relationship && (
-                <p className={`${bodyFont} text-xs opacity-45`} style={{ color: bodyColor }}>{cfg.organizer1.relationship}</p>
+                <p className={`${bodyFont} text-xs opacity-85`} style={{ color: bodyColor }}>{cfg.organizer1.relationship}</p>
               )}
               {cfg.organizerCount === 2 && cfg.organizer2?.name && (
                 <>
                   <p className={`${bodyFont} opacity-25 pt-1`} style={{ color: bodyColor, fontSize: "14px" }}>&</p>
                   <p className={`${orgFont} font-semibold`} style={{ color: bodyColor, fontSize: `${orgSize}px` }}>{cfg.organizer2.name}</p>
                   {cfg.organizer2.relationship && (
-                    <p className={`${bodyFont} text-xs opacity-45`} style={{ color: bodyColor }}>{cfg.organizer2.relationship}</p>
+                    <p className={`${bodyFont} text-xs opacity-85`} style={{ color: bodyColor }}>{cfg.organizer2.relationship}</p>
                   )}
                 </>
               )}
@@ -187,7 +190,7 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
           )}
 
           {(cfg?.invitationSpeech || card.description) && (
-            <div className={`${bodyFont} leading-relaxed mb-6 opacity-65`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
+            <div className={`${bodyFont} leading-relaxed mb-6 font-medium`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
               {multiLine(cfg?.invitationSpeech || card.description || "")}
             </div>
           )}
@@ -212,12 +215,12 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
               <div className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 mt-0.5 shrink-0 opacity-50" style={{ color: primaryColor }} />
                 <div className="flex-1">
-                  <p className={`${headFont} text-[10px] uppercase tracking-wider opacity-40 mb-1`} style={{ color: bodyColor }}>
+                  <p className={`${headFont} text-[10px] uppercase tracking-wider opacity-85 mb-1`} style={{ color: bodyColor }}>
                     {isMs ? "Tempat" : "Venue"}
                   </p>
                   {venueName && <p className={`${orgFont} text-sm font-medium`} style={{ color: bodyColor, whiteSpace: "pre-line" }}>{venueName}</p>}
                   {address && (
-                    <div className={`${bodyFont} text-xs opacity-55 mt-1 leading-relaxed`} style={{ color: bodyColor }}>
+                    <div className={`${bodyFont} text-xs font-medium mt-1 leading-relaxed`} style={{ color: bodyColor }}>
                       {multiLine(address)}
                     </div>
                   )}
@@ -247,16 +250,16 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
               <div className="flex items-start gap-3">
                 <Calendar className="w-4 h-4 mt-0.5 shrink-0 opacity-50" style={{ color: primaryColor }} />
                 <div>
-                  <p className={`${headFont} text-[10px] uppercase tracking-wider opacity-40 mb-1`} style={{ color: bodyColor }}>
+                  <p className={`${headFont} text-[10px] uppercase tracking-wider opacity-85 mb-1`} style={{ color: bodyColor }}>
                     {isMs ? "Tarikh & Masa" : "Date & Time"}
                   </p>
-                  <p className={`${bodyFont} text-sm`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
+                  <p className={`${bodyFont} text-sm font-medium`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
                     {formatDate(startDT)}
                   </p>
                   {seg.time && (
-                    <p className={`${bodyFont} text-sm opacity-65`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
+                    <p className={`${bodyFont} text-sm font-medium opacity-90`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
                       {formatTime(startDT)}
-                      {seg.endTime && endDT && ` – ${formatTime(endDT)}`}
+                      {seg.endTime && endDT && ` - ${formatTime(endDT)}`}
                     </p>
                   )}
                   {cfg?.hijriDate && (
@@ -268,7 +271,7 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
           </div>
 
           {cfg?.additionalInfo1 && (
-            <div className={`${bodyFont} text-sm opacity-60 mt-5 leading-relaxed`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
+            <div className={`${bodyFont} text-sm font-medium mt-5 leading-relaxed`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
               {multiLine(cfg.additionalInfo1)}
             </div>
           )}
@@ -288,15 +291,15 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
       {showProgramme && seg.eventProgram && cfg?.eventProgram && (
         <div className="pb-6">
           <CorporateRule color={primaryColor} />
-          <p className={`${headFont} text-[10px] tracking-[0.3em] uppercase opacity-40 mb-5`} style={{ color: bodyColor }}>
+          <p className={`${headFont} text-[10px] tracking-[0.3em] uppercase opacity-85 mb-5`} style={{ color: bodyColor }}>
             {isMs ? "Atur Cara" : "Programme"}
           </p>
           <div className="space-y-3 max-w-sm">
             {parseProgramText(cfg.eventProgram).map((item, i) => (
               <div key={i} className="flex justify-between items-baseline gap-3 border-b pb-3"
                 style={{ borderColor: `${primaryColor}10` }}>
-                <span className={`${bodyFont} opacity-80`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>{item.label}</span>
-                <span className={`${headFont} text-xs opacity-45 shrink-0`} style={{ color: bodyColor }}>{item.time}</span>
+                <span className={`${bodyFont} font-medium`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>{item.label}</span>
+                <span className={`${headFont} text-xs opacity-85 shrink-0`} style={{ color: bodyColor }}>{item.time}</span>
               </div>
             ))}
           </div>
@@ -309,14 +312,14 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
           <CorporateRule color={primaryColor} />
 
           {cfg?.additionalInfo2 && (
-            <div className={`${orgFont} leading-relaxed mb-8 opacity-65`} style={{ color: bodyColor, fontSize: `${orgSize - 2}px` }}>
+            <div className={`${orgFont} leading-relaxed mb-8 font-medium`} style={{ color: bodyColor, fontSize: `${orgSize - 2}px` }}>
               {multiLine(cfg.additionalInfo2)}
             </div>
           )}
 
           {seg.countdown && cfg?.startDateTime && !eventPassed && (
             <div>
-              <p className={`${headFont} text-[10px] tracking-[0.3em] uppercase opacity-40 mb-5`} style={{ color: bodyColor }}>
+              <p className={`${headFont} text-[10px] tracking-[0.3em] uppercase opacity-85 mb-5`} style={{ color: bodyColor }}>
                 {isMs ? "Menghitung Hari" : "Countdown"}
               </p>
               <div className="flex items-start justify-center gap-6">
@@ -409,6 +412,16 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
           />
         </div>
       )}
+
+      {/* ekadku.com brand */}
+      <div className="flex justify-center items-center py-8">
+        <span className="font-playfair text-[17px] tracking-wide leading-none">
+          <span className="text-[var(--tx-1)]">e</span>
+          <span style={{ color: "#D4AF37" }}>kad</span>
+          <span className="text-[var(--tx-1)]">ku</span>
+          <span className="text-gold/50 text-[10px] font-sans tracking-normal align-baseline">.com</span>
+        </span>
+      </div>
 
       <div className="h-28" />
     </div>

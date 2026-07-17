@@ -81,8 +81,11 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
   const isMs = card.language === "ms"
   const formatDate = (d: Date) =>
     d.toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long", year: "numeric" })
-  const formatTime = (d: Date) =>
-    d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })
+  const formatTime = (d: Date) => {
+    const h = d.getHours()
+    const m = d.getMinutes().toString().padStart(2, "0")
+    return `${String(h % 12 || 12).padStart(2, "0")}:${m}${h >= 12 ? "pm" : "am"}`
+  }
 
   const all          = !p || p === 12
   const showCover      = all || [1, 2, 6, 8, 9, 10].includes(p!)
@@ -94,7 +97,7 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
   const showPhotos     = all || p === 11
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden" style={{ paddingLeft: `${sideMargin}rem`, paddingRight: `${sideMargin}rem` }}>
+    <div className="relative z-10 min-h-screen w-full overflow-x-hidden" style={{ paddingLeft: `${sideMargin}rem`, paddingRight: `${sideMargin}rem` }}>
       {/* subtle top line */}
       <div className="h-px w-full" style={{ background: `linear-gradient(90deg, transparent, ${primaryColor}60, transparent)` }} />
 
@@ -107,7 +110,7 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
       >
         {(cfg?.eventType || card.subtitle) && (
           <p
-            className={`${headFont} text-[10px] uppercase tracking-[0.5em] mb-8 opacity-45`}
+            className={`${headFont} text-[10px] uppercase tracking-[0.5em] mb-8 opacity-85`}
             style={{ color: bodyColor, fontSize: `${cfg?.eventTypeSize ?? 10}px`, whiteSpace: "pre-line" }}
           >
             {cfg?.eventType || card.subtitle}
@@ -126,7 +129,7 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
         )}
         {secondaryName && (
           <>
-            <p className={`${bodyFont} my-4 opacity-25`} style={{ color: bodyColor, fontSize: "18px" }}>×</p>
+            <p className={`${bodyFont} my-4 opacity-50`} style={{ color: bodyColor, fontSize: "18px" }}>×</p>
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }}
               transition={{ delay: 0.5, duration: 0.9 }}
@@ -142,7 +145,7 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
           <motion.p
             initial={{ opacity: 0 }} animate={{ opacity: 1 }}
             transition={{ delay: 0.7, duration: 0.7 }}
-            className={`${bodyFont} mt-8 opacity-50`}
+            className={`${bodyFont} mt-8 font-medium`}
             style={{ color: bodyColor, fontSize: `${cfg.dayAndDateSize ?? 15}px`, whiteSpace: "pre-line" }}
           >
             {cfg.dayAndDate}
@@ -150,7 +153,7 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
         )}
 
         {venueName && (
-          <p className={`${bodyFont} mt-1 opacity-30`} style={{ color: bodyColor, fontSize: `${cfg?.venueLineSize ?? 12}px`, whiteSpace: "pre-line" }}>
+          <p className={`${bodyFont} mt-1 font-medium`} style={{ color: bodyColor, fontSize: `${cfg?.venueLineSize ?? 12}px`, whiteSpace: "pre-line" }}>
             {venueName}
           </p>
         )}
@@ -161,7 +164,7 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
           <GenericSep color={primaryColor} />
 
           {cfg?.openingSpeech && (
-            <div className={`${orgFont} leading-relaxed mb-7 opacity-70`} style={{ color: bodyColor, fontSize: `${orgSize}px` }}>
+            <div className={`${orgFont} leading-relaxed mb-7 font-medium`} style={{ color: bodyColor, fontSize: `${orgSize}px` }}>
               {multiLine(cfg.openingSpeech)}
             </div>
           )}
@@ -170,14 +173,14 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
             <div className="mb-5 space-y-0.5">
               <p className={`${orgFont}`} style={{ color: bodyColor, fontSize: `${orgSize}px` }}>{cfg.organizer1.name}</p>
               {cfg.organizer1.relationship && (
-                <p className={`${bodyFont} text-xs opacity-40`} style={{ color: bodyColor }}>{cfg.organizer1.relationship}</p>
+                <p className={`${bodyFont} text-xs opacity-85`} style={{ color: bodyColor }}>{cfg.organizer1.relationship}</p>
               )}
               {cfg.organizerCount === 2 && cfg.organizer2?.name && (
                 <>
-                  <p className={`${bodyFont} opacity-20 pt-1`} style={{ color: bodyColor, fontSize: "15px" }}>&</p>
+                  <p className={`${bodyFont} opacity-50 pt-1`} style={{ color: bodyColor, fontSize: "15px" }}>&</p>
                   <p className={`${orgFont}`} style={{ color: bodyColor, fontSize: `${orgSize}px` }}>{cfg.organizer2.name}</p>
                   {cfg.organizer2.relationship && (
-                    <p className={`${bodyFont} text-xs opacity-40`} style={{ color: bodyColor }}>{cfg.organizer2.relationship}</p>
+                    <p className={`${bodyFont} text-xs opacity-85`} style={{ color: bodyColor }}>{cfg.organizer2.relationship}</p>
                   )}
                 </>
               )}
@@ -185,7 +188,7 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
           )}
 
           {(cfg?.invitationSpeech || card.description) && (
-            <div className={`${bodyFont} leading-relaxed mb-5 opacity-60`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
+            <div className={`${bodyFont} leading-relaxed mb-5 font-medium`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
               {multiLine(cfg?.invitationSpeech || card.description || "")}
             </div>
           )}
@@ -205,12 +208,12 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
 
           {seg.venue && (venueName || address) && (
             <div className="mb-8">
-              <p className={`${headFont} text-[10px] uppercase tracking-[0.4em] opacity-35 mb-4`} style={{ color: bodyColor }}>
+              <p className={`${headFont} text-[10px] uppercase tracking-[0.4em] opacity-85 mb-4`} style={{ color: bodyColor }}>
                 {isMs ? "Tempat" : "Venue"}
               </p>
               {venueName && <p className={`${orgFont}`} style={{ color: bodyColor, fontSize: `${orgSize}px`, whiteSpace: "pre-line" }}>{venueName}</p>}
               {address && (
-                <div className={`${bodyFont} text-xs opacity-50 mt-2 leading-relaxed`} style={{ color: bodyColor, fontSize: `${Math.max(bodySize - 2, 11)}px` }}>
+                <div className={`${bodyFont} text-xs font-medium mt-2 leading-relaxed`} style={{ color: bodyColor, fontSize: `${Math.max(bodySize - 2, 11)}px` }}>
                   {multiLine(address)}
                 </div>
               )}
@@ -218,14 +221,14 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
                 <div className="flex justify-center gap-2 mt-4">
                   {mapsUrl && (
                     <a href={mapsUrl} target="_blank" rel="noopener noreferrer"
-                      className={`${bodyFont} inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] border opacity-55 hover:opacity-100 transition-opacity`}
+                      className={`${bodyFont} inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] border opacity-80 hover:opacity-100 transition-opacity`}
                       style={{ color: bodyColor, borderColor: `${bodyColor}28` }}>
                       <MapPin className="w-3 h-3" /> Google Maps
                     </a>
                   )}
                   {wazeUrl && (
                     <a href={wazeUrl} target="_blank" rel="noopener noreferrer"
-                      className={`${bodyFont} inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] border opacity-55 hover:opacity-100 transition-opacity`}
+                      className={`${bodyFont} inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] border opacity-80 hover:opacity-100 transition-opacity`}
                       style={{ color: bodyColor, borderColor: `${bodyColor}28` }}>
                       <Navigation className="w-3 h-3" /> Waze
                     </a>
@@ -237,26 +240,26 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
 
           {seg.date && startDT && (
             <div className="mb-8">
-              <p className={`${headFont} text-[10px] uppercase tracking-[0.4em] opacity-35 mb-4`} style={{ color: bodyColor }}>
+              <p className={`${headFont} text-[10px] uppercase tracking-[0.4em] opacity-85 mb-4`} style={{ color: bodyColor }}>
                 {isMs ? "Tarikh" : "Date"}
               </p>
-              <p className={`${bodyFont} opacity-75`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
+              <p className={`${bodyFont} font-medium`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
                 {formatDate(startDT)}
               </p>
               {seg.time && (
-                <p className={`${bodyFont} opacity-55 mt-1`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
+                <p className={`${bodyFont} font-medium mt-1`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
                   {formatTime(startDT)}
-                  {seg.endTime && endDT && ` – ${formatTime(endDT)}`}
+                  {seg.endTime && endDT && ` - ${formatTime(endDT)}`}
                 </p>
               )}
               {cfg?.hijriDate && (
-                <p className={`${bodyFont} text-xs opacity-35 mt-1`} style={{ color: bodyColor }}>{cfg.hijriDate}</p>
+                <p className={`${bodyFont} text-xs opacity-90 mt-1`} style={{ color: bodyColor }}>{cfg.hijriDate}</p>
               )}
             </div>
           )}
 
           {cfg?.additionalInfo1 && (
-            <div className={`${bodyFont} opacity-55 mb-5 leading-relaxed`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
+            <div className={`${bodyFont} font-medium mb-5 leading-relaxed`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
               {multiLine(cfg.additionalInfo1)}
             </div>
           )}
@@ -276,14 +279,14 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
       {showProgramme && seg.eventProgram && cfg?.eventProgram && (
         <div className="pb-6 text-center">
           <GenericSep color={primaryColor} />
-          <p className={`${headFont} text-[10px] uppercase tracking-[0.4em] opacity-35 mb-6`} style={{ color: bodyColor }}>
+          <p className={`${headFont} text-[10px] uppercase tracking-[0.4em] opacity-85 mb-6`} style={{ color: bodyColor }}>
             {isMs ? "Atur Cara" : "Programme"}
           </p>
           <div className="space-y-5 max-w-xs mx-auto">
             {parseProgramText(cfg.eventProgram).map((item, i) => (
               <div key={i} className="flex justify-between items-baseline gap-3">
-                <span className={`${bodyFont} opacity-70`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>{item.label}</span>
-                <span className={`${bodyFont} opacity-40 text-right shrink-0`} style={{ color: bodyColor, fontSize: `${Math.max(bodySize - 1, 12)}px` }}>{item.time}</span>
+                <span className={`${bodyFont} font-medium`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>{item.label}</span>
+                <span className={`${bodyFont} opacity-85 text-right shrink-0`} style={{ color: bodyColor, fontSize: `${Math.max(bodySize - 1, 12)}px` }}>{item.time}</span>
               </div>
             ))}
           </div>
@@ -296,14 +299,14 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
           <GenericSep color={primaryColor} />
 
           {cfg?.additionalInfo2 && (
-            <div className={`${orgFont} leading-relaxed mb-8 opacity-60`} style={{ color: bodyColor, fontSize: `${orgSize - 2}px` }}>
+            <div className={`${orgFont} leading-relaxed mb-8 font-medium`} style={{ color: bodyColor, fontSize: `${orgSize - 2}px` }}>
               {multiLine(cfg.additionalInfo2)}
             </div>
           )}
 
           {seg.countdown && cfg?.startDateTime && !eventPassed && (
             <div>
-              <p className={`${headFont} text-[10px] uppercase tracking-[0.4em] opacity-35 mb-6`} style={{ color: bodyColor }}>
+              <p className={`${headFont} text-[10px] uppercase tracking-[0.4em] opacity-85 mb-6`} style={{ color: bodyColor }}>
                 {isMs ? "Menghitung Hari" : "Countdown"}
               </p>
               <div className="flex items-start justify-center gap-6">
@@ -317,7 +320,7 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
                     <span className={`${headFont} text-3xl font-light leading-none`} style={{ color: displayColor }}>
                       {String(val).padStart(2, "0")}
                     </span>
-                    <span className={`${bodyFont} text-[9px] uppercase tracking-widest opacity-35 mt-2`} style={{ color: bodyColor }}>
+                    <span className={`${bodyFont} text-[9px] uppercase tracking-widest opacity-85 mt-2`} style={{ color: bodyColor }}>
                       {label}
                     </span>
                   </div>
@@ -332,7 +335,7 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
       {showAttendance && seg.attendance && (
         <div className="pb-4 text-center">
           <GenericSep color={primaryColor} />
-          <p className={`${headFont} text-[10px] uppercase tracking-[0.4em] opacity-35 mb-6`} style={{ color: bodyColor }}>
+          <p className={`${headFont} text-[10px] uppercase tracking-[0.4em] opacity-85 mb-6`} style={{ color: bodyColor }}>
             {isMs ? "Kehadiran" : "Attendance"}
           </p>
           <div className="flex flex-col items-center gap-3">
@@ -362,14 +365,14 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
       {showAttendance && seg.wishes && wishes.length > 0 && (
         <div className="pb-6 text-center">
           <GenericSep color={primaryColor} />
-          <p className={`${headFont} text-[10px] uppercase tracking-[0.4em] opacity-35 mb-8`} style={{ color: bodyColor }}>
+          <p className={`${headFont} text-[10px] uppercase tracking-[0.4em] opacity-85 mb-8`} style={{ color: bodyColor }}>
             {isMs ? "Ucapan" : "Wishes"}
           </p>
           <div className="space-y-8 max-w-sm mx-auto">
             {wishes.map((w, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.04 }}>
                 <p className={`${orgFont} text-sm mb-1.5`} style={{ color: displayColor }}>{w.guestName}</p>
-                <p className={`${bodyFont} text-xs opacity-50 italic leading-relaxed`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
+                <p className={`${bodyFont} text-xs font-medium italic leading-relaxed`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>
                   &ldquo;{w.message}&rdquo;
                 </p>
               </motion.div>
@@ -391,6 +394,16 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
           />
         </div>
       )}
+
+      {/* ekadku.com brand */}
+      <div className="flex justify-center items-center py-8">
+        <span className="font-playfair text-[17px] tracking-wide leading-none">
+          <span className="text-[var(--tx-1)]">e</span>
+          <span style={{ color: "#D4AF37" }}>kad</span>
+          <span className="text-[var(--tx-1)]">ku</span>
+          <span className="text-gold/50 text-[10px] font-sans tracking-normal align-baseline">.com</span>
+        </span>
+      </div>
 
       <div className="h-28" />
     </div>

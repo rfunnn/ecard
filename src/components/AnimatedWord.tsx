@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 
-const WORDS = ["PERKAHWINAN", "HARI LAHIR", "PERAYAAN", "MAJLIS"]
+const WORDS = ["PERKAHWINAN", "HARI LAHIR", "PERAYAAN", "ACARA KORPORAT"]
 
 export function AnimatedWord() {
   const [i, setI] = useState(0)
@@ -20,14 +20,14 @@ export function AnimatedWord() {
 
       {/* cycling word - letter-by-letter rise */}
       <div
-        className="overflow-hidden flex items-end justify-center w-full"
-        style={{ height: "clamp(2.5rem, 6vw, 4rem)" }}
+        className="flex items-center justify-center w-full"
+        style={{ height: "clamp(2.8rem, 6.5vw, 4.4rem)" }}
       >
         <AnimatePresence mode="wait">
           <motion.div
             key={word}
-            className="flex items-end justify-center"
-            exit={{ opacity: 0, y: -16, transition: { duration: 0.18, ease: "easeIn" as const } }}
+            className="flex items-center justify-center"
+            exit={{ opacity: 0, y: -12, transition: { duration: 0.18, ease: "easeIn" as const } }}
           >
             {word.split("").map((letter, j) =>
               letter === " " ? (
@@ -38,15 +38,15 @@ export function AnimatedWord() {
               ) : (
                 <motion.span
                   key={j}
-                  initial={{ y: "100%", opacity: 0 }}
-                  animate={{ y: "0%", opacity: 1 }}
+                  initial={{ y: 16, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
                   transition={{
                     delay: j * 0.045,
                     duration: 0.48,
                     ease: "easeOut" as const,
                   }}
                   className="font-playfair shimmer leading-none"
-                  style={{ fontSize: "clamp(2rem, 5vw, 3.2rem)", letterSpacing: "0.05em" }}
+                  style={{ fontSize: "clamp(1.55rem, 3.9vw, 2.5rem)", letterSpacing: "0.05em" }}
                 >
                   {letter}
                 </motion.span>
