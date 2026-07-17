@@ -415,11 +415,11 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
 
       {/* ekadku.com brand */}
       <div className="flex justify-center items-center py-8">
-        <span className="font-playfair text-[17px] tracking-wide leading-none">
-          <span className="text-[var(--tx-1)]">e</span>
+        <span className="font-playfair text-[26px] tracking-wide leading-none">
+          <span style={{ color: "#000000" }}>e</span>
           <span style={{ color: "#D4AF37" }}>kad</span>
-          <span className="text-[var(--tx-1)]">ku</span>
-          <span className="text-gold/50 text-[10px] font-sans tracking-normal align-baseline">.com</span>
+          <span style={{ color: "#000000" }}>ku</span>
+          <span className="text-[15px] font-sans tracking-normal align-baseline" style={{ color: "#000000" }}>.com</span>
         </span>
       </div>
 
