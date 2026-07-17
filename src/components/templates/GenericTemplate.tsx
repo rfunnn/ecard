@@ -397,11 +397,11 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
 
       {/* ekadku.com brand */}
       <div className="flex justify-center items-center py-8">
-        <span className="font-playfair text-[26px] tracking-wide leading-none">
-          <span style={{ color: "#000000" }}>e</span>
+        <span className="font-playfair text-[20px] tracking-wide leading-none inline-flex items-baseline rounded-full px-4 py-1.5" style={{ background: "rgba(0,0,0,0.5)", border: "1px solid rgba(0,0,0,0.5)" }}>
+          <span className="text-white">e</span>
           <span style={{ color: "#D4AF37" }}>kad</span>
-          <span style={{ color: "#000000" }}>ku</span>
-          <span className="text-[15px] font-sans tracking-normal align-baseline" style={{ color: "#000000" }}>.com</span>
+          <span className="text-white">ku</span>
+          <span className="text-[12px] font-sans tracking-normal align-baseline" style={{ color: "#D4AF3780" }}>.com</span>
         </span>
       </div>
 

@@ -747,7 +747,9 @@ export function WizardShell({ initialCard, guest = false, authoring }: Props) {
                       </div>
                     )}
                     <div className="relative z-10">
-                      <TemplateRenderer card={cardPreview} previewPage={currentPage} />
+                      {!modalGateOpen && (
+                        <TemplateRenderer card={cardPreview} previewPage={currentPage} />
+                      )}
                     </div>
                   </div>
 
