@@ -3,14 +3,15 @@
 import { Suspense } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useRef } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import {
   Pencil, ImageIcon, Gift, Mail, Eye, Printer,
   MoreVertical, ExternalLink, Plus, Trash2, Copy, Check, BarChart2,
-  Link2, AlertCircle, Loader2,
+  Link2, AlertCircle, Loader2, Share2, Download, X,
 } from "lucide-react"
+import QRCode from "qrcode"
 import type { WizardConfig } from "@/types/config"
 import { generatePrintHTML } from "@/lib/print-card"
 import { removeFromCart } from "@/lib/cart"
@@ -284,9 +285,106 @@ function InviteLinkRow({ card }: { card: Card }) {
   )
 }
 
+function ShareModal({ card, onClose }: { card: Card; onClose: () => void }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [shareUrl, setShareUrl] = useState("")
+  const [canNativeShare, setCanNativeShare] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    const url = `${window.location.origin}${card.cardNum ? `/${card.cardNum}` : `/${card.slug}`}`
+    setShareUrl(url)
+    setCanNativeShare(typeof navigator !== "undefined" && !!navigator.share)
+  }, [card.cardNum, card.slug])
+
+  useEffect(() => {
+    if (!canvasRef.current || !shareUrl) return
+    QRCode.toCanvas(canvasRef.current, shareUrl, {
+      width: 200,
+      margin: 2,
+      color: { dark: "#D4AF37", light: "#1a0a00" },
+    }).catch(() => {})
+  }, [shareUrl])
+
+  function handleDownload() {
+    if (!canvasRef.current) return
+    const a = document.createElement("a")
+    a.download = `qr-${card.slug}.png`
+    a.href = canvasRef.current.toDataURL("image/png")
+    a.click()
+  }
+
+  async function handleShare() {
+    try {
+      await navigator.share({
+        title: card.title || "Kad Jemputan",
+        text: card.groomName && card.brideName
+          ? `Jemput hadir ke majlis ${card.groomName} & ${card.brideName}`
+          : `Jemput hadir ke majlis ${card.title}`,
+        url: shareUrl,
+      })
+    } catch { /* user cancelled */ }
+  }
+
+  async function handleCopyLink() {
+    await navigator.clipboard.writeText(shareUrl)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <>
+      <div className="fixed inset-0 z-40 bg-black/50" onClick={onClose} />
+      <div className="fixed inset-x-4 bottom-4 z-50 bg-[var(--pg-alt)] border border-[var(--bd)] rounded-2xl p-5 shadow-2xl max-w-sm mx-auto">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-bold text-[var(--tx-1)]">Kongsi Kad</h3>
+          <button onClick={onClose} className="p-1 rounded hover:bg-[var(--sf)] text-[var(--tx-3)] transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="flex flex-col items-center gap-3 mb-4 p-4 rounded-xl bg-[#1a0a00] border border-white/10">
+          <canvas ref={canvasRef} className="rounded-lg" style={{ imageRendering: "pixelated" }} />
+          <p className="text-xs text-white/40 text-center">Imbas kod QR untuk buka kad</p>
+        </div>
+
+        <p className="text-[11px] text-[var(--tx-3)] font-mono text-center mb-4 truncate px-2">
+          {shareUrl.replace(/^https?:\/\//, "")}
+        </p>
+
+        <div className="flex gap-2">
+          <button
+            onClick={handleDownload}
+            className="flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold border border-[var(--bd)] text-[var(--tx-2)] py-2.5 rounded-lg hover:bg-[var(--sf)] transition-colors"
+          >
+            <Download className="w-3.5 h-3.5" /> Muat Turun QR
+          </button>
+          {canNativeShare ? (
+            <button
+              onClick={handleShare}
+              className="flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold bg-[var(--tx-1)] text-[var(--pg)] py-2.5 rounded-lg hover:opacity-80 transition-opacity"
+            >
+              <Share2 className="w-3.5 h-3.5" /> Kongsi
+            </button>
+          ) : (
+            <button
+              onClick={handleCopyLink}
+              className="flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold bg-[var(--tx-1)] text-[var(--pg)] py-2.5 rounded-lg hover:opacity-80 transition-opacity"
+            >
+              {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? "Disalin!" : "Salin Pautan"}
+            </button>
+          )}
+        </div>
+      </div>
+    </>
+  )
+}
+
 function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => void }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [printing, setPrinting] = useState(false)
+  const [showShare, setShowShare] = useState(false)
   const lang = card.language === "ms"
 
   const displayName =
@@ -351,6 +449,9 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
                   <button onClick={() => { setMenuOpen(false); handlePrint() }} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)]">
                     <Printer className="w-3.5 h-3.5" /> Print Card
                   </button>
+                  <button onClick={() => { setMenuOpen(false); setShowShare(true) }} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)]">
+                    <Share2 className="w-3.5 h-3.5" /> Share
+                  </button>
                   <hr className="my-1 border-[var(--bd)]" />
                   <button onClick={() => { setMenuOpen(false); onRemove(card.slug) }} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-500/10">
                     <Trash2 className="w-3.5 h-3.5" /> Remove
@@ -391,6 +492,7 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
             PAY NOW
           </Link>
         )}
+        {showShare && <ShareModal card={card} onClose={() => setShowShare(false)} />}
         {card.isPublished && (() => {
           const expiry = card.expiresAt ? new Date(card.expiresAt) : null
           const now = new Date()
