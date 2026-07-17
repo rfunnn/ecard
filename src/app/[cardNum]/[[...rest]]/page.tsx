@@ -5,6 +5,7 @@ import { InviteClient } from "@/components/invite/InviteClient"
 import type { InvitationCardData } from "@/types/invitation"
 import { DEFAULT_THEME, DEFAULT_MEDIA, DEFAULT_SCROLL } from "@/types/invitation"
 import type { WizardConfig } from "@/types/config"
+import { deriveOgText } from "@/lib/og-meta"
 
 export const dynamic = "force-dynamic"
 
@@ -57,14 +58,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const where = !isNaN(num) && String(num) === id ? { cardNum: num } : { slug: id }
     const card = await prisma.invitationCard.findUnique({
       where,
-      select: { slug: true, cardNum: true, title: true, description: true, isPublished: true, expiresAt: true },
+      select: {
+        slug: true, cardNum: true, title: true, description: true, isPublished: true, expiresAt: true,
+        groomName: true, brideName: true, wizardConfig: true,
+        template: { select: { category: true } },
+      },
     })
     if (!card) return { title: "Jemputan", robots: { index: false } }
 
     const isExpired = card.expiresAt != null && card.expiresAt < new Date()
     const shouldIndex = card.isPublished && !isExpired
     const canonical = card.cardNum ? `https://ekadku.com/${card.cardNum}` : `https://ekadku.com/${card.slug}`
-    const title = card.title || "Kad Jemputan Digital"
+
+    const { displayName, eventType, dayAndDateRaw } = deriveOgText(card)
+    const dayAndDate = dayAndDateRaw.replace(/\n/g, ", ")
+    const title = dayAndDate ? `${eventType} ${displayName} | ${dayAndDate}` : `${eventType} ${displayName}`
     const description = card.description ?? "Anda dijemput! Buka pautan ini untuk melihat kad jemputan."
     const ogImage = `https://ekadku.com/api/og/${card.slug}`
 

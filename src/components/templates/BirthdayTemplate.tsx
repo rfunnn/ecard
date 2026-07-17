@@ -384,7 +384,7 @@ export function BirthdayTemplate({ card, onRsvpOpen, previewPage: p, revealed = 
           <p className={`${headFont} text-[11px] tracking-[0.3em] uppercase opacity-85 mb-8`} style={{ color: bodyColor }}>
             {isMs ? "Ucapan" : "Wishes"}
           </p>
-          <div className="max-h-[50vh] overflow-y-auto max-w-sm mx-auto pr-1">
+          <div className="max-h-[35vh] overflow-y-auto max-w-sm mx-auto pr-1">
             <div className="space-y-7">
               {wishes.map((w, i) => (
                 <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>

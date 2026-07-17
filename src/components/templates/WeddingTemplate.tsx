@@ -575,7 +575,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
           >
             {card.language === "ms" ? "Ucapan" : "Wishes"}
           </p>
-          <div className="max-h-[50vh] overflow-y-auto max-w-sm mx-auto pr-1">
+          <div className="max-h-[35vh] overflow-y-auto max-w-sm mx-auto pr-1">
             <div className="space-y-5">
               {wishes.map((w, i) => (
                 <motion.div

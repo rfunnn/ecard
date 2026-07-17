@@ -392,7 +392,7 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
           <p className={`${headFont} text-[10px] tracking-[0.3em] uppercase opacity-40 mb-6`} style={{ color: bodyColor }}>
             {isMs ? "Ucapan" : "Messages"}
           </p>
-          <div className="max-h-[50vh] overflow-y-auto max-w-sm pr-1">
+          <div className="max-h-[35vh] overflow-y-auto max-w-sm pr-1">
             <div className="space-y-5">
               {wishes.map((w, i) => (
                 <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}

@@ -1,35 +1,17 @@
-import type { WizardConfig } from "@/types/config"
+import { deriveOgText, type OgCardCore } from "./og-meta"
 
-export type OgCardData = {
-  title: string
-  groomName: string | null
-  brideName: string | null
-  wizardConfig: unknown
+export type OgCardData = (OgCardCore & {
   template: { category: string; image1Url: string | null } | null
   theme: { primaryColor: string; bgColor: string } | null
-} | null
+}) | null
 
 export function buildOgImage(card: OgCardData) {
   const primary = card?.theme?.primaryColor ?? "#D4AF37"
   const bg      = card?.theme?.bgColor      ?? "#0e0e0e"
   const img1    = card?.template?.image1Url  ?? null
 
-  const wc = card?.wizardConfig as WizardConfig | undefined
-
-  const rawName = wc?.displayName ||
-    (card?.groomName && card?.brideName
-      ? `${card.groomName} & ${card.brideName}`
-      : card?.title ?? "Kad Jemputan")
-  const displayName = rawName.replace(/\n/g, " ")
-
-  const eventType =
-    wc?.eventType ||
-    (card?.template?.category === "WEDDING"   ? "Walimatul Urus" :
-     card?.template?.category === "BIRTHDAY"  ? "Jemputan Hari Lahir" :
-     card?.template?.category === "CORPORATE" ? "Majlis Korporat" :
-     "Jemputan Digital")
-
-  const dayAndDate = (wc?.dayAndDate ?? "").replace(/\n/g, "  ·  ")
+  const { displayName, eventType, dayAndDateRaw } = deriveOgText(card)
+  const dayAndDate = dayAndDateRaw.replace(/\n/g, "  ·  ")
 
   // Determine if bgColor is light to pick text colour
   const h  = (bg.replace("#", "") + "000000").slice(0, 6)
@@ -37,10 +19,10 @@ export function buildOgImage(card: OgCardData) {
   const gg = parseInt(h.slice(2, 4), 16) || 0
   const bb = parseInt(h.slice(4, 6), 16) || 0
   const bgIsLight = (rr * 299 + gg * 587 + bb * 114) / 1000 > 130
-  const textColor = bgIsLight ? "#1a1a1a" : "#f0ece4"
-  const textSub   = bgIsLight ? "#555555" : "#9a8a6a"
+  const textColor = bgIsLight ? "#1a1a1a" : "#f5efe2"
+  const textSub   = bgIsLight ? "#4a4a4a" : "#d8c9a3"
 
-  const nameFontSize = displayName.length > 35 ? 60 : displayName.length > 22 ? 74 : 86
+  const nameFontSize = displayName.length > 35 ? 52 : displayName.length > 22 ? 62 : 72
 
   return (
     <div
@@ -55,7 +37,7 @@ export function buildOgImage(card: OgCardData) {
         overflow: "hidden",
       }}
     >
-      {/* Template background image — faded */}
+      {/* Template cover photo — full bleed, matches the real page 1 */}
       {img1 && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -69,47 +51,56 @@ export function buildOgImage(card: OgCardData) {
             width: "100%",
             height: "100%",
             objectFit: "cover",
-            opacity: 0.18,
           }}
         />
       )}
 
-      {/* Gradient overlay so text stays readable regardless of bg image */}
+      {/* Bottom scrim so the caption stays legible over any photo */}
       <div style={{
         position: "absolute",
-        inset: 0,
-        background: `linear-gradient(140deg, ${bg}f2 0%, ${bg}88 55%, ${bg}d0 100%)`,
+        left: 0, right: 0, bottom: 0,
+        height: img1 ? "62%" : "100%",
+        background: img1
+          ? `linear-gradient(0deg, ${bg}f2 0%, ${bg}d0 40%, transparent 100%)`
+          : bg,
         display: "flex",
       }} />
 
-      {/* Top accent bar */}
+      {/* ekadku.com wordmark — top right */}
       <div style={{
         position: "absolute",
-        top: 0, left: 0, right: 0, height: 5,
-        background: `linear-gradient(90deg, transparent, ${primary}, transparent)`,
+        top: 28,
+        right: 44,
         display: "flex",
-      }} />
+        alignItems: "baseline",
+        gap: 0,
+      }}>
+        <span style={{ fontSize: 24, color: textColor }}>e</span>
+        <span style={{ fontSize: 24, color: primary }}>kad</span>
+        <span style={{ fontSize: 24, color: textColor }}>ku</span>
+        <span style={{ fontSize: 13, color: `${primary}a0` }}>.com</span>
+      </div>
 
-      {/* Centre content */}
+      {/* Caption block — anchored to the bottom, like the card's own cover */}
       <div style={{
         position: "absolute",
-        inset: 0,
+        left: 0, right: 0, bottom: 0,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
-        paddingLeft: 100,
-        paddingRight: 100,
-        paddingBottom: 50,
+        paddingLeft: 90,
+        paddingRight: 90,
+        paddingBottom: 56,
+        paddingTop: 40,
       }}>
         {/* Event type */}
         {eventType && (
           <div style={{
-            fontSize: 20,
-            letterSpacing: "0.42em",
+            fontSize: 18,
+            letterSpacing: "0.38em",
             textTransform: "uppercase",
-            color: `${primary}cc`,
-            marginBottom: 28,
+            color: primary,
+            marginBottom: 18,
             display: "flex",
           }}>
             {eventType}
@@ -126,48 +117,24 @@ export function buildOgImage(card: OgCardData) {
           display: "flex",
           flexWrap: "wrap",
           justifyContent: "center",
-          maxWidth: 900,
+          maxWidth: 950,
         }}>
           {displayName}
         </div>
 
-        {/* Ornamental divider */}
-        <div style={{
-          width: 150,
-          height: 1,
-          background: `linear-gradient(90deg, transparent, ${primary}, transparent)`,
-          marginTop: 28,
-          marginBottom: 28,
-          display: "flex",
-        }} />
-
         {/* Date */}
         {dayAndDate && (
           <div style={{
-            fontSize: 22,
+            fontSize: 20,
             color: textSub,
             textAlign: "center",
             letterSpacing: "0.04em",
+            marginTop: 18,
             display: "flex",
           }}>
             {dayAndDate}
           </div>
         )}
-      </div>
-
-      {/* ekadku.com wordmark — bottom right */}
-      <div style={{
-        position: "absolute",
-        bottom: 32,
-        right: 52,
-        display: "flex",
-        alignItems: "baseline",
-        gap: 0,
-      }}>
-        <span style={{ fontSize: 30, color: textColor }}>e</span>
-        <span style={{ fontSize: 30, color: primary }}>kad</span>
-        <span style={{ fontSize: 30, color: textColor }}>ku</span>
-        <span style={{ fontSize: 16, color: `${primary}80` }}>.com</span>
       </div>
 
       {/* Bottom accent bar */}
