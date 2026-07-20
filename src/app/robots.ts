@@ -4,6 +4,12 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
+        // WhatsApp / Facebook link-preview crawler — needs OG image endpoint
+        userAgent: "facebookexternalhit",
+        allow: ["/", "/api/og/"],
+        disallow: [],
+      },
+      {
         userAgent: "*",
         allow: ["/", "/api/og/"],
         disallow: [
@@ -11,8 +17,12 @@ export default function robots(): MetadataRoute.Robots {
           "/builder/",
           "/admin/",
           "/checkout/",
-          "/api/",
           "/mock-payment/",
+          "/api/user/",
+          "/api/cards/",
+          "/api/analytics/",
+          "/api/admin/",
+          "/api/auth/",
         ],
       },
     ],
