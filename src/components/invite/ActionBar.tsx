@@ -1,14 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { Phone, CirclePlay, CirclePause, MapPin, Gift, Mail, Heart, QrCode } from "lucide-react"
+import { Phone, CirclePlay, CirclePause, MapPin, Gift, Mail, Heart } from "lucide-react"
 import { motion } from "framer-motion"
 import type { InvitationCardData } from "@/types/invitation"
 import type { WizardConfig } from "@/types/config"
 import { GiftModal } from "./GiftModal"
 import { LocationModal } from "./LocationModal"
 import { ContactModal } from "./ContactModal"
-import { QRModal } from "./QRModal"
 
 interface ActionBarProps {
   card: InvitationCardData
@@ -32,7 +31,6 @@ export function ActionBar({
   const [giftOpen, setGiftOpen] = useState(false)
   const [locationOpen, setLocationOpen] = useState(false)
   const [contactOpen, setContactOpen] = useState(false)
-  const [qrOpen, setQrOpen] = useState(false)
 
   const handleMapClick = () => {
     setLocationOpen(true)
@@ -148,19 +146,6 @@ export function ActionBar({
             </button>
           )}
 
-          {/* QR Code */}
-          <button
-            onClick={() => setQrOpen(true)}
-            aria-label={card.language === "ms" ? "Kod QR" : "QR Code"}
-            className="flex flex-col items-center gap-1.5 w-14 transition-all active:scale-90"
-            style={{ opacity: 0.9 }}
-          >
-            <QrCode className="w-6 h-6" style={{ color: footerIconCol, strokeWidth: 1.5 }} />
-            <span className="text-[10px] tracking-wide" style={{ color: footerIconCol }}>
-              {card.language === "ms" ? "Kod QR" : "QR Code"}
-            </span>
-          </button>
-
         </div>
       </motion.div>
 
@@ -185,13 +170,6 @@ export function ActionBar({
         onClose={() => setGiftOpen(false)}
         card={card}
         onAnalytic={onAnalytic}
-        contained={contained}
-      />
-
-      <QRModal
-        isOpen={qrOpen}
-        onClose={() => setQrOpen(false)}
-        card={card}
         contained={contained}
       />
     </>
