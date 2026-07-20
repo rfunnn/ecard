@@ -142,21 +142,17 @@ function suffixError(val: string): string | null {
   return null
 }
 
-function InviteLinkRow({ card }: { card: Card }) {
+function InviteLinkRow({ card, suffix, onSuffixChange }: { card: Card; suffix: string; onSuffixChange: (s: string) => void }) {
   const storageKey = `invite-suffix-${card.slug}`
-  const [suffix, setSuffix]   = useState("")
   const [origin, setOrigin]   = useState("https://ekadku.com")
   const [editing, setEditing] = useState(false)
   const [draft, setDraft]     = useState("")
   const [copied, setCopied]   = useState(false)
 
-  // Load persisted suffix and resolve origin on mount
+  // Resolve origin on mount
   useEffect(() => {
     setOrigin(window.location.origin)
-    try {
-      setSuffix(localStorage.getItem(storageKey) ?? "")
-    } catch { /* ignore */ }
-  }, [storageKey])
+  }, [])
 
   const baseUrl = card.cardNum ? `${origin}/${card.cardNum}` : `${origin}/${card.slug}`
   const fullUrl = suffix ? `${baseUrl}/${suffix}` : baseUrl
@@ -170,7 +166,7 @@ function InviteLinkRow({ card }: { card: Card }) {
   function saveSuffix() {
     if (error) return
     const trimmed = draft.replace(/^-+|-+$/g, "")
-    setSuffix(trimmed)
+    onSuffixChange(trimmed)
     try { localStorage.setItem(storageKey, trimmed) } catch { /* ignore */ }
     setEditing(false)
   }
@@ -272,7 +268,7 @@ function InviteLinkRow({ card }: { card: Card }) {
             </button>
             {suffix && (
               <button
-                onClick={() => { setSuffix(""); setDraft(""); try { localStorage.removeItem(storageKey) } catch { /* ignore */ } setEditing(false) }}
+                onClick={() => { onSuffixChange(""); setDraft(""); try { localStorage.removeItem(storageKey) } catch { /* ignore */ } setEditing(false) }}
                 className="ml-auto text-[11px] text-red-400 hover:text-red-600 transition-colors"
               >
                 Buang nama
@@ -382,7 +378,15 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
   const [menuOpen, setMenuOpen] = useState(false)
   const [printing, setPrinting] = useState(false)
   const [showShare, setShowShare] = useState(false)
+  const [suffix, setSuffix] = useState("")
   const lang = card.language === "ms"
+
+  useEffect(() => {
+    try { setSuffix(localStorage.getItem(`invite-suffix-${card.slug}`) ?? "") } catch { /* ignore */ }
+  }, [card.slug])
+
+  const base = card.cardNum ? `/${card.cardNum}` : `/${card.slug}`
+  const previewUrl = suffix ? `${base}/${suffix}` : base
 
   const displayName =
     card.groomName && card.brideName
@@ -440,7 +444,7 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
                   <Link href={`/builder/${card.slug}`} className="flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)]">
                     <Pencil className="w-3.5 h-3.5" /> Edit
                   </Link>
-                  <Link href={card.cardNum ? `/${card.cardNum}` : `/${card.slug}`} target="_blank" className="flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)]">
+                  <Link href={previewUrl} target="_blank" className="flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)]">
                     <Eye className="w-3.5 h-3.5" /> Preview
                   </Link>
                   <button onClick={() => { setMenuOpen(false); handlePrint() }} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)]">
@@ -465,7 +469,7 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
           </div>
         )}
 
-        <InviteLinkRow card={card} />
+        <InviteLinkRow card={card} suffix={suffix} onSuffixChange={setSuffix} />
 
         <div className="flex items-center flex-wrap gap-1 mb-3">
           <Link href={`/builder/${card.slug}`} className={actionBtn}><Pencil className="w-3.5 h-3.5" /> Edit</Link>
@@ -477,7 +481,7 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
               <BarChart2 className="w-3.5 h-3.5" />{lang ? "Laporan" : "Report"}
             </Link>
           )}
-          <Link href={card.cardNum ? `/${card.cardNum}` : `/${card.slug}`} target="_blank" className={actionBtn}><Eye className="w-3.5 h-3.5" /> Preview</Link>
+          <Link href={previewUrl} target="_blank" className={actionBtn}><Eye className="w-3.5 h-3.5" /> Preview</Link>
           <button onClick={handlePrint} disabled={printing} className={`${actionBtn} text-amber-600 hover:text-amber-800`}>
             {printing ? <div className="w-3.5 h-3.5 border-2 border-amber-600 border-t-transparent rounded-full animate-spin" /> : <Printer className="w-3.5 h-3.5" />}
             Print Card

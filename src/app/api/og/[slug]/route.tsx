@@ -23,7 +23,7 @@ export async function GET(
       groomName: true,
       brideName: true,
       wizardConfig: true,
-      template: { select: { category: true, image1Url: true } },
+      template: { select: { category: true, image1Url: true, thumbnail: true } },
       theme: { select: { primaryColor: true, bgColor: true, bgImageUrl: true } },
     },
   })
@@ -33,6 +33,7 @@ export async function GET(
     template: raw.template ? {
       ...raw.template,
       image1Url: rewriteStorageUrl(raw.template.image1Url) || null,
+      thumbnail: rewriteStorageUrl(raw.template.thumbnail) || null,
     } : null,
     theme: raw.theme ? {
       ...raw.theme,

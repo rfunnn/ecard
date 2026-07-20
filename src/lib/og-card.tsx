@@ -1,14 +1,14 @@
 import { deriveOgText, type OgCardCore } from "./og-meta"
 
 export type OgCardData = (OgCardCore & {
-  template: { category: string; image1Url: string | null } | null
+  template: { category: string; image1Url: string | null; thumbnail?: string | null } | null
   theme: { primaryColor: string; bgColor: string; bgImageUrl: string | null } | null
 }) | null
 
 export function buildOgImage(card: OgCardData) {
   const primary = card?.theme?.primaryColor ?? "#D4AF37"
   const bg      = card?.theme?.bgColor      ?? "#0e0e0e"
-  const img1    = card?.template?.image1Url ?? card?.theme?.bgImageUrl ?? null
+  const img1    = card?.template?.image1Url ?? card?.template?.thumbnail ?? card?.theme?.bgImageUrl ?? null
 
   const { displayName, eventType, dayAndDateRaw } = deriveOgText(card)
   const dayAndDate = dayAndDateRaw.replace(/\n/g, "  ·  ")
