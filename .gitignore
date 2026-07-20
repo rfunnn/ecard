@@ -1,5 +1,10 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# Large media exports — generate locally with scripts/record-homepage.mjs
+/public/*.mp4
+/public/*.webm
+/tmp-recording/
+
 # dependencies
 /node_modules
 /.pnp
