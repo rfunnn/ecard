@@ -67,13 +67,13 @@ export function buildOgImage(card: OgCardData, scale = 1) {
         />
       )}
 
-      {/* Bottom scrim so the caption stays legible over any photo */}
+      {/* Scrim so the caption stays legible over any photo — weighted to the
+          middle band, where the caption now sits */}
       <div style={{
         position: "absolute",
-        left: 0, right: 0, bottom: 0,
-        height: img1 ? "62%" : "100%",
+        left: 0, right: 0, top: 0, bottom: 0,
         background: img1
-          ? `linear-gradient(0deg, ${bg}f2 0%, ${bg}d0 40%, transparent 100%)`
+          ? `linear-gradient(180deg, transparent 0%, ${bg}c0 22%, ${bg}ee 50%, ${bg}c0 78%, transparent 100%)`
           : bg,
         display: "flex",
       }} />
@@ -93,17 +93,16 @@ export function buildOgImage(card: OgCardData, scale = 1) {
         <span style={{ fontSize: s(13), color: `${primary}a0` }}>.com</span>
       </div>
 
-      {/* Caption block — anchored to the bottom, like the card's own cover */}
+      {/* Caption block — centred both ways in the frame */}
       <div style={{
         position: "absolute",
-        left: 0, right: 0, bottom: 0,
+        left: 0, right: 0, top: 0, bottom: 0,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        justifyContent: "center",
         paddingLeft: s(90),
         paddingRight: s(90),
-        paddingBottom: s(56),
-        paddingTop: s(40),
       }}>
         {/* Event type */}
         {eventType && (
