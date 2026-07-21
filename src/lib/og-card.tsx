@@ -5,7 +5,19 @@ export type OgCardData = (OgCardCore & {
   theme: { primaryColor: string; bgColor: string; bgImageUrl: string | null } | null
 }) | null
 
-export function buildOgImage(card: OgCardData) {
+/**
+ * Renders the OG card layout.
+ *
+ * `scale` shrinks every fixed pixel value proportionally so the rendered PNG
+ * can be emitted at a smaller resolution (fewer pixels → smaller file). This
+ * matters for WhatsApp, which silently drops link-preview thumbnails once the
+ * og:image exceeds ~300 KB. The design is authored for a 1200×630 canvas, so a
+ * scale of 0.7 yields 840×441 — visually identical in a chat/preview card but
+ * roughly half the byte size.
+ */
+export function buildOgImage(card: OgCardData, scale = 1) {
+  const s = (n: number) => n * scale
+
   const primary = card?.theme?.primaryColor ?? "#D4AF37"
   const bg      = card?.theme?.bgColor      ?? "#0e0e0e"
   const img1    = card?.template?.image1Url ?? card?.template?.thumbnail ?? card?.theme?.bgImageUrl ?? null
@@ -22,7 +34,7 @@ export function buildOgImage(card: OgCardData) {
   const textColor = bgIsLight ? "#1a1a1a" : "#f5efe2"
   const textSub   = bgIsLight ? "#4a4a4a" : "#d8c9a3"
 
-  const nameFontSize = displayName.length > 35 ? 52 : displayName.length > 22 ? 62 : 72
+  const nameFontSize = displayName.length > 35 ? s(52) : displayName.length > 22 ? s(62) : s(72)
 
   return (
     <div
@@ -42,8 +54,8 @@ export function buildOgImage(card: OgCardData) {
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={img1}
-          width={1200}
-          height={630}
+          width={s(1200)}
+          height={s(630)}
           alt=""
           style={{
             position: "absolute",
@@ -69,16 +81,16 @@ export function buildOgImage(card: OgCardData) {
       {/* ekadku.com wordmark — top right */}
       <div style={{
         position: "absolute",
-        top: 28,
-        right: 44,
+        top: s(28),
+        right: s(44),
         display: "flex",
         alignItems: "baseline",
         gap: 0,
       }}>
-        <span style={{ fontSize: 24, color: textColor }}>e</span>
-        <span style={{ fontSize: 24, color: primary }}>kad</span>
-        <span style={{ fontSize: 24, color: textColor }}>ku</span>
-        <span style={{ fontSize: 13, color: `${primary}a0` }}>.com</span>
+        <span style={{ fontSize: s(24), color: textColor }}>e</span>
+        <span style={{ fontSize: s(24), color: primary }}>kad</span>
+        <span style={{ fontSize: s(24), color: textColor }}>ku</span>
+        <span style={{ fontSize: s(13), color: `${primary}a0` }}>.com</span>
       </div>
 
       {/* Caption block — anchored to the bottom, like the card's own cover */}
@@ -88,19 +100,19 @@ export function buildOgImage(card: OgCardData) {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        paddingLeft: 90,
-        paddingRight: 90,
-        paddingBottom: 56,
-        paddingTop: 40,
+        paddingLeft: s(90),
+        paddingRight: s(90),
+        paddingBottom: s(56),
+        paddingTop: s(40),
       }}>
         {/* Event type */}
         {eventType && (
           <div style={{
-            fontSize: 18,
+            fontSize: s(18),
             letterSpacing: "0.38em",
             textTransform: "uppercase",
             color: primary,
-            marginBottom: 18,
+            marginBottom: s(18),
             display: "flex",
           }}>
             {eventType}
@@ -112,12 +124,12 @@ export function buildOgImage(card: OgCardData) {
           fontSize: nameFontSize,
           color: textColor,
           textAlign: "center",
-          letterSpacing: "-0.5px",
+          letterSpacing: `${s(-0.5)}px`,
           lineHeight: 1.2,
           display: "flex",
           flexWrap: "wrap",
           justifyContent: "center",
-          maxWidth: 950,
+          maxWidth: s(950),
         }}>
           {displayName}
         </div>
@@ -125,11 +137,11 @@ export function buildOgImage(card: OgCardData) {
         {/* Date */}
         {dayAndDate && (
           <div style={{
-            fontSize: 20,
+            fontSize: s(20),
             color: textSub,
             textAlign: "center",
             letterSpacing: "0.04em",
-            marginTop: 18,
+            marginTop: s(18),
             display: "flex",
           }}>
             {dayAndDate}
@@ -140,7 +152,7 @@ export function buildOgImage(card: OgCardData) {
       {/* Bottom accent bar */}
       <div style={{
         position: "absolute",
-        bottom: 0, left: 0, right: 0, height: 5,
+        bottom: 0, left: 0, right: 0, height: s(5),
         background: `linear-gradient(90deg, transparent, ${primary}, transparent)`,
         display: "flex",
       }} />
