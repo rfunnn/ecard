@@ -30,8 +30,16 @@ export default async function Image() {
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 5, background: "linear-gradient(90deg, transparent, #D4AF37, transparent)" }} />
 
         <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 4 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={iconSrc} width={96} height={96} alt="" style={{ borderRadius: 20 }} />
+          <div style={{
+            display: "flex",
+            padding: 6,
+            borderRadius: 26,
+            background: "rgba(212,175,55,0.10)",
+            border: "2px solid rgba(212,175,55,0.55)",
+          }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={iconSrc} width={96} height={96} alt="" style={{ borderRadius: 20 }} />
+          </div>
           <div style={{ display: "flex", alignItems: "baseline", gap: 0 }}>
             <span style={{ fontSize: 88, color: "#f5f0e8", letterSpacing: "-3px" }}>e</span>
             <span style={{ fontSize: 88, color: "#D4AF37", letterSpacing: "-3px" }}>kad</span>
