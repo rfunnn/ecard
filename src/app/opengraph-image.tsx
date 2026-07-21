@@ -1,10 +1,16 @@
 import { ImageResponse } from "next/og"
+import { readFile } from "node:fs/promises"
+import { join } from "node:path"
 
 export const alt = "ekadku.com — Kad Jemputan Digital"
 export const size = { width: 1200, height: 630 }
 export const contentType = "image/png"
 
-export default function Image() {
+export default async function Image() {
+  // process.cwd() is the Next.js project root; icon.png sits there.
+  const iconData = await readFile(join(process.cwd(), "icon.png"), "base64")
+  const iconSrc = `data:image/png;base64,${iconData}`
+
   return new ImageResponse(
     (
       <div
@@ -23,8 +29,9 @@ export default function Image() {
       >
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 5, background: "linear-gradient(90deg, transparent, #D4AF37, transparent)" }} />
 
-        <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 4 }}>
-          <div style={{ fontSize: 60, color: "#D4AF37" }}>♥</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 4 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={iconSrc} width={96} height={96} alt="" style={{ borderRadius: 20 }} />
           <div style={{ display: "flex", alignItems: "baseline", gap: 0 }}>
             <span style={{ fontSize: 88, color: "#f5f0e8", letterSpacing: "-3px" }}>e</span>
             <span style={{ fontSize: 88, color: "#D4AF37", letterSpacing: "-3px" }}>kad</span>
