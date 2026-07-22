@@ -9,12 +9,14 @@ import Image from "next/image"
 import {
   Pencil, ImageIcon, Gift, Mail, Eye, Printer,
   MoreVertical, ExternalLink, Plus, Trash2, Copy, Check, BarChart2,
-  Link2, AlertCircle, Loader2, Share2, Download, X,
+  Link2, AlertCircle, Loader2, Share2, Download, X, RefreshCw, ArrowUpCircle,
 } from "lucide-react"
 import QRCode from "qrcode"
 import type { WizardConfig } from "@/types/config"
+import { getPackageTier } from "@/types/config"
 import { generatePrintHTML } from "@/lib/print-card"
 import { removeFromCart } from "@/lib/cart"
+import { useToast } from "@/components/ui/Toast"
 
 type Card = {
   id: string
@@ -325,6 +327,15 @@ function ShareModal({ card, onClose }: { card: Card; onClose: () => void }) {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  function handleWhatsApp() {
+    const displayName =
+      card.groomName && card.brideName
+        ? `${card.groomName} & ${card.brideName}`
+        : card.title || "majlis kami"
+    const msg = `Assalamualaikum! Anda dijemput hadir ke majlis *${displayName}*. Sila klik pautan untuk maklumat lanjut:\n${shareUrl}`
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank", "noopener noreferrer")
+  }
+
   return (
     <>
       <div className="fixed inset-0 z-40 bg-black/50" onClick={onClose} />
@@ -345,6 +356,18 @@ function ShareModal({ card, onClose }: { card: Card; onClose: () => void }) {
           {shareUrl.replace(/^https?:\/\//, "")}
         </p>
 
+        {/* WhatsApp — primary share action */}
+        <button
+          onClick={handleWhatsApp}
+          className="w-full flex items-center justify-center gap-2 text-sm font-bold bg-[#25D366] hover:bg-[#1fb855] text-white py-3 rounded-xl transition-colors mb-2"
+        >
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.345.223-.643.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51a12.8 12.8 0 00-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.29.173-1.414z"/>
+          </svg>
+          Hantar via WhatsApp
+        </button>
+
+        {/* Secondary actions */}
         <div className="flex gap-2">
           <button
             onClick={handleDownload}
@@ -379,7 +402,7 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
   const [printing, setPrinting] = useState(false)
   const [showShare, setShowShare] = useState(false)
   const [suffix, setSuffix] = useState("")
-  const lang = card.language === "ms"
+  const { toast } = useToast()
 
   useEffect(() => {
     try { setSuffix(localStorage.getItem(`invite-suffix-${card.slug}`) ?? "") } catch { /* ignore */ }
@@ -412,7 +435,7 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
     const w = window.open("", "_blank", "width=900,height=760")
     if (!w) {
       setPrinting(false)
-      alert(lang ? "Sila benarkan popup untuk mencetak." : "Please allow popups to print.")
+      toast("Sila benarkan popup untuk mencetak.", "error")
       return
     }
     w.document.write(html)
@@ -445,17 +468,17 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
                     <Pencil className="w-3.5 h-3.5" /> Edit
                   </Link>
                   <Link href={previewUrl} target="_blank" className="flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)]">
-                    <Eye className="w-3.5 h-3.5" /> Preview
+                    <Eye className="w-3.5 h-3.5" /> Pratonton
                   </Link>
                   <button onClick={() => { setMenuOpen(false); handlePrint() }} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)]">
-                    <Printer className="w-3.5 h-3.5" /> Print Card
+                    <Printer className="w-3.5 h-3.5" /> Cetak Kad
                   </button>
                   <button onClick={() => { setMenuOpen(false); setShowShare(true) }} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)]">
-                    <Share2 className="w-3.5 h-3.5" /> Share
+                    <Share2 className="w-3.5 h-3.5" /> Kongsi
                   </button>
                   <hr className="my-1 border-[var(--bd)]" />
                   <button onClick={() => { setMenuOpen(false); onRemove(card.slug) }} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-500/10">
-                    <Trash2 className="w-3.5 h-3.5" /> Remove
+                    <Trash2 className="w-3.5 h-3.5" /> Padam
                   </button>
                 </div>
               </>
@@ -473,24 +496,24 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
 
         <div className="flex items-center flex-wrap gap-1 mb-3">
           <Link href={`/builder/${card.slug}`} className={actionBtn}><Pencil className="w-3.5 h-3.5" /> Edit</Link>
-          <Link href={`/builder/${card.slug}?page=11`} className={actionBtn}><ImageIcon className="w-3.5 h-3.5" /> Gallery</Link>
-          <Link href={`/builder/${card.slug}?page=10`} className={actionBtn}><Gift className="w-3.5 h-3.5" /> Gifts</Link>
+          <Link href={`/builder/${card.slug}?page=11`} className={actionBtn}><ImageIcon className="w-3.5 h-3.5" /> Galeri</Link>
+          <Link href={`/builder/${card.slug}?page=10`} className={actionBtn}><Gift className="w-3.5 h-3.5" /> Hadiah</Link>
           <Link href={`/builder/${card.slug}?page=7`} className={actionBtn}><Mail className="w-3.5 h-3.5" /> RSVP</Link>
           {card.isPublished && (
             <Link href={`/dashboard/${card.slug}/report`} className={`${actionBtn} font-semibold`} style={{ color: card.theme?.primaryColor ?? undefined }}>
-              <BarChart2 className="w-3.5 h-3.5" />{lang ? "Laporan" : "Report"}
+              <BarChart2 className="w-3.5 h-3.5" /> Laporan
             </Link>
           )}
-          <Link href={previewUrl} target="_blank" className={actionBtn}><Eye className="w-3.5 h-3.5" /> Preview</Link>
+          <Link href={previewUrl} target="_blank" className={actionBtn}><Eye className="w-3.5 h-3.5" /> Pratonton</Link>
           <button onClick={handlePrint} disabled={printing} className={`${actionBtn} text-amber-600 hover:text-amber-800`}>
             {printing ? <div className="w-3.5 h-3.5 border-2 border-amber-600 border-t-transparent rounded-full animate-spin" /> : <Printer className="w-3.5 h-3.5" />}
-            Print Card
+            Cetak Kad
           </button>
         </div>
 
         {!card.isPublished && (
           <Link href={`/checkout?slug=${card.slug}`} className="inline-flex items-center gap-1.5 text-xs font-semibold border border-[var(--tx-1)] text-[var(--tx-1)] px-4 py-1.5 rounded-full hover:bg-[var(--tx-1)] hover:text-[var(--pg)] transition-colors">
-            PAY NOW
+            BAYAR SEKARANG
           </Link>
         )}
         {showShare && <ShareModal card={card} onClose={() => setShowShare(false)} />}
@@ -515,7 +538,7 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
                     ? "text-amber-600 bg-amber-500/10 border border-amber-500/20"
                     : "text-green-600 bg-green-500/10 border border-green-500/20"
                 }`}>
-                  Active{expiryLabel ? ` · Luput ${expiryLabel}` : ""}
+                  Aktif{expiryLabel ? ` · Luput ${expiryLabel}` : ""}
                 </span>
               )}
               {isExpiringSoon && daysLeft !== null && (
@@ -525,12 +548,43 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
               )}
               {isExpired && (
                 <Link
-                  href={`/checkout?slug=${card.slug}`}
-                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-red-500 hover:text-red-700 transition-colors underline underline-offset-2 w-fit"
+                  href={`/checkout?slug=${card.slug}&renewal=true`}
+                  className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-red-500 hover:text-red-700 transition-colors underline underline-offset-2 w-fit"
                 >
-                  Perbaharui pautan →
+                  <RefreshCw className="w-3 h-3" /> Perbaharui pautan →
                 </Link>
               )}
+              {isExpiringSoon && !isExpired && (
+                <Link
+                  href={`/checkout?slug=${card.slug}&renewal=true`}
+                  className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-amber-500 hover:text-amber-700 transition-colors underline underline-offset-2 w-fit"
+                >
+                  <RefreshCw className="w-3 h-3" /> Perbaharui awal →
+                </Link>
+              )}
+            </div>
+          )
+        })()}
+        {card.isPublished && (() => {
+          const currentTier = getPackageTier((card.wizardConfig?.packageType as string | undefined) ?? "")
+          if (currentTier === "gold") return null
+          return (
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
+              <span className="text-[10px] text-[var(--tx-3)] font-medium">Naik taraf:</span>
+              {currentTier === "bronze" && (
+                <Link
+                  href={`/checkout?slug=${card.slug}&upgrade=silver`}
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold border border-silver/40 text-[var(--tx-2)] px-2.5 py-1 rounded-full hover:bg-[var(--sf)] transition-colors"
+                >
+                  <ArrowUpCircle className="w-3 h-3" /> Silver (RM10)
+                </Link>
+              )}
+              <Link
+                href={`/checkout?slug=${card.slug}&upgrade=gold`}
+                className="inline-flex items-center gap-1 text-[11px] font-semibold border border-gold/40 text-gold px-2.5 py-1 rounded-full hover:bg-gold/10 transition-colors"
+              >
+                <ArrowUpCircle className="w-3 h-3" /> Gold {currentTier === "silver" ? "(RM20)" : "(RM30)"}
+              </Link>
             </div>
           )
         })()}
@@ -675,6 +729,7 @@ function DashboardInner() {
   const router  = useRouter()
   const params  = useSearchParams()
   const tab     = params.get("tab") ?? "orders"
+  const { toast } = useToast()
 
   const [cards,        setCards]        = useState<Card[]>([])
   const [likes,        setLikes]        = useState<LikedTemplate[]>([])
@@ -715,9 +770,9 @@ function DashboardInner() {
       // Reload from server on failure so the list is consistent
       const res = await fetch("/api/user/cards")
       if (res.ok) setCards((await res.json()).cards)
-      alert("Gagal memadam kad. Sila cuba lagi.")
+      toast("Gagal memadam kad. Sila cuba lagi.", "error")
     }
-  }, [])
+  }, [toast])
 
   const handleUseFav = useCallback(async (tpl: LikedTemplate) => {
     if (creatingFav) return
@@ -731,7 +786,7 @@ function DashboardInner() {
       if (res.status === 403) {
         const body = await res.json().catch(() => ({}))
         if (body.error === "DRAFT_LIMIT_EXCEEDED") {
-          alert("Anda sudah mempunyai 3 draf. Sila selesaikan atau padamkan salah satu draf dahulu.")
+          toast("Anda sudah mempunyai 3 draf. Sila selesaikan atau padamkan salah satu draf dahulu.", "info")
           setCreatingFav(null)
           return
         }
@@ -741,10 +796,10 @@ function DashboardInner() {
       router.push(`/builder/${card.slug}`)
     } catch (err) {
       console.error("handleUseFav failed:", err)
-      alert("Gagal membuka pembina kad. Sila cuba lagi.")
+      toast("Gagal membuka pembina kad. Sila cuba lagi.", "error")
       setCreatingFav(null)
     }
-  }, [creatingFav, router])
+  }, [creatingFav, router, toast])
 
   useEffect(() => {
     if (status !== "authenticated") return
@@ -763,9 +818,9 @@ function DashboardInner() {
   if (!session) return null
 
   const sideNav = [
-    { key: "orders",    label: "ORDERS" },
-    { key: "favorites", label: "FAVORITES" },
-    { key: "profile",   label: "MY PROFILE" },
+    { key: "orders",    label: "KAD SAYA" },
+    { key: "favorites", label: "TEMPLAT SUKA" },
+    { key: "profile",   label: "PROFIL SAYA" },
   ]
 
   return (
@@ -810,15 +865,15 @@ function DashboardInner() {
         {/* Top bar */}
         <div className="flex items-center justify-between gap-3 mb-6">
           <h1 className="text-lg sm:text-xl font-black tracking-widest text-[var(--tx-1)] uppercase">
-            {tab === "orders" ? "Orders" : tab === "favorites" ? "Favorites" : "My Profile"}
+            {tab === "orders" ? "Kad Saya" : tab === "favorites" ? "Templat Suka" : "Profil Saya"}
           </h1>
           <Link
             href="/templates"
             className="flex items-center gap-1.5 shrink-0 bg-[var(--tx-1)] text-[var(--pg)] text-[11px] sm:text-xs font-black tracking-widest uppercase px-3 sm:px-4 py-2.5 rounded-lg hover:opacity-80 transition-opacity"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Create New Card</span>
-            <span className="sm:hidden">New</span>
+            <span className="hidden sm:inline">Kad Baharu</span>
+            <span className="sm:hidden">Baharu</span>
           </Link>
         </div>
 
@@ -831,12 +886,12 @@ function DashboardInner() {
               </div>
             ) : cards.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 text-center gap-4">
-                <p className="text-[var(--tx-3)] text-sm">No cards yet.</p>
+                <p className="text-[var(--tx-3)] text-sm">Tiada kad lagi.</p>
                 <Link
                   href="/templates"
                   className="text-xs font-bold bg-[var(--tx-1)] text-[var(--pg)] px-5 py-2.5 rounded-lg hover:opacity-80 transition-opacity"
                 >
-                  Create Your First Card
+                  Buat Kad Pertama
                 </Link>
               </div>
             ) : (
@@ -858,9 +913,9 @@ function DashboardInner() {
               </div>
             ) : likes.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 text-center gap-4">
-                <p className="text-[var(--tx-3)] text-sm">No liked templates yet.</p>
+                <p className="text-[var(--tx-3)] text-sm">Tiada templat suka lagi.</p>
                 <Link href="/templates" className="text-xs font-bold bg-[var(--tx-1)] text-[var(--pg)] px-5 py-2.5 rounded-lg hover:opacity-80 transition-opacity">
-                  Browse Templates
+                  Lihat Templat
                 </Link>
               </div>
             ) : (
@@ -892,7 +947,7 @@ function DashboardInner() {
                         target="_blank"
                         className="flex-1 text-center text-xs font-bold border border-[var(--bd)] text-[var(--tx-2)] py-2 rounded-lg hover:bg-[var(--sf)] transition-colors"
                       >
-                        Preview
+                        Pratonton
                       </Link>
                     </div>
                   </div>

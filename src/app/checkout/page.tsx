@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import {
   ChevronLeft, ShoppingBag, Shield, Loader2,
-  CheckCircle2, Package, Sparkles, Video, Paintbrush,
+  CheckCircle2, Package, Sparkles, Video, Paintbrush, RefreshCw,
 } from "lucide-react"
 import { getCartSlugs } from "@/lib/cart"
 import { PaymentMethods } from "@/components/checkout/PaymentMethods"
@@ -27,15 +27,25 @@ interface CartCard {
   groomName?: string
   brideName?: string
   isPublished: boolean
+  expiresAt?: string | null
   wizardConfig: WizardConfigSlice | null
   template: { name: string; nameMs: string; category: string }
   theme: { primaryColor: string; bgColor: string } | null
 }
 
+const RENEWAL_PRICE_RM = 20
+
 // ─── pricing helpers ─────────────────────────────────────────────────────────
 
 const PACKAGE_PRICES: Record<string, number> = { bronze: 30, silver: 40, gold: 60 }
 const PACKAGE_LABELS: Record<string, string> = { bronze: "Bronze", silver: "Silver", gold: "Gold" }
+
+function upgradeCostRM(currentPkgType: string | undefined, targetTier: string): number {
+  const currentKey = (currentPkgType ?? "bronze").split("(")[0].trim().toLowerCase()
+  const current    = PACKAGE_PRICES[currentKey] ?? 30
+  const target     = PACKAGE_PRICES[targetTier]  ?? 60
+  return Math.max(0, target - current)
+}
 
 function parsePackage(raw?: string) {
   const key = (raw ?? "bronze").split("(")[0].trim().toLowerCase()
@@ -141,6 +151,115 @@ function CardRow({ card }: { card: CartCard }) {
   )
 }
 
+// ─── renewal card row ─────────────────────────────────────────────────────────
+
+function RenewalCardRow({ card }: { card: CartCard }) {
+  const accent = card.theme?.primaryColor ?? "#D4AF37"
+  const bg = card.theme?.bgColor ?? "#1a0a00"
+  const displayName =
+    card.groomName && card.brideName
+      ? `${card.groomName} & ${card.brideName}`
+      : card.title || "Kad Jemputan"
+
+  const now = new Date()
+  const expiry = card.expiresAt ? new Date(card.expiresAt) : null
+  const isExpired = expiry ? expiry < now : false
+  const expiryLabel = expiry
+    ? expiry.toLocaleDateString("ms-MY", { day: "numeric", month: "short", year: "numeric" })
+    : null
+
+  return (
+    <div className="flex gap-4 p-4 rounded-xl border border-[var(--bd)] bg-[var(--pg-alt)] hover:border-gold/20 transition-colors">
+      <div
+        className="shrink-0 w-10 rounded-lg overflow-hidden flex flex-col items-center justify-center"
+        style={{ aspectRatio: "3/4", background: bg, border: `1px solid ${accent}30` }}
+      >
+        <span className="text-base">{CATEGORY_EMOJI[card.template.category] ?? "✉️"}</span>
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-[var(--tx-1)] truncate">{displayName}</p>
+        <p className="text-xs text-[var(--tx-3)] mt-0.5">{card.template.nameMs}</p>
+        <div className="flex flex-wrap gap-1.5 mt-2">
+          <span
+            className={`inline-flex items-center gap-1 text-[10px] font-semibold rounded-full px-2 py-0.5 ${
+              isExpired
+                ? "text-red-400 bg-red-400/10 border border-red-400/30"
+                : "text-amber-400 bg-amber-400/10 border border-amber-400/30"
+            }`}
+          >
+            <RefreshCw className="w-2.5 h-2.5" />
+            {isExpired ? `Luput ${expiryLabel ?? ""}` : `Akan luput ${expiryLabel ?? ""}`} · +6 Bulan
+          </span>
+        </div>
+      </div>
+
+      <div className="shrink-0 text-right">
+        <p className="text-base font-bold text-gold">RM{RENEWAL_PRICE_RM}</p>
+      </div>
+    </div>
+  )
+}
+
+// ─── upgrade card row ─────────────────────────────────────────────────────────
+
+function UpgradeCardRow({ card, targetTier }: { card: CartCard; targetTier: string }) {
+  const accent = card.theme?.primaryColor ?? "#D4AF37"
+  const bg     = card.theme?.bgColor      ?? "#1a0a00"
+  const displayName =
+    card.groomName && card.brideName
+      ? `${card.groomName} & ${card.brideName}`
+      : card.title || "Kad Jemputan"
+
+  const currentPkg    = parsePackage(card.wizardConfig?.packageType)
+  const targetLabel   = PACKAGE_LABELS[targetTier]  ?? "Gold"
+  const targetColor   = PACKAGE_COLORS[targetTier]  ?? "#D4AF37"
+  const cost          = upgradeCostRM(card.wizardConfig?.packageType, targetTier)
+
+  return (
+    <div className="flex gap-4 p-4 rounded-xl border border-[var(--bd)] bg-[var(--pg-alt)] hover:border-gold/20 transition-colors">
+      <div
+        className="shrink-0 w-10 rounded-lg overflow-hidden flex flex-col items-center justify-center"
+        style={{ aspectRatio: "3/4", background: bg, border: `1px solid ${accent}30` }}
+      >
+        <span className="text-base">{CATEGORY_EMOJI[card.template.category] ?? "✉️"}</span>
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-[var(--tx-1)] truncate">{displayName}</p>
+        <p className="text-xs text-[var(--tx-3)] mt-0.5">{card.template.nameMs}</p>
+        <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+          <span
+            className="inline-flex items-center text-[10px] font-semibold rounded-full px-2 py-0.5 opacity-60"
+            style={{
+              color: PACKAGE_COLORS[currentPkg.key] ?? "#D4AF37",
+              background: `${PACKAGE_COLORS[currentPkg.key] ?? "#D4AF37"}15`,
+              border: `1px solid ${PACKAGE_COLORS[currentPkg.key] ?? "#D4AF37"}30`,
+            }}
+          >
+            {currentPkg.label}
+          </span>
+          <span className="text-[10px] text-[var(--tx-3)]">→</span>
+          <span
+            className="inline-flex items-center text-[10px] font-bold rounded-full px-2 py-0.5"
+            style={{
+              color: targetColor,
+              background: `${targetColor}15`,
+              border: `1px solid ${targetColor}30`,
+            }}
+          >
+            {targetLabel}
+          </span>
+        </div>
+      </div>
+
+      <div className="shrink-0 text-right">
+        <p className="text-base font-bold text-gold">RM{cost}</p>
+      </div>
+    </div>
+  )
+}
+
 // ─── page ────────────────────────────────────────────────────────────────────
 
 export default function CheckoutPage() {
@@ -155,7 +274,10 @@ function CheckoutInner() {
   const router = useRouter()
   const { status } = useSession()
   const params = useSearchParams()
-  const specificSlug = params.get("slug")
+  const specificSlug   = params.get("slug")
+  const isRenewalMode  = !!specificSlug && params.get("renewal") === "true"
+  const upgradeTarget  = params.get("upgrade") ?? ""          // "silver" | "gold"
+  const isUpgradeMode  = !!specificSlug && (upgradeTarget === "silver" || upgradeTarget === "gold") && !isRenewalMode
 
   const [cards, setCards]     = useState<CartCard[]>([])
   const [loading, setLoading] = useState(true)
@@ -164,18 +286,15 @@ function CheckoutInner() {
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      const callbackUrl = specificSlug
-        ? `/checkout?slug=${specificSlug}`
-        : "/checkout"
+      const extra = isRenewalMode ? "&renewal=true" : isUpgradeMode ? `&upgrade=${upgradeTarget}` : ""
+      const callbackUrl = specificSlug ? `/checkout?slug=${specificSlug}${extra}` : "/checkout"
       router.replace(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`)
     }
-  }, [status, router, specificSlug])
+  }, [status, router, specificSlug, isRenewalMode, isUpgradeMode, upgradeTarget])
 
   useEffect(() => {
     if (status !== "authenticated") return
 
-    // When coming from dashboard "PAY NOW", only load that specific card.
-    // Otherwise fall back to the full localStorage cart.
     const slugsToLoad = specificSlug ? [specificSlug] : getCartSlugs()
 
     if (slugsToLoad.length === 0) {
@@ -190,9 +309,13 @@ function CheckoutInner() {
       .finally(() => setLoading(false))
   }, [status, specificSlug])
 
-  const unpaidCards    = cards.filter((c) => !c.isPublished)
-  const publishedCards = cards.filter((c) =>  c.isPublished)
+  const unpaidCards    = (isRenewalMode || isUpgradeMode) ? [] : cards.filter((c) => !c.isPublished)
+  const publishedCards = (isRenewalMode || isUpgradeMode) ? [] : cards.filter((c) =>  c.isPublished)
+  const renewalCards   = isRenewalMode  ? cards.filter((c) => c.isPublished) : []
+  const upgradeCards   = isUpgradeMode  ? cards.filter((c) => c.isPublished) : []
   const subtotal       = unpaidCards.reduce((s, c) => s + cardTotal(c.wizardConfig), 0)
+  const renewalTotal   = renewalCards.length * RENEWAL_PRICE_RM
+  const upgradeTotal   = upgradeCards.reduce((s, c) => s + upgradeCostRM(c.wizardConfig?.packageType, upgradeTarget), 0)
 
   const handlePay = useCallback(async () => {
     if (paying || unpaidCards.length === 0) return
@@ -220,6 +343,58 @@ function CheckoutInner() {
     }
   }, [paying, unpaidCards, setError])
 
+  const handleRenew = useCallback(async () => {
+    if (paying || renewalCards.length === 0) return
+    setError(null)
+    setPaying(true)
+
+    try {
+      const res = await fetch("/api/checkout/create-renewal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cardSlug: renewalCards[0].slug }),
+      })
+      const data = await res.json() as { paymentUrl?: string; error?: string }
+
+      if (!res.ok || !data.paymentUrl) {
+        setError(data.error ?? "Ralat semasa membuat bil pembaharuan.")
+        return
+      }
+
+      window.location.href = data.paymentUrl
+    } catch {
+      setError("Masalah sambungan. Sila cuba lagi.")
+    } finally {
+      setPaying(false)
+    }
+  }, [paying, renewalCards, setError])
+
+  const handleUpgrade = useCallback(async () => {
+    if (paying || upgradeCards.length === 0) return
+    setError(null)
+    setPaying(true)
+
+    try {
+      const res = await fetch("/api/checkout/create-upgrade", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cardSlug: upgradeCards[0].slug, targetPackage: upgradeTarget }),
+      })
+      const data = await res.json() as { paymentUrl?: string; error?: string }
+
+      if (!res.ok || !data.paymentUrl) {
+        setError(data.error ?? "Ralat semasa membuat bil naik taraf.")
+        return
+      }
+
+      window.location.href = data.paymentUrl
+    } catch {
+      setError("Masalah sambungan. Sila cuba lagi.")
+    } finally {
+      setPaying(false)
+    }
+  }, [paying, upgradeCards, upgradeTarget, setError])
+
   const isLoading = status === "loading" || loading
   const backHref  = specificSlug ? "/dashboard" : "/templates"
   const backLabel = specificSlug ? "Kad Saya" : "Kembali"
@@ -237,7 +412,9 @@ function CheckoutInner() {
             <ChevronLeft className="w-4 h-4" />
             {backLabel}
           </Link>
-          <h1 className="font-playfair text-[14px] text-[var(--tx-1)]">Pembayaran</h1>
+          <h1 className="font-playfair text-[14px] text-[var(--tx-1)]">
+            {isUpgradeMode ? "Naik Taraf Pakej" : isRenewalMode ? "Perbaharui Langganan" : "Pembayaran"}
+          </h1>
           <div className="w-16" />
         </div>
       </div>
@@ -247,6 +424,26 @@ function CheckoutInner() {
         {isLoading ? (
           <div className="flex items-center justify-center py-24">
             <Loader2 className="w-6 h-6 text-gold animate-spin" />
+          </div>
+
+        ) : isUpgradeMode && upgradeCards.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <Package className="w-12 h-12 text-[var(--tx-3)]/30 mb-4" />
+            <h2 className="text-lg font-semibold text-[var(--tx-1)] mb-2">Kad tidak layak dinaik taraf</h2>
+            <p className="text-sm text-[var(--tx-3)] mb-6">Kad ini belum diterbitkan atau pakej sudah setara.</p>
+            <Link href="/dashboard" className="inline-flex items-center gap-2 bg-gold/10 hover:bg-gold/20 border border-gold/25 text-gold text-sm font-medium px-5 py-2.5 rounded-full transition-colors">
+              Kembali ke Dashboard
+            </Link>
+          </div>
+
+        ) : isRenewalMode && renewalCards.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <RefreshCw className="w-12 h-12 text-[var(--tx-3)]/30 mb-4" />
+            <h2 className="text-lg font-semibold text-[var(--tx-1)] mb-2">Kad tidak layak diperbaharui</h2>
+            <p className="text-sm text-[var(--tx-3)] mb-6">Kad ini belum diterbitkan atau tidak ditemui.</p>
+            <Link href="/dashboard" className="inline-flex items-center gap-2 bg-gold/10 hover:bg-gold/20 border border-gold/25 text-gold text-sm font-medium px-5 py-2.5 rounded-full transition-colors">
+              Kembali ke Dashboard
+            </Link>
           </div>
 
         ) : cards.length === 0 ? (
@@ -262,7 +459,195 @@ function CheckoutInner() {
             </Link>
           </div>
 
+        ) : isUpgradeMode ? (
+          /* ── Upgrade mode ── */
+          <div className="grid lg:grid-cols-[1fr_340px] gap-6 items-start">
+            <div className="space-y-3">
+              <div className="flex items-start gap-3 rounded-xl border border-gold/20 bg-gold/5 px-4 py-3">
+                <Package className="w-4 h-4 text-gold shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-semibold text-[var(--tx-1)]">
+                    Naik Taraf ke {PACKAGE_LABELS[upgradeTarget] ?? "Gold"} — bayar perbezaan sahaja
+                  </p>
+                  <p className="text-xs text-[var(--tx-3)] mt-0.5">
+                    Ciri baharu tersedia serta-merta dalam builder selepas bayaran.
+                  </p>
+                </div>
+              </div>
+              <p className="text-[10px] font-bold text-[var(--tx-3)] uppercase tracking-widest">
+                Kad Untuk Dinaik Taraf
+              </p>
+              <div className="space-y-2">
+                {upgradeCards.map((c) => (
+                  <UpgradeCardRow key={c.slug} card={c} targetTier={upgradeTarget} />
+                ))}
+              </div>
+            </div>
+
+            <div className="lg:sticky lg:top-20 space-y-4">
+              <div className="rounded-xl border border-[var(--bd)] bg-[var(--pg-alt)] overflow-hidden">
+                <div className="px-5 py-4 border-b border-[var(--bd)]">
+                  <p className="font-semibold text-[var(--tx-1)]">Ringkasan Naik Taraf</p>
+                </div>
+                <div className="px-5 py-4 space-y-3">
+                  {upgradeCards.map((c) => {
+                    const name = c.groomName && c.brideName
+                      ? `${c.groomName} & ${c.brideName}`
+                      : c.title || "Kad Jemputan"
+                    const cost = upgradeCostRM(c.wizardConfig?.packageType, upgradeTarget)
+                    return (
+                      <div key={c.slug} className="flex items-center justify-between text-sm">
+                        <span className="text-[var(--tx-2)] truncate pr-2 max-w-[180px]">{name}</span>
+                        <span className="text-[var(--tx-1)] font-medium shrink-0">RM{cost}</span>
+                      </div>
+                    )
+                  })}
+                  <div className="border-t border-[var(--bd)] pt-3 flex items-center justify-between">
+                    <span className="text-sm font-semibold text-[var(--tx-1)]">Jumlah</span>
+                    <span className="text-lg font-bold text-gold">RM{upgradeTotal}</span>
+                  </div>
+                </div>
+                <div className="px-5 pb-5 space-y-3">
+                  {error && (
+                    <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+                      {error}
+                    </p>
+                  )}
+                  <button
+                    onClick={handleUpgrade}
+                    disabled={paying || upgradeTotal <= 0}
+                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gold hover:bg-gold/90 text-ink text-sm font-bold transition-all disabled:opacity-60 active:scale-[0.98]"
+                  >
+                    {paying ? (
+                      <><Loader2 className="w-4 h-4 animate-spin" /> Memproses…</>
+                    ) : (
+                      <>Naik Taraf RM{upgradeTotal} Sekarang</>
+                    )}
+                  </button>
+                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-[var(--tx-3)]">
+                    <Shield className="w-3 h-3" />
+                    Pembayaran selamat melalui ToyyibPay
+                  </div>
+                </div>
+              </div>
+
+              <PaymentMethods />
+
+              <div className="rounded-xl border border-[var(--bd)] bg-[var(--pg-alt)] px-5 py-4">
+                <p className="text-[10px] font-bold text-[var(--tx-3)] uppercase tracking-widest mb-3">
+                  Selepas Bayar
+                </p>
+                <ul className="space-y-2 text-xs text-[var(--tx-2)]">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    Pakej dikemas kini serta-merta
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    Ciri baharu terbuka dalam builder kad
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    Pautan & kandungan sedia ada dikekalkan
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+        ) : isRenewalMode ? (
+          /* ── Renewal mode ── */
+          <div className="grid lg:grid-cols-[1fr_340px] gap-6 items-start">
+            <div className="space-y-3">
+              <div className="flex items-start gap-3 rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3">
+                <RefreshCw className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-semibold text-[var(--tx-1)]">Pembaharuan Langganan 6 Bulan</p>
+                  <p className="text-xs text-[var(--tx-3)] mt-0.5">
+                    Pautan akan dilanjutkan 6 bulan dari tarikh luput semasa (atau dari hari ini jika sudah luput).
+                  </p>
+                </div>
+              </div>
+              <p className="text-[10px] font-bold text-[var(--tx-3)] uppercase tracking-widest">
+                Kad Untuk Diperbaharui
+              </p>
+              <div className="space-y-2">
+                {renewalCards.map((c) => <RenewalCardRow key={c.slug} card={c} />)}
+              </div>
+            </div>
+
+            <div className="lg:sticky lg:top-20 space-y-4">
+              <div className="rounded-xl border border-[var(--bd)] bg-[var(--pg-alt)] overflow-hidden">
+                <div className="px-5 py-4 border-b border-[var(--bd)]">
+                  <p className="font-semibold text-[var(--tx-1)]">Ringkasan Pembaharuan</p>
+                </div>
+                <div className="px-5 py-4 space-y-3">
+                  {renewalCards.map((c) => {
+                    const name = c.groomName && c.brideName
+                      ? `${c.groomName} & ${c.brideName}`
+                      : c.title || "Kad Jemputan"
+                    return (
+                      <div key={c.slug} className="flex items-center justify-between text-sm">
+                        <span className="text-[var(--tx-2)] truncate pr-2 max-w-[180px]">{name}</span>
+                        <span className="text-[var(--tx-1)] font-medium shrink-0">RM{RENEWAL_PRICE_RM}</span>
+                      </div>
+                    )
+                  })}
+                  <div className="border-t border-[var(--bd)] pt-3 flex items-center justify-between">
+                    <span className="text-sm font-semibold text-[var(--tx-1)]">Jumlah</span>
+                    <span className="text-lg font-bold text-gold">RM{renewalTotal}</span>
+                  </div>
+                </div>
+                <div className="px-5 pb-5 space-y-3">
+                  {error && (
+                    <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+                      {error}
+                    </p>
+                  )}
+                  <button
+                    onClick={handleRenew}
+                    disabled={paying}
+                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gold hover:bg-gold/90 text-ink text-sm font-bold transition-all disabled:opacity-60 active:scale-[0.98]"
+                  >
+                    {paying ? (
+                      <><Loader2 className="w-4 h-4 animate-spin" /> Memproses…</>
+                    ) : (
+                      <><RefreshCw className="w-4 h-4" /> Perbaharui RM{renewalTotal} Sekarang</>
+                    )}
+                  </button>
+                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-[var(--tx-3)]">
+                    <Shield className="w-3 h-3" />
+                    Pembayaran selamat melalui ToyyibPay
+                  </div>
+                </div>
+              </div>
+
+              <PaymentMethods />
+
+              <div className="rounded-xl border border-[var(--bd)] bg-[var(--pg-alt)] px-5 py-4">
+                <p className="text-[10px] font-bold text-[var(--tx-3)] uppercase tracking-widest mb-3">
+                  Selepas Bayar
+                </p>
+                <ul className="space-y-2 text-xs text-[var(--tx-2)]">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    Pautan kad dilanjutkan <span className="font-semibold text-[var(--tx-1)]">6 bulan</span> lagi
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    Semua kandungan & RSVP dikekalkan
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    Pautan sama, aktif serta-merta selepas bayaran
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
         ) : (
+          /* ── Normal checkout mode ── */
           <div className="grid lg:grid-cols-[1fr_340px] gap-6 items-start">
 
             {/* ── Left: Card list ── */}

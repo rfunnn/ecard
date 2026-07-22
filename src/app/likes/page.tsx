@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ChevronLeft, Heart, Eye, Loader2, Sparkles, AlertTriangle } from "lucide-react"
+import { useToast } from "@/components/ui/Toast"
 import { TemplatePhoneFrame } from "@/components/TemplatePhoneFrame"
 import type { TemplateForFrame } from "@/components/TemplatePhoneFrame"
 import { useLikes } from "@/hooks/useLikes"
@@ -72,6 +73,7 @@ export default function LikesPage() {
   const router = useRouter()
   const { data: session, status } = useSession()
   const { liked, toggle, loading: likesLoading } = useLikes()
+  const { toast } = useToast()
 
   const [templates,    setTemplates]    = useState<Template[]>([])
   const [loading,      setLoading]      = useState(true)
@@ -141,10 +143,10 @@ export default function LikesPage() {
       router.push(`/builder/${card.slug}`)
     } catch (err) {
       console.error("handleTryNow failed:", err)
-      alert("Gagal membuka pembina kad. Sila cuba lagi.")
+      toast("Gagal membuka pembina kad. Sila cuba lagi.", "error")
       setCreating(null)
     }
-  }, [creating, status, router])
+  }, [creating, status, router, toast])
 
   const handleView = (template: Template) => {
     if (template.previewUrl) {

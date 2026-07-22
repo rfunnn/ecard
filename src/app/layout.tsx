@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { ThemeProvider } from "@/components/ThemeProvider"
 import AuthProvider from "@/components/AuthProvider"
 import { ConditionalSiteNav } from "@/components/ConditionalSiteNav"
+import { ToastProvider } from "@/components/ui/Toast"
 import {
   Playfair_Display,
   Lato,
@@ -135,8 +136,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         />
         <AuthProvider>
           <ThemeProvider>
-            <ConditionalSiteNav />
-            {children}
+            <ToastProvider>
+              <ConditionalSiteNav />
+              {children}
+            </ToastProvider>
           </ThemeProvider>
         </AuthProvider>
       </body>

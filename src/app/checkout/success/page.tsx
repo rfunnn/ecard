@@ -18,6 +18,8 @@ interface OrderStatus {
   status:      string
   totalAmount: number
   paidAt:      string | null
+  isRenewal:   boolean
+  isUpgrade:   boolean
   cards:       OrderCard[]
 }
 
@@ -164,15 +166,25 @@ function CheckoutSuccessContent() {
           </div>
           <h1 className="text-2xl font-playfair text-[var(--tx-1)] mb-2">Pembayaran Berjaya!</h1>
           <p className="text-sm text-[var(--tx-3)]">
-            RM{totalRM} telah dibayar. Kad anda kini diterbitkan dan boleh dikongsi.
+            {order.isUpgrade
+              ? `RM${totalRM} telah dibayar. Pakej kad anda berjaya dinaik taraf. Ciri baharu kini tersedia dalam builder.`
+              : order.isRenewal
+                ? `RM${totalRM} telah dibayar. Pautan kad anda telah dilanjutkan 6 bulan lagi.`
+                : `RM${totalRM} telah dibayar. Kad anda kini diterbitkan dan boleh dikongsi.`
+            }
           </p>
         </div>
 
-        {/* Published cards */}
+        {/* Published / renewed cards */}
         <div className="rounded-xl border border-[var(--bd)] bg-[var(--pg-alt)] overflow-hidden mb-6">
           <div className="px-5 py-3 border-b border-[var(--bd)]">
             <p className="text-[10px] font-bold text-[var(--tx-3)] uppercase tracking-widest">
-              Kad Diterbitkan ({order.cards.length})
+              {order.isUpgrade
+            ? `Pakej Dinaik Taraf (${order.cards.length})`
+            : order.isRenewal
+              ? `Kad Diperbaharui (${order.cards.length})`
+              : `Kad Diterbitkan (${order.cards.length})`
+          }
             </p>
           </div>
           <div className="divide-y divide-[var(--bd)]">
@@ -198,12 +210,21 @@ function CheckoutSuccessContent() {
 
         {/* Actions */}
         <div className="flex flex-col gap-3">
-          <Link
-            href="/templates"
-            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gold hover:bg-gold/90 text-ink text-sm font-bold transition-all"
-          >
-            Buat Kad Lain
-          </Link>
+          {order.isUpgrade && order.cards.length > 0 ? (
+            <Link
+              href={`/builder/${order.cards[0].slug}`}
+              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gold hover:bg-gold/90 text-ink text-sm font-bold transition-all"
+            >
+              Buka Builder — Guna Ciri Baharu
+            </Link>
+          ) : (
+            <Link
+              href="/templates"
+              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gold hover:bg-gold/90 text-ink text-sm font-bold transition-all"
+            >
+              Buat Kad Lain
+            </Link>
+          )}
           <Link
             href="/"
             className="flex items-center justify-center gap-2 w-full py-3 rounded-xl border border-[var(--bd)] text-[var(--tx-2)] text-sm font-medium hover:bg-[var(--sf)] transition-colors"

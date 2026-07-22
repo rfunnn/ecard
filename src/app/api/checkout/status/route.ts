@@ -59,14 +59,17 @@ export async function GET(req: NextRequest) {
     status: order.status,
     totalAmount: order.totalAmount,
     paidAt: order.paidAt,
+    isRenewal: order.items.some((i) => i.package === "renewal"),
+    isUpgrade: order.items.some((i) => i.package.startsWith("upgrade-")),
     cards: order.items.map((i) => ({
-      slug:    i.card.slug,
-      cardNum: i.card.cardNum,
-      name:    i.card.groomName && i.card.brideName
+      slug:      i.card.slug,
+      cardNum:   i.card.cardNum,
+      name:      i.card.groomName && i.card.brideName
         ? `${i.card.groomName} & ${i.card.brideName}`
         : i.card.title,
-      package: i.package,
-      amount:  i.amount,
+      package:   i.package,
+      amount:    i.amount,
+      isRenewal: i.package === "renewal",
     })),
   })
 }

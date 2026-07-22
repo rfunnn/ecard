@@ -8,6 +8,7 @@ import Link from "next/link"
 import type { TemplateCategory } from "@/types/invitation"
 import { TemplatePhoneFrame } from "@/components/TemplatePhoneFrame"
 import { useLikes } from "@/hooks/useLikes"
+import { useToast } from "@/components/ui/Toast"
 
 // ─── types ───────────────────────────────────────────────────────────────────
 
@@ -262,6 +263,7 @@ function Sidebar({
 export function TemplatesClient() {
   const router = useRouter()
   const { status } = useSession()
+  const { toast } = useToast()
 
   const [templates,    setTemplates]    = useState<Template[]>([])
   const [loading,      setLoading]      = useState(true)
@@ -377,10 +379,10 @@ export function TemplatesClient() {
       router.push(`/builder/${card.slug}`)
     } catch (err) {
       console.error("handleTryNow failed:", err)
-      alert("Gagal membuka pembina kad. Sila cuba lagi.")
+      toast("Gagal membuka pembina kad. Sila cuba lagi.", "error")
       setCreating(null)
     }
-  }, [creating, status, router])
+  }, [creating, status, router, toast])
 
   const handleView = (template: Template) => {
     // Always use /invite/demo so the eye button reflects the latest authored

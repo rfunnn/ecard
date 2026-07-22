@@ -30,6 +30,7 @@ export async function GET(req: NextRequest) {
         brideName: true,
         language: true,
         isPublished: true,
+        expiresAt: true,
         wizardConfig: true,
         updatedAt: true,
         template: { select: { name: true, nameMs: true, category: true } },
