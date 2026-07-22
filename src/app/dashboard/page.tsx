@@ -9,7 +9,7 @@ import Image from "next/image"
 import {
   Pencil, ImageIcon, Gift, Mail, Eye, Printer,
   MoreVertical, ExternalLink, Plus, Trash2, Copy, Check, BarChart2,
-  Link2, AlertCircle, Loader2, Share2, Download, X, RefreshCw, ArrowUpCircle,
+  Link2, AlertCircle, Loader2, Share2, Download, X, RefreshCw, ArrowUpCircle, CopyPlus,
 } from "lucide-react"
 import QRCode from "qrcode"
 import type { WizardConfig } from "@/types/config"
@@ -397,12 +397,14 @@ function ShareModal({ card, onClose }: { card: Card; onClose: () => void }) {
   )
 }
 
-function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => void }) {
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [printing, setPrinting] = useState(false)
-  const [showShare, setShowShare] = useState(false)
-  const [suffix, setSuffix] = useState("")
+function CardRow({ card, onRemove, onDuplicated }: { card: Card; onRemove: (slug: string) => void; onDuplicated: () => void }) {
+  const [menuOpen,      setMenuOpen]      = useState(false)
+  const [printing,      setPrinting]      = useState(false)
+  const [duplicating,   setDuplicating]   = useState(false)
+  const [showShare,     setShowShare]     = useState(false)
+  const [suffix,        setSuffix]        = useState("")
   const { toast } = useToast()
+  const router = useRouter()
 
   useEffect(() => {
     try { setSuffix(localStorage.getItem(`invite-suffix-${card.slug}`) ?? "") } catch { /* ignore */ }
@@ -444,6 +446,30 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
     setTimeout(() => { w.print(); setPrinting(false) }, 1400)
   }
 
+  async function handleDuplicate() {
+    if (duplicating) return
+    setDuplicating(true)
+    try {
+      const res = await fetch(`/api/cards/${card.slug}/duplicate`, { method: "POST" })
+      if (res.status === 403) {
+        const body = await res.json().catch(() => ({}))
+        if (body.error === "DRAFT_LIMIT_EXCEEDED") {
+          toast("Anda sudah mempunyai 3 draf. Sila selesaikan atau padamkan salah satu dahulu.", "info")
+          return
+        }
+      }
+      if (!res.ok) throw new Error()
+      const { slug: newSlug } = await res.json()
+      toast("Kad berjaya disalin.", "success")
+      onDuplicated()
+      router.push(`/builder/${newSlug}`)
+    } catch {
+      toast("Gagal menduplikasi kad. Sila cuba lagi.", "error")
+    } finally {
+      setDuplicating(false)
+    }
+  }
+
   const actionBtn = "flex items-center gap-1 text-xs text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors py-1 px-1.5 rounded hover:bg-[var(--sf)]"
 
   return (
@@ -467,6 +493,9 @@ function CardRow({ card, onRemove }: { card: Card; onRemove: (slug: string) => v
                   <Link href={`/builder/${card.slug}`} className="flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)]">
                     <Pencil className="w-3.5 h-3.5" /> Edit
                   </Link>
+                  <button onClick={() => { setMenuOpen(false); handleDuplicate() }} disabled={duplicating} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)] disabled:opacity-50">
+                    {duplicating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CopyPlus className="w-3.5 h-3.5" />} Duplikasi
+                  </button>
                   <Link href={previewUrl} target="_blank" className="flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)]">
                     <Eye className="w-3.5 h-3.5" /> Pratonton
                   </Link>
@@ -897,7 +926,7 @@ function DashboardInner() {
             ) : (
               <div className="divide-y divide-[var(--bd)]">
                 {cards.map(card => (
-                  <CardRow key={card.id} card={card} onRemove={handleRemove} />
+                  <CardRow key={card.id} card={card} onRemove={handleRemove} onDuplicated={loadCards} />
                 ))}
               </div>
             )}
