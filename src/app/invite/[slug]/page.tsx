@@ -225,6 +225,7 @@ export default async function InvitePage({ params, searchParams }: Props) {
       footerBgOpacity: 70,
       footerIconColor: "",
       scrollAnimation: "Naik",
+      frontPageContentOffset: 0,
 
       // Cover
       eventType: "Walimatul Urus",

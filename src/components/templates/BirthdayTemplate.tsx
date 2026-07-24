@@ -78,11 +78,12 @@ export function BirthdayTemplate({ card, onRsvpOpen, previewPage: p, revealed = 
   const orgFont      = wizardFont(cfg?.organizerFont)
   const fullNFont    = wizardFont(cfg?.fullNamesFont)
 
-  const bodySize    = cfg?.generalSize     ?? 14
-  const displaySize = cfg?.displayNameSize ?? 48
-  const orgSize     = cfg?.organizerSize   ?? 18
-  const fullNSize   = cfg?.fullNamesSize   ?? 20
-  const sideMargin  = cfg?.sideMargin      ?? 1.25
+  const bodySize      = cfg?.generalSize     ?? 14
+  const displaySize   = cfg?.displayNameSize ?? 48
+  const orgSize       = cfg?.organizerSize   ?? 18
+  const fullNSize     = cfg?.fullNamesSize   ?? 20
+  const sideMargin    = cfg?.sideMargin      ?? 1.25
+  const contentOffset = cfg?.frontPageContentOffset ?? 0
 
   const locale = card.language === "ms" ? "ms-MY" : "en-MY"
   const isMs = card.language === "ms"
@@ -113,6 +114,7 @@ export function BirthdayTemplate({ card, onRsvpOpen, previewPage: p, revealed = 
         transition={{ duration: 1 }}
         className="min-h-screen flex flex-col items-center justify-center text-center pt-12 pb-44"
       >
+        <div style={contentOffset !== 0 ? { transform: `translateY(${contentOffset}px)` } : undefined}>
         {/* event type */}
         {(cfg?.eventType || card.subtitle) && (
           <p
@@ -168,6 +170,7 @@ export function BirthdayTemplate({ card, onRsvpOpen, previewPage: p, revealed = 
             {venueName}
           </p>
         )}
+        </div>
       </motion.div>}
 
       {showInvitation && (cfg?.openingSpeech || cfg?.organizer1?.name || card.description || cfg?.fullNames) && (

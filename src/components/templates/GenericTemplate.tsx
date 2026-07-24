@@ -74,11 +74,12 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
   const orgFont      = wizardFont(cfg?.organizerFont)
   const fullNFont    = wizardFont(cfg?.fullNamesFont)
 
-  const bodySize    = cfg?.generalSize     ?? 14
-  const displaySize = cfg?.displayNameSize ?? 42
-  const orgSize     = cfg?.organizerSize   ?? 16
-  const fullNSize   = cfg?.fullNamesSize   ?? 20
-  const sideMargin  = cfg?.sideMargin      ?? 1.25
+  const bodySize      = cfg?.generalSize     ?? 14
+  const displaySize   = cfg?.displayNameSize ?? 42
+  const orgSize       = cfg?.organizerSize   ?? 16
+  const fullNSize     = cfg?.fullNamesSize   ?? 20
+  const sideMargin    = cfg?.sideMargin      ?? 1.25
+  const contentOffset = cfg?.frontPageContentOffset ?? 0
 
   const locale = card.language === "ms" ? "ms-MY" : "en-MY"
   const isMs = card.language === "ms"
@@ -111,6 +112,7 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
         transition={{ duration: 1 }}
         className="min-h-screen flex flex-col items-center justify-center text-center pt-12 pb-44"
       >
+        <div style={contentOffset !== 0 ? { transform: `translateY(${contentOffset}px)` } : undefined}>
         {(cfg?.eventType || card.subtitle) && (
           <p
             className={`${headFont} text-[10px] uppercase tracking-[0.5em] mb-8 opacity-85`}
@@ -160,6 +162,7 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
             {venueName}
           </p>
         )}
+        </div>
       </motion.div>}
 
       {showInvitation && (cfg?.openingSpeech || cfg?.organizer1?.name || card.description || cfg?.fullNames) && (

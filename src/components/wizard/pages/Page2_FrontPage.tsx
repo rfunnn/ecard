@@ -16,6 +16,24 @@ export function Page2_FrontPage() {
 
   return (
     <div className="space-y-6">
+      {/* Front Page Content Offset */}
+      <div>
+        <FieldLabel label={isMs ? "Geser Kandungan Atas/Bawah" : "Move Content Up / Down"} />
+        <SliderField
+          value={config.frontPageContentOffset ?? 0}
+          onChange={(v) => updateConfig("frontPageContentOffset", v)}
+          min={-200}
+          max={200}
+          step={4}
+          unit="px"
+        />
+        <p className="text-[11px] text-gray-400 mt-1">
+          {isMs ? "Nilai negatif geser kandungan ke atas, positif ke bawah." : "Negative moves content up, positive moves it down."}
+        </p>
+      </div>
+
+      {DIVIDER}
+
       {/* Event Type */}
       <div>
         <FieldLabel label={isMs ? "Jenis Majlis" : "Event Type"} />

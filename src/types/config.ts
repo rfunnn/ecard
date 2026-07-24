@@ -64,6 +64,7 @@ export interface WizardConfig {
   scrollAnimation: string
 
   // Page 2 — Muka Depan
+  frontPageContentOffset: number   // vertical shift in px (-200 → up, +200 → down)
   eventType: string
   eventTypeSize: number
   displayName: string
@@ -147,6 +148,8 @@ export const DEFAULT_WIZARD_CONFIG: WizardConfig = {
   footerBgOpacity: 70,
   footerIconColor: "",
   scrollAnimation: "Naik",
+
+  frontPageContentOffset: 0,
 
   eventType: "Walimatul Urus",
   eventTypeSize: 14,

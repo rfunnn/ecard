@@ -74,11 +74,12 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
   const orgFont      = wizardFont(cfg?.organizerFont)
   const fullNFont    = wizardFont(cfg?.fullNamesFont)
 
-  const bodySize    = cfg?.generalSize     ?? 14
-  const displaySize = cfg?.displayNameSize ?? 36
-  const orgSize     = cfg?.organizerSize   ?? 16
-  const fullNSize   = cfg?.fullNamesSize   ?? 18
-  const sideMargin  = cfg?.sideMargin      ?? 1.25
+  const bodySize      = cfg?.generalSize     ?? 14
+  const displaySize   = cfg?.displayNameSize ?? 36
+  const orgSize       = cfg?.organizerSize   ?? 16
+  const fullNSize     = cfg?.fullNamesSize   ?? 18
+  const sideMargin    = cfg?.sideMargin      ?? 1.25
+  const contentOffset = cfg?.frontPageContentOffset ?? 0
 
   const locale = card.language === "ms" ? "ms-MY" : "en-MY"
   const isMs = card.language === "ms"
@@ -111,6 +112,7 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
         transition={{ duration: 0.8 }}
         className="min-h-screen flex flex-col justify-center pt-12 pb-32"
       >
+        <div style={contentOffset !== 0 ? { transform: `translateY(${contentOffset}px)` } : undefined}>
         <div className="mb-6 inline-flex items-center justify-center w-12 h-12 rounded-lg"
           style={{ background: `${primaryColor}12`, border: `1px solid ${primaryColor}20` }}>
           <Building2 className="w-5 h-5" style={{ color: primaryColor }} />
@@ -162,6 +164,7 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
             {venueName}
           </p>
         )}
+        </div>
       </motion.div>}
 
       {showInvitation && (cfg?.openingSpeech || cfg?.organizer1?.name || card.description || cfg?.fullNames) && (

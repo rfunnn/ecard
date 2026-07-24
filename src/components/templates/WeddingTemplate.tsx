@@ -125,11 +125,12 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
   const fullNFont    = wizardFont(cfg?.fullNamesFont)
 
   // common sizes
-  const bodySize    = cfg?.generalSize     ?? 14
-  const displaySize = cfg?.displayNameSize ?? 52
-  const orgSize     = cfg?.organizerSize   ?? 20
-  const fullNSize   = cfg?.fullNamesSize   ?? 22
-  const sideMargin  = cfg?.sideMargin      ?? 1.25
+  const bodySize       = cfg?.generalSize     ?? 14
+  const displaySize    = cfg?.displayNameSize ?? 52
+  const orgSize        = cfg?.organizerSize   ?? 20
+  const fullNSize      = cfg?.fullNamesSize   ?? 22
+  const sideMargin     = cfg?.sideMargin      ?? 1.25
+  const contentOffset  = cfg?.frontPageContentOffset ?? 0
 
   // locale
   const locale = card.language === "ms" ? "ms-MY" : "en-MY"
@@ -164,6 +165,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
         transition={anim.transition}
         className="min-h-screen flex flex-col items-center justify-center text-center pt-12 pb-44"
       >
+        <div style={contentOffset !== 0 ? { transform: `translateY(${contentOffset}px)` } : undefined}>
         {/* event type */}
         {(cfg?.eventType || card.subtitle) && (
           <p
@@ -233,6 +235,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
             {venueName}
           </p>
         )}
+        </div>
       </motion.div>}
 
       {/* â•â• SECTION 2 Â· INVITATION TEXT (Config Page 3) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
