@@ -30,8 +30,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  // 20 uploads per user per hour
-  if (!rateLimit(`upload:${session.user.id}`, 20, 60 * 60 * 1000)) {
+  // Admins are exempt from the rate limit (they upload frequently while authoring templates)
+  const adminEmails = (process.env.ADMIN_EMAILS ?? "").split(",").map((e) => e.trim().toLowerCase()).filter(Boolean)
+  const isAdmin = !!session.user.email && adminEmails.includes(session.user.email.toLowerCase())
+
+  // 20 uploads per user per hour for regular users
+  if (!isAdmin && !rateLimit(`upload:${session.user.id}`, 20, 60 * 60 * 1000)) {
     return NextResponse.json({ error: "Too many uploads. Try again later." }, { status: 429 })
   }
 
