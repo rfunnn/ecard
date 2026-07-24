@@ -18,7 +18,7 @@ export function Page2_FrontPage() {
     <div className="space-y-6">
       {/* Front Page Content Offset */}
       <div>
-        <FieldLabel label={isMs ? "Geser Kandungan Atas/Bawah" : "Move Content Up / Down"} />
+        <FieldLabel label={isMs ? "Gerak Kandungan Atas/Bawah" : "Move Content Up / Down"} />
         <SliderField
           value={config.frontPageContentOffset ?? 0}
           onChange={(v) => updateConfig("frontPageContentOffset", v)}
