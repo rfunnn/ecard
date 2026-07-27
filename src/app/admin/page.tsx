@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { LayoutTemplate, ShoppingBag, ChevronRight } from "lucide-react"
+import { LayoutTemplate, ShoppingBag, CreditCard, ChevronRight } from "lucide-react"
 
 const sections = [
   {
@@ -8,6 +8,13 @@ const sections = [
     label: "Templates",
     description: "Urus, tambah, dan edit template kad jemputan.",
     color: "text-blue-600 bg-blue-50",
+  },
+  {
+    href: "/admin/cards",
+    icon: CreditCard,
+    label: "Cards",
+    description: "Semak semua kad yang telah dibuat oleh pengguna.",
+    color: "text-amber-600 bg-amber-50",
   },
   {
     href: "/admin/orders",
