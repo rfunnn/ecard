@@ -52,6 +52,11 @@ const googleProvider =
       ]
     : []
 
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? "")
+  .split(",")
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean)
+
 export const authOptions: NextAuthOptions = {
   providers: [
     ...googleProvider,
@@ -113,6 +118,7 @@ export const authOptions: NextAuthOptions = {
         } else {
           token.id = user.id
         }
+        token.isAdmin = ADMIN_EMAILS.includes((token.email ?? "").toLowerCase())
       }
       return token
     },
@@ -120,6 +126,7 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user && token.id) {
         session.user.id = token.id as string
+        session.user.isAdmin = token.isAdmin ?? false
       }
       return session
     },

@@ -3,7 +3,7 @@
 import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
 import { useState, useRef, useEffect } from "react"
-import { User, ShoppingBag, Sun, Moon, LogOut, MessageCircle } from "lucide-react"
+import { User, ShoppingBag, Sun, Moon, LogOut, MessageCircle, ShieldCheck } from "lucide-react"
 
 const WA_URL = `https://wa.me/601164981201?text=${encodeURIComponent("Hello, saya ingin bertanya tentang ekadku.com")}`
 import { useTheme } from "@/components/ThemeProvider"
@@ -97,8 +97,22 @@ export default function UserMenu() {
             )}
 
 
+            {/* Admin — only for admin users */}
+            {session?.user?.isAdmin && (
+              <div className="py-1">
+                <Link
+                  href="/admin"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-500/10 transition-colors w-full font-medium"
+                >
+                  <ShieldCheck className="w-4 h-4 shrink-0" />
+                  Admin
+                </Link>
+              </div>
+            )}
+
             {/* Kad Saya */}
-            <div className="py-1">
+            <div className={session?.user?.isAdmin ? "border-t border-[var(--bd)] py-1" : "py-1"}>
               <Link
                 href="/dashboard"
                 onClick={() => setOpen(false)}

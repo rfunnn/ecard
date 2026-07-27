@@ -32,6 +32,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             >
               Templates
             </Link>
+            <Link
+              href="/admin/orders"
+              className="px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+            >
+              Orders
+            </Link>
           </nav>
         </div>
       </header>
