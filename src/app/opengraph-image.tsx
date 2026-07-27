@@ -8,7 +8,7 @@ export const contentType = "image/png"
 
 export default async function Image() {
   // process.cwd() is the Next.js project root; icon.png sits there.
-  const iconData = await readFile(join(process.cwd(), "icon.png"), "base64")
+  const iconData = await readFile(join(process.cwd(), "public", "icon.png"), "base64")
   const iconSrc = `data:image/png;base64,${iconData}`
 
   return new ImageResponse(
