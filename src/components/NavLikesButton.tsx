@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Heart } from "lucide-react"
+import { useT } from "@/lib/i18n"
 
 export function NavLikesButton() {
+  const { templates: tl } = useT()
   const [count, setCount] = useState(0)
 
   useEffect(() => {
@@ -32,7 +34,7 @@ export function NavLikesButton() {
       className="relative flex items-center gap-1.5 text-[var(--tx-2)] hover:text-[var(--tx-1)] text-sm transition-colors px-3 py-2"
     >
       <Heart className={`w-4 h-4 ${count > 0 ? "fill-red-400 text-red-400" : ""}`} />
-      <span className="hidden sm:inline">Suka</span>
+      <span className="hidden sm:inline">{tl.like}</span>
       {count > 0 && (
         <span className="absolute -top-0.5 right-0 sm:static sm:ml-0.5 min-w-[18px] h-[18px] text-[10px] bg-red-500 text-white rounded-full flex items-center justify-center px-1 font-bold leading-none">
           {count}
