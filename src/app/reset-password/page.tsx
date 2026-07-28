@@ -3,8 +3,10 @@
 import { useState, FormEvent, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
+import { useT } from "@/lib/i18n"
 
 function ResetForm() {
+  const { auth: a } = useT()
   const params  = useSearchParams()
   const router  = useRouter()
   const token   = params.get("token") ?? ""
@@ -18,9 +20,9 @@ function ResetForm() {
   if (!token) {
     return (
       <div className="text-center">
-        <p className="text-red-600 text-sm mb-4">Pautan tidak sah. Sila minta pautan baharu.</p>
+        <p className="text-red-600 text-sm mb-4">{a.resetErrInvalidLink}</p>
         <Link href="/forgot-password" className="text-gray-900 font-semibold hover:underline text-sm">
-          Minta Pautan Baharu
+          {a.resetRequestNew}
         </Link>
       </div>
     )
@@ -31,7 +33,7 @@ function ResetForm() {
     setError("")
 
     if (password !== confirm) {
-      setError("Kata laluan tidak sepadan.")
+      setError(a.resetErrMismatch)
       return
     }
 
@@ -47,7 +49,7 @@ function ResetForm() {
 
     if (!res.ok) {
       const body = await res.json()
-      setError(body.error ?? "Gagal menetapkan semula kata laluan.")
+      setError(body.error ?? a.resetErrFailed)
       return
     }
 
@@ -63,8 +65,8 @@ function ResetForm() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h2 className="text-xl font-bold text-gray-900 mb-2">Kata Laluan Diubah!</h2>
-        <p className="text-sm text-gray-500">Mengalihkan ke log masuk…</p>
+        <h2 className="text-xl font-bold text-gray-900 mb-2">{a.resetDoneTitle}</h2>
+        <p className="text-sm text-gray-500">{a.resetDoneDesc}</p>
       </div>
     )
   }
@@ -72,7 +74,7 @@ function ResetForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Kata Laluan Baharu</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{a.resetNewPassword}</label>
         <input
           type="password"
           required
@@ -80,19 +82,19 @@ function ResetForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
-          placeholder="Sekurang-kurangnya 8 aksara"
+          placeholder={a.passwordMinChars}
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Sahkan Kata Laluan</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{a.resetConfirmPassword}</label>
         <input
           type="password"
           required
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
-          placeholder="Taip semula kata laluan"
+          placeholder={a.confirmPasswordPlaceholder}
         />
       </div>
 
@@ -103,19 +105,20 @@ function ResetForm() {
         disabled={loading}
         className="w-full bg-gray-900 text-white py-2.5 rounded-lg text-sm font-semibold hover:bg-gray-700 transition-colors disabled:opacity-50"
       >
-        {loading ? "Menyimpan…" : "Tetapkan Semula Kata Laluan"}
+        {loading ? a.resetSaving : a.resetBtn}
       </button>
     </form>
   )
 }
 
 export default function ResetPasswordPage() {
+  const { auth: a } = useT()
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-md p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">Kata Laluan Baharu</h1>
-        <p className="text-sm text-gray-500 mb-6">Pilih kata laluan baharu untuk akaun anda.</p>
-        <Suspense fallback={<div className="text-center text-sm text-gray-400">Memuatkan…</div>}>
+        <h1 className="text-2xl font-bold text-gray-900 mb-1">{a.resetTitle}</h1>
+        <p className="text-sm text-gray-500 mb-6">{a.resetSubtitle}</p>
+        <Suspense fallback={<div className="text-center text-sm text-gray-400">{a.resetLoading}</div>}>
           <ResetForm />
         </Suspense>
       </div>

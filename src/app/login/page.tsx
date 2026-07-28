@@ -5,6 +5,8 @@ import { signIn } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Eye, EyeOff, ChevronLeft, Loader2 } from "lucide-react"
+import { useT } from "@/lib/i18n"
+import { LanguageSwitcher } from "@/components/LanguageSwitcher"
 
 function GoogleIcon() {
   return (
@@ -29,6 +31,7 @@ function LoginInner() {
   const router      = useRouter()
   const params      = useSearchParams()
   const callbackUrl = params.get("callbackUrl") ?? "/"
+  const { auth: a } = useT()
 
   const [email,    setEmail]    = useState("")
   const [password, setPassword] = useState("")
@@ -44,7 +47,7 @@ function LoginInner() {
     const res = await signIn("credentials", { email, password, redirect: false })
     setLoading(false)
     if (res?.error) {
-      setError("E-mel atau kata laluan tidak sah.")
+      setError(a.errInvalidCredentials)
       return
     }
     router.push(callbackUrl)
@@ -65,10 +68,10 @@ function LoginInner() {
           className="flex items-center gap-1.5 text-sm text-[var(--tx-3)] hover:text-[var(--tx-1)] transition-colors"
         >
           <ChevronLeft className="w-4 h-4" />
-          Kembali
+          {a.back}
         </Link>
         <span className="mx-auto font-playfair text-[15px] text-[var(--tx-1)]">ekadku.com</span>
-        <div className="w-16" />
+        <LanguageSwitcher />
       </div>
 
       <div className="flex-1 flex items-center justify-center px-4 py-10">
@@ -76,8 +79,8 @@ function LoginInner() {
 
           {/* heading */}
           <div className="text-center mb-8">
-            <h1 className="font-playfair text-3xl text-[var(--tx-1)] mb-1">Log Masuk</h1>
-            <p className="text-sm text-[var(--tx-3)]">Selamat kembali ke ekadku.com</p>
+            <h1 className="font-playfair text-3xl text-[var(--tx-1)] mb-1">{a.loginTitle}</h1>
+            <p className="text-sm text-[var(--tx-3)]">{a.loginSubtitle}</p>
           </div>
 
           {/* Google */}
@@ -87,7 +90,7 @@ function LoginInner() {
             className="w-full flex items-center justify-center gap-2.5 border border-[var(--bd)] bg-[var(--pg-alt)] hover:bg-[var(--sf)] rounded-xl px-4 py-3 text-sm font-medium text-[var(--tx-1)] transition-all disabled:opacity-50 mb-4"
           >
             {gLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <GoogleIcon />}
-            {gLoading ? "Mengalihkan…" : "Teruskan dengan Google"}
+            {gLoading ? a.googleRedirecting : a.googleLogin}
           </button>
 
           {/* divider */}
@@ -96,29 +99,29 @@ function LoginInner() {
               <div className="w-full border-t border-[var(--bd)]" />
             </div>
             <div className="relative flex justify-center">
-              <span className="bg-[var(--pg)] px-3 text-xs text-[var(--tx-3)]">atau dengan e-mel</span>
+              <span className="bg-[var(--pg)] px-3 text-xs text-[var(--tx-3)]">{a.orEmail}</span>
             </div>
           </div>
 
           {/* Email/password form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-[var(--tx-2)] mb-1.5">E-mel</label>
+              <label className="block text-xs font-medium text-[var(--tx-2)] mb-1.5">{a.email}</label>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full border border-[var(--bd)] bg-[var(--pg-alt)] rounded-xl px-3.5 py-2.5 text-sm text-[var(--tx-1)] placeholder-[var(--tx-3)] focus:outline-none focus:border-gold/50 transition-colors"
-                placeholder="anda@contoh.com"
+                placeholder={a.emailPlaceholder}
               />
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-medium text-[var(--tx-2)]">Kata Laluan</label>
+                <label className="text-xs font-medium text-[var(--tx-2)]">{a.password}</label>
                 <Link href="/forgot-password" className="text-xs text-[var(--tx-3)] hover:text-gold transition-colors">
-                  Lupa kata laluan?
+                  {a.forgotPassword}
                 </Link>
               </div>
               <div className="relative">
@@ -128,7 +131,7 @@ function LoginInner() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full border border-[var(--bd)] bg-[var(--pg-alt)] rounded-xl px-3.5 py-2.5 pr-10 text-sm text-[var(--tx-1)] placeholder-[var(--tx-3)] focus:outline-none focus:border-gold/50 transition-colors"
-                  placeholder="••••••••"
+                  placeholder={a.passwordPlaceholder}
                 />
                 <button
                   type="button"
@@ -152,14 +155,14 @@ function LoginInner() {
               disabled={loading}
               className="w-full bg-gold/10 hover:bg-gold/20 border border-gold/30 hover:border-gold/50 text-gold py-2.5 rounded-xl text-sm font-semibold transition-all disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Sedang log masuk…</> : "Log Masuk"}
+              {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> {a.loginLoading}</> : a.loginBtn}
             </button>
           </form>
 
           <p className="mt-6 text-center text-sm text-[var(--tx-3)]">
-            Belum ada akaun?{" "}
+            {a.noAccount}{" "}
             <Link href="/register" className="text-[var(--tx-1)] font-semibold hover:text-gold transition-colors">
-              Daftar sekarang
+              {a.registerNow}
             </Link>
           </p>
         </div>

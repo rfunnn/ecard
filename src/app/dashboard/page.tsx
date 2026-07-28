@@ -17,6 +17,7 @@ import { getPackageTier } from "@/types/config"
 import { generatePrintHTML } from "@/lib/print-card"
 import { removeFromCart } from "@/lib/cart"
 import { useToast } from "@/components/ui/Toast"
+import { useT } from "@/lib/i18n"
 
 type Card = {
   id: string
@@ -136,15 +137,17 @@ function sanitizeSuffix(raw: string): string {
     .replace(/-{2,}/g, "-")
 }
 
-function suffixError(val: string): string | null {
+function useSuffixError(val: string): string | null {
+  const { dashboard: d } = useT()
   if (val === "") return null
-  if (val.length < 2)  return "Minimum 2 aksara."
-  if (val.length > 60) return "Maksimum 60 aksara."
-  if (/^-|-$/.test(val)) return "Tidak boleh bermula atau berakhir dengan sempang."
+  if (val.length < 2)  return d.suffixMin
+  if (val.length > 60) return d.suffixMax
+  if (/^-|-$/.test(val)) return d.suffixNoHyphen
   return null
 }
 
 function InviteLinkRow({ card, suffix, onSuffixChange }: { card: Card; suffix: string; onSuffixChange: (s: string) => void }) {
+  const { dashboard: d } = useT()
   const storageKey = `invite-suffix-${card.slug}`
   const [origin, setOrigin]   = useState("https://ekadku.com")
   const [editing, setEditing] = useState(false)
@@ -158,7 +161,7 @@ function InviteLinkRow({ card, suffix, onSuffixChange }: { card: Card; suffix: s
 
   const baseUrl = card.cardNum ? `${origin}/${card.cardNum}` : `${origin}/${card.slug}`
   const fullUrl = suffix ? `${baseUrl}/${suffix}` : baseUrl
-  const error   = suffixError(draft)
+  const error   = useSuffixError(draft)
 
   function openEditor() {
     setDraft(suffix)
@@ -193,12 +196,12 @@ function InviteLinkRow({ card, suffix, onSuffixChange }: { card: Card; suffix: s
     <div className="mb-3 space-y-2">
       {/* Base URL row */}
       <div>
-        <p className="text-[10px] text-[var(--tx-3)] mb-1">Pautan Jemputan:</p>
+        <p className="text-[10px] text-[var(--tx-3)] mb-1">{d.invitationLink}</p>
         <div className="flex items-center gap-1 bg-[var(--pg-alt)] border border-[var(--bd)] rounded-lg px-2 py-1.5">
           <span className="text-[11px] text-[var(--tx-2)] truncate flex-1 font-mono">
             {fullUrl.replace(/^https?:\/\//, "")}
           </span>
-          <button onClick={copyLink} className="ml-1 p-1 rounded transition-colors hover:bg-[var(--sf)]" title="Salin pautan">
+          <button onClick={copyLink} className="ml-1 p-1 rounded transition-colors hover:bg-[var(--sf)]" title={d.copyLink}>
             {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5 text-[var(--tx-3)]" />}
           </button>
           <a href={fullUrl} target="_blank" rel="noopener noreferrer" className="p-1 hover:bg-[var(--sf)] rounded transition-colors">
@@ -215,16 +218,14 @@ function InviteLinkRow({ card, suffix, onSuffixChange }: { card: Card; suffix: s
         >
           <Link2 className="w-3 h-3" />
           {suffix
-            ? <span>Nama pautan: <span className="font-mono text-[var(--tx-2)]">/{suffix}</span></span>
-            : <span className="group-hover:underline">+ Tambah nama pada pautan</span>
+            ? <span>{d.invitationLink.replace(":", "")} <span className="font-mono text-[var(--tx-2)]">/{suffix}</span></span>
+            : <span className="group-hover:underline">{d.addLinkName}</span>
           }
-          <span className="text-[10px] text-[var(--tx-3)] opacity-60 group-hover:opacity-100">(pilihan)</span>
+          <span className="text-[10px] text-[var(--tx-3)] opacity-60 group-hover:opacity-100">{d.optional}</span>
         </button>
       ) : (
         <div className="rounded-lg border border-[var(--bd)] bg-[var(--pg-alt)] p-2.5 space-y-2">
-          <p className="text-[10px] text-[var(--tx-3)] font-medium">
-            Tambah nama selepas pautan asas — kedua-dua URL berfungsi
-          </p>
+          <p className="text-[10px] text-[var(--tx-3)] font-medium">{d.linkNameHint}</p>
           <div className="flex items-center gap-1 text-[11px] font-mono">
             <span className="text-[var(--tx-3)] shrink-0 truncate max-w-[140px]">
               {card.cardNum ? `…/${card.cardNum}/` : `…/${card.slug}/`}
@@ -237,7 +238,7 @@ function InviteLinkRow({ card, suffix, onSuffixChange }: { card: Card; suffix: s
                 if (e.key === "Enter") saveSuffix()
                 if (e.key === "Escape") cancelEdit()
               }}
-              placeholder="nama-anda"
+              placeholder={d.linkNamePlaceholder}
               maxLength={60}
               className={`flex-1 min-w-0 border rounded px-2 py-1 bg-[var(--pg)] text-[var(--tx-1)] focus:outline-none focus:ring-1 ${
                 error ? "border-red-400 focus:ring-red-400" : "border-[var(--bd)] focus:ring-gold/40"
@@ -254,7 +255,7 @@ function InviteLinkRow({ card, suffix, onSuffixChange }: { card: Card; suffix: s
             </p>
           ) : (
             <p className="text-[10px] text-[var(--tx-3)]">
-              Huruf kecil, nombor dan sempang sahaja. Contoh: <span className="font-mono">ahmad-dan-sara</span>
+              {d.linkNameHelp} <span className="font-mono">ahmad-dan-sara</span>
             </p>
           )}
           <div className="flex items-center gap-2 pt-0.5">
@@ -263,17 +264,17 @@ function InviteLinkRow({ card, suffix, onSuffixChange }: { card: Card; suffix: s
               disabled={!!error || draft === suffix}
               className="text-[11px] font-semibold px-3 py-1 rounded bg-[var(--tx-1)] text-[var(--pg)] hover:opacity-80 transition-opacity disabled:opacity-40"
             >
-              Simpan
+              {d.save}
             </button>
             <button onClick={cancelEdit} className="text-[11px] text-[var(--tx-3)] hover:text-[var(--tx-1)] transition-colors px-2 py-1">
-              Batal
+              {d.cancel}
             </button>
             {suffix && (
               <button
                 onClick={() => { onSuffixChange(""); setDraft(""); try { localStorage.removeItem(storageKey) } catch { /* ignore */ } setEditing(false) }}
                 className="ml-auto text-[11px] text-red-400 hover:text-red-600 transition-colors"
               >
-                Buang nama
+                {d.removeName}
               </button>
             )}
           </div>
@@ -284,6 +285,7 @@ function InviteLinkRow({ card, suffix, onSuffixChange }: { card: Card; suffix: s
 }
 
 function ShareModal({ card, onClose }: { card: Card; onClose: () => void }) {
+  const { dashboard: d } = useT()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [shareUrl, setShareUrl] = useState("")
   const [canNativeShare, setCanNativeShare] = useState(false)
@@ -341,7 +343,7 @@ function ShareModal({ card, onClose }: { card: Card; onClose: () => void }) {
       <div className="fixed inset-0 z-40 bg-black/50" onClick={onClose} />
       <div className="fixed inset-x-4 bottom-4 z-50 bg-[var(--pg-alt)] border border-[var(--bd)] rounded-2xl p-5 shadow-2xl max-w-sm mx-auto">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-bold text-[var(--tx-1)]">Kongsi Kad</h3>
+          <h3 className="text-sm font-bold text-[var(--tx-1)]">{d.shareCard}</h3>
           <button onClick={onClose} className="p-1 rounded hover:bg-[var(--sf)] text-[var(--tx-3)] transition-colors">
             <X className="w-4 h-4" />
           </button>
@@ -349,7 +351,7 @@ function ShareModal({ card, onClose }: { card: Card; onClose: () => void }) {
 
         <div className="flex flex-col items-center gap-3 mb-4 p-4 rounded-xl bg-[#1a0a00] border border-white/10">
           <canvas ref={canvasRef} className="rounded-lg" style={{ imageRendering: "pixelated" }} />
-          <p className="text-xs text-white/40 text-center">Imbas kod QR untuk buka kad</p>
+          <p className="text-xs text-white/40 text-center">{d.scanQR}</p>
         </div>
 
         <p className="text-[11px] text-[var(--tx-3)] font-mono text-center mb-4 truncate px-2">
@@ -364,7 +366,7 @@ function ShareModal({ card, onClose }: { card: Card; onClose: () => void }) {
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
             <path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.345.223-.643.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51a12.8 12.8 0 00-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.29.173-1.414z"/>
           </svg>
-          Hantar via WhatsApp
+          {d.sendWhatsApp}
         </button>
 
         {/* Secondary actions */}
@@ -373,14 +375,14 @@ function ShareModal({ card, onClose }: { card: Card; onClose: () => void }) {
             onClick={handleDownload}
             className="flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold border border-[var(--bd)] text-[var(--tx-2)] py-2.5 rounded-lg hover:bg-[var(--sf)] transition-colors"
           >
-            <Download className="w-3.5 h-3.5" /> Muat Turun QR
+            <Download className="w-3.5 h-3.5" /> {d.downloadQR}
           </button>
           {canNativeShare ? (
             <button
               onClick={handleShare}
               className="flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold bg-[var(--tx-1)] text-[var(--pg)] py-2.5 rounded-lg hover:opacity-80 transition-opacity"
             >
-              <Share2 className="w-3.5 h-3.5" /> Kongsi
+              <Share2 className="w-3.5 h-3.5" /> {d.share}
             </button>
           ) : (
             <button
@@ -388,7 +390,7 @@ function ShareModal({ card, onClose }: { card: Card; onClose: () => void }) {
               className="flex-1 flex items-center justify-center gap-1.5 text-xs font-semibold bg-[var(--tx-1)] text-[var(--pg)] py-2.5 rounded-lg hover:opacity-80 transition-opacity"
             >
               {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-              {copied ? "Disalin!" : "Salin Pautan"}
+              {copied ? d.copied : d.copyLink}
             </button>
           )}
         </div>
@@ -398,6 +400,7 @@ function ShareModal({ card, onClose }: { card: Card; onClose: () => void }) {
 }
 
 function CardRow({ card, onRemove, onDuplicated }: { card: Card; onRemove: (slug: string) => void; onDuplicated: () => void }) {
+  const { dashboard: d } = useT()
   const [menuOpen,      setMenuOpen]      = useState(false)
   const [printing,      setPrinting]      = useState(false)
   const [duplicating,   setDuplicating]   = useState(false)
@@ -416,7 +419,7 @@ function CardRow({ card, onRemove, onDuplicated }: { card: Card; onRemove: (slug
   const displayName =
     card.groomName && card.brideName
       ? `${card.groomName} & ${card.brideName}`
-      : card.title || "Kad Jemputan"
+      : card.title || d.defaultCardTitle
 
   const eventDateStr = formatEventDate(
     (card.wizardConfig as WizardConfig | null)?.startDateTime ?? card.eventDate
@@ -437,7 +440,7 @@ function CardRow({ card, onRemove, onDuplicated }: { card: Card; onRemove: (slug
     const w = window.open("", "_blank", "width=900,height=760")
     if (!w) {
       setPrinting(false)
-      toast("Sila benarkan popup untuk mencetak.", "error")
+      toast(d.toastAllowPopup, "error")
       return
     }
     w.document.write(html)
@@ -454,17 +457,17 @@ function CardRow({ card, onRemove, onDuplicated }: { card: Card; onRemove: (slug
       if (res.status === 403) {
         const body = await res.json().catch(() => ({}))
         if (body.error === "DRAFT_LIMIT_EXCEEDED") {
-          toast("Anda sudah mempunyai 3 draf. Sila selesaikan atau padamkan salah satu dahulu.", "info")
+          toast(d.toastDraftLimit, "info")
           return
         }
       }
       if (!res.ok) throw new Error()
       const { slug: newSlug } = await res.json()
-      toast("Kad berjaya disalin.", "success")
+      toast(d.toastDuplicateOk, "success")
       onDuplicated()
       router.push(`/builder/${newSlug}`)
     } catch {
-      toast("Gagal menduplikasi kad. Sila cuba lagi.", "error")
+      toast(d.toastDuplicateFail, "error")
     } finally {
       setDuplicating(false)
     }
@@ -491,23 +494,23 @@ function CardRow({ card, onRemove, onDuplicated }: { card: Card; onRemove: (slug
                 <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
                 <div className="absolute right-0 top-7 z-20 bg-[var(--float)] border border-[var(--float-bd)] rounded-xl shadow-lg py-1 w-36">
                   <Link href={`/builder/${card.slug}`} className="flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)]">
-                    <Pencil className="w-3.5 h-3.5" /> Edit
+                    <Pencil className="w-3.5 h-3.5" /> {d.edit}
                   </Link>
                   <button onClick={() => { setMenuOpen(false); handleDuplicate() }} disabled={duplicating} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)] disabled:opacity-50">
-                    {duplicating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CopyPlus className="w-3.5 h-3.5" />} Duplikasi
+                    {duplicating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CopyPlus className="w-3.5 h-3.5" />} {d.duplicate}
                   </button>
                   <Link href={previewUrl} target="_blank" className="flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)]">
-                    <Eye className="w-3.5 h-3.5" /> Pratonton
+                    <Eye className="w-3.5 h-3.5" /> {d.preview}
                   </Link>
                   <button onClick={() => { setMenuOpen(false); handlePrint() }} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)]">
-                    <Printer className="w-3.5 h-3.5" /> Cetak Kad
+                    <Printer className="w-3.5 h-3.5" /> {d.printCard}
                   </button>
                   <button onClick={() => { setMenuOpen(false); setShowShare(true) }} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-[var(--tx-2)] hover:bg-[var(--sf)]">
-                    <Share2 className="w-3.5 h-3.5" /> Kongsi
+                    <Share2 className="w-3.5 h-3.5" /> {d.share}
                   </button>
                   <hr className="my-1 border-[var(--bd)]" />
                   <button onClick={() => { setMenuOpen(false); onRemove(card.slug) }} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-red-500 hover:bg-red-500/10">
-                    <Trash2 className="w-3.5 h-3.5" /> Padam
+                    <Trash2 className="w-3.5 h-3.5" /> {d.delete}
                   </button>
                 </div>
               </>
@@ -524,25 +527,25 @@ function CardRow({ card, onRemove, onDuplicated }: { card: Card; onRemove: (slug
         <InviteLinkRow card={card} suffix={suffix} onSuffixChange={setSuffix} />
 
         <div className="flex items-center flex-wrap gap-1 mb-3">
-          <Link href={`/builder/${card.slug}`} className={actionBtn}><Pencil className="w-3.5 h-3.5" /> Edit</Link>
-          <Link href={`/builder/${card.slug}?page=11`} className={actionBtn}><ImageIcon className="w-3.5 h-3.5" /> Galeri</Link>
-          <Link href={`/builder/${card.slug}?page=10`} className={actionBtn}><Gift className="w-3.5 h-3.5" /> Hadiah</Link>
+          <Link href={`/builder/${card.slug}`} className={actionBtn}><Pencil className="w-3.5 h-3.5" /> {d.edit}</Link>
+          <Link href={`/builder/${card.slug}?page=11`} className={actionBtn}><ImageIcon className="w-3.5 h-3.5" /> {d.gallery}</Link>
+          <Link href={`/builder/${card.slug}?page=10`} className={actionBtn}><Gift className="w-3.5 h-3.5" /> {d.gifts}</Link>
           <Link href={`/builder/${card.slug}?page=7`} className={actionBtn}><Mail className="w-3.5 h-3.5" /> RSVP</Link>
           {card.isPublished && (
             <Link href={`/dashboard/${card.slug}/report`} className={`${actionBtn} font-semibold`} style={{ color: card.theme?.primaryColor ?? undefined }}>
-              <BarChart2 className="w-3.5 h-3.5" /> Laporan
+              <BarChart2 className="w-3.5 h-3.5" /> {d.report}
             </Link>
           )}
-          <Link href={previewUrl} target="_blank" className={actionBtn}><Eye className="w-3.5 h-3.5" /> Pratonton</Link>
+          <Link href={previewUrl} target="_blank" className={actionBtn}><Eye className="w-3.5 h-3.5" /> {d.preview}</Link>
           <button onClick={handlePrint} disabled={printing} className={`${actionBtn} text-amber-600 hover:text-amber-800`}>
             {printing ? <div className="w-3.5 h-3.5 border-2 border-amber-600 border-t-transparent rounded-full animate-spin" /> : <Printer className="w-3.5 h-3.5" />}
-            Cetak Kad
+            {d.printCard}
           </button>
         </div>
 
         {!card.isPublished && (
           <Link href={`/checkout?slug=${card.slug}`} className="inline-flex items-center gap-1.5 text-xs font-semibold border border-[var(--tx-1)] text-[var(--tx-1)] px-4 py-1.5 rounded-full hover:bg-[var(--tx-1)] hover:text-[var(--pg)] transition-colors">
-            BAYAR SEKARANG
+            {d.payNow}
           </Link>
         )}
         {showShare && <ShareModal card={card} onClose={() => setShowShare(false)} />}
@@ -559,7 +562,7 @@ function CardRow({ card, onRemove, onDuplicated }: { card: Card; onRemove: (slug
             <div className="flex flex-col gap-1">
               {isExpired ? (
                 <span className="inline-flex items-center gap-1 text-xs px-3 py-1 rounded-full font-medium w-fit text-red-600 bg-red-500/10 border border-red-500/20">
-                  Luput{expiryLabel ? ` · ${expiryLabel}` : ""}
+                  {d.statusExpired}{expiryLabel ? ` · ${expiryLabel}` : ""}
                 </span>
               ) : (
                 <span className={`inline-flex items-center gap-1 text-xs px-3 py-1 rounded-full font-medium w-fit ${
@@ -567,12 +570,12 @@ function CardRow({ card, onRemove, onDuplicated }: { card: Card; onRemove: (slug
                     ? "text-amber-600 bg-amber-500/10 border border-amber-500/20"
                     : "text-green-600 bg-green-500/10 border border-green-500/20"
                 }`}>
-                  Aktif{expiryLabel ? ` · Luput ${expiryLabel}` : ""}
+                  {d.statusActive}{expiryLabel ? ` · ${d.statusExpired} ${expiryLabel}` : ""}
                 </span>
               )}
               {isExpiringSoon && daysLeft !== null && (
                 <p className="text-[11px] text-amber-500">
-                  Pautan tamat dalam {daysLeft} hari
+                  {d.linkExpiresIn(daysLeft)}
                 </p>
               )}
               {isExpired && (
@@ -580,7 +583,7 @@ function CardRow({ card, onRemove, onDuplicated }: { card: Card; onRemove: (slug
                   href={`/checkout?slug=${card.slug}&renewal=true`}
                   className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-red-500 hover:text-red-700 transition-colors underline underline-offset-2 w-fit"
                 >
-                  <RefreshCw className="w-3 h-3" /> Perbaharui pautan →
+                  <RefreshCw className="w-3 h-3" /> {d.renewLink}
                 </Link>
               )}
               {isExpiringSoon && !isExpired && (
@@ -588,7 +591,7 @@ function CardRow({ card, onRemove, onDuplicated }: { card: Card; onRemove: (slug
                   href={`/checkout?slug=${card.slug}&renewal=true`}
                   className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-amber-500 hover:text-amber-700 transition-colors underline underline-offset-2 w-fit"
                 >
-                  <RefreshCw className="w-3 h-3" /> Perbaharui awal →
+                  <RefreshCw className="w-3 h-3" /> {d.renewEarly}
                 </Link>
               )}
             </div>
@@ -599,7 +602,7 @@ function CardRow({ card, onRemove, onDuplicated }: { card: Card; onRemove: (slug
           if (currentTier === "gold") return null
           return (
             <div className="flex items-center gap-2 mt-2 flex-wrap">
-              <span className="text-[10px] text-[var(--tx-3)] font-medium">Naik taraf:</span>
+              <span className="text-[10px] text-[var(--tx-3)] font-medium">{d.upgrade}</span>
               {currentTier === "bronze" && (
                 <Link
                   href={`/checkout?slug=${card.slug}&upgrade=silver`}
@@ -624,6 +627,7 @@ function CardRow({ card, onRemove, onDuplicated }: { card: Card; onRemove: (slug
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function ProfileTab({ session }: { session: any }) {
+  const { dashboard: d } = useT()
   const [name,            setName]            = useState(session.user.name ?? "")
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword,     setNewPassword]     = useState("")
@@ -634,7 +638,7 @@ function ProfileTab({ session }: { session: any }) {
   const handleSave = async () => {
     setMessage(null)
     if (newPassword && newPassword !== confirmPassword) {
-      setMessage({ type: "err", text: "Kata laluan baharu tidak sepadan" })
+      setMessage({ type: "err", text: d.newPasswordMismatch })
       return
     }
     setSaving(true)
@@ -649,13 +653,13 @@ function ProfileTab({ session }: { session: any }) {
         }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error ?? "Ralat tidak diketahui")
-      setMessage({ type: "ok", text: "Profil berjaya dikemas kini" })
+      if (!res.ok) throw new Error(data.error ?? d.unknownError)
+      setMessage({ type: "ok", text: d.profileUpdated })
       setCurrentPassword("")
       setNewPassword("")
       setConfirmPassword("")
     } catch (e) {
-      setMessage({ type: "err", text: e instanceof Error ? e.message : "Gagal" })
+      setMessage({ type: "err", text: e instanceof Error ? e.message : d.failed })
     } finally {
       setSaving(false)
     }
@@ -677,21 +681,21 @@ function ProfileTab({ session }: { session: any }) {
       )}
 
       <div className="rounded-2xl border border-[var(--bd)] bg-[var(--pg-alt)] p-5 space-y-4">
-        <p className="text-xs font-bold text-[var(--tx-3)] uppercase tracking-widest">Maklumat Akaun</p>
+        <p className="text-xs font-bold text-[var(--tx-3)] uppercase tracking-widest">{d.accountInfo}</p>
 
         <div>
-          <label className={labelCls}>Nama</label>
+          <label className={labelCls}>{d.name}</label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className={inputCls}
-            placeholder="Nama anda"
+            placeholder={d.namePlaceholder}
           />
         </div>
 
         <div>
-          <label className={labelCls}>Emel</label>
+          <label className={labelCls}>{d.emailLabel}</label>
           <input
             type="email"
             value={session.user.email ?? ""}
@@ -702,10 +706,10 @@ function ProfileTab({ session }: { session: any }) {
       </div>
 
       <div className="rounded-2xl border border-[var(--bd)] bg-[var(--pg-alt)] p-5 space-y-4">
-        <p className="text-xs font-bold text-[var(--tx-3)] uppercase tracking-widest">Tukar Kata Laluan</p>
+        <p className="text-xs font-bold text-[var(--tx-3)] uppercase tracking-widest">{d.changePassword}</p>
 
         <div>
-          <label className={labelCls}>Kata Laluan Semasa</label>
+          <label className={labelCls}>{d.currentPassword}</label>
           <input
             type="password"
             value={currentPassword}
@@ -717,19 +721,19 @@ function ProfileTab({ session }: { session: any }) {
         </div>
 
         <div>
-          <label className={labelCls}>Kata Laluan Baharu</label>
+          <label className={labelCls}>{d.newPassword}</label>
           <input
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             className={inputCls}
-            placeholder="Sekurang-kurangnya 8 aksara"
+            placeholder="••••••••"
             autoComplete="new-password"
           />
         </div>
 
         <div>
-          <label className={labelCls}>Sahkan Kata Laluan Baharu</label>
+          <label className={labelCls}>{d.confirmNewPassword}</label>
           <input
             type="password"
             value={confirmPassword}
@@ -747,7 +751,7 @@ function ProfileTab({ session }: { session: any }) {
         className="inline-flex items-center gap-2 bg-[var(--tx-1)] text-[var(--pg)] text-xs font-bold tracking-widest uppercase px-6 py-2.5 rounded-lg hover:opacity-80 transition-opacity disabled:opacity-50"
       >
         {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-        Simpan Perubahan
+        {d.saveChanges}
       </button>
     </div>
   )
@@ -755,6 +759,7 @@ function ProfileTab({ session }: { session: any }) {
 
 function DashboardInner() {
   const { data: session, status } = useSession()
+  const { dashboard: d } = useT()
   const router  = useRouter()
   const params  = useSearchParams()
   const tab     = params.get("tab") ?? "orders"
@@ -785,7 +790,7 @@ function DashboardInner() {
   }, [])
 
   const handleRemove = useCallback(async (slug: string) => {
-    if (!confirm("Padam kad ini secara kekal? Tindakan ini tidak boleh dibatalkan.")) return
+    if (!confirm(d.confirmDelete)) return
 
     // Optimistic removal
     setCards(prev => prev.filter(c => c.slug !== slug))
@@ -799,9 +804,9 @@ function DashboardInner() {
       // Reload from server on failure so the list is consistent
       const res = await fetch("/api/user/cards")
       if (res.ok) setCards((await res.json()).cards)
-      toast("Gagal memadam kad. Sila cuba lagi.", "error")
+      toast(d.toastDeleteFail, "error")
     }
-  }, [toast])
+  }, [toast, d])
 
   const handleUseFav = useCallback(async (tpl: LikedTemplate) => {
     if (creatingFav) return
@@ -815,7 +820,7 @@ function DashboardInner() {
       if (res.status === 403) {
         const body = await res.json().catch(() => ({}))
         if (body.error === "DRAFT_LIMIT_EXCEEDED") {
-          toast("Anda sudah mempunyai 3 draf. Sila selesaikan atau padamkan salah satu draf dahulu.", "info")
+          toast(d.toastDraftLimitFav, "info")
           setCreatingFav(null)
           return
         }
@@ -825,7 +830,7 @@ function DashboardInner() {
       router.push(`/builder/${card.slug}`)
     } catch (err) {
       console.error("handleUseFav failed:", err)
-      toast("Gagal membuka pembina kad. Sila cuba lagi.", "error")
+      toast(d.toastOpenFail, "error")
       setCreatingFav(null)
     }
   }, [creatingFav, router, toast])
@@ -847,16 +852,16 @@ function DashboardInner() {
   if (!session) return null
 
   const sideNav = [
-    { key: "orders",    label: "KAD SAYA" },
-    { key: "favorites", label: "TEMPLAT SUKA" },
-    { key: "profile",   label: "PROFIL SAYA" },
+    { key: "orders",    label: d.navMyCards },
+    { key: "favorites", label: d.navLiked },
+    { key: "profile",   label: d.navProfile },
   ]
 
   return (
     <div className="min-h-screen bg-[var(--pg)] flex">
       {/* ── Sidebar ── */}
       <aside className="hidden md:flex flex-col w-44 shrink-0 border-r border-[var(--bd)] py-8 px-6 gap-5">
-        <div className="mb-2 text-[10px] font-bold tracking-widest text-[var(--tx-3)] uppercase">Menu</div>
+        <div className="mb-2 text-[10px] font-bold tracking-widest text-[var(--tx-3)] uppercase">{d.menu}</div>
         {sideNav.map(({ key, label }) => (
           <Link
             key={key}
@@ -894,15 +899,15 @@ function DashboardInner() {
         {/* Top bar */}
         <div className="flex items-center justify-between gap-3 mb-6">
           <h1 className="text-lg sm:text-xl font-black tracking-widest text-[var(--tx-1)] uppercase">
-            {tab === "orders" ? "Kad Saya" : tab === "favorites" ? "Templat Suka" : "Profil Saya"}
+            {tab === "orders" ? d.titleMyCards : tab === "favorites" ? d.titleLiked : d.titleProfile}
           </h1>
           <Link
             href="/templates"
             className="flex items-center gap-1.5 shrink-0 bg-[var(--tx-1)] text-[var(--pg)] text-[11px] sm:text-xs font-black tracking-widest uppercase px-3 sm:px-4 py-2.5 rounded-lg hover:opacity-80 transition-opacity"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Kad Baharu</span>
-            <span className="sm:hidden">Baharu</span>
+            <span className="hidden sm:inline">{d.newCard}</span>
+            <span className="sm:hidden">{d.newCardShort}</span>
           </Link>
         </div>
 
@@ -915,12 +920,12 @@ function DashboardInner() {
               </div>
             ) : cards.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 text-center gap-4">
-                <p className="text-[var(--tx-3)] text-sm">Tiada kad lagi.</p>
+                <p className="text-[var(--tx-3)] text-sm">{d.noCards}</p>
                 <Link
                   href="/templates"
                   className="text-xs font-bold bg-[var(--tx-1)] text-[var(--pg)] px-5 py-2.5 rounded-lg hover:opacity-80 transition-opacity"
                 >
-                  Buat Kad Pertama
+                  {d.createFirstCard}
                 </Link>
               </div>
             ) : (
@@ -942,9 +947,9 @@ function DashboardInner() {
               </div>
             ) : likes.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 text-center gap-4">
-                <p className="text-[var(--tx-3)] text-sm">Tiada templat suka lagi.</p>
+                <p className="text-[var(--tx-3)] text-sm">{d.noLikedTemplates}</p>
                 <Link href="/templates" className="text-xs font-bold bg-[var(--tx-1)] text-[var(--pg)] px-5 py-2.5 rounded-lg hover:opacity-80 transition-opacity">
-                  Lihat Templat
+                  {d.viewTemplates}
                 </Link>
               </div>
             ) : (
@@ -968,7 +973,7 @@ function DashboardInner() {
                       >
                         {creatingFav === tpl.id
                           ? <Loader2 className="w-3 h-3 animate-spin" />
-                          : "Guna"
+                          : d.useTemplate
                         }
                       </button>
                       <Link
@@ -976,7 +981,7 @@ function DashboardInner() {
                         target="_blank"
                         className="flex-1 text-center text-xs font-bold border border-[var(--bd)] text-[var(--tx-2)] py-2 rounded-lg hover:bg-[var(--sf)] transition-colors"
                       >
-                        Pratonton
+                        {d.preview}
                       </Link>
                     </div>
                   </div>

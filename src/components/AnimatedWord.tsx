@@ -2,16 +2,21 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-
-const WORDS = ["PERKAHWINAN", "HARI LAHIR", "PERAYAAN", "ACARA KORPORAT"]
+import { useT } from "@/lib/i18n"
 
 export function AnimatedWord() {
+  const t = useT()
+  const WORDS = t.home.animatedWords
   const [i, setI] = useState(0)
 
   useEffect(() => {
-    const t = setInterval(() => setI((n) => (n + 1) % WORDS.length), 2800)
-    return () => clearInterval(t)
-  }, [])
+    setI(0)
+  }, [WORDS[0]])
+
+  useEffect(() => {
+    const timer = setInterval(() => setI((n) => (n + 1) % WORDS.length), 2800)
+    return () => clearInterval(timer)
+  }, [WORDS.length])
 
   const word = WORDS[i]
 

@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Heart } from "lucide-react"
 import UserMenu from "@/components/UserMenu"
 import { NavLikesButton } from "@/components/NavLikesButton"
+import { LanguageSwitcher } from "@/components/LanguageSwitcher"
 import type { ReactNode } from "react"
 
 interface SiteNavProps {
@@ -29,6 +30,7 @@ export function SiteNav({ actions }: SiteNavProps) {
         {/* Right controls */}
         <div className="flex items-center gap-1">
           {actions}
+          <LanguageSwitcher />
           <NavLikesButton />
           <UserMenu />
         </div>

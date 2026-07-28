@@ -3,14 +3,18 @@
 import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
 import { useState, useRef, useEffect } from "react"
-import { User, ShoppingBag, Sun, Moon, LogOut, MessageCircle, ShieldCheck } from "lucide-react"
+import { User, ShoppingBag, Sun, Moon, LogOut, MessageCircle, ShieldCheck, Languages } from "lucide-react"
+import { useTheme } from "@/components/ThemeProvider"
+import { useT } from "@/lib/i18n"
+import { useLanguageStore } from "@/store/languageStore"
 
 const WA_URL = `https://wa.me/601164981201?text=${encodeURIComponent("Hello, saya ingin bertanya tentang ekadku.com")}`
-import { useTheme } from "@/components/ThemeProvider"
 
 export default function UserMenu() {
   const { data: session, status } = useSession()
   const { theme, toggle } = useTheme()
+  const { userMenu: m } = useT()
+  const { lang, setLang } = useLanguageStore()
   const [open, setOpen] = useState(false)
   const [cardCount, setCardCount] = useState(0)
   const ref = useRef<HTMLDivElement | undefined>(undefined)
@@ -78,20 +82,20 @@ export default function UserMenu() {
               </div>
             ) : (
               <div className="px-4 py-3 border-b border-[var(--bd)] space-y-2">
-                <p className="text-[11px] text-[var(--tx-3)]">Belum log masuk</p>
+                <p className="text-[11px] text-[var(--tx-3)]">{m.notLoggedIn}</p>
                 <Link
                   href="/login"
                   onClick={() => setOpen(false)}
                   className="block text-center text-xs py-1.5 rounded-lg bg-gold/10 border border-gold/25 text-gold hover:bg-gold/20 transition-colors font-medium"
                 >
-                  Log Masuk
+                  {m.login}
                 </Link>
                 <Link
                   href="/register"
                   onClick={() => setOpen(false)}
                   className="block text-center text-xs py-1.5 rounded-lg border border-[var(--bd)] text-[var(--tx-2)] hover:bg-[var(--sf)] transition-colors"
                 >
-                  Daftar Akaun
+                  {m.register}
                 </Link>
               </div>
             )}
@@ -106,12 +110,12 @@ export default function UserMenu() {
                   className="flex items-center gap-3 px-4 py-2.5 text-sm text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-500/10 transition-colors w-full font-medium"
                 >
                   <ShieldCheck className="w-4 h-4 shrink-0" />
-                  Admin
+                  {m.admin}
                 </Link>
               </div>
             )}
 
-            {/* Kad Saya */}
+            {/* My Cards */}
             <div className={session?.user?.isAdmin ? "border-t border-[var(--bd)] py-1" : "py-1"}>
               <Link
                 href="/dashboard"
@@ -119,7 +123,7 @@ export default function UserMenu() {
                 className="flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--tx-2)] hover:text-[var(--tx-1)] hover:bg-[var(--sf)] transition-colors w-full"
               >
                 <ShoppingBag className="w-4 h-4 shrink-0" />
-                Kad Saya
+                {m.myCards}
                 {cardCount > 0 && (
                   <span className="ml-auto min-w-[18px] h-[18px] text-[10px] bg-gold text-ink rounded-full flex items-center justify-center px-1 font-bold leading-none">
                     {cardCount}
@@ -128,7 +132,7 @@ export default function UserMenu() {
               </Link>
             </div>
 
-            {/* Hubungi Kami */}
+            {/* Contact Us */}
             <div className="border-t border-[var(--bd)] py-1">
               <a
                 href={WA_URL}
@@ -138,8 +142,22 @@ export default function UserMenu() {
                 className="flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--tx-2)] hover:text-[var(--tx-1)] hover:bg-[var(--sf)] transition-colors w-full"
               >
                 <MessageCircle className="w-4 h-4 shrink-0 text-[#25D366]" />
-                Hubungi Kami
+                {m.contactUs}
               </a>
+            </div>
+
+            {/* Language row */}
+            <div className="border-t border-[var(--bd)] py-1">
+              <button
+                onClick={() => setLang(lang === "ms" ? "en" : "ms")}
+                className="flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--tx-2)] hover:text-[var(--tx-1)] hover:bg-[var(--sf)] transition-colors w-full"
+              >
+                <Languages className="w-4 h-4 shrink-0" />
+                {lang === "ms" ? "Bahasa" : "Language"}
+                <span className="ml-auto text-[11px] font-bold text-[var(--tx-3)]">
+                  {lang === "ms" ? "BM" : "EN"}
+                </span>
+              </button>
             </div>
 
             {/* Theme row */}
@@ -152,9 +170,9 @@ export default function UserMenu() {
                   ? <Sun className="w-4 h-4 shrink-0" />
                   : <Moon className="w-4 h-4 shrink-0" />
                 }
-                Theme
+                {m.theme}
                 <span className="ml-auto text-[11px] text-[var(--tx-3)]">
-                  {theme === "dark" ? "Gelap" : "Cerah"}
+                  {theme === "dark" ? m.dark : m.light}
                 </span>
               </button>
             </div>
@@ -167,7 +185,7 @@ export default function UserMenu() {
                   className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors w-full text-left"
                 >
                   <LogOut className="w-4 h-4 shrink-0" />
-                  Log Keluar
+                  {m.logout}
                 </button>
               </div>
             )}

@@ -128,18 +128,27 @@ export default async function InvitePage({ params, searchParams }: Props) {
   const packageParam = (sp.package ?? "gold").toLowerCase()
 
   if (slug === "demo") {
+    // Resolve which template slug to use: query param → SiteConfig slot 1 → hardcoded fallback
+    let resolvedTemplateSlug = templateSlug
+    if (!resolvedTemplateSlug) {
+      const siteConfig = await prisma.siteConfig.findUnique({ where: { id: "default" } })
+      resolvedTemplateSlug = siteConfig?.demoSlug1 ?? "wedding-classic"
+    }
+
     // Fetch the selected template first so its colours can drive the whole demo
     const demoTemplate = await prisma.template.findFirst({
-      where: { slug: templateSlug ?? "wedding-classic" },
+      where: { slug: resolvedTemplateSlug },
       select: { slug: true, name: true, category: true, image1Url: true, image2Url: true, defaultConfig: true },
     }) ?? await prisma.template.findFirst({
-      where: { slug: "wedding-classic" },
+      where: { isActive: true },
       select: { slug: true, name: true, category: true, image1Url: true, image2Url: true, defaultConfig: true },
+      orderBy: { sortOrder: "asc" },
     })
 
     const tmplCfgRaw  = (demoTemplate?.defaultConfig ?? {}) as Record<string, unknown>
     const authored    = tmplCfgRaw.authored as import("@/types/template-admin").AuthoredInvite | undefined
     const tmplCfg    = tmplCfgRaw as { primaryColor?: string; bgColor?: string; titleFont?: string }
+    // isTemplatePreview: true when user explicitly chose a template (query param), so authored config is used
     const isTemplatePreview = !!templateSlug
     const demoPrimary = isTemplatePreview ? (tmplCfg.primaryColor ?? "#9b4d5e") : "#9b4d5e"
     const demoBg      = isTemplatePreview ? (tmplCfg.bgColor      ?? "#faf7f4") : "#faf7f4"

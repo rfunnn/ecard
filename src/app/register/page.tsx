@@ -5,6 +5,8 @@ import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Eye, EyeOff, ChevronLeft, Loader2, Check } from "lucide-react"
+import { useT } from "@/lib/i18n"
+import { LanguageSwitcher } from "@/components/LanguageSwitcher"
 
 function GoogleIcon() {
   return (
@@ -18,11 +20,12 @@ function GoogleIcon() {
 }
 
 function PasswordStrength({ password }: { password: string }) {
+  const { auth: a } = useT()
   if (!password) return null
   const checks = [
-    { label: "Sekurang-kurangnya 8 aksara", ok: password.length >= 8 },
-    { label: "Mengandungi huruf besar", ok: /[A-Z]/.test(password) },
-    { label: "Mengandungi nombor", ok: /\d/.test(password) },
+    { label: a.strengthMin,   ok: password.length >= 8 },
+    { label: a.strengthUpper, ok: /[A-Z]/.test(password) },
+    { label: a.strengthNum,   ok: /\d/.test(password) },
   ]
   return (
     <div className="mt-2 space-y-1">
@@ -38,6 +41,7 @@ function PasswordStrength({ password }: { password: string }) {
 
 export default function RegisterPage() {
   const router = useRouter()
+  const { auth: a } = useT()
 
   const [name,     setName]     = useState("")
   const [email,    setEmail]    = useState("")
@@ -54,11 +58,11 @@ export default function RegisterPage() {
     setError("")
 
     if (password !== confirm) {
-      setError("Kata laluan tidak sepadan.")
+      setError(a.errPasswordMismatch)
       return
     }
     if (password.length < 8) {
-      setError("Kata laluan mestilah sekurang-kurangnya 8 aksara.")
+      setError(a.errPasswordTooShort)
       return
     }
 
@@ -71,7 +75,7 @@ export default function RegisterPage() {
 
     if (!res.ok) {
       const body = await res.json()
-      setError(body.error ?? "Pendaftaran gagal.")
+      setError(body.error ?? a.errRegisterFailed)
       setLoading(false)
       return
     }
@@ -102,10 +106,10 @@ export default function RegisterPage() {
           className="flex items-center gap-1.5 text-sm text-[var(--tx-3)] hover:text-[var(--tx-1)] transition-colors"
         >
           <ChevronLeft className="w-4 h-4" />
-          Kembali
+          {a.back}
         </Link>
         <span className="mx-auto font-playfair text-[15px] text-[var(--tx-1)]">ekadku.com</span>
-        <div className="w-16" />
+        <LanguageSwitcher />
       </div>
 
       <div className="flex-1 flex items-center justify-center px-4 py-10">
@@ -113,8 +117,8 @@ export default function RegisterPage() {
 
           {/* heading */}
           <div className="text-center mb-8">
-            <h1 className="font-playfair text-3xl text-[var(--tx-1)] mb-1">Daftar Akaun</h1>
-            <p className="text-sm text-[var(--tx-3)]">Cipta akaun baharu anda secara percuma</p>
+            <h1 className="font-playfair text-3xl text-[var(--tx-1)] mb-1">{a.registerTitle}</h1>
+            <p className="text-sm text-[var(--tx-3)]">{a.registerSubtitle}</p>
           </div>
 
           {/* Google */}
@@ -124,7 +128,7 @@ export default function RegisterPage() {
             className="w-full flex items-center justify-center gap-2.5 border border-[var(--bd)] bg-[var(--pg-alt)] hover:bg-[var(--sf)] rounded-xl px-4 py-3 text-sm font-medium text-[var(--tx-1)] transition-all disabled:opacity-50 mb-4"
           >
             {gLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <GoogleIcon />}
-            {gLoading ? "Mengalihkan…" : "Daftar dengan Google"}
+            {gLoading ? a.googleRedirecting : a.googleRegister}
           </button>
 
           {/* divider */}
@@ -133,38 +137,38 @@ export default function RegisterPage() {
               <div className="w-full border-t border-[var(--bd)]" />
             </div>
             <div className="relative flex justify-center">
-              <span className="bg-[var(--pg)] px-3 text-xs text-[var(--tx-3)]">atau daftar dengan e-mel</span>
+              <span className="bg-[var(--pg)] px-3 text-xs text-[var(--tx-3)]">{a.orRegisterEmail}</span>
             </div>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-[var(--tx-2)] mb-1.5">Nama Penuh</label>
+              <label className="block text-xs font-medium text-[var(--tx-2)] mb-1.5">{a.fullName}</label>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full border border-[var(--bd)] bg-[var(--pg-alt)] rounded-xl px-3.5 py-2.5 text-sm text-[var(--tx-1)] placeholder-[var(--tx-3)] focus:outline-none focus:border-gold/50 transition-colors"
-                placeholder="Nama penuh anda"
+                placeholder={a.fullNamePlaceholder}
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-[var(--tx-2)] mb-1.5">E-mel</label>
+              <label className="block text-xs font-medium text-[var(--tx-2)] mb-1.5">{a.email}</label>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full border border-[var(--bd)] bg-[var(--pg-alt)] rounded-xl px-3.5 py-2.5 text-sm text-[var(--tx-1)] placeholder-[var(--tx-3)] focus:outline-none focus:border-gold/50 transition-colors"
-                placeholder="anda@contoh.com"
+                placeholder={a.emailPlaceholder}
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-[var(--tx-2)] mb-1.5">Kata Laluan</label>
+              <label className="block text-xs font-medium text-[var(--tx-2)] mb-1.5">{a.password}</label>
               <div className="relative">
                 <input
                   type={showPw ? "text" : "password"}
@@ -173,7 +177,7 @@ export default function RegisterPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full border border-[var(--bd)] bg-[var(--pg-alt)] rounded-xl px-3.5 py-2.5 pr-10 text-sm text-[var(--tx-1)] placeholder-[var(--tx-3)] focus:outline-none focus:border-gold/50 transition-colors"
-                  placeholder="Sekurang-kurangnya 8 aksara"
+                  placeholder={a.passwordMinChars}
                 />
                 <button
                   type="button"
@@ -188,7 +192,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-[var(--tx-2)] mb-1.5">Sahkan Kata Laluan</label>
+              <label className="block text-xs font-medium text-[var(--tx-2)] mb-1.5">{a.confirmPassword}</label>
               <div className="relative">
                 <input
                   type={showCf ? "text" : "password"}
@@ -202,7 +206,7 @@ export default function RegisterPage() {
                       ? "border-green-500/50 focus:border-green-500/70"
                       : "border-[var(--bd)] focus:border-gold/50"
                   }`}
-                  placeholder="Taip semula kata laluan"
+                  placeholder={a.confirmPasswordPlaceholder}
                 />
                 <button
                   type="button"
@@ -214,7 +218,7 @@ export default function RegisterPage() {
                 </button>
               </div>
               {confirm && confirm !== password && (
-                <p className="text-[11px] text-red-500 mt-1">Kata laluan tidak sepadan</p>
+                <p className="text-[11px] text-red-500 mt-1">{a.passwordMismatch}</p>
               )}
             </div>
 
@@ -229,14 +233,14 @@ export default function RegisterPage() {
               disabled={loading}
               className="w-full bg-gold/10 hover:bg-gold/20 border border-gold/30 hover:border-gold/50 text-gold py-2.5 rounded-xl text-sm font-semibold transition-all disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
             >
-              {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Sedang mendaftar…</> : "Daftar Sekarang"}
+              {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> {a.registerLoading}</> : a.registerBtn}
             </button>
           </form>
 
           <p className="mt-6 text-center text-sm text-[var(--tx-3)]">
-            Sudah ada akaun?{" "}
+            {a.hasAccount}{" "}
             <Link href="/login" className="text-[var(--tx-1)] font-semibold hover:text-gold transition-colors">
-              Log masuk
+              {a.loginLink}
             </Link>
           </p>
         </div>

@@ -9,6 +9,7 @@ import type { TemplateCategory } from "@/types/invitation"
 import { TemplatePhoneFrame } from "@/components/TemplatePhoneFrame"
 import { useLikes } from "@/hooks/useLikes"
 import { useToast } from "@/components/ui/Toast"
+import { useT } from "@/lib/i18n"
 
 // ─── types ───────────────────────────────────────────────────────────────────
 
@@ -30,20 +31,6 @@ interface Template {
 }
 
 // ─── constants ───────────────────────────────────────────────────────────────
-
-const SORT_OPTIONS = [
-  { value: "latest",  label: "Terbaru" },
-  { value: "name",    label: "Nama" },
-  { value: "popular", label: "Popular" },
-]
-
-const THEME_FILTERS: { key: TemplateCategory | "ALL"; label: string; emoji: string }[] = [
-  { key: "ALL",       label: "Semua",       emoji: "✦" },
-  { key: "WEDDING",   label: "Perkahwinan", emoji: "💍" },
-  { key: "BIRTHDAY",  label: "Hari Lahir",  emoji: "🎂" },
-  { key: "CORPORATE", label: "Korporat",    emoji: "🏢" },
-  { key: "GENERIC",   label: "Umum",        emoji: "✉️" },
-]
 
 const COLOR_SWATCHES = [
   "#1a1a1a", "#B8960C", "#f9c5d1", "#9e9e9e",
@@ -81,6 +68,8 @@ function TemplateCard({
   onView: () => void
   creating: boolean
 }) {
+  const { templates: tl } = useT()
+
   return (
     <div className="bg-[var(--pg-alt)] rounded-xl p-2.5 border border-[var(--bd)] flex flex-col items-center gap-2 hover:border-gold/25 transition-all">
       <TemplatePhoneFrame template={template} previewName={previewName} />
@@ -90,20 +79,20 @@ function TemplateCard({
       </p>
 
       <div className="flex items-center gap-1.5 w-full">
-        {/* TRY NOW */}
+        {/* TRY */}
         <button
           onClick={onTryNow}
           disabled={creating}
           className="flex-1 flex items-center justify-center gap-1.5 bg-gold/10 hover:bg-gold/20 border border-gold/20 hover:border-gold/40 text-gold text-[11px] font-semibold py-2 rounded-full transition-all disabled:opacity-50 active:scale-95"
         >
-          {creating ? <Loader2 className="w-3 h-3 animate-spin" /> : "Cuba"}
+          {creating ? <Loader2 className="w-3 h-3 animate-spin" /> : tl.tryBtn}
         </button>
 
         {/* VIEW */}
         <button
           onClick={onView}
           className="w-8 h-8 flex items-center justify-center border border-[var(--bd)] hover:border-gold/30 text-[var(--tx-3)] hover:text-[var(--tx-1)] rounded-full transition-all shrink-0"
-          title="Lihat pratonton"
+          title={tl.viewPreview}
         >
           <Eye className="w-3.5 h-3.5" />
         </button>
@@ -116,7 +105,7 @@ function TemplateCard({
               ? "border-red-400/40 bg-red-500/10 text-red-400"
               : "border-[var(--bd)] hover:border-red-400/40 text-[var(--tx-3)] hover:text-red-400"
           }`}
-          title={liked ? "Nyahsuka" : "Suka"}
+          title={liked ? tl.unlike : tl.like}
         >
           <Heart className={`w-3.5 h-3.5 ${liked ? "fill-red-400" : ""}`} />
         </button>
@@ -148,6 +137,9 @@ function Sidebar({
   onApply: () => void
   onClose?: () => void
 }) {
+  const { templates: tl } = useT()
+  const THEME_FILTERS = tl.categories as ReadonlyArray<{ key: string; label: string; emoji: string }>
+
   const counts = THEME_FILTERS.reduce<Record<string, number>>((acc, f) => {
     acc[f.key] = f.key === "ALL"
       ? templates.length
@@ -180,7 +172,7 @@ function Sidebar({
     <div className="flex flex-col gap-5 p-5">
       {onClose && (
         <div className="flex items-center justify-between">
-          <p className="font-semibold text-[var(--tx-1)]">Penapis</p>
+          <p className="font-semibold text-[var(--tx-1)]">{tl.filterTitle}</p>
           <button onClick={onClose} className="p-1 text-[var(--tx-3)] hover:text-[var(--tx-1)] transition-colors">
             <X className="w-4 h-4" />
           </button>
@@ -189,14 +181,14 @@ function Sidebar({
 
       {/* Sort By */}
       <div>
-        <p className="text-[10px] font-bold text-[var(--tx-3)] uppercase tracking-widest mb-2.5">Atur Ikut</p>
+        <p className="text-[10px] font-bold text-[var(--tx-3)] uppercase tracking-widest mb-2.5">{tl.sortLabel}</p>
         <div className="relative">
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
             className="w-full appearance-none border border-[var(--bd)] rounded-xl px-3 py-2.5 text-sm text-[var(--tx-1)] bg-[var(--pg)] focus:outline-none focus:border-gold/40 pr-8 transition-colors"
           >
-            {SORT_OPTIONS.map((o) => (
+            {tl.sortOptions.map((o) => (
               <option key={o.value} value={o.value}>{o.label}</option>
             ))}
           </select>
@@ -204,9 +196,9 @@ function Sidebar({
         </div>
       </div>
 
-      {/* Design Themes */}
+      {/* Design Theme */}
       <div>
-        <p className="text-[10px] font-bold text-[var(--tx-3)] uppercase tracking-widest mb-2.5">Tema Reka Bentuk</p>
+        <p className="text-[10px] font-bold text-[var(--tx-3)] uppercase tracking-widest mb-2.5">{tl.themeLabel}</p>
         <div className="space-y-2">
           {THEME_FILTERS.map((f) => (
             <label key={f.key} className="flex items-center gap-2.5 cursor-pointer group">
@@ -225,9 +217,9 @@ function Sidebar({
         </div>
       </div>
 
-      {/* Color */}
+      {/* Colour */}
       <div>
-        <p className="text-[10px] font-bold text-[var(--tx-3)] uppercase tracking-widest mb-2.5">Warna</p>
+        <p className="text-[10px] font-bold text-[var(--tx-3)] uppercase tracking-widest mb-2.5">{tl.colorLabel}</p>
         <div className="grid grid-cols-6 gap-2">
           {COLOR_SWATCHES.map((color) => (
             <button
@@ -252,7 +244,7 @@ function Sidebar({
         onClick={onApply}
         className="w-full py-2.5 bg-gold/10 hover:bg-gold/20 border border-gold/20 hover:border-gold/40 text-gold text-sm font-semibold rounded-xl transition-all tracking-wide"
       >
-        Guna Penapis
+        {tl.applyFilter}
       </button>
     </div>
   )
@@ -264,6 +256,9 @@ export function TemplatesClient() {
   const router = useRouter()
   const { status } = useSession()
   const { toast } = useToast()
+  const { templates: tl } = useT()
+
+  const THEME_FILTERS = tl.categories as ReadonlyArray<{ key: string; label: string; emoji: string }>
 
   const [templates,    setTemplates]    = useState<Template[]>([])
   const [loading,      setLoading]      = useState(true)
@@ -379,15 +374,12 @@ export function TemplatesClient() {
       router.push(`/builder/${card.slug}`)
     } catch (err) {
       console.error("handleTryNow failed:", err)
-      toast("Gagal membuka pembina kad. Sila cuba lagi.", "error")
+      toast(tl.toastOpenFail, "error")
       setCreating(null)
     }
-  }, [creating, status, router, toast])
+  }, [creating, status, router, toast, tl])
 
   const handleView = (template: Template) => {
-    // Always use /invite/demo so the eye button reflects the latest authored
-    // config (animation, colours, text) saved by admin — previewUrl is a
-    // legacy field that bypasses the authored config entirely.
     const params = new URLSearchParams({ template: template.slug })
     if (previewName) params.set("name", previewName)
     window.open(`/invite/demo?${params.toString()}`, "_blank", "noopener noreferrer")
@@ -419,9 +411,9 @@ export function TemplatesClient() {
                 <AlertTriangle className="w-5 h-5 text-amber-400" />
               </span>
               <div>
-                <h2 className="font-semibold text-[var(--tx-1)] text-base leading-snug">Had Draf Dicapai</h2>
+                <h2 className="font-semibold text-[var(--tx-1)] text-base leading-snug">{tl.draftLimitTitle}</h2>
                 <p className="mt-1.5 text-sm text-[var(--tx-2)] leading-relaxed">
-                  Anda sudah mempunyai <span className="font-semibold text-[var(--tx-1)]">3 draf reka bentuk</span> kad jemputan. Sila selesaikan atau padamkan salah satu draf sedia ada sebelum mencipta reka bentuk baharu.
+                  {tl.draftLimitDesc(<span className="font-semibold text-[var(--tx-1)]">{tl.draftLimitBold}</span> as unknown as string)}
                 </p>
               </div>
             </div>
@@ -430,14 +422,14 @@ export function TemplatesClient() {
                 onClick={() => setDraftLimitError(false)}
                 className="px-4 py-2 text-sm rounded-lg border border-[var(--bd)] text-[var(--tx-2)] hover:bg-[var(--sf)] transition-colors"
               >
-                Tutup
+                {tl.draftLimitClose}
               </button>
               <Link
                 href="/dashboard"
                 onClick={() => setDraftLimitError(false)}
                 className="px-4 py-2 text-sm rounded-lg bg-gold/10 border border-gold/25 text-gold hover:bg-gold/20 transition-colors font-medium"
               >
-                Pergi ke Kad Saya
+                {tl.draftLimitGo}
               </Link>
             </div>
           </div>
@@ -447,13 +439,13 @@ export function TemplatesClient() {
       {/* ── Sub-nav: page title + mobile filter ── */}
       <div className="bg-[var(--pg-nav)] border-b border-[var(--bd)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-10">
-          <h1 className="font-playfair text-[15px] text-[var(--tx-1)]">Pilih Templat</h1>
+          <h1 className="font-playfair text-[15px] text-[var(--tx-1)]">{tl.pageTitle}</h1>
           <button
             onClick={() => setMobileFilter(true)}
             className="lg:hidden flex items-center gap-1.5 text-[13px] text-[var(--tx-2)] border border-[var(--bd)] hover:border-gold/30 hover:text-[var(--tx-1)] rounded-full px-3 py-1.5 transition-all"
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
-            Penapis
+            {tl.filterBtn}
           </button>
         </div>
 
@@ -491,15 +483,13 @@ export function TemplatesClient() {
 
           {/* Name preview input */}
           <div className="rounded-xl border border-[var(--bd)] bg-[var(--pg-alt)] px-3 py-3">
-            <p className="text-[13px] font-semibold text-[var(--tx-1)] mb-2.5">
-              Tetapkan nama untuk pratonton peribadi
-            </p>
+            <p className="text-[13px] font-semibold text-[var(--tx-1)] mb-2.5">{tl.previewLabel}</p>
             <div className="flex gap-2">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--tx-3)]" />
                 <input
                   type="text"
-                  placeholder="Adam & Hawa"
+                  placeholder={tl.previewPlaceholder}
                   value={nameInput}
                   onChange={(e) => setNameInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSetName()}
@@ -510,18 +500,21 @@ export function TemplatesClient() {
                 onClick={handleSetName}
                 className="px-4 py-2 bg-gold/10 hover:bg-gold/20 border border-gold/20 hover:border-gold/40 text-gold text-[12px] font-bold rounded-xl transition-all tracking-wider shrink-0 active:scale-95"
               >
-                SET
+                {tl.setBtn}
               </button>
             </div>
           </div>
 
           {/* Result count */}
           <p className="text-[12px] text-[var(--tx-3)] px-0.5">
-            {sorted.length === 0 ? "0 templat dijumpai" : (
-              <>
-                {(currentPage - 1) * ITEMS_PER_PAGE + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, sorted.length)} daripada {sorted.length} templat
-              </>
-            )}
+            {sorted.length === 0
+              ? tl.noResults
+              : tl.resultRange(
+                  (currentPage - 1) * ITEMS_PER_PAGE + 1,
+                  Math.min(currentPage * ITEMS_PER_PAGE, sorted.length),
+                  sorted.length
+                )
+            }
           </p>
 
           {/* Grid */}
@@ -537,8 +530,8 @@ export function TemplatesClient() {
             </div>
           ) : sorted.length === 0 ? (
             <div className="py-20 text-center">
-              <p className="font-playfair text-xl text-[var(--tx-1)] mb-2">Tiada templat dijumpai</p>
-              <p className="text-sm text-[var(--tx-3)]">Cuba tukar penapis anda</p>
+              <p className="font-playfair text-xl text-[var(--tx-1)] mb-2">{tl.emptyTitle}</p>
+              <p className="text-sm text-[var(--tx-3)]">{tl.emptySubtitle}</p>
             </div>
           ) : (
             <>

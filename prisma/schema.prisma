@@ -233,6 +233,13 @@ model OrderItem {
   createdAt DateTime       @default(now())
 }
 
+model SiteConfig {
+  id        String   @id @default("default")
+  demoSlug1 String   @default("wedding-classic")
+  demoSlug2 String   @default("wedding-classic")
+  updatedAt DateTime @updatedAt
+}
+
 model PasswordResetToken {
   id        String   @id @default(cuid())
   email     String
