@@ -25,8 +25,8 @@ export async function GET() {
       createdAt:    true,
       eventDate:    true,
       wizardConfig: true,
-      template:     { select: { name: true, nameMs: true, category: true, image1Url: true } },
-      theme:        { select: { primaryColor: true, bgColor: true } },
+      template:     { select: { name: true, nameMs: true, category: true, image1Url: true, image2Url: true } },
+      theme:        { select: { primaryColor: true, bgColor: true, bodyColor: true } },
     },
   })
 

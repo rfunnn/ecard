@@ -34,8 +34,8 @@ type Card = {
   createdAt: string
   eventDate: string | null
   wizardConfig: WizardConfig | null
-  template: { name: string; nameMs: string; category: string; image1Url: string | null } | null
-  theme: { primaryColor: string; bgColor: string } | null
+  template: { name: string; nameMs: string; category: string; image1Url: string | null; image2Url: string | null } | null
+  theme: { primaryColor: string; bgColor: string; bodyColor: string | null } | null
 }
 
 type LikedTemplate = {
@@ -436,6 +436,8 @@ function CardRow({ card, onRemove, onDuplicated }: { card: Card; onRemove: (slug
       isPublished: card.isPublished,
       wizardConfig: card.wizardConfig,
       theme: card.theme,
+      image1Url: card.template?.image1Url ?? null,
+      image2Url: card.template?.image2Url ?? null,
     })
     const w = window.open("", "_blank", "width=900,height=760")
     if (!w) {

@@ -9,7 +9,9 @@ export interface PrintCardInput {
   language: string
   isPublished: boolean
   wizardConfig?: WizardConfig | null
-  theme: { primaryColor: string; bgColor: string } | null
+  theme: { primaryColor: string; bgColor: string; bodyColor?: string | null } | null
+  image1Url?: string | null
+  image2Url?: string | null
 }
 
 function esc(s: string | undefined | null): string {
@@ -49,10 +51,16 @@ const GOOGLE_FONTS =
 const SERIF = "'Cormorant Garamond', serif"
 const SANS = "'Lato', sans-serif"
 
+function safeCssUrl(url: string): string {
+  return url.replace(/'/g, "%27").replace(/\(/g, "%28").replace(/\)/g, "%29")
+}
+
 export function generatePrintHTML(card: PrintCardInput): string {
   const wc = card.wizardConfig
   const accent = card.theme?.primaryColor ?? "#9b4d5e"
   const bg = card.theme?.bgColor ?? "#faf7f4"
+  // body is used for paragraph/body text; accent for headings/names/ornaments
+  const body = wc?.generalColor ?? card.theme?.bodyColor ?? accent
   const lang = card.language === "ms"
 
   const displayName =
@@ -100,7 +108,14 @@ export function generatePrintHTML(card: PrintCardInput): string {
   // ── Shared style builder ───────────────────────────────────────────
 
   // All HTML uses double-quoted attributes. CSS font-family values use single quotes which are safe inside double-quoted HTML attributes.
-  const pgStyle = `width:5in;height:7in;position:relative;overflow:hidden;background-color:${bg};font-family:${SERIF};page-break-after:always;`
+  // Cover (page 1) uses image1Url; inner pages (2-4) use image2Url. Falls back to flat bgColor when no image is set.
+  function pgStyle(useImage1: boolean): string {
+    const imgUrl = useImage1 ? card.image1Url : (card.image2Url ?? card.image1Url)
+    const bgImage = imgUrl
+      ? `background-image:url('${safeCssUrl(imgUrl)}');background-size:cover;background-position:center top;`
+      : ""
+    return `width:5in;height:7in;position:relative;overflow:hidden;background-color:${bg};${bgImage}font-family:${SERIF};page-break-after:always;`
+  }
 
   const frame = [
     `<div style="position:absolute;top:14px;left:14px;right:14px;bottom:14px;border:1px solid ${accent}40;pointer-events:none;"></div>`,
@@ -135,41 +150,41 @@ export function generatePrintHTML(card: PrintCardInput): string {
   const nameHtml = esc(displayName).replace(" &amp; ", "<br>&amp;<br>")
 
   const p1: string[] = [
-    `<p style="font-family:${SANS};font-size:8pt;letter-spacing:0.38em;color:${accent};text-transform:uppercase;opacity:0.78;margin-bottom:10px;">${esc(eventType)}</p>`,
+    `<p style="font-family:${SANS};font-size:8pt;letter-spacing:0.38em;color:${body};text-transform:uppercase;opacity:0.78;margin-bottom:10px;">${esc(eventType)}</p>`,
     divider("&#10022;"),
     `<h1 style="font-family:${nameFontCss};font-size:42pt;color:${accent};line-height:1.05;margin:10px 0 8px;">${nameHtml}</h1>`,
     divider("&#10022;"),
   ]
   if (dayAndDate) {
-    p1.push(`<div style="margin:8px 0 3px;">${splitLines(dayAndDate).map(l => `<p style="font-family:${SERIF};font-size:12pt;color:${accent};opacity:0.84;line-height:1.55;">${esc(l)}</p>`).join("")}</div>`)
+    p1.push(`<div style="margin:8px 0 3px;">${splitLines(dayAndDate).map(l => `<p style="font-family:${SERIF};font-size:12pt;color:${body};opacity:0.84;line-height:1.55;">${esc(l)}</p>`).join("")}</div>`)
   }
   if (hijriDate) {
-    p1.push(`<p style="font-family:${SERIF};font-size:9pt;color:${accent};opacity:0.58;font-style:italic;margin-top:2px;">${esc(hijriDate)}</p>`)
+    p1.push(`<p style="font-family:${SERIF};font-size:9pt;color:${body};opacity:0.58;font-style:italic;margin-top:2px;">${esc(hijriDate)}</p>`)
   }
   if (timeRange) {
-    p1.push(`<p style="font-family:${SANS};font-size:9pt;letter-spacing:0.1em;color:${accent};opacity:0.68;margin-top:4px;">${esc(timeRange)}</p>`)
+    p1.push(`<p style="font-family:${SANS};font-size:9pt;letter-spacing:0.1em;color:${body};opacity:0.68;margin-top:4px;">${esc(timeRange)}</p>`)
   }
   if (venueLine) {
     p1.push(thinDivider("&middot;"))
-    p1.push(`<p style="font-family:${SERIF};font-size:11pt;color:${accent};opacity:0.78;font-style:italic;margin-top:4px;">${esc(venueLine)}</p>`)
+    p1.push(`<p style="font-family:${SERIF};font-size:11pt;color:${body};opacity:0.78;font-style:italic;margin-top:4px;">${esc(venueLine)}</p>`)
   }
 
-  const page1 = `<div style="${pgStyle}">${watermark}${frame}<div style="${centerCol}">${p1.join("")}</div></div>`
+  const page1 = `<div style="${pgStyle(true)}">${watermark}${frame}<div style="${centerCol}">${p1.join("")}</div></div>`
 
   // ── Page 2: Invitation ────────────────────────────────────────────
 
   const orgs: string[] = []
   if (orgCount >= 1 && org1?.name) {
-    orgs.push(`<p style="font-family:${SERIF};font-size:13pt;font-weight:600;color:${accent};">${esc(org1.name)}</p>`)
+    orgs.push(`<p style="font-family:${SERIF};font-size:13pt;font-weight:600;color:${body};">${esc(org1.name)}</p>`)
     if (org1.relationship) {
-      orgs.push(`<p style="font-family:${SANS};font-size:7.5pt;color:${accent};opacity:0.52;letter-spacing:0.1em;font-style:italic;">${esc(org1.relationship)}</p>`)
+      orgs.push(`<p style="font-family:${SANS};font-size:7.5pt;color:${body};opacity:0.52;letter-spacing:0.1em;font-style:italic;">${esc(org1.relationship)}</p>`)
     }
   }
   if (orgCount >= 2 && org2?.name) {
-    orgs.push(`<p style="font-family:${SERIF};font-size:9pt;color:${accent};opacity:0.4;margin:5px 0;">&amp;</p>`)
-    orgs.push(`<p style="font-family:${SERIF};font-size:13pt;font-weight:600;color:${accent};">${esc(org2.name)}</p>`)
+    orgs.push(`<p style="font-family:${SERIF};font-size:9pt;color:${body};opacity:0.4;margin:5px 0;">&amp;</p>`)
+    orgs.push(`<p style="font-family:${SERIF};font-size:13pt;font-weight:600;color:${body};">${esc(org2.name)}</p>`)
     if (org2.relationship) {
-      orgs.push(`<p style="font-family:${SANS};font-size:7.5pt;color:${accent};opacity:0.52;letter-spacing:0.1em;font-style:italic;">${esc(org2.relationship)}</p>`)
+      orgs.push(`<p style="font-family:${SANS};font-size:7.5pt;color:${body};opacity:0.52;letter-spacing:0.1em;font-style:italic;">${esc(org2.relationship)}</p>`)
     }
   }
 
@@ -180,19 +195,19 @@ export function generatePrintHTML(card: PrintCardInput): string {
 
   const p2: string[] = []
   if (openingSpeech) {
-    p2.push(`<div style="margin-bottom:8px;">${splitLines(openingSpeech).map((l, i) => `<p style="font-family:${SERIF};font-size:${i === 0 ? "11" : "9"}pt;color:${accent};opacity:${i === 0 ? "0.88" : "0.62"};line-height:1.65;font-style:italic;">${esc(l)}</p>`).join("")}</div>`)
+    p2.push(`<div style="margin-bottom:8px;">${splitLines(openingSpeech).map((l, i) => `<p style="font-family:${SERIF};font-size:${i === 0 ? "11" : "9"}pt;color:${body};opacity:${i === 0 ? "0.88" : "0.62"};line-height:1.65;font-style:italic;">${esc(l)}</p>`).join("")}</div>`)
   }
   p2.push(divider("&#10022;"))
   if (orgs.length) {
     p2.push(`<div style="margin:8px 0;text-align:center;">${orgs.join("")}</div>`)
   }
   if (invitationSpeech) {
-    p2.push(`<div style="max-width:3.4in;margin:8px auto;">${splitLines(invitationSpeech).map(l => `<p style="font-family:${SERIF};font-size:9pt;color:${accent};opacity:0.68;line-height:1.75;">${esc(l)}</p>`).join("")}</div>`)
+    p2.push(`<div style="max-width:3.4in;margin:8px auto;">${splitLines(invitationSpeech).map(l => `<p style="font-family:${SERIF};font-size:9pt;color:${body};opacity:0.68;line-height:1.75;">${esc(l)}</p>`).join("")}</div>`)
   }
   p2.push(divider("&#10022;"))
   p2.push(`<div style="margin-top:5px;">${fullNameLines.join("")}</div>`)
 
-  const page2 = `<div style="${pgStyle}">${watermark}${frame}<div style="${centerCol}">${p2.join("")}</div></div>`
+  const page2 = `<div style="${pgStyle(false)}">${watermark}${frame}<div style="${centerCol}">${p2.join("")}</div></div>`
 
   // ── Page 3: Venue & Details ───────────────────────────────────────
 
@@ -200,40 +215,40 @@ export function generatePrintHTML(card: PrintCardInput): string {
 
   const topCol = `position:absolute;inset:34px;display:flex;flex-direction:column;align-items:center;text-align:center;overflow:hidden;gap:0;padding-top:6px;`
   const p3: string[] = [
-    `<p style="font-family:${SANS};font-size:7.5pt;letter-spacing:0.4em;color:${accent};text-transform:uppercase;opacity:0.62;margin-bottom:8px;">${lang ? "MAKLUMAT MAJLIS" : "EVENT DETAILS"}</p>`,
+    `<p style="font-family:${SANS};font-size:7.5pt;letter-spacing:0.4em;color:${body};text-transform:uppercase;opacity:0.62;margin-bottom:8px;">${lang ? "MAKLUMAT MAJLIS" : "EVENT DETAILS"}</p>`,
     divider("&#10022;", "4px"),
   ]
   if (venueLine) {
     p3.push(`<h2 style="font-family:${SERIF};font-size:16pt;color:${accent};font-weight:600;margin:8px 0 4px;">${esc(venueLine)}</h2>`)
   }
   if (venueAddress) {
-    p3.push(`<div style="margin:2px 0 5px;">${splitLines(venueAddress).map(l => `<p style="font-family:${SANS};font-size:8pt;color:${accent};opacity:0.62;line-height:1.6;">${esc(l)}</p>`).join("")}</div>`)
+    p3.push(`<div style="margin:2px 0 5px;">${splitLines(venueAddress).map(l => `<p style="font-family:${SANS};font-size:8pt;color:${body};opacity:0.62;line-height:1.6;">${esc(l)}</p>`).join("")}</div>`)
   }
   if (gpsCoords) {
-    p3.push(`<p style="font-family:${SANS};font-size:7pt;color:${accent};opacity:0.42;margin-bottom:3px;">GPS: ${esc(gpsCoords)}</p>`)
+    p3.push(`<p style="font-family:${SANS};font-size:7pt;color:${body};opacity:0.42;margin-bottom:3px;">GPS: ${esc(gpsCoords)}</p>`)
   }
   p3.push(thinDivider("&#10022;"))
   if (dayAndDate) {
-    p3.push(`<div style="margin:5px 0 2px;">${splitLines(dayAndDate).map(l => `<p style="font-family:${SERIF};font-size:11pt;color:${accent};opacity:0.84;line-height:1.55;">${esc(l)}</p>`).join("")}</div>`)
+    p3.push(`<div style="margin:5px 0 2px;">${splitLines(dayAndDate).map(l => `<p style="font-family:${SERIF};font-size:11pt;color:${body};opacity:0.84;line-height:1.55;">${esc(l)}</p>`).join("")}</div>`)
   }
   if (timeRange) {
-    p3.push(`<p style="font-family:${SANS};font-size:9pt;letter-spacing:0.1em;color:${accent};opacity:0.68;margin-bottom:3px;">${esc(timeRange)}</p>`)
+    p3.push(`<p style="font-family:${SANS};font-size:9pt;letter-spacing:0.1em;color:${body};opacity:0.68;margin-bottom:3px;">${esc(timeRange)}</p>`)
   }
   if (additionalInfo1) {
     p3.push(thinDivider("&middot;"))
-    p3.push(`<p style="font-family:${SERIF};font-size:9pt;color:${accent};opacity:0.68;font-style:italic;margin:4px 0;">${esc(additionalInfo1)}</p>`)
+    p3.push(`<p style="font-family:${SERIF};font-size:9pt;color:${body};opacity:0.68;font-style:italic;margin:4px 0;">${esc(additionalInfo1)}</p>`)
   }
   if (progLines.length > 0) {
     p3.push(thinDivider("&middot;"))
-    p3.push(`<p style="font-family:${SANS};font-size:7pt;letter-spacing:0.3em;color:${accent};text-transform:uppercase;opacity:0.48;margin-bottom:5px;">${lang ? "ATUR CARA" : "PROGRAMME"}</p>`)
+    p3.push(`<p style="font-family:${SANS};font-size:7pt;letter-spacing:0.3em;color:${body};text-transform:uppercase;opacity:0.48;margin-bottom:5px;">${lang ? "ATUR CARA" : "PROGRAMME"}</p>`)
     const progHtml = progLines.slice(0, 8).map(l => {
       const isTime = /^\d{1,2}[:.]\d{2}/.test(l.trim()) || /\b(pagi|petang|malam|am|pm)\b/i.test(l)
-      return `<p style="font-family:${SANS};font-size:7.5pt;color:${accent};opacity:${isTime ? "0.48" : "0.82"};line-height:1.55;text-align:left;${!isTime ? "font-weight:700;margin-top:4px;" : ""}">${esc(l)}</p>`
+      return `<p style="font-family:${SANS};font-size:7.5pt;color:${body};opacity:${isTime ? "0.48" : "0.82"};line-height:1.55;text-align:left;${!isTime ? "font-weight:700;margin-top:4px;" : ""}">${esc(l)}</p>`
     }).join("")
     p3.push(`<div style="width:100%;max-width:195px;margin:0 auto;">${progHtml}</div>`)
   }
 
-  const page3 = `<div style="${pgStyle}">${watermark}${frame}<div style="${topCol}">${p3.join("")}</div></div>`
+  const page3 = `<div style="${pgStyle(false)}">${watermark}${frame}<div style="${topCol}">${p3.join("")}</div></div>`
 
   // ── Page 4: Thank You / Contact ───────────────────────────────────
 
@@ -244,13 +259,13 @@ export function generatePrintHTML(card: PrintCardInput): string {
     `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="2" style="opacity:0.62;flex-shrink:0;"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.82a19.79 19.79 0 01-3.07-8.67A2 2 0 012 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.5a16 16 0 006.29 6.29l1.06-1.06a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>`
 
   const contactsHtml = contacts.slice(0, 3).map(c =>
-    `<div style="display:flex;align-items:center;justify-content:center;gap:7px;margin:3px 0;">${c.isWhatsApp ? waIconSvg(accent) : phoneIconSvg(accent)}<div style="text-align:left;">${c.name ? `<p style="font-family:${SERIF};font-size:11pt;color:${accent};">${esc(c.name)}</p>` : ""}<p style="font-family:${SANS};font-size:8pt;color:${accent};opacity:0.62;">${esc(c.phone)}</p></div></div>`
+    `<div style="display:flex;align-items:center;justify-content:center;gap:7px;margin:3px 0;">${c.isWhatsApp ? waIconSvg(body) : phoneIconSvg(body)}<div style="text-align:left;">${c.name ? `<p style="font-family:${SERIF};font-size:11pt;color:${body};">${esc(c.name)}</p>` : ""}<p style="font-family:${SANS};font-size:8pt;color:${body};opacity:0.62;">${esc(c.phone)}</p></div></div>`
   ).join("")
 
   const closingLines = splitLines(additionalInfo2).slice(0, 4)
   const closingHtml = closingLines.length > 0
-    ? closingLines.map(l => `<p style="font-family:${SERIF};font-size:9pt;color:${accent};opacity:0.62;line-height:1.75;font-style:italic;">${esc(l)}</p>`).join("")
-    : `<p style="font-family:${SERIF};font-size:9pt;color:${accent};opacity:0.58;font-style:italic;">${lang ? "Kehadiran Dato&#39; | Datin | Tuan | Puan adalah penghormatan besar bagi kami." : "Your presence is the greatest honour to us."}</p>`
+    ? closingLines.map(l => `<p style="font-family:${SERIF};font-size:9pt;color:${body};opacity:0.62;line-height:1.75;font-style:italic;">${esc(l)}</p>`).join("")
+    : `<p style="font-family:${SERIF};font-size:9pt;color:${body};opacity:0.58;font-style:italic;">${lang ? "Kehadiran Dato&#39; | Datin | Tuan | Puan adalah penghormatan besar bagi kami." : "Your presence is the greatest honour to us."}</p>`
 
   const p4: string[] = [
     `<h2 style="font-family:${SERIF};font-size:22pt;color:${accent};font-weight:600;letter-spacing:0.03em;margin-bottom:8px;">${lang ? "Terima Kasih" : "Thank You"}</h2>`,
@@ -259,26 +274,26 @@ export function generatePrintHTML(card: PrintCardInput): string {
   ]
   if (rsvpNote) {
     p4.push(thinDivider("&middot;"))
-    p4.push(`<p style="font-family:${SANS};font-size:7.5pt;color:${accent};opacity:0.58;letter-spacing:0.04em;margin:4px 0;">${esc(rsvpNote)}</p>`)
+    p4.push(`<p style="font-family:${SANS};font-size:7.5pt;color:${body};opacity:0.58;letter-spacing:0.04em;margin:4px 0;">${esc(rsvpNote)}</p>`)
   }
   if (contacts.length > 0) {
     p4.push(thinDivider("&#10022;"))
-    p4.push(`<p style="font-family:${SANS};font-size:6.5pt;letter-spacing:0.35em;color:${accent};text-transform:uppercase;opacity:0.48;margin-bottom:5px;">${lang ? "HUBUNGI" : "CONTACT"}</p>`)
+    p4.push(`<p style="font-family:${SANS};font-size:6.5pt;letter-spacing:0.35em;color:${body};text-transform:uppercase;opacity:0.48;margin-bottom:5px;">${lang ? "HUBUNGI" : "CONTACT"}</p>`)
     p4.push(contactsHtml)
   }
   p4.push(thinDivider("&middot;"))
   p4.push(
     `<div style="margin-top:6px;">` +
-    `<p style="font-family:${SANS};font-size:6.5pt;letter-spacing:0.2em;color:${accent};text-transform:uppercase;opacity:0.42;margin-bottom:3px;">${lang ? "KAD DIGITAL" : "DIGITAL CARD"}</p>` +
-    `<p style="font-family:${SANS};font-size:8pt;color:${accent};opacity:0.58;">ekadku.com${card.cardNum ? `/${card.cardNum}` : `/${esc(card.slug)}`}</p>` +
+    `<p style="font-family:${SANS};font-size:6.5pt;letter-spacing:0.2em;color:${body};text-transform:uppercase;opacity:0.42;margin-bottom:3px;">${lang ? "KAD DIGITAL" : "DIGITAL CARD"}</p>` +
+    `<p style="font-family:${SANS};font-size:8pt;color:${body};opacity:0.58;">ekadku.com${card.cardNum ? `/${card.cardNum}` : `/${esc(card.slug)}`}</p>` +
     `</div>`
   )
 
   const page4 =
-    `<div style="${pgStyle}">` +
+    `<div style="${pgStyle(false)}">` +
     watermark + frame +
     `<div style="${centerCol}">${p4.join("")}</div>` +
-    `<p style="position:absolute;bottom:26px;left:0;right:0;text-align:center;font-family:${SANS};font-size:5.5pt;color:${accent};opacity:0.22;letter-spacing:0.25em;text-transform:uppercase;">ekadku.com &nbsp;&middot;&nbsp; kad jemputan digital</p>` +
+    `<p style="position:absolute;bottom:26px;left:0;right:0;text-align:center;font-family:${SANS};font-size:5.5pt;color:${body};opacity:0.22;letter-spacing:0.25em;text-transform:uppercase;">ekadku.com &nbsp;&middot;&nbsp; kad jemputan digital</p>` +
     `</div>`
 
   return `<!DOCTYPE html>
