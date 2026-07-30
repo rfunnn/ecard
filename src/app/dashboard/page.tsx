@@ -14,7 +14,7 @@ import {
 import QRCode from "qrcode"
 import type { WizardConfig } from "@/types/config"
 import { getPackageTier } from "@/types/config"
-import { generatePrintHTML } from "@/lib/print-card"
+import { PrintPreviewModal } from "@/components/PrintPreviewModal"
 import { removeFromCart } from "@/lib/cart"
 import { useToast } from "@/components/ui/Toast"
 import { useT } from "@/lib/i18n"
@@ -402,7 +402,7 @@ function ShareModal({ card, onClose }: { card: Card; onClose: () => void }) {
 function CardRow({ card, onRemove, onDuplicated }: { card: Card; onRemove: (slug: string) => void; onDuplicated: () => void }) {
   const { dashboard: d } = useT()
   const [menuOpen,      setMenuOpen]      = useState(false)
-  const [printing,      setPrinting]      = useState(false)
+  const [showPrintPreview, setShowPrintPreview] = useState(false)
   const [duplicating,   setDuplicating]   = useState(false)
   const [showShare,     setShowShare]     = useState(false)
   const [suffix,        setSuffix]        = useState("")
@@ -426,29 +426,7 @@ function CardRow({ card, onRemove, onDuplicated }: { card: Card; onRemove: (slug
   )
 
   function handlePrint() {
-    setPrinting(true)
-    const html = generatePrintHTML({
-      slug: card.slug,
-      title: card.title,
-      groomName: card.groomName,
-      brideName: card.brideName,
-      language: card.language,
-      isPublished: card.isPublished,
-      wizardConfig: card.wizardConfig,
-      theme: card.theme,
-      image1Url: card.template?.image1Url ?? null,
-      image2Url: card.template?.image2Url ?? null,
-    })
-    const w = window.open("", "_blank", "width=900,height=760")
-    if (!w) {
-      setPrinting(false)
-      toast(d.toastAllowPopup, "error")
-      return
-    }
-    w.document.write(html)
-    w.document.close()
-    w.focus()
-    setTimeout(() => { w.print(); setPrinting(false) }, 1400)
+    setShowPrintPreview(true)
   }
 
   async function handleDuplicate() {
@@ -478,6 +456,13 @@ function CardRow({ card, onRemove, onDuplicated }: { card: Card; onRemove: (slug
   const actionBtn = "flex items-center gap-1 text-xs text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors py-1 px-1.5 rounded hover:bg-[var(--sf)]"
 
   return (
+    <>
+    {showPrintPreview && (
+      <PrintPreviewModal
+        card={{ ...card, template: card.template ? { image1Url: card.template.image1Url ?? null, image2Url: card.template.image2Url ?? null } : null }}
+        onClose={() => setShowPrintPreview(false)}
+      />
+    )}
     <div className="flex gap-4 py-6">
       <CardThumbnail card={card} />
 
@@ -539,8 +524,8 @@ function CardRow({ card, onRemove, onDuplicated }: { card: Card; onRemove: (slug
             </Link>
           )}
           <Link href={previewUrl} target="_blank" className={actionBtn}><Eye className="w-3.5 h-3.5" /> {d.preview}</Link>
-          <button onClick={handlePrint} disabled={printing} className={`${actionBtn} text-amber-600 hover:text-amber-800`}>
-            {printing ? <div className="w-3.5 h-3.5 border-2 border-amber-600 border-t-transparent rounded-full animate-spin" /> : <Printer className="w-3.5 h-3.5" />}
+          <button onClick={handlePrint} className={`${actionBtn} text-amber-600 hover:text-amber-800`}>
+            <Printer className="w-3.5 h-3.5" />
             {d.printCard}
           </button>
         </div>
@@ -624,6 +609,7 @@ function CardRow({ card, onRemove, onDuplicated }: { card: Card; onRemove: (slug
         })()}
       </div>
     </div>
+    </>
   )
 }
 

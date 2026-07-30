@@ -1,5 +1,7 @@
 import type { WizardConfig } from "@/types/config"
 
+export type PrintPageMode = "2" | "4"
+
 export interface PrintCardInput {
   slug: string
   cardNum?: number | null
@@ -12,6 +14,7 @@ export interface PrintCardInput {
   theme: { primaryColor: string; bgColor: string; bodyColor?: string | null } | null
   image1Url?: string | null
   image2Url?: string | null
+  pageMode?: PrintPageMode
 }
 
 function esc(s: string | undefined | null): string {
@@ -62,6 +65,7 @@ export function generatePrintHTML(card: PrintCardInput): string {
   // body is used for paragraph/body text; accent for headings/names/ornaments
   const body = wc?.generalColor ?? card.theme?.bodyColor ?? accent
   const lang = card.language === "ms"
+  const pageMode = card.pageMode ?? "4"
 
   const displayName =
     wc?.displayName ||
@@ -130,8 +134,8 @@ export function generatePrintHTML(card: PrintCardInput): string {
     return `<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin:${mg} 0;"><div style="height:1px;width:40px;background:${accent};opacity:0.3;"></div><span style="color:${accent};font-size:7pt;opacity:0.55;">${sym}</span><div style="height:1px;width:40px;background:${accent};opacity:0.3;"></div></div>`
   }
 
-  function thinDivider(sym: string): string {
-    return `<div style="display:flex;align-items:center;justify-content:center;gap:6px;margin:4px 0;"><div style="height:1px;width:26px;background:${accent};opacity:0.25;"></div><span style="color:${accent};font-size:6pt;opacity:0.4;">${sym}</span><div style="height:1px;width:26px;background:${accent};opacity:0.25;"></div></div>`
+  function thinDivider(sym: string, mg = "4px"): string {
+    return `<div style="display:flex;align-items:center;justify-content:center;gap:6px;margin:${mg} 0;"><div style="height:1px;width:26px;background:${accent};opacity:0.25;"></div><span style="color:${accent};font-size:6pt;opacity:0.4;">${sym}</span><div style="height:1px;width:26px;background:${accent};opacity:0.25;"></div></div>`
   }
 
   const centerCol = `position:absolute;inset:34px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden;gap:0;`
@@ -144,6 +148,14 @@ export function generatePrintHTML(card: PrintCardInput): string {
         ).join("")
       }</div>`
     : ""
+
+  // ── Shared icon helpers (used by page 4 and packed page 2) ────────
+
+  const waIconSvg = (col: string) =>
+    `<svg width="13" height="13" viewBox="0 0 24 24" fill="${col}" style="opacity:0.62;flex-shrink:0;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`
+
+  const phoneIconSvg = (col: string) =>
+    `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="2" style="opacity:0.62;flex-shrink:0;"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.82a19.79 19.79 0 01-3.07-8.67A2 2 0 012 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.5a16 16 0 006.29 6.29l1.06-1.06a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>`
 
   // ── Page 1: Cover ─────────────────────────────────────────────────
 
@@ -252,12 +264,6 @@ export function generatePrintHTML(card: PrintCardInput): string {
 
   // ── Page 4: Thank You / Contact ───────────────────────────────────
 
-  const waIconSvg = (col: string) =>
-    `<svg width="13" height="13" viewBox="0 0 24 24" fill="${col}" style="opacity:0.62;flex-shrink:0;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`
-
-  const phoneIconSvg = (col: string) =>
-    `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="${col}" stroke-width="2" style="opacity:0.62;flex-shrink:0;"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.82a19.79 19.79 0 01-3.07-8.67A2 2 0 012 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.5a16 16 0 006.29 6.29l1.06-1.06a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>`
-
   const contactsHtml = contacts.slice(0, 3).map(c =>
     `<div style="display:flex;align-items:center;justify-content:center;gap:7px;margin:3px 0;">${c.isWhatsApp ? waIconSvg(body) : phoneIconSvg(body)}<div style="text-align:left;">${c.name ? `<p style="font-family:${SERIF};font-size:11pt;color:${body};">${esc(c.name)}</p>` : ""}<p style="font-family:${SANS};font-size:8pt;color:${body};opacity:0.62;">${esc(c.phone)}</p></div></div>`
   ).join("")
@@ -296,6 +302,146 @@ export function generatePrintHTML(card: PrintCardInput): string {
     `<p style="position:absolute;bottom:26px;left:0;right:0;text-align:center;font-family:${SANS};font-size:5.5pt;color:${body};opacity:0.22;letter-spacing:0.25em;text-transform:uppercase;">ekadku.com &nbsp;&middot;&nbsp; kad jemputan digital</p>` +
     `</div>`
 
+  // ── Packed page 2 (2-page mode): condenses pages 2+3+4 into one ──
+
+  function buildPackedPage(): string {
+    const packedCol = `position:absolute;inset:28px;display:flex;flex-direction:column;align-items:center;text-align:center;overflow:hidden;gap:0;`
+    const items: string[] = []
+
+    // Opening speech (max 3 lines)
+    if (openingSpeech) {
+      items.push(
+        `<div style="margin-bottom:3px;">${
+          splitLines(openingSpeech).slice(0, 3).map(l =>
+            `<p style="font-family:${SERIF};font-size:6.5pt;color:${body};opacity:0.75;line-height:1.5;font-style:italic;">${esc(l)}</p>`
+          ).join("")
+        }</div>`
+      )
+    }
+
+    items.push(divider("&#10022;", "3px"))
+
+    // Organizers
+    if (orgCount >= 1 && org1?.name) {
+      items.push(`<p style="font-family:${SERIF};font-size:9pt;font-weight:600;color:${body};line-height:1.3;">${esc(org1.name)}</p>`)
+      if (org1.relationship) {
+        items.push(`<p style="font-family:${SANS};font-size:6pt;color:${body};opacity:0.5;letter-spacing:0.08em;font-style:italic;">${esc(org1.relationship)}</p>`)
+      }
+    }
+    if (orgCount >= 2 && org2?.name) {
+      items.push(`<p style="font-family:${SERIF};font-size:7.5pt;color:${body};opacity:0.4;margin:2px 0;">&amp;</p>`)
+      items.push(`<p style="font-family:${SERIF};font-size:9pt;font-weight:600;color:${body};line-height:1.3;">${esc(org2.name)}</p>`)
+      if (org2.relationship) {
+        items.push(`<p style="font-family:${SANS};font-size:6pt;color:${body};opacity:0.5;letter-spacing:0.08em;font-style:italic;">${esc(org2.relationship)}</p>`)
+      }
+    }
+
+    // Invitation speech (max 4 lines)
+    if (invitationSpeech) {
+      items.push(
+        `<div style="max-width:3.2in;margin:3px auto;">${
+          splitLines(invitationSpeech).slice(0, 4).map(l =>
+            `<p style="font-family:${SERIF};font-size:6.5pt;color:${body};opacity:0.65;line-height:1.6;">${esc(l)}</p>`
+          ).join("")
+        }</div>`
+      )
+    }
+
+    items.push(thinDivider("&middot;", "3px"))
+
+    // Full names (slightly smaller than 4-page)
+    const packedNameLines = fullNames.split("\n").map(l => {
+      const isSep = /^[&]$/.test(l.trim()) || /^dan$/i.test(l.trim())
+      return `<p style="font-family:${fullNameFontCss};font-size:${isSep ? "8" : "12"}pt;color:${accent};line-height:1.35;${isSep ? "opacity:0.38;" : "font-weight:600;"}">${esc(l) || "&nbsp;"}</p>`
+    })
+    items.push(`<div style="margin:2px 0;">${packedNameLines.join("")}</div>`)
+
+    items.push(thinDivider("&middot;", "3px"))
+
+    // Venue
+    if (venueLine) {
+      items.push(`<p style="font-family:${SERIF};font-size:10pt;color:${accent};font-weight:600;margin-bottom:2px;">${esc(venueLine)}</p>`)
+    }
+    if (venueAddress) {
+      items.push(
+        `<div style="margin-bottom:2px;">${
+          splitLines(venueAddress).slice(0, 3).map(l =>
+            `<p style="font-family:${SANS};font-size:6pt;color:${body};opacity:0.6;line-height:1.5;">${esc(l)}</p>`
+          ).join("")
+        }</div>`
+      )
+    }
+
+    // Date + time
+    if (dayAndDate) {
+      items.push(
+        `<div style="margin-top:2px;">${
+          splitLines(dayAndDate).map(l =>
+            `<p style="font-family:${SERIF};font-size:7.5pt;color:${body};opacity:0.82;line-height:1.45;">${esc(l)}</p>`
+          ).join("")
+        }</div>`
+      )
+    }
+    if (timeRange) {
+      items.push(`<p style="font-family:${SANS};font-size:6.5pt;color:${body};opacity:0.62;margin-top:1px;">${esc(timeRange)}</p>`)
+    }
+
+    // Dress code / additionalInfo1
+    if (additionalInfo1) {
+      items.push(`<p style="font-family:${SERIF};font-size:6.5pt;color:${body};opacity:0.6;font-style:italic;margin-top:3px;">${esc(additionalInfo1)}</p>`)
+    }
+
+    // Programme (max 5 items)
+    const packedProgLines = splitLines(eventProgram)
+    if (packedProgLines.length > 0) {
+      items.push(thinDivider("&middot;", "3px"))
+      items.push(`<p style="font-family:${SANS};font-size:5.5pt;letter-spacing:0.3em;color:${body};text-transform:uppercase;opacity:0.45;margin-bottom:2px;">${lang ? "ATUR CARA" : "PROGRAMME"}</p>`)
+      const packedProgHtml = packedProgLines.slice(0, 5).map(l => {
+        const isTime = /^\d{1,2}[:.]\d{2}/.test(l.trim()) || /\b(pagi|petang|malam|am|pm)\b/i.test(l)
+        return `<p style="font-family:${SANS};font-size:6pt;color:${body};opacity:${isTime ? "0.45" : "0.78"};line-height:1.4;text-align:left;${!isTime ? "font-weight:700;margin-top:2px;" : ""}">${esc(l)}</p>`
+      }).join("")
+      items.push(`<div style="width:100%;max-width:180px;margin:0 auto;">${packedProgHtml}</div>`)
+    }
+
+    // Contacts (max 2, inline compact)
+    if (contacts.length > 0) {
+      items.push(thinDivider("&#10022;", "3px"))
+      const packedContactsHtml = contacts.slice(0, 2).map(c =>
+        `<div style="display:flex;align-items:center;justify-content:center;gap:5px;margin:2px 0;">${
+          c.isWhatsApp ? waIconSvg(body) : phoneIconSvg(body)
+        }<p style="font-family:${SANS};font-size:6pt;color:${body};opacity:0.65;">${
+          c.name ? `${esc(c.name)} &nbsp;·&nbsp; ` : ""
+        }${esc(c.phone)}</p></div>`
+      ).join("")
+      items.push(packedContactsHtml)
+    }
+
+    // Closing line (max 2 lines, or default)
+    const packedClosing = splitLines(additionalInfo2).slice(0, 2)
+    if (packedClosing.length > 0) {
+      items.push(thinDivider("&middot;", "3px"))
+      items.push(
+        packedClosing.map(l =>
+          `<p style="font-family:${SERIF};font-size:6pt;color:${body};opacity:0.55;line-height:1.6;font-style:italic;">${esc(l)}</p>`
+        ).join("")
+      )
+    }
+
+    // ekadku.com footer
+    items.push(
+      `<p style="font-family:${SANS};font-size:5.5pt;color:${body};opacity:0.38;letter-spacing:0.15em;margin-top:4px;">` +
+      `ekadku.com${card.cardNum ? `/${card.cardNum}` : `/${esc(card.slug)}`}</p>`
+    )
+
+    return `<div style="${pgStyle(false)}">${watermark}${frame}<div style="${packedCol}">${items.join("")}</div></div>`
+  }
+
+  // ── Assemble pages based on mode ──────────────────────────────────
+
+  const pages = pageMode === "2"
+    ? [page1, buildPackedPage()]
+    : [page1, page2, page3, page4]
+
   return `<!DOCTYPE html>
 <html lang="${esc(card.language)}">
 <head>
@@ -313,10 +459,7 @@ html,body{background:#c8c8c8;}
 </style>
 </head>
 <body>
-<div class="pw">${page1}</div>
-<div class="pw">${page2}</div>
-<div class="pw">${page3}</div>
-<div class="pw">${page4}</div>
+${pages.map(p => `<div class="pw">${p}</div>`).join("\n")}
 </body>
 </html>`
 }
