@@ -197,7 +197,7 @@ export function Page10_Gift() {
   }
 
   if (!caps.wishlist && !caps.moneyGift) {
-    return <LockedPage feature={isMs ? "Hadiah & Pembayaran" : "Gifts & Payment"} requiredPlan="Gold (RM60)" />
+    return <LockedPage feature={isMs ? "Hadiah & Pembayaran" : "Gifts & Payment"} requiredPlan="Premium (RM60)" />
   }
 
   return (

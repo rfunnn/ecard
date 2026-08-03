@@ -12,7 +12,7 @@ const FEATURE_ICONS = [Sparkles, Music, Share2, Clock]
 
 const PACKAGES = [
   {
-    name: "Bronze", emoji: "🥉",
+    name: "Basic", emoji: "⭐",
     headerBg: "linear-gradient(135deg, #c8945a, #a06b3a)",
     price: "RM30",
     features: [
@@ -24,7 +24,7 @@ const PACKAGES = [
     ],
   },
   {
-    name: "Silver", emoji: "🥈",
+    name: "Pro", emoji: "🚀",
     headerBg: "linear-gradient(135deg, #9CA3AF, #6B7280)",
     price: "RM40",
     features: [
@@ -39,7 +39,7 @@ const PACKAGES = [
     ],
   },
   {
-    name: "Gold", emoji: "🥇",
+    name: "Premium", emoji: "💎",
     headerBg: "linear-gradient(135deg, #D4AF37, #a07820)",
     price: "RM60",
     features: [

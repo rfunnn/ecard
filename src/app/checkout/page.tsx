@@ -37,21 +37,27 @@ const RENEWAL_PRICE_RM = 20
 
 // ─── pricing helpers ─────────────────────────────────────────────────────────
 
-const PACKAGE_PRICES: Record<string, number> = { bronze: 30, silver: 40, gold: 60 }
-const PACKAGE_LABELS: Record<string, string> = { bronze: "Bronze", silver: "Silver", gold: "Gold" }
+const PACKAGE_PRICES: Record<string, number> = {
+  bronze: 30, silver: 40, gold: 60,    // backward compat for existing cards
+  basic:  30, pro:   40, premium: 60,
+}
+const PACKAGE_LABELS: Record<string, string> = {
+  bronze: "Basic", silver: "Pro", gold: "Premium", // backward compat
+  basic:  "Basic", pro:   "Pro", premium: "Premium",
+}
 
 function upgradeCostRM(currentPkgType: string | undefined, targetTier: string): number {
-  const currentKey = (currentPkgType ?? "bronze").split("(")[0].trim().toLowerCase()
+  const currentKey = (currentPkgType ?? "basic").split("(")[0].trim().toLowerCase()
   const current    = PACKAGE_PRICES[currentKey] ?? 30
   const target     = PACKAGE_PRICES[targetTier]  ?? 60
   return Math.max(0, target - current)
 }
 
 function parsePackage(raw?: string) {
-  const key = (raw ?? "bronze").split("(")[0].trim().toLowerCase()
+  const key = (raw ?? "basic").split("(")[0].trim().toLowerCase()
   return {
     key,
-    label: PACKAGE_LABELS[key] ?? "Bronze",
+    label: PACKAGE_LABELS[key] ?? "Basic",
     price: PACKAGE_PRICES[key] ?? 30,
   }
 }
@@ -66,9 +72,8 @@ const CATEGORY_EMOJI: Record<string, string> = {
 }
 
 const PACKAGE_COLORS: Record<string, string> = {
-  bronze: "#CD7F32",
-  silver: "#C0C0C0",
-  gold:   "#D4AF37",
+  bronze: "#CD7F32", silver: "#C0C0C0", gold:    "#D4AF37", // backward compat
+  basic:  "#CD7F32", pro:   "#C0C0C0", premium: "#D4AF37",
 }
 
 // ─── card row ────────────────────────────────────────────────────────────────
@@ -212,7 +217,7 @@ function UpgradeCardRow({ card, targetTier }: { card: CartCard; targetTier: stri
       : card.title || "Kad Jemputan"
 
   const currentPkg    = parsePackage(card.wizardConfig?.packageType)
-  const targetLabel   = PACKAGE_LABELS[targetTier]  ?? "Gold"
+  const targetLabel   = PACKAGE_LABELS[targetTier]  ?? "Premium"
   const targetColor   = PACKAGE_COLORS[targetTier]  ?? "#D4AF37"
   const cost          = upgradeCostRM(card.wizardConfig?.packageType, targetTier)
 
@@ -276,8 +281,8 @@ function CheckoutInner() {
   const params = useSearchParams()
   const specificSlug   = params.get("slug")
   const isRenewalMode  = !!specificSlug && params.get("renewal") === "true"
-  const upgradeTarget  = params.get("upgrade") ?? ""          // "silver" | "gold"
-  const isUpgradeMode  = !!specificSlug && (upgradeTarget === "silver" || upgradeTarget === "gold") && !isRenewalMode
+  const upgradeTarget  = params.get("upgrade") ?? ""          // "pro" | "premium"
+  const isUpgradeMode  = !!specificSlug && (upgradeTarget === "pro" || upgradeTarget === "premium" || upgradeTarget === "silver" || upgradeTarget === "gold") && !isRenewalMode
 
   const [cards, setCards]     = useState<CartCard[]>([])
   const [loading, setLoading] = useState(true)
@@ -467,7 +472,7 @@ function CheckoutInner() {
                 <Package className="w-4 h-4 text-gold shrink-0 mt-0.5" />
                 <div>
                   <p className="text-sm font-semibold text-[var(--tx-1)]">
-                    Naik Taraf ke {PACKAGE_LABELS[upgradeTarget] ?? "Gold"} — bayar perbezaan sahaja
+                    Naik Taraf ke {PACKAGE_LABELS[upgradeTarget] ?? "Premium"} — bayar perbezaan sahaja
                   </p>
                   <p className="text-xs text-[var(--tx-3)] mt-0.5">
                     Ciri baharu tersedia serta-merta dalam builder selepas bayaran.

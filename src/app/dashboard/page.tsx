@@ -586,23 +586,23 @@ function CardRow({ card, onRemove, onDuplicated }: { card: Card; onRemove: (slug
         })()}
         {card.isPublished && (() => {
           const currentTier = getPackageTier((card.wizardConfig?.packageType as string | undefined) ?? "")
-          if (currentTier === "gold") return null
+          if (currentTier === "premium") return null
           return (
             <div className="flex items-center gap-2 mt-2 flex-wrap">
               <span className="text-[10px] text-[var(--tx-3)] font-medium">{d.upgrade}</span>
-              {currentTier === "bronze" && (
+              {currentTier === "basic" && (
                 <Link
-                  href={`/checkout?slug=${card.slug}&upgrade=silver`}
-                  className="inline-flex items-center gap-1 text-[11px] font-semibold border border-silver/40 text-[var(--tx-2)] px-2.5 py-1 rounded-full hover:bg-[var(--sf)] transition-colors"
+                  href={`/checkout?slug=${card.slug}&upgrade=pro`}
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold border border-[var(--bd)] text-[var(--tx-2)] px-2.5 py-1 rounded-full hover:bg-[var(--sf)] transition-colors"
                 >
-                  <ArrowUpCircle className="w-3 h-3" /> Silver (RM10)
+                  <ArrowUpCircle className="w-3 h-3" /> Pro (RM10)
                 </Link>
               )}
               <Link
-                href={`/checkout?slug=${card.slug}&upgrade=gold`}
+                href={`/checkout?slug=${card.slug}&upgrade=premium`}
                 className="inline-flex items-center gap-1 text-[11px] font-semibold border border-gold/40 text-gold px-2.5 py-1 rounded-full hover:bg-gold/10 transition-colors"
               >
-                <ArrowUpCircle className="w-3 h-3" /> Gold {currentTier === "silver" ? "(RM20)" : "(RM30)"}
+                <ArrowUpCircle className="w-3 h-3" /> Premium {currentTier === "pro" ? "(RM20)" : "(RM30)"}
               </Link>
             </div>
           )

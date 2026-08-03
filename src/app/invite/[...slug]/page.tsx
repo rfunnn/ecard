@@ -95,9 +95,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 const PACKAGE_META: Record<string, { label: string; emoji: string; price: string }> = {
-  bronze: { label: "Bronze", emoji: "🥉", price: "RM30" },
-  silver: { label: "Silver", emoji: "🥈", price: "RM40" },
-  gold:   { label: "Gold",   emoji: "🥇", price: "RM60" },
+  bronze:  { label: "Basic",   emoji: "⭐", price: "RM30" }, // backward compat
+  silver:  { label: "Pro",     emoji: "🚀", price: "RM40" }, // backward compat
+  gold:    { label: "Premium", emoji: "💎", price: "RM60" }, // backward compat
+  basic:   { label: "Basic",   emoji: "⭐", price: "RM30" },
+  pro:     { label: "Pro",     emoji: "🚀", price: "RM40" },
+  premium: { label: "Premium", emoji: "💎", price: "RM60" },
 }
 
 export default async function InvitePage({ params, searchParams }: Props) {
@@ -106,7 +109,7 @@ export default async function InvitePage({ params, searchParams }: Props) {
   const sp = await searchParams
   const nameOverride = sp.name
   const templateSlug = sp.template
-  const packageParam = (sp.package ?? "gold").toLowerCase()
+  const packageParam = (sp.package ?? "premium").toLowerCase()
 
   if (slug === "demo") {
     const demoTemplate = await prisma.template.findFirst({
@@ -140,19 +143,19 @@ export default async function InvitePage({ params, searchParams }: Props) {
         }
       }
 
-      if (packageParam === "bronze") {
+      if (packageParam === "basic" || packageParam === "bronze") {
         wc = {
           ...wc, effectAnimation: "Tiada",
           rsvp: { ...wc.rsvp, mode: "NONE" },
           segments: { ...wc.segments, attendance: false, wishes: false, confirmBtn: false, writeWishBtn: false },
         }
-      } else if (packageParam === "gold" && !wc.bankName) {
+      } else if ((packageParam === "premium" || packageParam === "gold") && !wc.bankName) {
         wc = { ...wc, bankName: "Maybank", bankAccountName: "Ahmad Faris bin Ahmad", bankAccountNumber: "1234567890" }
       }
 
-      const pkgMeta2 = PACKAGE_META[packageParam] ?? PACKAGE_META.gold
+      const pkgMeta2 = PACKAGE_META[packageParam] ?? PACKAGE_META.premium
       const authoredTheme = authored.theme ?? DEFAULT_THEME
-      const authoredGiftItems = packageParam !== "bronze"
+      const authoredGiftItems = packageParam !== "basic" && packageParam !== "bronze"
         ? (authored.giftItems ?? []).map((g, i) => ({ id: `demo-gift-${i}`, imageUrl: g.imageUrl, link: g.link, label: g.label, sortOrder: g.sortOrder ?? i }))
         : []
       const authoredPhotoItems = (authored.photoItems ?? []).map((p, i) => ({ id: `demo-photo-${i}`, imageUrl: p.imageUrl, caption: p.caption, sortOrder: p.sortOrder ?? i }))
@@ -193,7 +196,7 @@ export default async function InvitePage({ params, searchParams }: Props) {
 
     const demoWizardConfig: WizardConfig = {
       language: "ms",
-      packageType: "Gold",
+      packageType: "Premium",
       addOnCustomDesign: false,
       addOnCoverVideo: false,
       designCode: "",
@@ -279,14 +282,14 @@ export default async function InvitePage({ params, searchParams }: Props) {
       },
     }
 
-    if (packageParam === "bronze") {
+    if (packageParam === "basic" || packageParam === "bronze") {
       demoWizardConfig.effectAnimation = "Tiada"
       demoWizardConfig.rsvp = { ...demoWizardConfig.rsvp, mode: "NONE" }
       demoWizardConfig.segments = {
         ...demoWizardConfig.segments,
         attendance: false, wishes: false, confirmBtn: false, writeWishBtn: false,
       }
-    } else if (packageParam === "gold") {
+    } else if (packageParam === "premium" || packageParam === "gold") {
       demoWizardConfig.bankName = "Maybank"
       demoWizardConfig.bankAccountName = "Ahmad Faris bin Ahmad"
       demoWizardConfig.bankAccountNumber = "1234567890"
@@ -300,7 +303,7 @@ export default async function InvitePage({ params, searchParams }: Props) {
         : parts[0]
     }
 
-    const demoGiftItems = packageParam === "gold"
+    const demoGiftItems = packageParam === "premium" || packageParam === "gold"
       ? [
           { id: "demo-gift-1", label: "Set Makan Porselin 32pcs", imageUrl: "https://picsum.photos/seed/ceramicset/400/400", link: "https://www.lazada.com.my/", sortOrder: 0 },
           { id: "demo-gift-2", label: "Set Cadar Queen Premium", imageUrl: "https://picsum.photos/seed/beddingset/400/400", link: "https://shopee.com.my/", sortOrder: 1 },
@@ -308,7 +311,7 @@ export default async function InvitePage({ params, searchParams }: Props) {
         ]
       : []
 
-    const pkgMeta = PACKAGE_META[packageParam] ?? PACKAGE_META.gold
+    const pkgMeta = PACKAGE_META[packageParam] ?? PACKAGE_META.premium
     const demoBadge = `${pkgMeta.emoji} ${pkgMeta.label} · ${pkgMeta.price}`
 
     const demoCard: InvitationCardData = {

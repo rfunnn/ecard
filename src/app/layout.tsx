@@ -126,9 +126,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 url: "https://ekadku.com",
                 description: "Platform cipta kad jemputan digital untuk majlis perkahwinan, hari jadi, dan korporat di Malaysia.",
                 offers: [
-                  { "@type": "Offer", name: "Bronze", price: "30", priceCurrency: "MYR" },
-                  { "@type": "Offer", name: "Silver", price: "40", priceCurrency: "MYR" },
-                  { "@type": "Offer", name: "Gold",   price: "60", priceCurrency: "MYR" },
+                  { "@type": "Offer", name: "Basic",   price: "30", priceCurrency: "MYR" },
+                  { "@type": "Offer", name: "Pro",     price: "40", priceCurrency: "MYR" },
+                  { "@type": "Offer", name: "Premium", price: "60", priceCurrency: "MYR" },
                 ],
               },
             ],

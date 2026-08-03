@@ -4,17 +4,17 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Gift, Loader2 } from "lucide-react"
 
-type Tier = "bronze" | "silver" | "gold"
+type Tier = "basic" | "pro" | "premium"
 
 const TIER_LABELS: Record<Tier, string> = {
-  bronze: "Bronze",
-  silver: "Silver",
-  gold:   "Gold",
+  basic:   "Basic",
+  pro:     "Pro",
+  premium: "Premium",
 }
 
 export function PublishFreeButton({ slug }: { slug: string }) {
   const [open, setOpen] = useState(false)
-  const [tier, setTier] = useState<Tier>("gold")
+  const [tier, setTier] = useState<Tier>("premium")
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 

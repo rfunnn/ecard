@@ -114,7 +114,7 @@ export function Page11_Photos() {
   }
 
   if (!caps.photoGallery) {
-    return <LockedPage feature={isMs ? "Galeri Foto" : "Photo Gallery"} requiredPlan="Gold (RM60)" />
+    return <LockedPage feature={isMs ? "Galeri Foto" : "Photo Gallery"} requiredPlan="Premium (RM60)" />
   }
 
   const showEnabled = config.segments.photoGallery

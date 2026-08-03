@@ -57,7 +57,7 @@ export function Page7_RSVP() {
   const showFields = isMs ? SHOW_FIELDS_MS : SHOW_FIELDS_EN
 
   if (!caps.rsvp) {
-    return <LockedPage feature={isMs ? "RSVP / Ucapan" : "RSVP / Wishes"} requiredPlan="Silver (RM40)" />
+    return <LockedPage feature={isMs ? "RSVP / Ucapan" : "RSVP / Wishes"} requiredPlan="Pro (RM40)" />
   }
 
   function updateRSVP(updates: Partial<RSVPWizardConfig>) {

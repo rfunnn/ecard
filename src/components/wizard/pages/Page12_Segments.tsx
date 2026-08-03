@@ -15,12 +15,12 @@ const SEGMENT_LIST_MS: { key: keyof SegmentConfig; label: string; tier?: string 
   { key: "saveDateBtn",   label: "Butang \"Simpan Tarikh\"" },
   { key: "eventProgram",  label: "Atur Cara Majlis" },
   { key: "countdown",     label: "Menghitung Hari" },
-  { key: "weather",       label: "Ramalan Cuaca",       tier: "Gold" },
-  { key: "attendance",    label: "Kehadiran",           tier: "Silver+" },
-  { key: "wishes",        label: "Ucapan",              tier: "Silver+" },
-  { key: "confirmBtn",    label: "Butang \"Sahkan Kehadiran\"", tier: "Silver+" },
-  { key: "writeWishBtn",  label: "Butang \"Tulis Ucapan\"",    tier: "Silver+" },
-  { key: "photoGallery",  label: "Galeri Foto",         tier: "Gold" },
+  { key: "weather",       label: "Ramalan Cuaca",       tier: "Premium" },
+  { key: "attendance",    label: "Kehadiran",           tier: "Pro+" },
+  { key: "wishes",        label: "Ucapan",              tier: "Pro+" },
+  { key: "confirmBtn",    label: "Butang \"Sahkan Kehadiran\"", tier: "Pro+" },
+  { key: "writeWishBtn",  label: "Butang \"Tulis Ucapan\"",    tier: "Pro+" },
+  { key: "photoGallery",  label: "Galeri Foto",         tier: "Premium" },
 ]
 
 const SEGMENT_LIST_EN: { key: keyof SegmentConfig; label: string; tier?: string }[] = [
@@ -31,12 +31,12 @@ const SEGMENT_LIST_EN: { key: keyof SegmentConfig; label: string; tier?: string 
   { key: "saveDateBtn",   label: "\"Save Date\" Button" },
   { key: "eventProgram",  label: "Event Programme" },
   { key: "countdown",     label: "Countdown" },
-  { key: "weather",       label: "Weather Forecast",            tier: "Gold" },
-  { key: "attendance",    label: "Attendance",                  tier: "Silver+" },
-  { key: "wishes",        label: "Wishes",                      tier: "Silver+" },
-  { key: "confirmBtn",    label: "\"Confirm Attendance\" Button", tier: "Silver+" },
-  { key: "writeWishBtn",  label: "\"Write Wish\" Button",       tier: "Silver+" },
-  { key: "photoGallery",  label: "Photo Gallery",               tier: "Gold" },
+  { key: "weather",       label: "Weather Forecast",            tier: "Premium" },
+  { key: "attendance",    label: "Attendance",                  tier: "Pro+" },
+  { key: "wishes",        label: "Wishes",                      tier: "Pro+" },
+  { key: "confirmBtn",    label: "\"Confirm Attendance\" Button", tier: "Pro+" },
+  { key: "writeWishBtn",  label: "\"Write Wish\" Button",       tier: "Pro+" },
+  { key: "photoGallery",  label: "Photo Gallery",               tier: "Premium" },
 ]
 
 const SILVER_SEGMENTS = new Set<keyof SegmentConfig>(["attendance", "wishes", "confirmBtn", "writeWishBtn"])

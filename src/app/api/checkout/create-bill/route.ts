@@ -7,9 +7,8 @@ import { rateLimit } from "@/lib/rate-limit"
 
 // Prices in sen (100 sen = RM1)
 const PACKAGE_PRICES: Record<string, number> = {
-  bronze: 3000,
-  silver: 4000,
-  gold:   6000,
+  bronze: 3000, silver: 4000, gold:    6000, // backward compat
+  basic:  3000, pro:   4000, premium: 6000,
 }
 
 function packageAmount(packageType: string): number {
@@ -56,13 +55,13 @@ export async function POST(req: NextRequest) {
   // Build order items with prices
   const items = cards.map((card) => {
     const wc = (card.wizardConfig ?? {}) as WizardConfigSlice
-    const base = packageAmount(wc.packageType ?? "Bronze")
+    const base = packageAmount(wc.packageType ?? "Basic")
     const addOnAmount =
       (wc.addOnCustomDesign ? 1000 : 0) +
       (wc.addOnCoverVideo  ? 1000 : 0)
     return {
       cardId: card.id,
-      package: (wc.packageType ?? "Bronze").split("(")[0].trim(),
+      package: (wc.packageType ?? "Basic").split("(")[0].trim(),
       amount: base + addOnAmount,
       addOns: {
         customDesign: wc.addOnCustomDesign ?? false,

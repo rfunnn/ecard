@@ -196,9 +196,9 @@ export default function DemoSettingsPage() {
               href={`/invite/demo?template=${slug2}`}
             />
           )}
-          <DemoLink label="Demo Bronze" href="/invite/demo?package=bronze" />
-          <DemoLink label="Demo Silver" href="/invite/demo?package=silver" />
-          <DemoLink label="Demo Gold"   href="/invite/demo?package=gold" />
+          <DemoLink label="Demo Basic"   href="/invite/demo?package=basic" />
+          <DemoLink label="Demo Pro"     href="/invite/demo?package=pro" />
+          <DemoLink label="Demo Premium" href="/invite/demo?package=premium" />
         </div>
       </div>
     </div>

@@ -3,8 +3,10 @@ import { sendOrderNotification } from "@/lib/email"
 import { getPackageTier } from "@/types/config"
 
 const UPGRADE_PACKAGE_LABEL: Record<string, string> = {
-  silver: "Silver (RM40)",
-  gold:   "Gold (RM60)",
+  silver:  "Pro (RM40)",    // old key for backward compat
+  gold:    "Premium (RM60)", // old key for backward compat
+  pro:     "Pro (RM40)",
+  premium: "Premium (RM60)",
 }
 
 // Mark an order paid and publish every card it contains. Idempotent: the
@@ -66,7 +68,7 @@ export async function fulfillPaidOrder(orderId: string, billCode?: string): Prom
           const currentConfig = (existing?.wizardConfig ?? {}) as Record<string, unknown>
           const currentTier   = getPackageTier((currentConfig.packageType as string | undefined) ?? "")
           // Only apply if it's actually an upgrade
-          const tierRank = { bronze: 0, silver: 1, gold: 2 }
+          const tierRank = { bronze: 0, basic: 0, silver: 1, pro: 1, gold: 2, premium: 2 }
           if ((tierRank[targetTier as keyof typeof tierRank] ?? -1) > (tierRank[currentTier] ?? -1)) {
             await tx.invitationCard.update({
               where: { id: item.cardId },

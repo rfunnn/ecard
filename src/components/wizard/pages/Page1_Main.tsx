@@ -56,7 +56,7 @@ export function Page1_Main() {
     const tier = getPackageTier(newPackage)
     const updates: Partial<WizardConfig> = { packageType: newPackage }
 
-    if (tier === "bronze") {
+    if (tier === "basic") {
       updates.effectAnimation = "Tiada"
       updates.rsvp = { ...config.rsvp, mode: "NONE" }
       updates.segments = {
@@ -70,7 +70,7 @@ export function Page1_Main() {
       updates.bankAccountName = ""
       updates.bankAccountNumber = ""
       updates.bankQrUrl = ""
-    } else if (tier === "silver") {
+    } else if (tier === "pro") {
       if (config.rsvp.mode === "NONE") updates.rsvp = { ...config.rsvp, mode: "RSVP_WISHES" }
       updates.segments = {
         ...config.segments,
@@ -84,7 +84,7 @@ export function Page1_Main() {
       updates.bankAccountNumber = ""
       updates.bankQrUrl = ""
     } else {
-      // gold — unlock RSVP if it was locked by Bronze
+      // premium — unlock RSVP if it was locked by Basic
       if (config.rsvp.mode === "NONE") updates.rsvp = { ...config.rsvp, mode: "RSVP_WISHES" }
       updates.segments = {
         ...config.segments,
@@ -98,7 +98,7 @@ export function Page1_Main() {
     setConfig(updates)
   }
 
-  const isBronze = getPackageTier(config.packageType) === "bronze"
+  const isBasic = getPackageTier(config.packageType) === "basic"
   const { lang } = useLanguageStore()
   const isMs = lang === "ms"
   const packageLocked = isPublished
@@ -143,9 +143,9 @@ export function Page1_Main() {
           disabled={packageLocked}
           className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm text-gray-700 bg-white outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          <option>Gold (RM60)</option>
-          <option>Silver (RM40)</option>
-          <option>Bronze (RM20)</option>
+          <option>Premium (RM60)</option>
+          <option>Pro (RM40)</option>
+          <option>Basic (RM20)</option>
         </select>
         {packageLocked && (
           <p className="text-[11px] text-gray-400 mt-1">
@@ -233,12 +233,12 @@ export function Page1_Main() {
       </div>
 
       {/* Effect Animation */}
-      <div className={isBronze ? "opacity-50 pointer-events-none select-none" : ""}>
+      <div className={isBasic ? "opacity-50 pointer-events-none select-none" : ""}>
         <div className="flex items-center gap-2 mb-1">
           <FieldLabel label={isMs ? "Animasi Efek" : "Effect Animation"} required />
-          {isBronze && (
+          {isBasic && (
             <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full leading-none">
-              Silver+
+              Pro+
             </span>
           )}
         </div>
@@ -247,7 +247,7 @@ export function Page1_Main() {
             value={config.effectAnimation}
             onChange={(e) => updateConfig("effectAnimation", e.target.value)}
             className="flex-1 border border-gray-300 rounded-md px-3 py-2.5 text-sm text-gray-700 bg-white outline-none"
-            disabled={isBronze}
+            disabled={isBasic}
           >
             {EFFECT_ANIMATIONS.map((s) => <option key={s}>{s}</option>)}
           </select>

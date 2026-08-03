@@ -34,7 +34,7 @@ const SEGMENT_LIST_EN: { key: keyof SegmentConfig; label: string }[] = [
   { key: "writeWishBtn",  label: "\"Write Wish\" Button" },
 ]
 
-// These segments require Silver+ (tied to the RSVP feature)
+// These segments require Pro+ (tied to the RSVP feature)
 const RSVP_SEGMENTS = new Set<keyof SegmentConfig>(["attendance", "wishes", "confirmBtn", "writeWishBtn"])
 
 export function Page11_Segments() {
@@ -72,7 +72,7 @@ export function Page11_Segments() {
               </span>
               {locked && (
                 <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full leading-none ml-2">
-                  Silver+
+                  Pro+
                 </span>
               )}
             </div>

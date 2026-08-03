@@ -10,13 +10,13 @@ const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? "")
   .filter(Boolean)
 
 const PACKAGE_LABELS: Record<string, string> = {
-  bronze: "Bronze (RM0)",
-  silver: "Silver (RM0)",
-  gold:   "Gold (RM0)",
+  basic:   "Basic (RM0)",
+  pro:     "Pro (RM0)",
+  premium: "Premium (RM0)",
 }
 
 const bodySchema = z.object({
-  tier: z.enum(["bronze", "silver", "gold"]).default("gold"),
+  tier: z.enum(["basic", "pro", "premium"]).default("premium"),
 })
 
 export async function POST(

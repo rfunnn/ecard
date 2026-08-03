@@ -8,15 +8,16 @@ import { getPackageTier } from "@/types/config"
 
 // Prices in sen
 const PACKAGE_PRICES_SEN: Record<string, number> = {
-  bronze: 3000,
-  silver: 4000,
-  gold:   6000,
+  bronze: 3000, silver: 4000, gold:    6000, // backward compat
+  basic:  3000, pro:   4000, premium: 6000,
 }
 
 // Full packageType strings written back to wizardConfig
 const PACKAGE_TYPE_LABEL: Record<string, string> = {
-  silver: "Silver (RM40)",
-  gold:   "Gold (RM60)",
+  silver:  "Pro (RM40)",     // old key for backward compat
+  gold:    "Premium (RM60)", // old key for backward compat
+  pro:     "Pro (RM40)",
+  premium: "Premium (RM60)",
 }
 
 export async function POST(req: NextRequest) {
@@ -39,7 +40,7 @@ export async function POST(req: NextRequest) {
   }
 
   const targetTier = targetPackage.toLowerCase()
-  if (targetTier !== "silver" && targetTier !== "gold") {
+  if (targetTier !== "pro" && targetTier !== "premium" && targetTier !== "silver" && targetTier !== "gold") {
     return NextResponse.json({ error: "Invalid target package" }, { status: 400 })
   }
 
@@ -52,7 +53,7 @@ export async function POST(req: NextRequest) {
   }
 
   const wc = card.wizardConfig as { packageType?: string } | null
-  const currentTier = getPackageTier(wc?.packageType ?? "bronze")
+  const currentTier = getPackageTier(wc?.packageType ?? "basic")
 
   const currentPrice = PACKAGE_PRICES_SEN[currentTier] ?? 3000
   const targetPrice  = PACKAGE_PRICES_SEN[targetTier]  ?? 6000
@@ -78,7 +79,7 @@ export async function POST(req: NextRequest) {
     },
   })
 
-  const tierLabel    = targetTier === "gold" ? "Gold" : "Silver"
+  const tierLabel    = (targetTier === "gold" || targetTier === "premium") ? "Premium" : "Pro"
   const billName     = `ekadku.com - Naik Taraf ${card.groomName ?? card.title ?? "Kad"} ke ${tierLabel}`
   const baseUrl      = process.env.NEXTAUTH_URL
   if (!baseUrl) {

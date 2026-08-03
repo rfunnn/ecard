@@ -33,7 +33,7 @@ const translations = {
       faqs: [
         {
           q: "Berapa harga kad jemputan digital ekadku.com?",
-          a: "ekadku.com menawarkan tiga pakej: Bronze (RM30), Silver (RM40), dan Gold (RM60). Semua pakej adalah bayaran sekali sahaja — tiada langganan bulanan.",
+          a: "ekadku.com menawarkan tiga pakej: Basic (RM30), Pro (RM40), dan Premium (RM60). Semua pakej adalah bayaran sekali sahaja — tiada langganan bulanan.",
         },
         {
           q: "Berapa lama pautan kad jemputan saya aktif?",
@@ -45,7 +45,7 @@ const translations = {
         },
         {
           q: "Adakah tetamu boleh hantar RSVP melalui kad digital?",
-          a: "Ya. Pakej Silver dan Gold menyokong RSVP dan ucapan. Tetamu boleh sahkan kehadiran, bilangan tetamu, dan tinggalkan ucapan terus dari pautan kad anda.",
+          a: "Ya. Pakej Pro dan Premium menyokong RSVP dan ucapan. Tetamu boleh sahkan kehadiran, bilangan tetamu, dan tinggalkan ucapan terus dari pautan kad anda.",
         },
         {
           q: "Bolehkah saya edit kad selepas bayar?",
@@ -283,7 +283,7 @@ const translations = {
       faqs: [
         {
           q: "What is the price of ekadku.com digital invitation cards?",
-          a: "ekadku.com offers three packages: Bronze (RM30), Silver (RM40), and Gold (RM60). All packages are one-time payments — no monthly subscription.",
+          a: "ekadku.com offers three packages: Basic (RM30), Pro (RM40), and Premium (RM60). All packages are one-time payments — no monthly subscription.",
         },
         {
           q: "How long is my invitation card link active?",
@@ -295,7 +295,7 @@ const translations = {
         },
         {
           q: "Can guests send RSVP through the digital card?",
-          a: "Yes. Silver and Gold packages support RSVP and wishes. Guests can confirm attendance, number of guests, and leave wishes directly from your card link.",
+          a: "Yes. Pro and Premium packages support RSVP and wishes. Guests can confirm attendance, number of guests, and leave wishes directly from your card link.",
         },
         {
           q: "Can I edit the card after payment?",
