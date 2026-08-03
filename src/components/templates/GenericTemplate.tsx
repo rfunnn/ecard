@@ -5,8 +5,10 @@ import { motion } from "framer-motion"
 import { MapPin, Navigation, Calendar } from "lucide-react"
 import type { InvitationCardData } from "@/types/invitation"
 import type { WizardConfig } from "@/types/config"
+import { getPackageCapabilities } from "@/types/config"
 import { wizardFont, calendarUrl, parseProgramText, useCountdown, multiLine } from "./templateUtils"
 import { PhotoGallery } from "./PhotoGallery"
+import { WeatherForecast, parseVenueCoords } from "@/components/invite/WeatherForecast"
 
 interface WishEntry { guestName: string; message: string }
 
@@ -30,7 +32,7 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
     venue: true, date: true, time: true, endTime: true,
     saveDateBtn: true, eventProgram: true, countdown: true,
     attendance: true, wishes: true, confirmBtn: true, writeWishBtn: true,
-    photoGallery: true,
+    photoGallery: true, weather: false,
   }
 
   const displayParts = cfg?.displayName
@@ -63,6 +65,10 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
   const venueName  = cfg?.venueLine    || card.venueName   || ""
   const address    = cfg?.venueAddress || card.venueAddress || ""
   const mapsUrl    = cfg?.googleMapsUrl || card.venueMapUrl || ""
+
+  // Venue weather (Gold only) — shown before the attendance/wishes section
+  const weatherCoords  = parseVenueCoords(cfg)
+  const weatherEnabled = !!(seg.weather && getPackageCapabilities(cfg?.packageType ?? "").weather && weatherCoords)
   const wazeUrl    = cfg?.wazeUrl || ""
 
   const bodyColor    = cfg?.generalColor || theme.bodyColor    || "#374151"
@@ -338,6 +344,21 @@ export function GenericTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
       )}
 
       {/* ══ KEHADIRAN CTA ════════════════════════════════════════════════════ */}
+      {showAttendance && weatherEnabled && weatherCoords && (
+        <WeatherForecast
+          lat={weatherCoords.lat}
+          lng={weatherCoords.lng}
+          eventDate={cfg?.startDateTime ?? card.eventDate}
+          language={card.language}
+          bodyColor={bodyColor}
+          primaryColor={primaryColor}
+          headFont={headFont}
+          bodyFont={bodyFont}
+          venueName={venueName}
+          divider={<GenericSep color={primaryColor} />}
+        />
+      )}
+
       {showAttendance && seg.attendance && (
         <div className="pb-4 text-center">
           <GenericSep color={primaryColor} />

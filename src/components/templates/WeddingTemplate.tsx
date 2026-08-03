@@ -5,10 +5,12 @@ import { motion } from "framer-motion"
 import { MapPin, Navigation, Calendar } from "lucide-react"
 import type { InvitationCardData } from "@/types/invitation"
 import type { WizardConfig } from "@/types/config"
+import { getPackageCapabilities } from "@/types/config"
 
 // â”€â”€â”€ helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 import { wizardFont, calendarUrl, parseProgramText, useCountdown, multiLine } from "./templateUtils"
 import { PhotoGallery } from "./PhotoGallery"
+import { WeatherForecast, parseVenueCoords } from "@/components/invite/WeatherForecast"
 
 interface WishEntry { guestName: string; message: string }
 
@@ -74,7 +76,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
     venue: true, date: true, time: true, endTime: true,
     saveDateBtn: true, eventProgram: true, countdown: true,
     attendance: true, wishes: true, confirmBtn: true, writeWishBtn: true,
-    photoGallery: true,
+    photoGallery: true, weather: false,
   }
 
   // names â€” wizard Page 2 stores combined "displayName" (e.g. "Ahmad & Nurul")
@@ -113,6 +115,10 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
   const address    = cfg?.venueAddress || card.venueAddress || ""
   const mapsUrl    = cfg?.googleMapsUrl || card.venueMapUrl || ""
   const wazeUrl    = cfg?.wazeUrl || ""
+
+  // Venue weather (Gold only) — shown before the attendance/wishes section
+  const weatherCoords  = parseVenueCoords(cfg)
+  const weatherEnabled = !!(seg.weather && getPackageCapabilities(cfg?.packageType ?? "").weather && weatherCoords)
 
   // colours + fonts
   const bodyColor    = cfg?.generalColor || theme.bodyColor    || "#3a2010"
@@ -523,6 +529,21 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
 
       {/* â•â• SECTION 6 Â· WISHES â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */}
       {/* ══ KEHADIRAN CTA ════════════════════════════════════════════════════ */}
+      {showAttendance && weatherEnabled && weatherCoords && (
+        <WeatherForecast
+          lat={weatherCoords.lat}
+          lng={weatherCoords.lng}
+          eventDate={cfg?.startDateTime ?? card.eventDate}
+          language={card.language}
+          bodyColor={bodyColor}
+          primaryColor={primaryColor}
+          headFont={headFont}
+          bodyFont={bodyFont}
+          venueName={venueName}
+          divider={<WeddingDivider color={bodyColor} />}
+        />
+      )}
+
       {showAttendance && seg.attendance && (
         <motion.div
           initial={anim.initial} whileInView={anim.target}

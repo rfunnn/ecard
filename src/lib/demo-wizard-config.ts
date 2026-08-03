@@ -31,13 +31,13 @@ export function buildDemoWizardConfig(
     openingStyleColor: "#f2f2f2",
     effectAnimation: "Bunga 1",
     effectColor: primaryColor,
-    effectSize: 100,
+    effectSize: 40,
 
     eventType: "Walimatul Urus",
     eventTypeSize: 13,
     displayName: "Ahmad Faris & Nur Aisyah",
     displayNameFont: "GreatVibes",
-    displayNameColor: primaryColor,
+    displayNameColor: "#000000",
     displayNameSize: 52,
     startDateTime: eventStart.toISOString().slice(0, 16),
     endDateTime: eventEnd.toISOString().slice(0, 16),
@@ -73,7 +73,7 @@ export function buildDemoWizardConfig(
     additionalInfo2: "\"Dan di antara tanda-tanda kekuasaanNya ialah Dia menciptakan untukmu pasangan dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikanNya di antaramu rasa kasih dan sayang.\"\n\n”- Surah Ar-Rum (30:21)",
 
     generalFont: "Cormorant",
-    generalColor: primaryColor,
+    generalColor: "#000000",
     generalSize: 16,
     headingFont: "Cormorant",
     headingSize: 36,
@@ -126,6 +126,7 @@ export function buildDemoWizardConfig(
       confirmBtn: true,
       writeWishBtn: true,
       photoGallery: true,
+      weather: false,
     },
   }
 }

@@ -44,6 +44,7 @@ export interface SegmentConfig {
   confirmBtn: boolean
   writeWishBtn: boolean
   photoGallery: boolean
+  weather: boolean
 }
 
 export interface WizardConfig {
@@ -143,10 +144,10 @@ export const DEFAULT_WIZARD_CONFIG: WizardConfig = {
   openingStyleColor: "#f2f2f2",
   effectAnimation: "Tiada",
   effectColor: "#8999ab",
-  effectSize: 100,
-  footerBgColor: "",
+  effectSize: 40,
+  footerBgColor: "#ffffff",
   footerBgOpacity: 70,
-  footerIconColor: "",
+  footerIconColor: "#000000",
   scrollAnimation: "Naik",
 
   frontPageContentOffset: 0,
@@ -155,7 +156,7 @@ export const DEFAULT_WIZARD_CONFIG: WizardConfig = {
   eventTypeSize: 14,
   displayName: "",
   displayNameFont: "PlayfairScript",
-  displayNameColor: "#24104f",
+  displayNameColor: "#000000",
   displayNameSize: 50,
   startDateTime: "",
   endDateTime: "",
@@ -191,7 +192,7 @@ export const DEFAULT_WIZARD_CONFIG: WizardConfig = {
   additionalInfo2: "",
 
   generalFont: "Spartan",
-  generalColor: "#a25d66",
+  generalColor: "#000000",
   generalSize: 19,
   headingFont: "Spartan",
   headingSize: 39,
@@ -243,6 +244,7 @@ export const DEFAULT_WIZARD_CONFIG: WizardConfig = {
     confirmBtn: true,
     writeWishBtn: true,
     photoGallery: true,
+    weather: false,
   },
 }
 
@@ -263,6 +265,7 @@ export interface PackageCapabilities {
   moneyGift: boolean    // bank payment details — Gold only
   wishlist: boolean     // gift registry items — Gold only
   photoGallery: boolean // photo gallery — Silver+
+  weather: boolean      // venue weather forecast — Gold only
 }
 
 export function getPackageCapabilities(packageType: string): PackageCapabilities {
@@ -273,6 +276,7 @@ export function getPackageCapabilities(packageType: string): PackageCapabilities
     moneyGift:    tier === "gold",
     wishlist:     tier === "gold",
     photoGallery: tier === "gold",
+    weather:      tier === "gold",
   }
 }
 

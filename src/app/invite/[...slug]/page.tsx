@@ -275,7 +275,7 @@ export default async function InvitePage({ params, searchParams }: Props) {
         venue: true, date: true, time: true, endTime: true,
         saveDateBtn: true, eventProgram: true, countdown: true,
         attendance: true, wishes: true, confirmBtn: true, writeWishBtn: true,
-        photoGallery: true,
+        photoGallery: true, weather: true,
       },
     }
 
