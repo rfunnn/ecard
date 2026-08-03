@@ -201,6 +201,7 @@ export function WizardShell({ initialCard, guest = false, authoring }: Props) {
   const router = useRouter()
   const {
     config,
+    updateConfig,
     cardSlug,
     currentPage,
     isDirty,
@@ -422,6 +423,22 @@ export function WizardShell({ initialCard, guest = false, authoring }: Props) {
               {authoring ? "Admin" : guest ? (isMs ? "Templat" : "Templates") : "Dashboard"}
             </Link>
             <div className="flex items-center gap-1">
+              {/* Language toggle — applies across every builder page */}
+              <div className="flex rounded-full border border-gray-200 overflow-hidden mr-1">
+                {(["ms", "en"] as const).map((lang) => (
+                  <button
+                    key={lang}
+                    type="button"
+                    onClick={() => updateConfig("language", lang)}
+                    className={`px-2 py-0.5 text-[10px] font-bold tracking-wide transition-colors ${
+                      config.language === lang ? "bg-amber-500 text-white" : "text-gray-500 hover:bg-gray-100"
+                    }`}
+                    title={lang === "ms" ? "Bahasa Melayu" : "English"}
+                  >
+                    {lang === "ms" ? "BM" : "EN"}
+                  </button>
+                ))}
+              </div>
               {authoring && (
                 <span className="text-[10px] font-bold tracking-widest text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-full">
                   TEMPLAT

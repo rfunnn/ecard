@@ -163,15 +163,13 @@ export function WeatherForecast({
   if (!data) return null
   const info = WMO[data.code] ?? { ms: "Cuaca", en: "Weather", icon: "🌡️" }
 
-  // "Forecast on <event date/time>" caption
+  // "Forecast on <event date>" caption (date only — no time)
   const eventLabel = (() => {
     if (!eventDate) return null
     const d = new Date(eventDate)
     if (isNaN(d.getTime())) return null
     const locale = isMs ? "ms-MY" : "en-MY"
-    const datePart = d.toLocaleDateString(locale, { weekday: "short", day: "numeric", month: "short", year: "numeric" })
-    const timePart = d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })
-    return `${datePart}, ${timePart}`
+    return d.toLocaleDateString(locale, { weekday: "short", day: "numeric", month: "short", year: "numeric" })
   })()
 
   return (

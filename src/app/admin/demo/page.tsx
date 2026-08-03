@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Loader2, Save, ExternalLink, CheckCircle2 } from "lucide-react"
+import { Loader2, Save, ExternalLink, CheckCircle2, SlidersHorizontal } from "lucide-react"
 
 interface TemplateOption {
   id: string
@@ -271,12 +271,22 @@ function TemplateSlot({
         </select>
       </div>
 
+      {preview && (
+        <a
+          href={`/admin/templates/${preview.id}/author`}
+          className="flex items-center justify-center gap-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-2 rounded-lg transition-colors"
+        >
+          <SlidersHorizontal className="w-3.5 h-3.5" />
+          Sesuaikan Builder
+        </a>
+      )}
+
       {demoHref && (
         <a
           href={demoHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 text-xs text-amber-600 hover:text-amber-700 transition-colors"
+          className="flex items-center justify-center gap-1.5 text-xs text-amber-600 hover:text-amber-700 transition-colors"
         >
           <ExternalLink className="w-3 h-3" />
           Lihat demo
