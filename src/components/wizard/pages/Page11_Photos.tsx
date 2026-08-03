@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState } from "react"
 import { Images, Trash2, Plus, Upload, X, Loader2 } from "lucide-react"
 import { useWizardStore } from "@/store/wizardStore"
+import { useLanguageStore } from "@/store/languageStore"
 import { FieldLabel } from "../shared/FieldLabel"
 import { LockedPage } from "../shared/LockedPage"
 import { getPackageCapabilities } from "@/types/config"
@@ -18,7 +19,8 @@ export function Page11_Photos() {
   const removePhotoItem = useWizardStore((s) => s.removePhotoItem)
   const { config, updateConfig } = useWizardStore()
   const caps = getPackageCapabilities(config.packageType)
-  const isMs = config.language === "ms"
+  const { lang } = useLanguageStore()
+  const isMs = lang === "ms"
 
   const [loading, setLoading]         = useState(true)
   const [uploading, setUploading]     = useState(false)

@@ -1,6 +1,7 @@
 "use client"
 
 import { useWizardStore } from "@/store/wizardStore"
+import { useLanguageStore } from "@/store/languageStore"
 import { FieldLabel } from "../shared/FieldLabel"
 import { SimpleRichText } from "../shared/SimpleRichText"
 
@@ -10,7 +11,8 @@ const DEFAULT_SCHEDULE_EN = `Guest Arrival:\n11:00 am\n\nBride & Groom Arrival:\
 
 export function Page5_Program() {
   const { config, updateConfig } = useWizardStore()
-  const isMs = config.language === "ms"
+  const { lang } = useLanguageStore()
+  const isMs = lang === "ms"
   const DEFAULT_SCHEDULE = isMs ? DEFAULT_SCHEDULE_MS : DEFAULT_SCHEDULE_EN
 
   return (

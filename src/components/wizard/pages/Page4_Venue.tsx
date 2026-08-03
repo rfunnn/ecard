@@ -1,6 +1,7 @@
 "use client"
 
 import { useWizardStore } from "@/store/wizardStore"
+import { useLanguageStore } from "@/store/languageStore"
 import { FieldLabel } from "../shared/FieldLabel"
 import { WizardInput } from "../shared/WizardInput"
 import { SimpleRichText } from "../shared/SimpleRichText"
@@ -9,7 +10,8 @@ const DIVIDER = <div className="border-t border-gray-100" />
 
 export function Page4_Venue() {
   const { config, updateConfig } = useWizardStore()
-  const isMs = config.language === "ms"
+  const { lang } = useLanguageStore()
+  const isMs = lang === "ms"
 
   return (
     <div className="space-y-6">

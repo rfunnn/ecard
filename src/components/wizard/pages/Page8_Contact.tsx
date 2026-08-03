@@ -2,6 +2,7 @@
 
 import { ChevronUp, ChevronDown, Plus } from "lucide-react"
 import { useWizardStore } from "@/store/wizardStore"
+import { useLanguageStore } from "@/store/languageStore"
 import { WizardInput } from "../shared/WizardInput"
 import { WizardToggle } from "../shared/WizardToggle"
 
@@ -10,7 +11,8 @@ const MAX_CONTACTS = 7
 export function Page8_Contact() {
   const { config, addContact, removeContact, updateContact, moveContact } = useWizardStore()
   const contacts = config.contacts
-  const isMs = config.language === "ms"
+  const { lang } = useLanguageStore()
+  const isMs = lang === "ms"
 
   return (
     <div className="space-y-1">

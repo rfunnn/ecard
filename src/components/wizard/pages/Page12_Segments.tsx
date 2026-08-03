@@ -1,6 +1,7 @@
 "use client"
 
 import { useWizardStore } from "@/store/wizardStore"
+import { useLanguageStore } from "@/store/languageStore"
 import { WizardToggle } from "../shared/WizardToggle"
 import type { SegmentConfig } from "@/types/config"
 import { getPackageCapabilities } from "@/types/config"
@@ -45,7 +46,8 @@ export function Page12_Segments() {
   const { config, updateConfig } = useWizardStore()
   const segments = config.segments
   const caps = getPackageCapabilities(config.packageType)
-  const isMs = config.language === "ms"
+  const { lang } = useLanguageStore()
+  const isMs = lang === "ms"
   const segmentList = isMs ? SEGMENT_LIST_MS : SEGMENT_LIST_EN
   // Weather needs venue coordinates — without them the toggle can't be enabled.
   const hasCoords = !!parseVenueCoords(config)

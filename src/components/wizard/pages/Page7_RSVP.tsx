@@ -1,6 +1,7 @@
 "use client"
 
 import { useWizardStore } from "@/store/wizardStore"
+import { useLanguageStore } from "@/store/languageStore"
 import { FieldLabel } from "../shared/FieldLabel"
 import { SimpleRichText } from "../shared/SimpleRichText"
 import { WizardToggle } from "../shared/WizardToggle"
@@ -50,7 +51,8 @@ export function Page7_RSVP() {
   const { config, updateConfig } = useWizardStore()
   const rsvp = config.rsvp
   const caps = getPackageCapabilities(config.packageType)
-  const isMs = config.language === "ms"
+  const { lang } = useLanguageStore()
+  const isMs = lang === "ms"
   const modes = isMs ? MODES_MS : MODES_EN
   const showFields = isMs ? SHOW_FIELDS_MS : SHOW_FIELDS_EN
 

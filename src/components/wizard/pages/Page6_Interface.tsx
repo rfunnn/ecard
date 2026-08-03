@@ -1,6 +1,7 @@
 "use client"
 
 import { useWizardStore } from "@/store/wizardStore"
+import { useLanguageStore } from "@/store/languageStore"
 import { FieldLabel } from "../shared/FieldLabel"
 import { SliderField } from "../shared/SliderField"
 import { ColorField } from "../shared/ColorField"
@@ -10,7 +11,8 @@ const DIVIDER = <div className="border-t border-gray-100" />
 
 export function Page6_Interface() {
   const { config, updateConfig } = useWizardStore()
-  const isMs = config.language === "ms"
+  const { lang } = useLanguageStore()
+  const isMs = lang === "ms"
 
   return (
     <div className="space-y-6">

@@ -1,7 +1,7 @@
 "use client"
 
 import { Lock } from "lucide-react"
-import { useWizardStore } from "@/store/wizardStore"
+import { useLanguageStore } from "@/store/languageStore"
 
 interface Props {
   feature: string
@@ -9,8 +9,8 @@ interface Props {
 }
 
 export function LockedPage({ feature, requiredPlan }: Props) {
-  const { config } = useWizardStore()
-  const isMs = config.language === "ms"
+  const { lang } = useLanguageStore()
+  const isMs = lang === "ms"
 
   return (
     <div className="flex flex-col items-center justify-center gap-4 py-16 px-4 text-center">

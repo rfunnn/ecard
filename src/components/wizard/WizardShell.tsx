@@ -7,6 +7,7 @@ import { useSearchParams, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronLeft, ChevronRight, Save, Eye, X, ShoppingBag, ExternalLink, CheckCircle, AlertCircle } from "lucide-react"
 import { useWizardStore, TOTAL_PAGES } from "@/store/wizardStore"
+import { useLanguageStore } from "@/store/languageStore"
 import type { TemplateInfo } from "@/store/wizardStore"
 import type { WizardConfig } from "@/types/config"
 import { TemplateRenderer } from "@/components/templates/TemplateRenderer"
@@ -201,7 +202,6 @@ export function WizardShell({ initialCard, guest = false, authoring }: Props) {
   const router = useRouter()
   const {
     config,
-    updateConfig,
     cardSlug,
     currentPage,
     isDirty,
@@ -222,7 +222,8 @@ export function WizardShell({ initialCard, guest = false, authoring }: Props) {
     setPhotoItems,
   } = useWizardStore()
 
-  const isMs = config.language === "ms"
+  const { lang } = useLanguageStore()
+  const isMs = lang === "ms"
   const pageNames = isMs ? PAGE_NAMES_MS : PAGE_NAMES_EN
 
   const [cartOpen, setCartOpen] = useState(false)
@@ -423,22 +424,6 @@ export function WizardShell({ initialCard, guest = false, authoring }: Props) {
               {authoring ? "Admin" : guest ? (isMs ? "Templat" : "Templates") : "Dashboard"}
             </Link>
             <div className="flex items-center gap-1">
-              {/* Language toggle — applies across every builder page */}
-              <div className="flex rounded-full border border-gray-200 overflow-hidden mr-1">
-                {(["ms", "en"] as const).map((lang) => (
-                  <button
-                    key={lang}
-                    type="button"
-                    onClick={() => updateConfig("language", lang)}
-                    className={`px-2 py-0.5 text-[10px] font-bold tracking-wide transition-colors ${
-                      config.language === lang ? "bg-amber-500 text-white" : "text-gray-500 hover:bg-gray-100"
-                    }`}
-                    title={lang === "ms" ? "Bahasa Melayu" : "English"}
-                  >
-                    {lang === "ms" ? "BM" : "EN"}
-                  </button>
-                ))}
-              </div>
               {authoring && (
                 <span className="text-[10px] font-bold tracking-widest text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-full">
                   TEMPLAT

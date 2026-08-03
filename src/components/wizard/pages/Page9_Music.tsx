@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Play } from "lucide-react"
 import { useWizardStore } from "@/store/wizardStore"
+import { useLanguageStore } from "@/store/languageStore"
 import { FieldLabel } from "../shared/FieldLabel"
 import { SliderField } from "../shared/SliderField"
 import { WizardToggle } from "../shared/WizardToggle"
@@ -20,7 +21,8 @@ function parseStartSeconds(timeString: string): number {
 
 export function Page9_Music() {
   const { config, updateConfig } = useWizardStore()
-  const isMs = config.language === "ms"
+  const { lang } = useLanguageStore()
+  const isMs = lang === "ms"
   const [showEmbed, setShowEmbed] = useState(false)
 
   const videoId = extractYouTubeId(config.youtubeUrl)

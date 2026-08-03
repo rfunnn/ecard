@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { ChevronDown } from "lucide-react"
 import { useWizardStore } from "@/store/wizardStore"
+import { useLanguageStore } from "@/store/languageStore"
 import type { TemplateInfo } from "@/store/wizardStore"
 import { FieldLabel } from "../shared/FieldLabel"
 import { ColorField } from "../shared/ColorField"
@@ -98,7 +99,8 @@ export function Page1_Main() {
   }
 
   const isBronze = getPackageTier(config.packageType) === "bronze"
-  const isMs = config.language === "ms"
+  const { lang } = useLanguageStore()
+  const isMs = lang === "ms"
   const packageLocked = isPublished
 
   return (
