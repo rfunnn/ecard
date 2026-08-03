@@ -71,7 +71,6 @@ interface Forecast {
   tmax: number
   tmin: number
   rainText: string | null
-  mode: "forecast" | "estimate"
 }
 
 const pad = (n: number) => String(n).padStart(2, "0")
@@ -151,7 +150,6 @@ export function WeatherForecast({
 
         const fc: Forecast = {
           code, tmax: Math.round(tmax), tmin: Math.round(tmin), rainText,
-          mode: withinForecast ? "forecast" : "estimate",
         }
         setData(fc)
         try { sessionStorage.setItem(cacheKey, JSON.stringify(fc)) } catch { /* ignore quota */ }
@@ -164,6 +162,17 @@ export function WeatherForecast({
   // Stay hidden until there's real data — no loading spinner / layout flash.
   if (!data) return null
   const info = WMO[data.code] ?? { ms: "Cuaca", en: "Weather", icon: "🌡️" }
+
+  // "Forecast on <event date/time>" caption
+  const eventLabel = (() => {
+    if (!eventDate) return null
+    const d = new Date(eventDate)
+    if (isNaN(d.getTime())) return null
+    const locale = isMs ? "ms-MY" : "en-MY"
+    const datePart = d.toLocaleDateString(locale, { weekday: "short", day: "numeric", month: "short", year: "numeric" })
+    const timePart = d.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })
+    return `${datePart}, ${timePart}`
+  })()
 
   return (
     <div className="pb-4 text-center">
@@ -196,11 +205,11 @@ export function WeatherForecast({
             💧 {data.rainText}
           </p>
         )}
-        <p className={`${bodyFont} text-[10px] opacity-45 mt-1`} style={{ color: bodyColor }}>
-          {data.mode === "forecast"
-            ? (isMs ? "Ramalan untuk hari majlis" : "Forecast for the event day")
-            : (isMs ? "Anggaran berdasarkan tahun lepas" : "Estimate based on last year")}
-        </p>
+        {eventLabel && (
+          <p className={`${bodyFont} text-[10px] opacity-45 mt-1`} style={{ color: bodyColor }}>
+            {isMs ? "Ramalan pada " : "Forecast on "}{eventLabel}
+          </p>
+        )}
       </div>
     </div>
   )
