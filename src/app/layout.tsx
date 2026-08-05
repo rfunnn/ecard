@@ -60,14 +60,14 @@ export const metadata: Metadata = {
     siteName: "ekadku.com",
     locale: "ms_MY",
     type: "website",
-    images: [{ url: "/icon.png", width: 512, height: 512, alt: "ekadku.com — Kad Jemputan Digital" }],
+    images: [{ url: "/og-image.png", width: 1950, height: 1024, alt: "ekadku.com — Kad Jemputan Digital" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "ekadku.com — Kad Jemputan Digital",
     description: "Cipta kad jemputan digital yang cantik. Perkahwinan, hari jadi, korporat. Mulai RM30.",
     site: "@ekadku",
-    images: ["/icon.png"],
+    images: ["/og-image.png"],
   },
   verification: {
     google: "FsMFuM2EhLes5nhV5dR9Yc7yJJJ7UHctT_3ZOkExniI",
