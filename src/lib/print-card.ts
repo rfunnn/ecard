@@ -86,8 +86,10 @@ export function generatePrintHTML(card: PrintCardInput): string {
   const wc = card.wizardConfig
   const accent = card.theme?.primaryColor ?? "#9b4d5e"
   const bg = card.theme?.bgColor ?? "#faf7f4"
-  // body is used for paragraph/body text; accent for headings/names/ornaments
+  // Mirror the live card's font colours: body/headings use generalColor, the couple's
+  // names use displayNameColor. accent (primaryColor) is kept only for ornaments.
   const body = wc?.generalColor ?? card.theme?.bodyColor ?? accent
+  const nameColor = wc?.displayNameColor ?? card.theme?.bodyColor ?? accent
   const lang = card.language === "ms"
   const pageMode = card.pageMode ?? "4"
 
@@ -190,7 +192,7 @@ export function generatePrintHTML(card: PrintCardInput): string {
   const p1: string[] = [
     `<p style="font-family:${SANS};font-size:8pt;letter-spacing:0.38em;color:${body};text-transform:uppercase;opacity:0.78;margin-bottom:10px;">${esc(eventType)}</p>`,
     divider("&#10022;"),
-    `<h1 style="font-family:${nameFontCss};font-size:42pt;color:${accent};line-height:1.05;margin:10px 0 8px;">${nameHtml}</h1>`,
+    `<h1 style="font-family:${nameFontCss};font-size:42pt;color:${nameColor};line-height:1.05;margin:10px 0 8px;">${nameHtml}</h1>`,
     divider("&#10022;"),
   ]
   if (dayAndDate) {
@@ -226,7 +228,7 @@ export function generatePrintHTML(card: PrintCardInput): string {
 
   const fullNameLines = fullNames.split("\n").map(l => {
     const isSep = /^[&]$/.test(l.trim()) || /^dan$/i.test(l.trim())
-    return `<p style="font-family:${fullNameFontCss};font-size:${isSep ? "10" : "15"}pt;color:${accent};line-height:1.45;${isSep ? "opacity:0.38;" : "font-weight:600;"}">${esc(l) || "&nbsp;"}</p>`
+    return `<p style="font-family:${fullNameFontCss};font-size:${isSep ? "10" : "15"}pt;color:${nameColor};line-height:1.45;${isSep ? "opacity:0.38;" : "font-weight:600;"}">${esc(l) || "&nbsp;"}</p>`
   })
 
   const p2: string[] = []
@@ -258,7 +260,7 @@ export function generatePrintHTML(card: PrintCardInput): string {
   // name/address on the right; otherwise fall back to a centered stack.
   const venueInfo: string[] = []
   if (venueLine) {
-    venueInfo.push(`<h2 style="font-family:${SERIF};font-size:15pt;color:${accent};font-weight:600;margin:0 0 4px;line-height:1.2;">${esc(venueLine)}</h2>`)
+    venueInfo.push(`<h2 style="font-family:${SERIF};font-size:15pt;color:${body};font-weight:600;margin:0 0 4px;line-height:1.2;">${esc(venueLine)}</h2>`)
   }
   if (venueAddress) {
     venueInfo.push(`<div style="margin:2px 0;">${splitLines(venueAddress).map(l => `<p style="font-family:${SANS};font-size:8pt;color:${body};opacity:0.62;line-height:1.6;">${esc(l)}</p>`).join("")}</div>`)
@@ -316,7 +318,7 @@ export function generatePrintHTML(card: PrintCardInput): string {
     : `<p style="font-family:${SERIF};font-size:9pt;color:${body};opacity:0.58;font-style:italic;">${lang ? "Kehadiran Dato&#39; | Datin | Tuan | Puan adalah penghormatan besar bagi kami." : "Your presence is the greatest honour to us."}</p>`
 
   const p4: string[] = [
-    `<h2 style="font-family:${SERIF};font-size:22pt;color:${accent};font-weight:600;letter-spacing:0.03em;margin-bottom:8px;">${lang ? "Terima Kasih" : "Thank You"}</h2>`,
+    `<h2 style="font-family:${SERIF};font-size:22pt;color:${body};font-weight:600;letter-spacing:0.03em;margin-bottom:8px;">${lang ? "Terima Kasih" : "Thank You"}</h2>`,
     divider("&#10022;"),
     `<div style="max-width:3.2in;margin:6px auto;">${closingHtml}</div>`,
   ]
@@ -387,7 +389,7 @@ export function generatePrintHTML(card: PrintCardInput): string {
     // Full names (slightly smaller than 4-page)
     const packedNameLines = fullNames.split("\n").map(l => {
       const isSep = /^[&]$/.test(l.trim()) || /^dan$/i.test(l.trim())
-      return `<p style="font-family:${fullNameFontCss};font-size:${isSep ? "8" : "12"}pt;color:${accent};line-height:1.35;${isSep ? "opacity:0.38;" : "font-weight:600;"}">${esc(l) || "&nbsp;"}</p>`
+      return `<p style="font-family:${fullNameFontCss};font-size:${isSep ? "8" : "12"}pt;color:${nameColor};line-height:1.35;${isSep ? "opacity:0.38;" : "font-weight:600;"}">${esc(l) || "&nbsp;"}</p>`
     })
     items.push(`<div style="margin:2px 0;">${packedNameLines.join("")}</div>`)
 
@@ -396,7 +398,7 @@ export function generatePrintHTML(card: PrintCardInput): string {
     // Venue — QR on the left, venue name/address on the right (falls back to a stack).
     const packedVenueInfo: string[] = []
     if (venueLine) {
-      packedVenueInfo.push(`<p style="font-family:${SERIF};font-size:9pt;color:${accent};font-weight:600;margin-bottom:2px;line-height:1.2;">${esc(venueLine)}</p>`)
+      packedVenueInfo.push(`<p style="font-family:${SERIF};font-size:9pt;color:${body};font-weight:600;margin-bottom:2px;line-height:1.2;">${esc(venueLine)}</p>`)
     }
     if (venueAddress) {
       packedVenueInfo.push(
