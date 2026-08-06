@@ -33,6 +33,24 @@ function splitLines(s: string | undefined | null): string[] {
   return s.split("\n").filter(l => l.trim())
 }
 
+// Rich-text fields (from SimpleRichText) may contain HTML markup — convert it to
+// plain text with real newlines so esc()/splitLines handle it like the live card does.
+// Mirrors htmlToPlain in components/templates/templateUtils.tsx.
+function htmlToPlain(s: string | undefined | null): string {
+  if (!s) return ""
+  return s
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n")
+    .replace(/<\/div>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim()
+}
+
 // Returns a CSS font-family string using single quotes (safe inside double-quoted HTML attributes)
 function fontFamily(font: string | undefined): string {
   const map: Record<string, string> = {
@@ -94,7 +112,7 @@ export function generatePrintHTML(card: PrintCardInput): string {
   const pageMode = card.pageMode ?? "4"
 
   const displayName =
-    wc?.displayName ||
+    htmlToPlain(wc?.displayName) ||
     (card.groomName && card.brideName ? `${card.groomName} & ${card.brideName}` : null) ||
     card.title ||
     "Nama Pengantin"
@@ -102,25 +120,25 @@ export function generatePrintHTML(card: PrintCardInput): string {
   const nameFontCss = fontFamily(wc?.displayNameFont)
   const fullNameFontCss = fontFamily(wc?.fullNamesFont)
 
-  const eventType = wc?.eventType || (lang ? "Walimatul Urus" : "Wedding Reception")
-  const dayAndDate = wc?.dayAndDate || ""
-  const hijriDate = wc?.hijriDate || ""
-  const venueLine = wc?.venueLine || ""
-  const venueAddress = wc?.venueAddress || ""
-  const gpsCoords = wc?.gpsCoordinates || ""
+  const eventType = htmlToPlain(wc?.eventType) || (lang ? "Walimatul Urus" : "Wedding Reception")
+  const dayAndDate = htmlToPlain(wc?.dayAndDate)
+  const hijriDate = htmlToPlain(wc?.hijriDate)
+  const venueLine = htmlToPlain(wc?.venueLine)
+  const venueAddress = htmlToPlain(wc?.venueAddress)
+  const gpsCoords = htmlToPlain(wc?.gpsCoordinates)
   // Venue location QR: prefer the Google Maps URL, fall back to Waze when only that is set.
   const locationUrl = (wc?.googleMapsUrl || "").trim() || (wc?.wazeUrl || "").trim()
-  const openingSpeech = wc?.openingSpeech || ""
-  const fullNames = wc?.fullNames || displayName
-  const invitationSpeech = wc?.invitationSpeech || ""
+  const openingSpeech = htmlToPlain(wc?.openingSpeech)
+  const fullNames = htmlToPlain(wc?.fullNames) || displayName
+  const invitationSpeech = htmlToPlain(wc?.invitationSpeech)
   const org1 = wc?.organizer1
   const org2 = wc?.organizer2
   const orgCount = wc?.organizerCount ?? 0
-  const additionalInfo1 = wc?.additionalInfo1 || ""
-  const eventProgram = wc?.eventProgram || ""
-  const additionalInfo2 = wc?.additionalInfo2 || ""
+  const additionalInfo1 = htmlToPlain(wc?.additionalInfo1)
+  const eventProgram = htmlToPlain(wc?.eventProgram)
+  const additionalInfo2 = htmlToPlain(wc?.additionalInfo2)
   const contacts = (wc?.contacts ?? []).filter(c => c.phone)
-  const rsvpNote = wc?.rsvp?.note || ""
+  const rsvpNote = htmlToPlain(wc?.rsvp?.note)
 
   let timeRange = ""
   try {
