@@ -1,3 +1,4 @@
+import QRCode from "qrcode"
 import type { WizardConfig } from "@/types/config"
 
 export type PrintPageMode = "2" | "4"
@@ -58,6 +59,29 @@ function safeCssUrl(url: string): string {
   return url.replace(/'/g, "%27").replace(/\(/g, "%28").replace(/\)/g, "%29")
 }
 
+// Builds a self-contained SVG QR code from a URL. Uses the synchronous QRCode.create
+// (no external service), so the code renders offline in the print window. Dark modules
+// on a white plate keep it reliably scannable regardless of the card's colours.
+function qrSvg(text: string, size = 92): string {
+  try {
+    const qr = QRCode.create(text, { errorCorrectionLevel: "M" })
+    const count = qr.modules.size
+    const data = qr.modules.data
+    const cell = size / count
+    let rects = ""
+    for (let r = 0; r < count; r++) {
+      for (let c = 0; c < count; c++) {
+        if (data[r * count + c]) {
+          rects += `<rect x="${(c * cell).toFixed(2)}" y="${(r * cell).toFixed(2)}" width="${cell.toFixed(2)}" height="${cell.toFixed(2)}"/>`
+        }
+      }
+    }
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" shape-rendering="crispEdges"><g fill="#1f1f1f">${rects}</g></svg>`
+  } catch {
+    return ""
+  }
+}
+
 export function generatePrintHTML(card: PrintCardInput): string {
   const wc = card.wizardConfig
   const accent = card.theme?.primaryColor ?? "#9b4d5e"
@@ -82,6 +106,8 @@ export function generatePrintHTML(card: PrintCardInput): string {
   const venueLine = wc?.venueLine || ""
   const venueAddress = wc?.venueAddress || ""
   const gpsCoords = wc?.gpsCoordinates || ""
+  // Venue location QR: prefer the Google Maps URL, fall back to Waze when only that is set.
+  const locationUrl = (wc?.googleMapsUrl || "").trim() || (wc?.wazeUrl || "").trim()
   const openingSpeech = wc?.openingSpeech || ""
   const fullNames = wc?.fullNames || displayName
   const invitationSpeech = wc?.invitationSpeech || ""
@@ -173,9 +199,7 @@ export function generatePrintHTML(card: PrintCardInput): string {
   if (hijriDate) {
     p1.push(`<p style="font-family:${SERIF};font-size:9pt;color:${body};opacity:0.58;font-style:italic;margin-top:2px;">${esc(hijriDate)}</p>`)
   }
-  if (timeRange) {
-    p1.push(`<p style="font-family:${SANS};font-size:9pt;letter-spacing:0.1em;color:${body};opacity:0.68;margin-top:4px;">${esc(timeRange)}</p>`)
-  }
+  // Time is intentionally omitted on the cover — it's shown on the details page (page 3).
   if (venueLine) {
     p1.push(thinDivider("&middot;"))
     p1.push(`<p style="font-family:${SERIF};font-size:11pt;color:${body};opacity:0.78;font-style:italic;margin-top:4px;">${esc(venueLine)}</p>`)
@@ -225,27 +249,45 @@ export function generatePrintHTML(card: PrintCardInput): string {
 
   const progLines = splitLines(eventProgram)
 
-  const topCol = `position:absolute;inset:34px;display:flex;flex-direction:column;align-items:center;text-align:center;overflow:hidden;gap:0;padding-top:6px;`
+  const topCol = `position:absolute;inset:34px;display:flex;flex-direction:column;align-items:center;text-align:center;overflow:hidden;gap:0;padding-top:64px;`
   const p3: string[] = [
     `<p style="font-family:${SANS};font-size:7.5pt;letter-spacing:0.4em;color:${body};text-transform:uppercase;opacity:0.62;margin-bottom:8px;">${lang ? "MAKLUMAT MAJLIS" : "EVENT DETAILS"}</p>`,
     divider("&#10022;", "4px"),
   ]
+  // Venue block: when a location URL exists, lay the QR on the left and the venue
+  // name/address on the right; otherwise fall back to a centered stack.
+  const venueInfo: string[] = []
   if (venueLine) {
-    p3.push(`<h2 style="font-family:${SERIF};font-size:16pt;color:${accent};font-weight:600;margin:8px 0 4px;">${esc(venueLine)}</h2>`)
+    venueInfo.push(`<h2 style="font-family:${SERIF};font-size:15pt;color:${accent};font-weight:600;margin:0 0 4px;line-height:1.2;">${esc(venueLine)}</h2>`)
   }
   if (venueAddress) {
-    p3.push(`<div style="margin:2px 0 5px;">${splitLines(venueAddress).map(l => `<p style="font-family:${SANS};font-size:8pt;color:${body};opacity:0.62;line-height:1.6;">${esc(l)}</p>`).join("")}</div>`)
+    venueInfo.push(`<div style="margin:2px 0;">${splitLines(venueAddress).map(l => `<p style="font-family:${SANS};font-size:8pt;color:${body};opacity:0.62;line-height:1.6;">${esc(l)}</p>`).join("")}</div>`)
   }
   if (gpsCoords) {
-    p3.push(`<p style="font-family:${SANS};font-size:7pt;color:${body};opacity:0.42;margin-bottom:3px;">GPS: ${esc(gpsCoords)}</p>`)
+    venueInfo.push(`<p style="font-family:${SANS};font-size:7pt;color:${body};opacity:0.42;margin-top:2px;">GPS: ${esc(gpsCoords)}</p>`)
+  }
+
+  const venueQrSvg = locationUrl ? qrSvg(locationUrl, 88) : ""
+  if (venueQrSvg) {
+    const qrCol =
+      `<div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:3px;">` +
+      `<div style="background:#fff;padding:5px;border-radius:6px;border:1px solid ${accent}22;line-height:0;">${venueQrSvg}</div>` +
+      `<p style="font-family:${SANS};font-size:5.5pt;letter-spacing:0.22em;color:${body};text-transform:uppercase;opacity:0.5;">${lang ? "IMBAS LOKASI" : "SCAN LOCATION"}</p>` +
+      `</div>`
+    p3.push(
+      `<div style="display:flex;align-items:center;justify-content:center;gap:14px;margin:8px 0 4px;width:100%;max-width:290px;">` +
+      qrCol +
+      `<div style="flex:1;text-align:left;">${venueInfo.join("")}</div>` +
+      `</div>`
+    )
+  } else {
+    p3.push(...venueInfo)
   }
   p3.push(thinDivider("&#10022;"))
   if (dayAndDate) {
     p3.push(`<div style="margin:5px 0 2px;">${splitLines(dayAndDate).map(l => `<p style="font-family:${SERIF};font-size:11pt;color:${body};opacity:0.84;line-height:1.55;">${esc(l)}</p>`).join("")}</div>`)
   }
-  if (timeRange) {
-    p3.push(`<p style="font-family:${SANS};font-size:9pt;letter-spacing:0.1em;color:${body};opacity:0.68;margin-bottom:3px;">${esc(timeRange)}</p>`)
-  }
+  // Time is intentionally omitted here — it's covered by the "Atur Cara" programme below.
   if (additionalInfo1) {
     p3.push(thinDivider("&middot;"))
     p3.push(`<p style="font-family:${SERIF};font-size:9pt;color:${body};opacity:0.68;font-style:italic;margin:4px 0;">${esc(additionalInfo1)}</p>`)
@@ -287,25 +329,18 @@ export function generatePrintHTML(card: PrintCardInput): string {
     p4.push(`<p style="font-family:${SANS};font-size:6.5pt;letter-spacing:0.35em;color:${body};text-transform:uppercase;opacity:0.48;margin-bottom:5px;">${lang ? "HUBUNGI" : "CONTACT"}</p>`)
     p4.push(contactsHtml)
   }
-  p4.push(thinDivider("&middot;"))
-  p4.push(
-    `<div style="margin-top:6px;">` +
-    `<p style="font-family:${SANS};font-size:6.5pt;letter-spacing:0.2em;color:${body};text-transform:uppercase;opacity:0.42;margin-bottom:3px;">${lang ? "KAD DIGITAL" : "DIGITAL CARD"}</p>` +
-    `<p style="font-family:${SANS};font-size:8pt;color:${body};opacity:0.58;">ekadku.com${card.cardNum ? `/${card.cardNum}` : `/${esc(card.slug)}`}</p>` +
-    `</div>`
-  )
 
   const page4 =
     `<div style="${pgStyle(false)}">` +
     watermark + frame +
     `<div style="${centerCol}">${p4.join("")}</div>` +
-    `<p style="position:absolute;bottom:26px;left:0;right:0;text-align:center;font-family:${SANS};font-size:5.5pt;color:${body};opacity:0.22;letter-spacing:0.25em;text-transform:uppercase;">ekadku.com &nbsp;&middot;&nbsp; kad jemputan digital</p>` +
+    `<p style="position:absolute;bottom:26px;left:0;right:0;text-align:center;font-family:${SANS};font-size:6pt;color:${body};opacity:0.4;letter-spacing:0.2em;">www.ekadku.com</p>` +
     `</div>`
 
   // ── Packed page 2 (2-page mode): condenses pages 2+3+4 into one ──
 
   function buildPackedPage(): string {
-    const packedCol = `position:absolute;inset:28px;display:flex;flex-direction:column;align-items:center;text-align:center;overflow:hidden;gap:0;`
+    const packedCol = `position:absolute;inset:28px;display:flex;flex-direction:column;align-items:center;text-align:center;overflow:hidden;gap:0;padding-top:40px;`
     const items: string[] = []
 
     // Opening speech (max 3 lines)
@@ -358,33 +393,36 @@ export function generatePrintHTML(card: PrintCardInput): string {
 
     items.push(thinDivider("&middot;", "3px"))
 
-    // Venue
+    // Venue — QR on the left, venue name/address on the right (falls back to a stack).
+    const packedVenueInfo: string[] = []
     if (venueLine) {
-      items.push(`<p style="font-family:${SERIF};font-size:10pt;color:${accent};font-weight:600;margin-bottom:2px;">${esc(venueLine)}</p>`)
+      packedVenueInfo.push(`<p style="font-family:${SERIF};font-size:9pt;color:${accent};font-weight:600;margin-bottom:2px;line-height:1.2;">${esc(venueLine)}</p>`)
     }
     if (venueAddress) {
-      items.push(
-        `<div style="margin-bottom:2px;">${
+      packedVenueInfo.push(
+        `<div>${
           splitLines(venueAddress).slice(0, 3).map(l =>
             `<p style="font-family:${SANS};font-size:6pt;color:${body};opacity:0.6;line-height:1.5;">${esc(l)}</p>`
           ).join("")
         }</div>`
       )
     }
-
-    // Date + time
-    if (dayAndDate) {
+    const packedQrSvg = locationUrl ? qrSvg(locationUrl, 54) : ""
+    if (packedQrSvg) {
       items.push(
-        `<div style="margin-top:2px;">${
-          splitLines(dayAndDate).map(l =>
-            `<p style="font-family:${SERIF};font-size:7.5pt;color:${body};opacity:0.82;line-height:1.45;">${esc(l)}</p>`
-          ).join("")
-        }</div>`
+        `<div style="display:flex;align-items:center;justify-content:center;gap:8px;margin:2px 0;width:100%;max-width:230px;">` +
+        `<div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;">` +
+        `<div style="background:#fff;padding:3px;border-radius:4px;border:1px solid ${accent}22;line-height:0;">${packedQrSvg}</div>` +
+        `<p style="font-family:${SANS};font-size:4.5pt;letter-spacing:0.18em;color:${body};text-transform:uppercase;opacity:0.5;">${lang ? "IMBAS LOKASI" : "SCAN LOCATION"}</p>` +
+        `</div>` +
+        `<div style="flex:1;text-align:left;">${packedVenueInfo.join("")}</div>` +
+        `</div>`
       )
+    } else {
+      items.push(...packedVenueInfo)
     }
-    if (timeRange) {
-      items.push(`<p style="font-family:${SANS};font-size:6.5pt;color:${body};opacity:0.62;margin-top:1px;">${esc(timeRange)}</p>`)
-    }
+
+    // Day/date is omitted here (shown on the cover) and time is omitted (covered by "Atur Cara").
 
     // Dress code / additionalInfo1
     if (additionalInfo1) {
@@ -416,24 +454,11 @@ export function generatePrintHTML(card: PrintCardInput): string {
       items.push(packedContactsHtml)
     }
 
-    // Closing line (max 2 lines, or default)
-    const packedClosing = splitLines(additionalInfo2).slice(0, 2)
-    if (packedClosing.length > 0) {
-      items.push(thinDivider("&middot;", "3px"))
-      items.push(
-        packedClosing.map(l =>
-          `<p style="font-family:${SERIF};font-size:6pt;color:${body};opacity:0.55;line-height:1.6;font-style:italic;">${esc(l)}</p>`
-        ).join("")
-      )
-    }
+    // Additional Info #2 (additionalInfo2) is intentionally omitted in 2-page mode to save space.
 
-    // ekadku.com footer
-    items.push(
-      `<p style="font-family:${SANS};font-size:5.5pt;color:${body};opacity:0.38;letter-spacing:0.15em;margin-top:4px;">` +
-      `ekadku.com${card.cardNum ? `/${card.cardNum}` : `/${esc(card.slug)}`}</p>`
-    )
-
-    return `<div style="${pgStyle(false)}">${watermark}${frame}<div style="${packedCol}">${items.join("")}</div></div>`
+    return `<div style="${pgStyle(false)}">${watermark}${frame}<div style="${packedCol}">${items.join("")}</div>` +
+      `<p style="position:absolute;bottom:22px;left:0;right:0;text-align:center;font-family:${SANS};font-size:6pt;color:${body};opacity:0.4;letter-spacing:0.2em;">www.ekadku.com</p>` +
+      `</div>`
   }
 
   // ── Assemble pages based on mode ──────────────────────────────────
