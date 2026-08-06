@@ -297,7 +297,7 @@ export function generatePrintHTML(card: PrintCardInput): string {
     p3.push(`<p style="font-family:${SANS};font-size:7pt;letter-spacing:0.3em;color:${body};text-transform:uppercase;opacity:0.48;margin-bottom:5px;">${lang ? "ATUR CARA" : "PROGRAMME"}</p>`)
     const progHtml = progLines.slice(0, 8).map(l => {
       const isTime = /^\d{1,2}[:.]\d{2}/.test(l.trim()) || /\b(pagi|petang|malam|am|pm)\b/i.test(l)
-      return `<p style="font-family:${SANS};font-size:7.5pt;color:${body};opacity:${isTime ? "0.48" : "0.82"};line-height:1.55;text-align:left;${!isTime ? "font-weight:700;margin-top:4px;" : ""}">${esc(l)}</p>`
+      return `<p style="font-family:${SANS};font-size:7.5pt;color:${body};opacity:${isTime ? "0.48" : "0.82"};line-height:1.55;text-align:center;${!isTime ? "font-weight:700;margin-top:4px;" : ""}">${esc(l)}</p>`
     }).join("")
     p3.push(`<div style="width:100%;max-width:195px;margin:0 auto;">${progHtml}</div>`)
   }
@@ -307,7 +307,7 @@ export function generatePrintHTML(card: PrintCardInput): string {
   // ── Page 4: Thank You / Contact ───────────────────────────────────
 
   const contactsHtml = contacts.slice(0, 7).map(c =>
-    `<div style="display:flex;align-items:center;justify-content:center;gap:7px;margin:3px 0;">${c.isWhatsApp ? waIconSvg(body) : phoneIconSvg(body)}<div style="text-align:left;">${c.name ? `<p style="font-family:${SERIF};font-size:11pt;color:${body};">${esc(c.name)}</p>` : ""}<p style="font-family:${SANS};font-size:8pt;color:${body};opacity:0.62;">${esc(c.phone)}</p></div></div>`
+    `<div style="display:flex;align-items:center;gap:7px;">${c.isWhatsApp ? waIconSvg(body) : phoneIconSvg(body)}<div style="text-align:left;">${c.name ? `<p style="font-family:${SERIF};font-size:11pt;color:${body};">${esc(c.name)}</p>` : ""}<p style="font-family:${SANS};font-size:8pt;color:${body};opacity:0.62;">${esc(c.phone)}</p></div></div>`
   ).join("")
 
   const closingLines = splitLines(additionalInfo2).slice(0, 4)
@@ -327,7 +327,7 @@ export function generatePrintHTML(card: PrintCardInput): string {
   if (contacts.length > 0) {
     p4.push(thinDivider("&#10022;"))
     p4.push(`<p style="font-family:${SANS};font-size:6.5pt;letter-spacing:0.35em;color:${body};text-transform:uppercase;opacity:0.48;margin-bottom:5px;">${lang ? "HUBUNGI" : "CONTACT"}</p>`)
-    p4.push(contactsHtml)
+    p4.push(`<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:6px 22px;">${contactsHtml}</div>`)
   }
 
   const page4 =
@@ -436,22 +436,22 @@ export function generatePrintHTML(card: PrintCardInput): string {
       items.push(`<p style="font-family:${SANS};font-size:5.5pt;letter-spacing:0.3em;color:${body};text-transform:uppercase;opacity:0.45;margin-bottom:2px;">${lang ? "ATUR CARA" : "PROGRAMME"}</p>`)
       const packedProgHtml = packedProgLines.slice(0, 5).map(l => {
         const isTime = /^\d{1,2}[:.]\d{2}/.test(l.trim()) || /\b(pagi|petang|malam|am|pm)\b/i.test(l)
-        return `<p style="font-family:${SANS};font-size:6pt;color:${body};opacity:${isTime ? "0.45" : "0.78"};line-height:1.4;text-align:left;${!isTime ? "font-weight:700;margin-top:2px;" : ""}">${esc(l)}</p>`
+        return `<p style="font-family:${SANS};font-size:6pt;color:${body};opacity:${isTime ? "0.45" : "0.78"};line-height:1.4;text-align:center;${!isTime ? "font-weight:700;margin-top:2px;" : ""}">${esc(l)}</p>`
       }).join("")
       items.push(`<div style="width:100%;max-width:180px;margin:0 auto;">${packedProgHtml}</div>`)
     }
 
-    // Contacts (max 2, inline compact)
+    // Contacts (inline compact, side by side)
     if (contacts.length > 0) {
       items.push(thinDivider("&#10022;", "3px"))
       const packedContactsHtml = contacts.slice(0, 4).map(c =>
-        `<div style="display:flex;align-items:center;justify-content:center;gap:5px;margin:2px 0;">${
+        `<div style="display:flex;align-items:center;gap:5px;">${
           c.isWhatsApp ? waIconSvg(body) : phoneIconSvg(body)
         }<p style="font-family:${SANS};font-size:6pt;color:${body};opacity:0.65;">${
           c.name ? `${esc(c.name)} &nbsp;·&nbsp; ` : ""
         }${esc(c.phone)}</p></div>`
       ).join("")
-      items.push(packedContactsHtml)
+      items.push(`<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;">${packedContactsHtml}</div>`)
     }
 
     // Additional Info #2 (additionalInfo2) is intentionally omitted in 2-page mode to save space.
