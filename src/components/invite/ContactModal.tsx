@@ -22,19 +22,28 @@ export function ContactModal({ isOpen, onClose, card, onAnalytic, contained }: C
   const primaryColor = wCfg?.footerIconColor || _primaryColor
   const heading = card.language === "ms" ? "HUBUNGI" : "CONTACT"
 
-  if (!card.whatsappNumber) return null
+  // Use the full contacts list saved in the wizard config; fall back to the single
+  // top-level contact for older cards that predate the multi-contact field.
+  const contacts = (wCfg?.contacts ?? []).filter((c) => c.phone?.trim())
+  const list = contacts.length > 0
+    ? contacts
+    : card.whatsappNumber
+      ? [{ name: card.contactName ?? "", role: "", phone: card.whatsappNumber, isWhatsApp: true }]
+      : []
 
-  function openWhatsApp() {
+  if (list.length === 0) return null
+
+  function openWhatsApp(phone: string, name: string) {
     onAnalytic?.("WHATSAPP_CLICK")
     const message = card.language === "ms"
-      ? `Assalamualaikum ${card.contactName ?? ""}, saya ingin bertanya tentang ${card.title}.`
-      : `Hello ${card.contactName ?? ""}, I would like to enquire about ${card.title}.`
-    window.open(buildWhatsAppUrl(card.whatsappNumber!, message), "_blank", "noopener,noreferrer")
+      ? `Assalamualaikum ${name}, saya ingin bertanya tentang ${card.title}.`
+      : `Hello ${name}, I would like to enquire about ${card.title}.`
+    window.open(buildWhatsAppUrl(phone, message), "_blank", "noopener,noreferrer")
   }
 
-  function openPhoneCall() {
+  function openPhoneCall(phone: string) {
     onAnalytic?.("CALL_CLICK")
-    window.open(`tel:${card.whatsappNumber}`, "_self")
+    window.open(`tel:${phone}`, "_self")
   }
 
   const iconButtonClass = "flex items-center justify-center w-10 h-10 rounded-full transition-all active:scale-90"
@@ -50,22 +59,45 @@ export function ContactModal({ isOpen, onClose, card, onAnalytic, contained }: C
           {heading}
         </p>
 
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium" style={{ color: primaryColor }}>
-            {card.contactName || card.whatsappNumber}
-          </span>
+        <div className="flex flex-col divide-y" style={{ borderColor: `${primaryColor}18` }}>
+          {list.map((contact, i) => (
+            <div key={i} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
+              <div className="flex flex-col">
+                <span className="text-sm font-medium" style={{ color: primaryColor }}>
+                  {contact.name || contact.phone}
+                </span>
+                {contact.role && (
+                  <span className="text-xs opacity-60" style={{ color: primaryColor }}>
+                    {contact.role}
+                  </span>
+                )}
+              </div>
 
-          <div className="flex items-center gap-3">
-            <button onClick={openWhatsApp} aria-label="WhatsApp" className={iconButtonClass} style={iconButtonStyle}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d={WHATSAPP_PATH} fill={primaryColor} />
-              </svg>
-            </button>
+              <div className="flex items-center gap-3">
+                {contact.isWhatsApp && (
+                  <button
+                    onClick={() => openWhatsApp(contact.phone, contact.name)}
+                    aria-label="WhatsApp"
+                    className={iconButtonClass}
+                    style={iconButtonStyle}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d={WHATSAPP_PATH} fill={primaryColor} />
+                    </svg>
+                  </button>
+                )}
 
-            <button onClick={openPhoneCall} aria-label="Call" className={iconButtonClass} style={iconButtonStyle}>
-              <Phone className="w-5 h-5" style={{ color: primaryColor, strokeWidth: 1.5 }} />
-            </button>
-          </div>
+                <button
+                  onClick={() => openPhoneCall(contact.phone)}
+                  aria-label="Call"
+                  className={iconButtonClass}
+                  style={iconButtonStyle}
+                >
+                  <Phone className="w-5 h-5" style={{ color: primaryColor, strokeWidth: 1.5 }} />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </InviteBottomSheet>

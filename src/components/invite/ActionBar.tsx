@@ -38,7 +38,7 @@ export function ActionBar({
 
   const wCfg = card.wizardConfig as WizardConfig | undefined
   const hasMap = !!(card.venueMapUrl || card.venueAddress || wCfg?.googleMapsUrl || wCfg?.wazeUrl)
-  const hasWhatsApp = !!card.whatsappNumber
+  const hasWhatsApp = !!card.whatsappNumber || (wCfg?.contacts?.some((c) => c.phone?.trim()) ?? false)
   const hasGifts = (card.giftItems?.length ?? 0) > 0
   // Gift section visible only when there are wishlist items or explicit bank account details
   const hasGiftContent = hasGifts || !!(wCfg?.bankAccountNumber)

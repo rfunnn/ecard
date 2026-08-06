@@ -306,7 +306,7 @@ export function generatePrintHTML(card: PrintCardInput): string {
 
   // ── Page 4: Thank You / Contact ───────────────────────────────────
 
-  const contactsHtml = contacts.slice(0, 3).map(c =>
+  const contactsHtml = contacts.slice(0, 7).map(c =>
     `<div style="display:flex;align-items:center;justify-content:center;gap:7px;margin:3px 0;">${c.isWhatsApp ? waIconSvg(body) : phoneIconSvg(body)}<div style="text-align:left;">${c.name ? `<p style="font-family:${SERIF};font-size:11pt;color:${body};">${esc(c.name)}</p>` : ""}<p style="font-family:${SANS};font-size:8pt;color:${body};opacity:0.62;">${esc(c.phone)}</p></div></div>`
   ).join("")
 
@@ -444,7 +444,7 @@ export function generatePrintHTML(card: PrintCardInput): string {
     // Contacts (max 2, inline compact)
     if (contacts.length > 0) {
       items.push(thinDivider("&#10022;", "3px"))
-      const packedContactsHtml = contacts.slice(0, 2).map(c =>
+      const packedContactsHtml = contacts.slice(0, 4).map(c =>
         `<div style="display:flex;align-items:center;justify-content:center;gap:5px;margin:2px 0;">${
           c.isWhatsApp ? waIconSvg(body) : phoneIconSvg(body)
         }<p style="font-family:${SANS};font-size:6pt;color:${body};opacity:0.65;">${
