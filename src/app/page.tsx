@@ -100,7 +100,7 @@ export default function HomePage() {
       </nav>
 
       {/* ── Hero ── */}
-      <section className="relative min-h-[100svh] flex items-center pt-14 pb-10 overflow-x-hidden">
+      <section className="relative min-h-[100svh] flex flex-col pt-14 overflow-x-hidden">
 
         {/* Subtle non-yellow atmosphere — violet top-right, teal bottom-left */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -114,6 +114,7 @@ export default function HomePage() {
           />
         </div>
 
+        {/* Text content */}
         <div className="w-full max-w-3xl mx-auto px-5 lg:px-10 flex flex-col items-center text-center gap-8 py-8 relative z-10">
           <div className="flex flex-col items-center text-center">
 
@@ -163,9 +164,41 @@ export default function HomePage() {
               ))}
             </div>
           </div>
+        </div>
 
-          <div className="flex justify-center">
-            <HomepagePhoneMockup />
+        {/* Full-width yellow phone row */}
+        <div
+          className="w-full flex justify-center items-end relative z-10 overflow-hidden"
+          style={{
+            background: `linear-gradient(150deg, #FFFDE0 0%, #FFF5A0 35%, #FFE033 65%, ${Y} 100%)`,
+            paddingTop: "3.5rem",
+            paddingBottom: "3.5rem",
+          }}
+        >
+          {/* Wave mask — blends section top into page background */}
+          <div className="absolute top-0 left-0 right-0 pointer-events-none" style={{ height: 72 }}>
+            <svg viewBox="0 0 1440 72" preserveAspectRatio="none" className="w-full h-full">
+              <path d="M0,0 C360,72 1080,0 1440,72 L1440,0 L0,0 Z" fill="var(--pg)" />
+            </svg>
+          </div>
+          {/* Soft white spotlight bloom behind phone */}
+          <div
+            className="absolute pointer-events-none"
+            style={{
+              bottom: 0,
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: "50%",
+              height: "80%",
+              background: "radial-gradient(ellipse at center bottom, rgba(255,255,255,0.60) 0%, transparent 65%)",
+            }}
+          />
+          <HomepagePhoneMockup />
+          {/* Curved bottom edge */}
+          <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: 56 }}>
+            <svg viewBox="0 0 1440 56" preserveAspectRatio="none" className="w-full h-full">
+              <path d="M0,56 Q720,0 1440,56 L1440,56 L0,56 Z" fill="var(--pg)" />
+            </svg>
           </div>
         </div>
       </section>

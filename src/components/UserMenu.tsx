@@ -3,10 +3,9 @@
 import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
 import { useState, useRef, useEffect } from "react"
-import { User, ShoppingBag, Sun, Moon, LogOut, MessageCircle, ShieldCheck, Languages } from "lucide-react"
+import { User, ShoppingBag, Sun, Moon, LogOut, MessageCircle, ShieldCheck } from "lucide-react"
 import { useTheme } from "@/components/ThemeProvider"
 import { useT } from "@/lib/i18n"
-import { useLanguageStore } from "@/store/languageStore"
 
 const WA_URL = `https://wa.me/601164981201?text=${encodeURIComponent("Hello, saya ingin bertanya tentang ekadku.com")}`
 
@@ -14,7 +13,6 @@ export default function UserMenu() {
   const { data: session, status } = useSession()
   const { theme, toggle } = useTheme()
   const { userMenu: m } = useT()
-  const { lang, setLang } = useLanguageStore()
   const [open, setOpen] = useState(false)
   const [cardCount, setCardCount] = useState(0)
   const ref = useRef<HTMLDivElement | undefined>(undefined)
@@ -144,20 +142,6 @@ export default function UserMenu() {
                 <MessageCircle className="w-4 h-4 shrink-0 text-[#25D366]" />
                 {m.contactUs}
               </a>
-            </div>
-
-            {/* Language row */}
-            <div className="border-t border-[var(--bd)] py-1">
-              <button
-                onClick={() => setLang(lang === "ms" ? "en" : "ms")}
-                className="flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--tx-2)] hover:text-[var(--tx-1)] hover:bg-[var(--sf)] transition-colors w-full"
-              >
-                <Languages className="w-4 h-4 shrink-0" />
-                {lang === "ms" ? "Bahasa" : "Language"}
-                <span className="ml-auto text-[11px] font-bold text-[var(--tx-3)]">
-                  {lang === "ms" ? "BM" : "EN"}
-                </span>
-              </button>
             </div>
 
             {/* Theme row */}
