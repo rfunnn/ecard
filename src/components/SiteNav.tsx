@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Heart } from "lucide-react"
+import Image from "next/image"
 import UserMenu from "@/components/UserMenu"
 import { NavLikesButton } from "@/components/NavLikesButton"
 import { LanguageSwitcher } from "@/components/LanguageSwitcher"
@@ -18,10 +18,10 @@ export function SiteNav({ actions }: SiteNavProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-12">
         {/* Logo → home */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
-          <Heart className="w-3.5 h-3.5 text-gold fill-gold/30" />
+          <Image src="/icon.png" alt="ekadku" width={20} height={20} className="rounded-sm" />
           <span className="font-playfair text-[16px] tracking-wide leading-none select-none">
             <span className="text-[var(--tx-1)]">e</span>
-            <span style={{ color: "#D4AF37" }}>kad</span>
+            <span className="text-gold">kad</span>
             <span className="text-[var(--tx-1)]">ku</span>
             <span className="text-gold/50 text-[10px] font-sans tracking-normal align-baseline">.com</span>
           </span>

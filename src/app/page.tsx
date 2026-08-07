@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight, Music, Share2, Sparkles, Heart, Check, Eye, Clock } from "lucide-react"
+import { ArrowRight, Music, Share2, Sparkles, Check, Eye, Clock } from "lucide-react"
+import Image from "next/image"
 import UserMenu from "@/components/UserMenu"
 import { HomepagePhoneMockup } from "@/components/HomepagePhoneMockup"
 import { AnimatedWord } from "@/components/AnimatedWord"
@@ -10,11 +11,19 @@ import { useT } from "@/lib/i18n"
 
 const FEATURE_ICONS = [Sparkles, Music, Share2, Clock]
 
+const FEATURE_ACCENTS = [
+  { topBorder: "#FFCC00", iconBg: "rgba(255,204,0,0.14)",  iconColor: "#9a7a00", hoverGlow: "rgba(255,204,0,0.10)" },
+  { topBorder: "#7c3aed", iconBg: "rgba(124,58,237,0.12)", iconColor: "#7c3aed", hoverGlow: "rgba(124,58,237,0.09)" },
+  { topBorder: "#0284c7", iconBg: "rgba(2,132,199,0.12)",  iconColor: "#0284c7", hoverGlow: "rgba(2,132,199,0.09)"  },
+  { topBorder: "#10b981", iconBg: "rgba(16,185,129,0.12)", iconColor: "#059669", hoverGlow: "rgba(16,185,129,0.09)" },
+]
+
 const PACKAGES = [
   {
     name: "Basic", emoji: "⭐",
     headerBg: "linear-gradient(135deg, #c8945a, #a06b3a)",
     price: "RM30",
+    popular: false,
     features: [
       { label: "Calendar",   bold: false },
       { label: "Contacts",   bold: false },
@@ -27,6 +36,7 @@ const PACKAGES = [
     name: "Pro", emoji: "🚀",
     headerBg: "linear-gradient(135deg, #9CA3AF, #6B7280)",
     price: "RM40",
+    popular: true,
     features: [
       { label: "Calendar",       bold: false },
       { label: "Contacts",       bold: false },
@@ -42,6 +52,7 @@ const PACKAGES = [
     name: "Premium", emoji: "💎",
     headerBg: "linear-gradient(135deg, #D4AF37, #a07820)",
     price: "RM60",
+    popular: false,
     features: [
       { label: "Calendar",            bold: false },
       { label: "Contacts",            bold: false },
@@ -60,6 +71,10 @@ const PACKAGES = [
   },
 ]
 
+/* Fresh yellow used as a non-gold accent specifically on this page */
+const Y = "#FFCC00"
+const Y_DARK = "#141414"
+
 export default function HomePage() {
   const t = useT()
   const h = t.home
@@ -70,12 +85,12 @@ export default function HomePage() {
       {/* ── Nav ── */}
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 lg:px-10 py-3.5 bg-[var(--pg-nav)] backdrop-blur-md border-b border-[var(--bd)]">
         <div className="flex items-center gap-2">
-          <Heart className="w-3.5 h-3.5 text-gold fill-gold/30" />
+          <Image src="/icon.png" alt="ekadku" width={20} height={20} className="rounded-sm" />
           <span className="font-playfair text-[17px] tracking-wide leading-none">
             <span className="text-[var(--tx-1)]">e</span>
-            <span style={{ color: "#D4AF37" }}>kad</span>
+            <span style={{ color: Y }}>kad</span>
             <span className="text-[var(--tx-1)]">ku</span>
-            <span className="text-gold/50 text-[10px] font-sans tracking-normal align-baseline">.com</span>
+            <span style={{ color: Y, opacity: 0.5 }} className="text-[10px] font-sans tracking-normal align-baseline">.com</span>
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -86,14 +101,31 @@ export default function HomePage() {
 
       {/* ── Hero ── */}
       <section className="relative min-h-[100svh] flex items-center pt-14 pb-10 overflow-x-hidden">
-        <div className="absolute top-[38%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[560px] h-[560px] rounded-full blur-[140px] opacity-[0.07] pointer-events-none" style={{ background: "#D4AF37" }} />
-        <div className="w-full max-w-3xl mx-auto px-5 lg:px-10 flex flex-col items-center text-center gap-8 py-8">
 
+        {/* Subtle non-yellow atmosphere — violet top-right, teal bottom-left */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div
+            className="absolute -top-24 -right-24 w-[420px] h-[420px] rounded-full blur-[130px]"
+            style={{ background: "#7c3aed", opacity: 0.06 }}
+          />
+          <div
+            className="absolute bottom-0 -left-16 w-[360px] h-[360px] rounded-full blur-[120px]"
+            style={{ background: "#0891b2", opacity: 0.05 }}
+          />
+        </div>
+
+        <div className="w-full max-w-3xl mx-auto px-5 lg:px-10 flex flex-col items-center text-center gap-8 py-8 relative z-10">
           <div className="flex flex-col items-center text-center">
-            <div className="inline-flex items-center gap-1.5 text-gold text-[10px] tracking-[0.3em] uppercase mb-3 border border-gold/50 rounded-full px-3.5 py-1.5 bg-gold/10">
+
+            {/* Badge — solid bright yellow */}
+            <div
+              className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.25em] uppercase mb-3 rounded-full px-3.5 py-1.5 font-bold"
+              style={{ background: Y, color: Y_DARK }}
+            >
               <Sparkles className="w-2.5 h-2.5" />
               {h.badge}
             </div>
+
             <AnimatedWord />
 
             <p className="text-[var(--tx-2)] text-[13px] lg:text-lg leading-relaxed max-w-sm lg:max-w-md mb-5 lg:mb-10">
@@ -103,16 +135,21 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto mb-5 lg:mb-10">
               <Link
                 href="/templates"
-                className="inline-flex items-center justify-center gap-2 bg-gold text-ink font-semibold px-5 py-2.5 rounded-full hover:bg-gold-light transition-all hover:shadow-xl hover:shadow-gold/20 active:scale-95 text-[13px] sm:text-[15px]"
+                className="inline-flex items-center justify-center gap-2 font-bold px-6 py-2.5 rounded-full transition-all active:scale-95 text-[13px] sm:text-[15px]"
+                style={{
+                  background: Y,
+                  color: Y_DARK,
+                  boxShadow: `0 6px 24px ${Y}70`,
+                }}
               >
                 {h.heroCta}
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 href="/invite/demo"
-                className="inline-flex items-center justify-center gap-2 border border-gold/30 hover:border-gold/60 text-[var(--tx-1)] hover:bg-gold/5 px-5 py-2.5 rounded-full transition-all text-[13px] sm:text-[15px] active:scale-95"
+                className="inline-flex items-center justify-center gap-2 border border-[var(--bd)] hover:border-[var(--tx-3)] text-[var(--tx-1)] hover:bg-[var(--sf)] px-6 py-2.5 rounded-full transition-all text-[13px] sm:text-[15px] active:scale-95"
               >
-                <Eye className="w-4 h-4 text-gold/70" />
+                <Eye className="w-4 h-4 text-[var(--tx-3)]" />
                 {h.heroDemo}
               </Link>
             </div>
@@ -120,18 +157,14 @@ export default function HomePage() {
             <div className="grid grid-cols-3 gap-x-3 gap-y-2 w-full max-w-xs mx-auto">
               {h.perks.map((p) => (
                 <div key={p} className="flex items-center gap-1.5 text-[var(--tx-3)] text-[12px] sm:text-[13px]">
-                  <Check className="w-2.5 h-2.5 text-gold/50 shrink-0" />
+                  <Check className="w-2.5 h-2.5 shrink-0" style={{ color: Y }} />
                   {p}
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="flex justify-center relative">
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-48 h-48 sm:w-72 sm:h-72 rounded-full blur-[80px] opacity-20 dark:opacity-15"
-                style={{ background: "#D4AF37" }} />
-            </div>
+          <div className="flex justify-center">
             <HomepagePhoneMockup />
           </div>
         </div>
@@ -141,15 +174,23 @@ export default function HomePage() {
       <section className="py-10 lg:py-28 px-5 lg:px-10 border-t border-[var(--bd)]">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-7 lg:mb-14">
-            <p className="text-gold/60 text-[10px] tracking-[0.3em] uppercase mb-2">{h.howItWorksLabel}</p>
+            <p className="text-[10px] tracking-[0.3em] uppercase mb-2 font-bold" style={{ color: Y_DARK }}>
+              {h.howItWorksLabel}
+            </p>
             <h2 className="font-playfair text-2xl lg:text-4xl text-[var(--tx-1)]">{h.howItWorksTitle}</h2>
           </div>
 
           <div className="flex flex-col md:grid md:grid-cols-3 gap-5 lg:gap-10">
             {h.steps.map(({ num, label, desc }) => (
               <div key={num} className="flex flex-col items-center text-center gap-4">
-                <div className="w-12 h-12 rounded-full border border-gold/25 bg-gold/5 flex items-center justify-center shrink-0">
-                  <span className="font-playfair text-lg text-gold/70 font-bold leading-none">{num}</span>
+                <div
+                  className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+                  style={{
+                    background: Y,
+                    boxShadow: `0 4px 18px ${Y}60`,
+                  }}
+                >
+                  <span className="font-playfair text-lg font-bold leading-none" style={{ color: Y_DARK }}>{num}</span>
                 </div>
                 <div>
                   <h3 className="font-playfair text-lg text-[var(--tx-1)] mb-1.5">{label}</h3>
@@ -165,20 +206,35 @@ export default function HomePage() {
       <section className="py-10 lg:py-28 px-5 lg:px-10 bg-[var(--pg-alt)]">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-7 lg:mb-14">
-            <p className="text-gold/60 text-[10px] tracking-[0.3em] uppercase mb-2">{h.featuresLabel}</p>
+            <p className="text-[10px] tracking-[0.3em] uppercase mb-2 font-bold" style={{ color: Y_DARK }}>
+              {h.featuresLabel}
+            </p>
             <h2 className="font-playfair text-2xl lg:text-4xl text-[var(--tx-1)]">{h.featuresTitle}</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
             {h.features.map(({ title, desc }, idx) => {
               const Icon = FEATURE_ICONS[idx]
+              const accent = FEATURE_ACCENTS[idx]
               return (
                 <div
                   key={title}
-                  className="relative flex flex-col items-center text-center gap-3 p-3.5 lg:p-7 rounded-xl lg:rounded-2xl border border-[var(--bd)] bg-[var(--pg)] hover:border-gold/30 transition-all group overflow-hidden"
+                  className="relative flex flex-col items-center text-center gap-3 p-3.5 lg:p-7 rounded-xl lg:rounded-2xl bg-[var(--pg)] transition-all group overflow-hidden"
+                  style={{
+                    borderLeft: "1px solid var(--bd)",
+                    borderRight: "1px solid var(--bd)",
+                    borderBottom: "1px solid var(--bd)",
+                    borderTop: `3px solid ${accent.topBorder}`,
+                  }}
                 >
-                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center group-hover:bg-gold/20 transition-colors mb-1">
-                    <Icon className="w-4 h-4 text-gold" />
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                    style={{ background: `radial-gradient(ellipse at top, ${accent.hoverGlow} 0%, transparent 65%)` }}
+                  />
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center mb-1 transition-transform duration-300 group-hover:scale-110"
+                    style={{ background: accent.iconBg }}
+                  >
+                    <Icon className="w-4 h-4" style={{ color: accent.iconColor }} />
                   </div>
                   <div>
                     <h3 className="font-playfair text-[13px] lg:text-base text-[var(--tx-1)] mb-0.5 lg:mb-1.5">{title}</h3>
@@ -203,10 +259,13 @@ export default function HomePage() {
               {PACKAGES.map(({ name, emoji, headerBg, price, features }) => (
                 <div
                   key={name}
-                  className="rounded-2xl overflow-hidden border border-[var(--bd)] bg-[var(--pg-alt)] flex flex-col shrink-0 snap-center"
+                  className="rounded-2xl overflow-hidden border border-[var(--bd)] bg-[var(--pg-alt)] flex flex-col shrink-0 snap-center relative"
                   style={{ width: "clamp(100px, 28vw, 180px)" }}
                 >
-                  <div className="py-2.5 text-center" style={{ background: headerBg }}>
+                  <div
+                    className="py-2.5 text-center"
+                    style={{ background: headerBg }}
+                  >
                     <span className="text-white font-bold text-xs tracking-wide">{name} {emoji}</span>
                   </div>
                   <div className="flex-1 pt-3 pb-2 px-3 flex flex-col items-center">
@@ -222,7 +281,7 @@ export default function HomePage() {
                     <p className="text-2xl font-light text-[var(--tx-1)] leading-none">{price}</p>
                     <Link
                       href={`/invite/demo?package=${name.toLowerCase()}`}
-                      className="w-full flex items-center justify-center gap-1.5 text-white text-[10px] font-bold tracking-[0.1em] px-4 py-2 rounded-lg transition-all hover:opacity-90 hover:shadow-md active:scale-95"
+                      className="w-full flex items-center justify-center gap-1.5 text-white text-[10px] font-bold tracking-[0.1em] px-4 py-2 rounded-lg transition-all hover:opacity-90 active:scale-95"
                       style={{ background: headerBg }}
                     >
                       <Eye className="w-3 h-3 opacity-90" />
@@ -261,15 +320,26 @@ export default function HomePage() {
         />
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-7 lg:mb-14">
-            <p className="text-gold/60 text-[10px] tracking-[0.3em] uppercase mb-2">{h.faqLabel}</p>
+            <p className="text-[10px] tracking-[0.3em] uppercase mb-2 font-bold" style={{ color: Y_DARK }}>
+              {h.faqLabel}
+            </p>
             <h2 className="font-playfair text-2xl lg:text-4xl text-[var(--tx-1)]">{h.faqTitle}</h2>
           </div>
           <div className="flex flex-col gap-2">
             {h.faqs.map(({ q, a }) => (
-              <details key={q} className="group border border-[var(--bd)] rounded-xl bg-[var(--pg-alt)] open:border-gold/25 transition-all">
+              <details
+                key={q}
+                className="group border border-[var(--bd)] rounded-xl bg-[var(--pg-alt)] transition-all"
+                style={{ ["--open-color" as string]: Y }}
+              >
                 <summary className="flex items-center justify-between gap-3 px-5 py-4 cursor-pointer list-none select-none">
                   <span className="font-medium text-[13px] lg:text-[15px] text-[var(--tx-1)]">{q}</span>
-                  <span className="text-gold/50 text-lg shrink-0 group-open:rotate-45 transition-transform duration-200">+</span>
+                  <span
+                    className="text-lg shrink-0 group-open:rotate-45 transition-transform duration-200"
+                    style={{ color: Y }}
+                  >
+                    +
+                  </span>
                 </summary>
                 <p className="px-5 pb-4 text-[13px] lg:text-[14px] text-[var(--tx-2)] leading-relaxed">{a}</p>
               </details>
@@ -278,27 +348,31 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── CTA ── */}
-      <section className="py-10 lg:py-28 px-5 lg:px-10 bg-[var(--pg-alt)]">
+      {/* ── CTA — bright yellow block ── */}
+      <section className="py-14 lg:py-28 px-5 lg:px-10 relative overflow-hidden" style={{ background: Y }}>
+        {/* Subtle inner shadow rings for depth */}
         <div
-          className="max-w-2xl mx-auto text-center rounded-3xl p-6 lg:p-16 border border-gold/15 relative overflow-hidden bg-[var(--pg)]"
-          style={{ boxShadow: "0 0 80px rgba(212,175,55,0.07)" }}
-        >
-          <div className="absolute top-0 left-0 right-0 h-px"
-            style={{ background: "linear-gradient(90deg, transparent, #D4AF37, transparent)" }} />
-          <div className="absolute bottom-0 left-0 right-0 h-px"
-            style={{ background: "linear-gradient(90deg, transparent, #D4AF37, transparent)" }} />
-          <Sparkles className="absolute top-5 left-5 w-3 h-3 text-gold/15" />
-          <Sparkles className="absolute top-5 right-5 w-3 h-3 text-gold/15" />
-          <Sparkles className="absolute bottom-5 left-5 w-2.5 h-2.5 text-gold/10" />
-          <Sparkles className="absolute bottom-5 right-5 w-2.5 h-2.5 text-gold/10" />
-          <h2 className="font-playfair text-2xl lg:text-4xl text-[var(--tx-1)] mb-2 lg:mb-4">{h.ctaTitle}</h2>
-          <p className="text-[var(--tx-2)] text-[14px] lg:text-base mb-7 lg:mb-8 leading-relaxed">
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "radial-gradient(ellipse at 30% 50%, rgba(255,255,255,0.25) 0%, transparent 60%)",
+          }}
+        />
+        <div className="max-w-2xl mx-auto text-center relative z-10">
+          <Sparkles className="w-5 h-5 mx-auto mb-4" style={{ color: Y_DARK, opacity: 0.4 }} />
+          <h2 className="font-playfair text-2xl lg:text-4xl mb-3 lg:mb-4" style={{ color: Y_DARK }}>
+            {h.ctaTitle}
+          </h2>
+          <p className="text-[14px] lg:text-base mb-8 lg:mb-10 leading-relaxed max-w-md mx-auto" style={{ color: `${Y_DARK}99` }}>
             {h.ctaDesc}
           </p>
           <Link
             href="/templates"
-            className="inline-flex items-center gap-2 bg-gold text-ink font-semibold px-8 py-3.5 rounded-full hover:bg-gold-light transition-all hover:shadow-xl hover:shadow-gold/20 active:scale-95 text-[15px]"
+            className="inline-flex items-center gap-2 font-bold px-8 py-3.5 rounded-full transition-all active:scale-95 text-[15px]"
+            style={{
+              background: Y_DARK,
+              color: Y,
+              boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
+            }}
           >
             {h.ctaBtn} <ArrowRight className="w-4 h-4" />
           </Link>
@@ -306,12 +380,12 @@ export default function HomePage() {
       </section>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-[var(--bd)] bg-[var(--pg-alt)]">
+      <footer className="bg-[var(--pg-alt)] border-t border-[var(--bd)]">
         <div className="max-w-5xl mx-auto px-5 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-[var(--tx-3)]">
           <p>© {new Date().getFullYear()} ekadku.com</p>
           <div className="flex gap-4">
-            <Link href="/privacy" className="hover:text-gold transition-colors">{h.footerPrivacy}</Link>
-            <Link href="/terms" className="hover:text-gold transition-colors">{h.footerTerms}</Link>
+            <Link href="/privacy" className="hover:text-[var(--tx-1)] transition-colors">{h.footerPrivacy}</Link>
+            <Link href="/terms" className="hover:text-[var(--tx-1)] transition-colors">{h.footerTerms}</Link>
           </div>
         </div>
       </footer>

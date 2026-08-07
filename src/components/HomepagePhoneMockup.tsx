@@ -8,9 +8,9 @@ type FeatureId = "card" | "rsvp" | "lokasi" | "hadiah" | "hubungi" | "muzik"
 const SEQUENCE: FeatureId[] = ["card", "rsvp", "lokasi", "hadiah", "hubungi", "muzik"]
 const DURATION = 3000
 
-// Creamy + Maroon palette
-const BG       = "#fdf5ee"          // warm cream main background
-const SHEET_BG = "#f2e4d4"          // deeper cream for sheet overlays
+// White + Maroon palette
+const BG       = "#ffffff"          // clean white main background
+const SHEET_BG = "#f3f3f3"          // light neutral for sheet overlays
 const MAROON   = "#7B1414"          // deep maroon — text, icons, borders
 const MAROON_A = "#A83232"          // mid maroon — accents, active elements
 const ROSE     = "#c47880"          // soft dusty rose — petal decorations

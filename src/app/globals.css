@@ -7,7 +7,7 @@
 :root {
   /* Light mode (default) */
   --pg:      #ffffff;
-  --pg-alt:  #f7f4ef;
+  --pg-alt:  #f5f5f5;
   --pg-nav:  rgba(255,255,255,0.92);
   --tx-1:    #141414;
   --tx-2:    rgba(20,20,20,0.55);
@@ -32,9 +32,9 @@
 }
 
 @theme {
-  --color-gold: oklch(71.4% 0.148 84.5);
-  --color-gold-light: oklch(84% 0.12 84);
-  --color-gold-dark: oklch(48% 0.12 60);
+  --color-gold: oklch(87% 0.21 98);
+  --color-gold-light: oklch(93% 0.15 100);
+  --color-gold-dark: oklch(62% 0.17 90);
   --color-cream: oklch(93% 0.04 81);
   --color-ink: oklch(14% 0.04 45);
 
@@ -72,18 +72,18 @@ body {
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #D4AF37 #1a0a00;
+  scrollbar-color: #FFCC00 #1a1a00;
 }
 *::-webkit-scrollbar { width: 4px; height: 4px; }
-*::-webkit-scrollbar-track { background: #1a0a00; }
-*::-webkit-scrollbar-thumb { background: #D4AF37; border-radius: 2px; }
+*::-webkit-scrollbar-track { background: #1a1a00; }
+*::-webkit-scrollbar-thumb { background: #FFCC00; border-radius: 2px; }
 
 @keyframes shimmer {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
 .shimmer {
-  background: linear-gradient(90deg, #D4AF37 25%, #F2D06B 50%, #D4AF37 75%);
+  background: linear-gradient(90deg, #FFCC00 25%, #FFE566 50%, #FFCC00 75%);
   background-size: 200% auto;
   animation: shimmer 3s linear infinite;
   -webkit-background-clip: text;
