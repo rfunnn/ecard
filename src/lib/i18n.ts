@@ -45,7 +45,7 @@ const translations = {
       faqs: [
         {
           q: "Berapa harga kad jemputan digital ekadku.com?",
-          a: "ekadku.com menawarkan tiga pakej: Basic (RM30), Pro (RM40), dan Premium (RM60). Semua pakej adalah bayaran sekali sahaja — tiada langganan bulanan.",
+          a: "ekadku.com menawarkan tiga pakej: Basic (RM30), Pro (RM40), dan Premium (RM40). Semua pakej adalah bayaran sekali sahaja — tiada langganan bulanan.",
         },
         {
           q: "Berapa lama pautan kad jemputan saya aktif?",
@@ -371,7 +371,7 @@ const translations = {
       faqs: [
         {
           q: "What is the price of ekadku.com digital invitation cards?",
-          a: "ekadku.com offers three packages: Basic (RM30), Pro (RM40), and Premium (RM60). All packages are one-time payments — no monthly subscription.",
+          a: "ekadku.com offers three packages: Basic (RM30), Pro (RM40), and Premium (RM40). All packages are one-time payments — no monthly subscription.",
         },
         {
           q: "How long is my invitation card link active?",

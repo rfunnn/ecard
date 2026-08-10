@@ -52,7 +52,7 @@ const PACKAGES = [
   {
     name: "Premium", emoji: "💎",
     headerBg: "linear-gradient(135deg, #D4AF37, #a07820)",
-    price: "RM60",
+    price: "RM40",
     popular: false,
     features: [
       { label: "Calendar",            bold: false },
