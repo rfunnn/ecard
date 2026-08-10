@@ -259,7 +259,7 @@ const translations = {
       heroCta: "Mulakan Sekarang",
       benefitsHeading: "Faedah Menjadi Partner",
       benefits: [
-        { title: "Subdomain Anda Sendiri",     desc: "Storefront peribadi di nama-anda.{domain} — berjenama, profesional, terus boleh dikongsi kepada pelanggan." },
+        { title: "Subdomain Anda Sendiri",     desc: "Storefront peribadi di your-company.{domain} — berjenama, profesional, terus boleh dikongsi kepada pelanggan." },
         { title: "Dashboard Partner",           desc: "Pantau jumlah kad yang diwujudkan, jumlah pelanggan, dan amaun bil terkumpul dalam satu papan pemuka." },
         { title: "Pelanggan Anda, Jenama Anda", desc: "Pelanggan yang menggunakan storefront anda akan melihat jenama perniagaan anda — bukan Ekadku." },
         { title: "Tiada Kos Pendaftaran",       desc: "Daftar percuma. Anda hanya dibil berdasarkan jumlah e-kad yang diwujudkan oleh pelanggan anda." },
@@ -585,7 +585,7 @@ const translations = {
       heroCta: "Get Started",
       benefitsHeading: "Benefits of Being a Partner",
       benefits: [
-        { title: "Your Own Subdomain",       desc: "Your own storefront at your-name.{domain} — branded, professional, ready to share with customers." },
+        { title: "Your Own Subdomain",       desc: "Your own storefront at your-company.{domain} — branded, professional, ready to share with customers." },
         { title: "Partner Dashboard",        desc: "Track cards created, total customers, and accumulated billing in one dashboard." },
         { title: "Your Customers, Your Brand", desc: "Customers using your storefront see your business brand — not Ekadku." },
         { title: "No Registration Fee",      desc: "Register for free. You are only billed based on the number of e-cards created by your customers." },

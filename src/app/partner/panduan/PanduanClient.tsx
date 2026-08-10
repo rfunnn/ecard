@@ -38,9 +38,7 @@ export function PanduanClient({ partnerRate, partnerSlug, isPartner, baseDomain 
     ? `RM${(partnerRate / 100).toFixed(2)}`
     : p.pricingRateRange
 
-  const subdomainUrl = partnerSlug
-    ? `https://${partnerSlug}.${baseDomain}`
-    : `https://nama-anda.${baseDomain}`
+  const subdomainUrl = `https://your-company.${baseDomain}`
 
   function benefitDesc(desc: string) {
     return desc.replace("{domain}", baseDomain)
@@ -168,10 +166,8 @@ export function PanduanClient({ partnerRate, partnerSlug, isPartner, baseDomain 
           <SectionHeading>{p.subdomainHeading}</SectionHeading>
           <div className="bg-[var(--pg-alt)] border border-[var(--bd)] rounded-2xl p-5 space-y-4">
             <div className="flex items-center gap-3 bg-[var(--pg)] border border-[var(--bd)] rounded-xl px-4 py-3">
-              <Globe className={`w-4 h-4 shrink-0 ${partnerSlug ? "text-gold" : "text-[var(--tx-3)]"}`} />
-              <span className={`font-mono text-sm ${partnerSlug ? "text-[var(--tx-1)]" : "text-[var(--tx-3)]"}`}>
-                {subdomainUrl}
-              </span>
+              <Globe className="w-4 h-4 shrink-0 text-[var(--tx-3)]" />
+              <span className="font-mono text-sm text-[var(--tx-3)]">{subdomainUrl}</span>
             </div>
             <div className="space-y-2 text-sm text-[var(--tx-2)]">
               {p.subdomainBullets.map((b, i) => (
