@@ -47,18 +47,8 @@ export function PanduanClient({ partnerRate, partnerSlug, isPartner, baseDomain 
   return (
     <div className="min-h-screen bg-[var(--pg)]">
       <header className="sticky top-0 z-20 bg-[var(--pg-alt)] border-b border-[var(--bd)]">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
-          <Link href="/" className="text-sm font-bold text-gold">ekadku.com</Link>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 flex items-center justify-center h-14">
           <span className="text-xs text-[var(--tx-3)] font-medium uppercase tracking-wide">{p.pageTitle}</span>
-          {isPartner ? (
-            <Link href="/partner/dashboard" className="text-xs text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors">
-              {p.navDashboard}
-            </Link>
-          ) : (
-            <Link href="/partner/register" className="text-xs font-semibold text-gold hover:opacity-80 transition-opacity">
-              {p.navRegister}
-            </Link>
-          )}
         </div>
       </header>
 
