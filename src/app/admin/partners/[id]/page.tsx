@@ -6,7 +6,7 @@ import {
   ExternalLink, FileText,
 } from "lucide-react"
 import type { PartnerStatus, InvoiceStatus } from "@prisma/client"
-import { PartnerStatusActions, GenerateInvoiceButton, InvoiceActions } from "./PartnerDetailClient"
+import { PartnerStatusActions, GenerateInvoiceButton, InvoiceActions, PartnerEditButton, DeletePartnerButton } from "./PartnerDetailClient"
 
 export const dynamic = "force-dynamic"
 
@@ -157,11 +157,15 @@ export default async function PartnerDetailPage({ params }: Context) {
                 </div>
                 <p className="text-sm text-gray-500 mt-0.5">{BUSINESS_TYPE_LABELS[partner.businessType] ?? partner.businessType}</p>
               </div>
-              <PartnerStatusActions
-                partnerId={partner.id}
-                currentStatus={partner.status}
-                currentRate={partner.partnerRate}
-              />
+              <div className="flex items-center gap-2 flex-wrap">
+                <PartnerStatusActions
+                  partnerId={partner.id}
+                  currentStatus={partner.status}
+                  currentRate={partner.partnerRate}
+                />
+                <PartnerEditButton partner={partner} />
+                <DeletePartnerButton partnerId={partner.id} companyName={partner.companyName} />
+              </div>
             </div>
 
             <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-6 text-sm">
