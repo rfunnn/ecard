@@ -357,13 +357,21 @@ export default function HomePage() {
                 <p className="text-[14px] text-[var(--tx-2)] leading-relaxed mb-6">
                   {h.partnerDesc2}
                 </p>
-                <Link
-                  href="/partner/register"
-                  className="inline-flex items-center gap-2 font-bold px-7 py-3 rounded-full transition-all active:scale-95 text-[14px]"
-                  style={{ background: Y, color: Y_DARK }}
-                >
-                  {h.partnerCta} <ArrowRight className="w-4 h-4" />
-                </Link>
+                <div className="flex items-center gap-3 flex-wrap justify-center lg:justify-start">
+                  <Link
+                    href="/partner/register"
+                    className="inline-flex items-center gap-2 font-bold px-7 py-3 rounded-full transition-all active:scale-95 text-[14px]"
+                    style={{ background: Y, color: Y_DARK }}
+                  >
+                    {h.partnerCta} <ArrowRight className="w-4 h-4" />
+                  </Link>
+                  <Link
+                    href="/partner/panduan"
+                    className="inline-flex items-center gap-2 font-semibold px-6 py-3 rounded-full border border-[var(--bd)] text-[14px] text-[var(--tx-2)] hover:border-[var(--tx-3)] transition-all active:scale-95"
+                  >
+                    {h.partnerLearnMore}
+                  </Link>
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-3 shrink-0 w-full lg:w-auto lg:max-w-xs">
                 {h.partnerTypes.map(({ label, emoji }) => (

@@ -33,6 +33,7 @@ const translations = {
       partnerDesc1: "Anda pemilik Business Card, Event Space, Event Planner atau penyedia servis perkahwinan dan acara?",
       partnerDesc2: "Tawarkan Kad Digital Premium PERCUMA kepada pelanggan anda. Invois bulanan akan dihantar kepada anda — mudah dan telus.",
       partnerCta: "Daftar Sebagai Partner",
+      partnerLearnMore: "Ketahui Lebih Lanjut",
       partnerTypes: [
         { label: "Business Card", emoji: "🖨️" },
         { label: "Event Space",   emoji: "🏛️" },
@@ -294,6 +295,7 @@ const translations = {
       partnerDesc1: "Are you a Business Card provider, Event Space, Event Planner or wedding and events service provider?",
       partnerDesc2: "Offer Premium Digital Cards for FREE to your customers. Get invoiced monthly — simple and transparent.",
       partnerCta: "Register as Partner",
+      partnerLearnMore: "Learn More",
       partnerTypes: [
         { label: "Business Card", emoji: "🖨️" },
         { label: "Event Space",   emoji: "🏛️" },
