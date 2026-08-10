@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { LayoutTemplate, ShoppingBag, CreditCard, ChevronRight, MonitorPlay } from "lucide-react"
+import { LayoutTemplate, ShoppingBag, CreditCard, ChevronRight, MonitorPlay, Building2 } from "lucide-react"
 
 const sections = [
   {
@@ -22,6 +22,13 @@ const sections = [
     label: "Orders",
     description: "Semak semua pesanan dan tandakan sebagai dibayar.",
     color: "text-green-600 bg-green-50",
+  },
+  {
+    href: "/admin/partners",
+    icon: Building2,
+    label: "Partners",
+    description: "Urus partner, luluskan permohonan, jana invois bulanan.",
+    color: "text-indigo-600 bg-indigo-50",
   },
   {
     href: "/admin/demo",

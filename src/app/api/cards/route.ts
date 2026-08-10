@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth-options"
 import { prisma } from "@/lib/prisma"
 import { generateSlug } from "@/lib/slug"
+import { cookies } from "next/headers"
 import { DEFAULT_THEME, DEFAULT_MEDIA, DEFAULT_SCROLL } from "@/types/invitation"
 import { buildDemoWizardConfig, DEMO_YOUTUBE_URL, DEMO_YOUTUBE_VIDEO_ID, DEMO_GIFT_ITEMS } from "@/lib/demo-wizard-config"
 import { mergeWizardConfig } from "@/lib/wizard-merge"
@@ -107,6 +108,20 @@ export async function POST(req: NextRequest) {
       sortOrder: p.sortOrder ?? i,
     }))
 
+    // Resolve partner attribution from the cookie set by subdomain middleware
+    let partnerId: string | undefined
+    try {
+      const cookieStore = await cookies()
+      const partnerSlug = cookieStore.get("ekadku_partner")?.value
+      if (partnerSlug) {
+        const partner = await prisma.partner.findUnique({
+          where: { slug: partnerSlug, status: "ACTIVE" },
+          select: { id: true },
+        })
+        if (partner) partnerId = partner.id
+      }
+    } catch { /* non-fatal — proceed without attribution */ }
+
     let slug = generateSlug()
     let attempts = 0
     while (attempts < 5) {
@@ -146,7 +161,8 @@ export async function POST(req: NextRequest) {
         title: data.title,
         language: data.language,
         wizardConfig: wizardConfig as object,
-        ...(userId ? { userId } : {}),
+        ...(userId    ? { userId }    : {}),
+        ...(partnerId ? { partnerId } : {}),
         theme: { create: themeData },
         media: { create: mediaData },
         scrollConfig: { create: scrollData },

@@ -8,14 +8,14 @@ type FeatureId = "card" | "rsvp" | "lokasi" | "hadiah" | "hubungi" | "muzik"
 const SEQUENCE: FeatureId[] = ["card", "rsvp", "lokasi", "hadiah", "hubungi", "muzik"]
 const DURATION = 3000
 
-// White + Maroon palette
-const BG       = "#ffffff"          // clean white main background
-const SHEET_BG = "#f3f3f3"          // light neutral for sheet overlays
-const MAROON   = "#7B1414"          // deep maroon — text, icons, borders
-const MAROON_A = "#A83232"          // mid maroon — accents, active elements
-const ROSE     = "#c47880"          // soft dusty rose — petal decorations
-const TEXT     = "#4a1010"          // near-black maroon for body text
-const TEXT_MUT = "rgba(74,16,16,0.52)"
+// Bright warm palette — light card, vivid gold accents
+const BG       = "#FFFFF8"          // warm white — card background
+const SHEET_BG = "#FFFBEE"          // soft cream — sheet overlays
+const MAROON   = "#9A7000"          // dark gold — text, icons, borders
+const MAROON_A = "#C49500"          // vivid gold — accents, active elements
+const ROSE     = "#FFD700"          // bright yellow — petal decorations, sparkle
+const TEXT     = "#1A1200"          // near-black warm — body text
+const TEXT_MUT = "rgba(26,18,0,0.52)"
 
 // Static petal positions (no Math.random → no hydration mismatch)
 const PETALS = [
@@ -89,14 +89,19 @@ export function HomepagePhoneMockup() {
     <div className="relative float" style={{ width: "min(68vw, 270px)" }}>
       {/* Phone frame */}
       <div
-        className="relative rounded-[40px] border-2 shadow-2xl overflow-hidden"
-        style={{ aspectRatio: "9/19.5", background: BG, borderColor: `${MAROON}18` }}
+        className="relative rounded-[40px] border-2 overflow-hidden"
+        style={{
+          aspectRatio: "9/19.5",
+          background: BG,
+          borderColor: `${MAROON}30`,
+          boxShadow: `0 24px 48px -8px rgba(0,0,0,0.22), 0 0 0 1px ${MAROON}15, 0 0 32px -4px ${ROSE}60`,
+        }}
       >
         {/* Status bar */}
-        <div className="absolute top-0 left-0 right-0 h-7 flex items-center justify-between px-4 z-10" style={{ background: `${BG}e0` }}>
-          <span className="text-[8px]" style={{ color: `${MAROON}70` }}>9:41</span>
+        <div className="absolute top-0 left-0 right-0 h-7 flex items-center justify-between px-4 z-10" style={{ background: `${BG}f0` }}>
+          <span className="text-[8px]" style={{ color: `${MAROON}90` }}>9:41</span>
           <div className="w-14 h-3 bg-black rounded-full" />
-          <span className="text-[8px]" style={{ color: `${MAROON}70` }}>●●●</span>
+          <span className="text-[8px]" style={{ color: `${MAROON}90` }}>●●●</span>
         </div>
         <div className="absolute top-0 left-0 right-0 flex justify-center z-20 pointer-events-none">
           <div className="w-18 h-5 bg-black rounded-b-2xl" />
@@ -130,7 +135,7 @@ export function HomepagePhoneMockup() {
                     height: p.size * 1.4,
                     borderRadius: "40% 60% 55% 45% / 45% 55% 50% 50%",
                     background: ROSE,
-                    opacity: 0.22,
+                    opacity: 0.28,
                     animation: `petal-drift ${p.dur} ${p.delay} infinite linear`,
                   }}
                 />
@@ -303,9 +308,9 @@ export function HomepagePhoneMockup() {
             <Sheet show={active === "lokasi"} title="Lokasi Majlis">
               <div
                 className="rounded mb-2 overflow-hidden flex items-center justify-center relative"
-                style={{ height: 56, background: "#e8d4cc", border: `1px solid ${MAROON}20` }}
+                style={{ height: 56, background: "#F5EDD8", border: `1px solid ${MAROON}20` }}
               >
-                <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(ellipse at 45% 55%, #d4b8b0 0%, #e8d4cc 65%)" }} />
+                <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(ellipse at 45% 55%, #E8D8B0 0%, #F5EDD8 65%)" }} />
                 <div
                   className="absolute w-2 h-2 rounded-full"
                   style={{ background: MAROON, boxShadow: `0 0 0 4px ${MAROON_A}35`, animation: "pulse-pin 1.5s ease-in-out infinite" }}
@@ -321,7 +326,7 @@ export function HomepagePhoneMockup() {
 
             <Sheet show={active === "hadiah"} title="Info Hadiah">
               <div className="flex flex-col items-center gap-1.5">
-                <div className="rounded p-1" style={{ background: "white", width: 56, height: 56, border: `1px solid ${MAROON}25` }}>
+                <div className="rounded p-1" style={{ background: "#FFFBF0", width: 56, height: 56, border: `1px solid ${MAROON}25` }}>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(25, 1fr)", gap: 0.5, width: "100%", height: "100%" }}>
                     {QR_CELLS.map((on, i) => (
                       <div key={i} style={{ background: on ? MAROON : "transparent", borderRadius: 0.5 }} />

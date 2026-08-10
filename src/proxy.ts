@@ -7,8 +7,45 @@ const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? "")
   .map((e) => e.trim().toLowerCase())
   .filter(Boolean)
 
+const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN ?? "ekadku.com"
+
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
+  const hostname = req.headers.get("host") ?? ""
+  const host = hostname.split(":")[0]
+
+  // ── Partner subdomain detection ───────────────────────────
+  // Skip for API routes and Next.js internals
+  if (!pathname.startsWith("/api/") && !pathname.startsWith("/_next")) {
+    let partnerSlug: string | null = null
+
+    if (
+      host !== BASE_DOMAIN &&
+      host !== `www.${BASE_DOMAIN}` &&
+      host.endsWith(`.${BASE_DOMAIN}`)
+    ) {
+      partnerSlug = host.slice(0, -(BASE_DOMAIN.length + 1))
+    }
+
+    if (!partnerSlug && host !== "localhost" && host.endsWith(".localhost")) {
+      partnerSlug = host.slice(0, -(".localhost".length))
+    }
+
+    if (partnerSlug) {
+      const url = req.nextUrl.clone()
+      url.pathname = `/storefront/${partnerSlug}`
+      const response = NextResponse.rewrite(url)
+      response.cookies.set("ekadku_partner", partnerSlug, {
+        maxAge: 60 * 60 * 24 * 30,
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+      })
+      return response
+    }
+  }
+
+  // ── Admin route protection ────────────────────────────────
   const isAdminRoute = pathname.startsWith("/admin") || pathname.startsWith("/api/admin")
 
   if (isAdminRoute) {
@@ -33,6 +70,7 @@ export async function proxy(req: NextRequest) {
     }
   }
 
+  // ── Security headers ──────────────────────────────────────
   const response = NextResponse.next()
   response.headers.set("X-Content-Type-Options", "nosniff")
   response.headers.set("X-Frame-Options", "SAMEORIGIN")
@@ -44,7 +82,6 @@ export async function proxy(req: NextRequest) {
 
 export const config = {
   matcher: [
-    // Run on everything except static assets and NextAuth's own routes
     "/((?!api/auth|_next/static|_next/image|favicon\\.ico).*)",
   ],
 }

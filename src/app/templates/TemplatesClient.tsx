@@ -71,7 +71,7 @@ function TemplateCard({
   const { templates: tl } = useT()
 
   return (
-    <div className="bg-[var(--pg-alt)] rounded-xl p-2.5 border-2 border-gold/40 flex flex-col items-center gap-2 hover:border-gold transition-all">
+    <div className="bg-[var(--pg-alt)] rounded-xl p-2.5 border border-gold/40 flex flex-col items-center gap-2 hover:border-gold transition-all">
       <TemplatePhoneFrame template={template} previewName={previewName} />
 
       <p className="text-[11px] font-semibold text-[var(--tx-1)] tracking-wider text-center">

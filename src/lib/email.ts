@@ -146,6 +146,96 @@ export async function sendOrderNotification(data: OrderNotificationData): Promis
   })
 }
 
+export interface PartnerRegistrationData {
+  companyName: string
+  contactPerson: string
+  email: string
+  businessType: string
+  slug: string
+  baseDomain: string
+}
+
+export async function sendPartnerRegistrationEmail(data: PartnerRegistrationData): Promise<void> {
+  const transporter = createTransporter()
+  const partnerUrl = `${data.slug}.${data.baseDomain}`
+  const dashboardUrl = `${APP_URL}/partner/dashboard`
+
+  const html = `<!DOCTYPE html>
+<html lang="ms">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f7f3ee;font-family:'Helvetica Neue',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#f7f3ee;padding:32px 16px;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;max-width:600px;width:100%;">
+  <tr>
+    <td style="background:linear-gradient(135deg,#141414,#2a2a2a);padding:28px 32px;text-align:center;">
+      <p style="margin:0;color:#FFCC00;font-size:11px;letter-spacing:0.3em;text-transform:uppercase;">ekadku.com</p>
+      <h1 style="margin:8px 0 0;color:#fff;font-size:22px;font-weight:700;">Pendaftaran Partner ✦</h1>
+    </td>
+  </tr>
+  <tr>
+    <td style="padding:32px;">
+      <p style="margin:0 0 20px;color:#333;font-size:14px;line-height:1.6;">
+        Terima kasih kerana mendaftar sebagai Partner Ekadku, <strong>${data.contactPerson}</strong>!
+      </p>
+      <table width="100%" cellpadding="0" cellspacing="0" style="background:#fdf5ee;border-radius:8px;padding:16px;margin-bottom:24px;">
+        <tr>
+          <td style="padding:4px 0;color:#7B1414;font-size:12px;font-weight:600;width:160px;">Syarikat</td>
+          <td style="padding:4px 0;color:#333;font-size:12px;">${data.companyName}</td>
+        </tr>
+        <tr>
+          <td style="padding:4px 0;color:#7B1414;font-size:12px;font-weight:600;">Jenis Perniagaan</td>
+          <td style="padding:4px 0;color:#333;font-size:12px;">${data.businessType.replace(/_/g, " ")}</td>
+        </tr>
+        <tr>
+          <td style="padding:4px 0;color:#7B1414;font-size:12px;font-weight:600;">URL Partner</td>
+          <td style="padding:4px 0;color:#333;font-size:12px;font-family:monospace;">${partnerUrl}</td>
+        </tr>
+        <tr>
+          <td style="padding:4px 0;color:#7B1414;font-size:12px;font-weight:600;">Status</td>
+          <td style="padding:4px 0;color:#d97706;font-size:12px;font-weight:600;">Menunggu Kelulusan</td>
+        </tr>
+      </table>
+      <p style="margin:0 0 16px;color:#555;font-size:13px;line-height:1.6;">
+        Permohonan anda sedang disemak oleh pihak Ekadku. Anda akan dihubungi melalui e-mel apabila akaun partner anda diluluskan.
+      </p>
+      <a href="${dashboardUrl}" style="display:inline-block;background:#141414;color:#FFCC00;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:600;font-size:14px;">
+        Semak Status Partner
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td style="background:#fdf5ee;padding:16px 32px;text-align:center;border-top:1px solid #f0e8df;">
+      <p style="margin:0;color:rgba(74,16,16,0.4);font-size:11px;">ekadku.com — Kad Jemputan Digital</p>
+    </td>
+  </tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>`
+
+  if (!transporter) {
+    console.warn("[email] SMTP not configured — skipping partner registration email for", data.email)
+    return
+  }
+
+  await Promise.all([
+    transporter.sendMail({
+      from: FROM,
+      to: data.email,
+      subject: `[Ekadku Partner] Pendaftaran Diterima — ${data.companyName}`,
+      html,
+    }),
+    transporter.sendMail({
+      from: FROM,
+      to: "ekadku@gmail.com",
+      subject: `[Partner Baharu] ${data.companyName} — ${data.businessType.replace(/_/g, " ")}`,
+      html,
+    }),
+  ])
+}
+
 export async function sendPasswordResetEmail(email: string, token: string) {
   const resetUrl = `${APP_URL}/reset-password?token=${token}`
   const transporter = createTransporter()

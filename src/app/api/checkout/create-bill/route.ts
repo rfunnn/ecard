@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       userId: session.user.id,
       isPublished: false,
     },
-    select: { id: true, slug: true, title: true, groomName: true, wizardConfig: true },
+    select: { id: true, slug: true, title: true, groomName: true, wizardConfig: true, partnerId: true },
   })
 
   if (cards.length === 0) {
@@ -72,11 +72,15 @@ export async function POST(req: NextRequest) {
 
   const totalAmount = items.reduce((s, i) => s + i.amount, 0)
 
+  // Derive partner from the first card that has attribution
+  const partnerId = cards.find((c) => c.partnerId)?.partnerId ?? null
+
   // Create order record first
   const order = await prisma.order.create({
     data: {
       userId: session.user.id,
       totalAmount,
+      ...(partnerId ? { partnerId } : {}),
       items: {
         create: items.map((i) => ({
           cardId:  i.cardId,

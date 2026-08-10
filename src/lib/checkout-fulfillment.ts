@@ -22,9 +22,10 @@ export async function fulfillPaidOrder(orderId: string, billCode?: string): Prom
           cardId: true,
           package: true,
           amount: true,
-          card: { select: { slug: true, title: true, groomName: true, brideName: true } },
+          card: { select: { slug: true, title: true, groomName: true, brideName: true, partnerId: true } },
         },
       },
+      partner: { select: { id: true, partnerRate: true } },
     },
   })
   if (!order) return false
@@ -84,6 +85,26 @@ export async function fulfillPaidOrder(orderId: string, billCode?: string): Prom
       }
     }
   })
+
+  // Create partner usage records for newly published partner-attributed cards.
+  // One record per card (cardId @unique) — idempotent on duplicate trigger.
+  if (order.partner) {
+    const billingPeriod = `${paidAt.getFullYear()}-${String(paidAt.getMonth() + 1).padStart(2, "0")}`
+    for (const item of order.items) {
+      if (item.package === "renewal" || item.package.startsWith("upgrade-")) continue
+      if (!item.card.partnerId) continue
+      prisma.partnerUsage.create({
+        data: {
+          partnerId:          item.card.partnerId,
+          cardId:             item.cardId,
+          packageName:        item.package,
+          partnerRateAtUsage: order.partner.partnerRate,
+          amount:             order.partner.partnerRate,
+          billingPeriod,
+        },
+      }).catch(() => { /* cardId @unique — already billed, safe to ignore */ })
+    }
+  }
 
   // Fire-and-forget — email failure must never block fulfillment
   sendOrderNotification({

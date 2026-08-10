@@ -8,6 +8,7 @@ import { HomepagePhoneMockup } from "@/components/HomepagePhoneMockup"
 import { AnimatedWord } from "@/components/AnimatedWord"
 import { LanguageSwitcher } from "@/components/LanguageSwitcher"
 import { useT } from "@/lib/i18n"
+import { PartnerLogosMarquee } from "@/components/PartnerLogosMarquee"
 
 const FEATURE_ICONS = [Sparkles, Music, Share2, Clock]
 
@@ -331,6 +332,48 @@ export default function HomePage() {
               {h.packagesNote}{" "}
               <span className="text-blue-500 dark:text-blue-400">{h.packagesNoteHighlight}</span>.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Partner Logos Marquee ── */}
+      <PartnerLogosMarquee />
+
+      {/* ── Partner Section ── */}
+      <section className="py-14 lg:py-24 px-5 lg:px-10 border-t border-[var(--bd)]">
+        <div className="max-w-4xl mx-auto">
+          <div className="rounded-2xl border border-[var(--bd)] bg-[var(--pg-alt)] overflow-hidden">
+            <div className="px-6 py-8 lg:px-12 lg:py-10 flex flex-col lg:flex-row items-center lg:items-start gap-6 lg:gap-10">
+              <div className="flex-1 text-center lg:text-left">
+                <p className="text-[10px] tracking-[0.3em] uppercase font-bold mb-2" style={{ color: Y }}>
+                  {h.partnerLabel}
+                </p>
+                <h2 className="font-playfair text-2xl lg:text-3xl text-[var(--tx-1)] mb-3">
+                  {h.partnerTitle}
+                </h2>
+                <p className="text-[14px] text-[var(--tx-2)] leading-relaxed mb-2">
+                  {h.partnerDesc1}
+                </p>
+                <p className="text-[14px] text-[var(--tx-2)] leading-relaxed mb-6">
+                  {h.partnerDesc2}
+                </p>
+                <Link
+                  href="/partner/register"
+                  className="inline-flex items-center gap-2 font-bold px-7 py-3 rounded-full transition-all active:scale-95 text-[14px]"
+                  style={{ background: Y, color: Y_DARK }}
+                >
+                  {h.partnerCta} <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+              <div className="grid grid-cols-2 gap-3 shrink-0 w-full lg:w-auto lg:max-w-xs">
+                {h.partnerTypes.map(({ label, emoji }) => (
+                  <div key={label} className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-[var(--bd)] bg-[var(--pg)]">
+                    <span className="text-base">{emoji}</span>
+                    <span className="text-[12px] font-medium text-[var(--tx-2)]">{label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
