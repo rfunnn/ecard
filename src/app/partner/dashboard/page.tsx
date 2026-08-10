@@ -98,6 +98,9 @@ export default async function PartnerDashboardPage() {
                 Bil & Invois
               </Link>
             )}
+            <Link href="/partner/panduan" className="text-xs text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors">
+              Panduan
+            </Link>
             <Link href="/dashboard" className="text-xs text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors">
               Profil Saya
             </Link>

@@ -88,9 +88,14 @@ export default async function PartnerBillingPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
           <Link href="/" className="text-sm font-bold text-gold">ekadku.com</Link>
           <span className="text-xs text-[var(--tx-3)] font-medium uppercase tracking-wide">Bil & Invois</span>
-          <Link href="/partner/dashboard" className="text-xs text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors">
-            Dashboard
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link href="/partner/panduan" className="text-xs text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors">
+              Panduan
+            </Link>
+            <Link href="/partner/dashboard" className="text-xs text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors">
+              Dashboard
+            </Link>
+          </div>
         </div>
       </header>
 
