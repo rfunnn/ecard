@@ -45,7 +45,7 @@ const translations = {
       faqs: [
         {
           q: "Berapa harga kad jemputan digital ekadku.com?",
-          a: "ekadku.com menawarkan tiga pakej: Basic (RM30), Pro (RM40), dan Premium (RM40). Semua pakej adalah bayaran sekali sahaja — tiada langganan bulanan.",
+          a: "ekadku.com menawarkan tiga pakej: Basic (RM30), Pro (RM40), dan Premium (RM60). Semua pakej adalah bayaran sekali sahaja — tiada langganan bulanan.",
         },
         {
           q: "Berapa lama pautan kad jemputan saya aktif?",
@@ -277,9 +277,10 @@ const translations = {
       pricingRateDesc: "Kadar ditetapkan khusus untuk akaun anda",
       pricingRateDescGeneric: "Kadar ditetapkan oleh Ekadku berdasarkan pakej yang dipilih",
       pricingPerCard: "setiap e-kad",
-      pricingRateRange: "RM1.00–RM5.00",
+      pricingRateRange: "RM40.00",
       pricingBullets: [
         "Bil dikira berdasarkan bilangan e-kad yang diwujudkan dalam sebulan",
+        "Kadar ini khusus untuk pakej Premium — pakej lain mungkin berbeza",
         "E-kad yang dibatal atau dihapus tidak dikira dalam bil",
         "Tiada bayaran bulanan tetap — bayar ikut penggunaan sahaja",
         "Kadar boleh dikemas kini oleh Ekadku — anda akan dimaklumkan terlebih dahulu",
@@ -371,7 +372,7 @@ const translations = {
       faqs: [
         {
           q: "What is the price of ekadku.com digital invitation cards?",
-          a: "ekadku.com offers three packages: Basic (RM30), Pro (RM40), and Premium (RM40). All packages are one-time payments — no monthly subscription.",
+          a: "ekadku.com offers three packages: Basic (RM30), Pro (RM40), and Premium (RM60). All packages are one-time payments — no monthly subscription.",
         },
         {
           q: "How long is my invitation card link active?",
@@ -603,9 +604,10 @@ const translations = {
       pricingRateDesc: "Rate set specifically for your account",
       pricingRateDescGeneric: "Rate set by Ekadku based on the selected package",
       pricingPerCard: "per card",
-      pricingRateRange: "RM1.00–RM5.00",
+      pricingRateRange: "RM40.00",
       pricingBullets: [
         "Billing is calculated based on the number of e-cards created in a month",
+        "This rate applies to the Premium package — other packages may vary",
         "Cancelled or deleted e-cards are not counted in the bill",
         "No fixed monthly fee — pay only for what you use",
         "Rate may be updated by Ekadku — you will be notified in advance",
