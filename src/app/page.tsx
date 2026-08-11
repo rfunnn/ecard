@@ -294,7 +294,7 @@ export default function HomePage() {
               {PACKAGES.map(({ name, emoji, headerBg, price, popular, features }) => (
                 <div
                   key={name}
-                  className="rounded-2xl overflow-hidden border border-[var(--bd)] bg-[var(--pg-alt)] flex flex-col w-[168px] shrink-0 snap-center relative"
+                  className="rounded-2xl overflow-hidden border border-[var(--bd)] bg-[var(--pg-alt)] flex flex-col w-[148px] shrink-0 snap-center relative"
                 >
                   {popular && (
                     <div className="absolute top-0 right-3 z-10">
