@@ -108,7 +108,7 @@ export function buildDemoWizardConfig(
     ],
 
     youtubeUrl: "https://www.youtube.com/watch?v=Tf_zS_ES_7k",
-    musicStartTime: "00:00",
+    musicStartTime: "00:01",
     showMusicPlayer: true,
     autoplayMusic: true,
     scrollDelay: 3.5,

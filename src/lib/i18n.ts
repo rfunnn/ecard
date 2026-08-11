@@ -30,7 +30,7 @@ const translations = {
       packagesViewDemo: "LIHAT CONTOH",
       partnerLabel: "Rakan Perniagaan",
       partnerTitle: "Jual E-Kad Atas Nama Perniagaan Anda",
-      partnerDesc1: "Daftar percuma. Tiada bayaran langganan. Tiada kos persediaan. Anda hanya bayar berdasarkan bilangan e-kad yang pelanggan anda cipta — tiada kad, tiada bil.",
+      partnerDesc1: "Daftar percuma. Tiada bayaran langganan. Tiada kos persediaan. Anda hanya bayar berdasarkan bilangan e-kad yang pelanggan anda cipta.",
       partnerDesc2: "Dapatkan subdomain peribadi dan storefront berjenama sepenuhnya. Jana pendapatan setiap kali pelanggan anda mencipta e-kad melalui pautan anda.",
       partnerCta: "Daftar Sebagai Partner",
       partnerLearnMore: "Ketahui Lebih Lanjut",
