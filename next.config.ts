@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }]
   },
+  async rewrites() {
+    return [{ source: "/favicon.ico", destination: "/icon.png" }]
+  },
   // Required for Docker: copies only the minimal server files into .next/standalone
   output: "standalone",
 

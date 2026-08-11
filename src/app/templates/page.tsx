@@ -6,7 +6,7 @@ export const revalidate = 3600 // revalidate at most once per hour
 export const metadata: Metadata = {
   title: "Templat Kad Jemputan Digital | ekadku.com",
   description: "Pilih dari pelbagai templat kad jemputan digital — perkahwinan, hari jadi, korporat dan umum. Sesuaikan warna, fon, muzik dan animasi dalam masa beberapa minit.",
-  keywords: ["templat kad jemputan", "kad kahwin digital", "e-invite Malaysia", "kad hari jadi digital", "kad korporat digital"],
+  keywords: ["templat kad jemputan", "kad kahwin digital", "e-invite Malaysia", "kad hari jadi digital", "kad korporat digital", "e-kad kahwin", "kad kahwin", "e-card", "kad digital malaysia"],
   alternates: { canonical: "https://ekadku.com/templates" },
   openGraph: {
     title: "Templat Kad Jemputan Digital | ekadku.com",
