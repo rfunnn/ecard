@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Building2, Globe, AtSign, ChevronLeft, Loader2, Upload, X, Link2 } from "lucide-react"
 import { useT } from "@/lib/i18n"
-import { LanguageSwitcher } from "@/components/LanguageSwitcher"
 
 const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN ?? "ekadku.com"
 
@@ -104,9 +103,9 @@ export default function PartnerRegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--pg)] py-8 px-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="mb-6 flex items-center justify-between">
+    <div className="min-h-screen bg-[var(--pg)] py-8 px-5 lg:px-10">
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-6">
           <Link
             href="/"
             className="inline-flex items-center gap-1.5 text-sm text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors"
@@ -114,7 +113,6 @@ export default function PartnerRegisterPage() {
             <ChevronLeft className="w-4 h-4" />
             {r.backToHome}
           </Link>
-          <LanguageSwitcher />
         </div>
 
         <div className="text-center mb-8">

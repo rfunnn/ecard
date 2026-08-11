@@ -107,7 +107,7 @@ export default async function PartnerDashboardPage() {
                 Bil & Invois
               </Link>
             )}
-            <Link href="/partner/panduan" className="text-xs text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors hidden sm:block">
+            <Link href="/partner/guidline" className="text-xs text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors hidden sm:block">
               Panduan
             </Link>
             <UserMenu />

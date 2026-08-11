@@ -403,7 +403,7 @@ export default function HomePage() {
                     {h.partnerCta} <ArrowRight className="w-4 h-4" />
                   </Link>
                   <Link
-                    href="/partner/panduan"
+                    href="/partner/guidline"
                     className="inline-flex items-center gap-2 font-semibold px-6 py-3 rounded-full border border-[var(--bd)] text-[14px] text-[var(--tx-2)] hover:border-[var(--tx-3)] transition-all active:scale-95"
                   >
                     {h.partnerLearnMore}

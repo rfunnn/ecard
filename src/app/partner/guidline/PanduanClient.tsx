@@ -75,7 +75,7 @@ export function PanduanClient({ partnerRate, partnerSlug, isPartner, baseDomain 
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-10">
+      <main className="max-w-5xl mx-auto px-5 lg:px-10 py-10 space-y-10">
 
         {/* Hero */}
         <div className="text-center space-y-3 py-4">
