@@ -405,7 +405,7 @@ const translations = {
       packagesViewDemo: "VIEW DEMO",
       partnerLabel: "Business Partner",
       partnerTitle: "Sell E-Invitations Under Your Own Brand",
-      partnerDesc1: "Free to join. No subscription. No setup fees. You only pay based on the number of cards your customers create — no cards, no bill.",
+      partnerDesc1: "Free to join. No subscription. No setup fees. You only pay based on the number of cards your customers create.",
       partnerDesc2: "Get your own subdomain and a fully branded storefront. Earn every time your customers create an e-invitation through your link.",
       partnerCta: "Register as Partner",
       partnerLearnMore: "Learn More",

@@ -338,7 +338,7 @@ model Partner {
   instagram          String?
   facebook           String?
   status             PartnerStatus       @default(PENDING)
-  partnerRate        Int                 @default(3000)
+  partnerRate        Int                 @default(4000)
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
 

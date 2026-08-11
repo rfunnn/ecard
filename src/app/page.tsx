@@ -37,7 +37,7 @@ const PACKAGES = [
     name: "Pro", emoji: "🚀",
     headerBg: "linear-gradient(135deg, #9CA3AF, #6B7280)",
     price: "RM40",
-    popular: true,
+    popular: false,
     features: [
       { label: "Calendar",       bold: false },
       { label: "Contacts",       bold: false },
@@ -53,7 +53,7 @@ const PACKAGES = [
     name: "Premium", emoji: "💎",
     headerBg: "linear-gradient(135deg, #D4AF37, #a07820)",
     price: "RM60",
-    popular: false,
+    popular: true,
     features: [
       { label: "Calendar",            bold: false },
       { label: "Contacts",            bold: false },
