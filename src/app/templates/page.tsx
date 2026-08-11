@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
 import { TemplatesClient } from "./TemplatesClient"
+import { prisma } from "@/lib/prisma"
+import { rewriteStorageUrl } from "@/lib/storage"
 
 export const revalidate = 3600 // revalidate at most once per hour
 
@@ -26,6 +28,21 @@ export const metadata: Metadata = {
   },
 }
 
-export default function TemplatesPage() {
-  return <TemplatesClient />
+export default async function TemplatesPage() {
+  let initialTemplates: React.ComponentProps<typeof TemplatesClient>["initialTemplates"] = []
+  try {
+    const rows = await prisma.template.findMany({
+      where: { isActive: true },
+      orderBy: { sortOrder: "asc" },
+      select: { id: true, slug: true, name: true, nameMs: true, category: true, thumbnail: true, previewUrl: true, defaultConfig: true },
+    })
+    initialTemplates = rows.map((t) => ({
+      ...t,
+      thumbnail: rewriteStorageUrl(t.thumbnail) || "",
+      defaultConfig: t.defaultConfig as React.ComponentProps<typeof TemplatesClient>["initialTemplates"][number]["defaultConfig"],
+    }))
+  } catch {
+    // DB unavailable — client will fetch on mount
+  }
+  return <TemplatesClient initialTemplates={initialTemplates} />
 }

@@ -252,7 +252,7 @@ function Sidebar({
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export function TemplatesClient() {
+export function TemplatesClient({ initialTemplates = [] }: { initialTemplates?: Template[] }) {
   const router = useRouter()
   const { status } = useSession()
   const { toast } = useToast()
@@ -260,8 +260,8 @@ export function TemplatesClient() {
 
   const THEME_FILTERS = tl.categories as ReadonlyArray<{ key: string; label: string; emoji: string }>
 
-  const [templates,    setTemplates]    = useState<Template[]>([])
-  const [loading,      setLoading]      = useState(true)
+  const [templates,    setTemplates]    = useState<Template[]>(initialTemplates)
+  const [loading,      setLoading]      = useState(initialTemplates.length === 0)
   const [sort,         setSort]         = useState("latest")
   const [activeThemes, setActiveThemes] = useState<Set<string>>(
     new Set(THEME_FILTERS.map((f) => f.key))
@@ -276,12 +276,13 @@ export function TemplatesClient() {
   const [currentPage,     setCurrentPage]     = useState(1)
 
   useEffect(() => {
+    if (initialTemplates.length > 0) return
     fetch("/api/templates")
       .then((r) => r.json())
       .then((d) => setTemplates(d.templates?.length ? d.templates : FALLBACK_TEMPLATES))
       .catch(() => setTemplates(FALLBACK_TEMPLATES))
       .finally(() => setLoading(false))
-  }, [])
+  }, [initialTemplates.length])
 
   const handleSetName = () => setPreviewName(nameInput.trim())
 
