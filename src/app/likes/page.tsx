@@ -198,7 +198,7 @@ export default function LikesPage() {
 
       {/* Sub-nav: page title + back */}
       <div className="bg-[var(--pg-nav)] border-b border-[var(--bd)]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between h-10">
+        <div className="px-5 lg:px-10 flex items-center justify-between h-10">
           <div className="flex items-center gap-2">
             <Heart className="w-4 h-4 fill-red-400 text-red-400" />
             <h1 className="text-sm font-semibold text-[var(--tx-1)]">Templat Disukai</h1>
@@ -218,10 +218,10 @@ export default function LikesPage() {
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 flex-1">
+      <div className="w-full px-5 lg:px-10 py-6 flex-1">
 
         {isLoading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="bg-[var(--pg-alt)] rounded-xl p-3 border border-[var(--bd)] animate-pulse">
                 <div className="mx-auto bg-[var(--bd)] rounded-[22px]" style={{ width: "110px", aspectRatio: "9/19.5" }} />
@@ -260,7 +260,7 @@ export default function LikesPage() {
               {displayed.length} templat disimpan
             </p>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {displayed.map((t) => (
                 <LikedTemplateCard
                   key={t.id}
