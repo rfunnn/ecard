@@ -84,7 +84,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-[var(--pg)] overflow-x-hidden">
 
       {/* ── Nav ── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 lg:px-10 py-3.5 bg-[var(--pg-nav)] backdrop-blur-md border-b border-[var(--bd)]">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 lg:px-10 h-14 bg-[var(--pg-nav)] backdrop-blur-md border-b border-[var(--bd)]">
         <div className="flex items-center gap-2">
           <Image src="/icon.png" alt="ekadku" width={20} height={20} className="rounded-sm" />
           <span className="font-playfair text-[17px] tracking-wide leading-none">
@@ -101,7 +101,7 @@ export default function HomePage() {
       </nav>
 
       {/* ── Hero ── */}
-      <section className="relative min-h-[100svh] flex flex-col pt-14 overflow-x-hidden">
+      <section className="relative min-h-[100svh] flex flex-col lg:flex-row pt-14 overflow-x-hidden">
 
         {/* Subtle non-yellow atmosphere — violet top-right, teal bottom-left */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -115,9 +115,9 @@ export default function HomePage() {
           />
         </div>
 
-        {/* Text content */}
-        <div className="w-full max-w-3xl mx-auto px-5 lg:px-10 flex flex-col items-center text-center gap-8 py-8 relative z-10">
-          <div className="flex flex-col items-center text-center">
+        {/* Left: Text content */}
+        <div className="flex-1 flex flex-col items-center justify-center px-5 lg:px-12 xl:px-16 py-10 lg:py-12 relative z-10">
+          <div className="flex flex-col items-center text-center w-full max-w-lg">
 
             {/* Badge — solid bright yellow */}
             <div
@@ -130,14 +130,14 @@ export default function HomePage() {
 
             <AnimatedWord />
 
-            <p className="text-[var(--tx-2)] text-[13px] lg:text-lg leading-relaxed max-w-sm lg:max-w-md mb-5 lg:mb-10">
+            <p className="text-[var(--tx-2)] text-[13px] lg:text-xl leading-relaxed max-w-sm lg:max-w-md mb-5 lg:mb-10">
               {h.heroDesc}
             </p>
 
             <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto mb-5 lg:mb-10">
               <Link
                 href="/templates"
-                className="inline-flex items-center justify-center gap-2 font-bold px-6 py-2.5 rounded-full transition-all active:scale-95 text-[13px] sm:text-[15px]"
+                className="inline-flex items-center justify-center gap-2 font-bold px-6 lg:px-8 py-2.5 lg:py-3.5 rounded-full transition-all active:scale-95 text-[13px] sm:text-[15px] lg:text-base"
                 style={{
                   background: Y,
                   color: Y_DARK,
@@ -149,14 +149,14 @@ export default function HomePage() {
               </Link>
               <Link
                 href="/invite/demo"
-                className="inline-flex items-center justify-center gap-2 border border-[var(--bd)] hover:border-[var(--tx-3)] text-[var(--tx-1)] hover:bg-[var(--sf)] px-6 py-2.5 rounded-full transition-all text-[13px] sm:text-[15px] active:scale-95"
+                className="inline-flex items-center justify-center gap-2 border border-[var(--bd)] hover:border-[var(--tx-3)] text-[var(--tx-1)] hover:bg-[var(--sf)] px-6 lg:px-8 py-2.5 lg:py-3.5 rounded-full transition-all text-[13px] sm:text-[15px] lg:text-base active:scale-95"
               >
                 <Eye className="w-4 h-4 text-[var(--tx-3)]" />
                 {h.heroDemo}
               </Link>
             </div>
 
-            <div className="grid grid-cols-3 gap-x-3 gap-y-2 w-full max-w-xs mx-auto">
+            <div className="grid grid-cols-3 gap-x-3 gap-y-2 w-full max-w-xs mx-auto lg:max-w-sm">
               {h.perks.map((p) => (
                 <div key={p} className="flex items-center gap-1.5 text-[var(--tx-3)] text-[12px] sm:text-[13px]">
                   <Check className="w-2.5 h-2.5 shrink-0" style={{ color: Y }} />
@@ -167,17 +167,17 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Full-width yellow phone row */}
+        {/* Right: Yellow phone panel */}
         <div
-          className="w-full flex justify-center items-end relative z-10 overflow-hidden"
+          className="w-full lg:w-[45%] lg:shrink-0 flex justify-center items-end lg:items-center relative z-10 overflow-hidden"
           style={{
             background: `linear-gradient(150deg, #FFFDE0 0%, #FFF5A0 35%, #FFE033 65%, ${Y} 100%)`,
             paddingTop: "3.5rem",
             paddingBottom: "3.5rem",
           }}
         >
-          {/* Wave mask — blends section top into page background */}
-          <div className="absolute top-0 left-0 right-0 pointer-events-none" style={{ height: 72 }}>
+          {/* Wave mask — mobile only */}
+          <div className="absolute top-0 left-0 right-0 pointer-events-none lg:hidden" style={{ height: 72 }}>
             <svg viewBox="0 0 1440 72" preserveAspectRatio="none" className="w-full h-full">
               <path d="M0,0 C360,72 1080,0 1440,72 L1440,0 L0,0 Z" fill="var(--pg)" />
             </svg>
@@ -189,14 +189,14 @@ export default function HomePage() {
               bottom: 0,
               left: "50%",
               transform: "translateX(-50%)",
-              width: "50%",
+              width: "80%",
               height: "80%",
               background: "radial-gradient(ellipse at center bottom, rgba(255,255,255,0.60) 0%, transparent 65%)",
             }}
           />
           <HomepagePhoneMockup />
-          {/* Curved bottom edge */}
-          <div className="absolute bottom-0 left-0 right-0 pointer-events-none" style={{ height: 56 }}>
+          {/* Curved bottom edge — mobile only */}
+          <div className="absolute bottom-0 left-0 right-0 pointer-events-none lg:hidden" style={{ height: 56 }}>
             <svg viewBox="0 0 1440 56" preserveAspectRatio="none" className="w-full h-full">
               <path d="M0,56 Q720,0 1440,56 L1440,56 L0,56 Z" fill="var(--pg)" />
             </svg>
@@ -282,36 +282,36 @@ export default function HomePage() {
       </section>
 
       {/* ── Packages ── */}
-      <section className="py-16 lg:py-28 border-t border-[var(--bd)] bg-[var(--pg)]">
+      <section className="py-16 lg:py-28 border-t border-[var(--bd)] bg-[var(--pg)]" id="packages">
         <div className="max-w-5xl mx-auto">
-          <div className="px-5 lg:px-10">
-            <h2 className="font-playfair text-3xl lg:text-5xl text-[var(--tx-1)] text-center mb-7 lg:mb-14">{h.packagesTitle}</h2>
+          <div className="px-5 lg:px-10 mb-7 lg:mb-14">
+            <h2 className="font-playfair text-3xl lg:text-5xl text-[var(--tx-1)] text-center">{h.packagesTitle}</h2>
           </div>
 
-          <div className="-mx-0 lg:mx-0 px-5 lg:px-10">
-            <div className="flex justify-center lg:grid lg:grid-cols-3 gap-3 overflow-x-auto lg:overflow-visible pb-4 lg:pb-0 snap-x snap-mandatory lg:snap-none scrollbar-hide mb-6 lg:mb-8">
-              {PACKAGES.map(({ name, emoji, headerBg, price, features }) => (
+          {/* Mobile: horizontal scroll */}
+          <div className="lg:hidden overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide mb-6 px-5">
+            <div className="flex gap-3 w-max mx-auto">
+              {PACKAGES.map(({ name, emoji, headerBg, price, popular, features }) => (
                 <div
                   key={name}
-                  className="rounded-2xl overflow-hidden border border-[var(--bd)] bg-[var(--pg-alt)] flex flex-col shrink-0 snap-center relative"
-                  style={{ width: "clamp(100px, 28vw, 180px)" }}
+                  className="rounded-2xl overflow-hidden border border-[var(--bd)] bg-[var(--pg-alt)] flex flex-col w-[168px] shrink-0 snap-center relative"
                 >
-                  <div
-                    className="py-2.5 text-center"
-                    style={{ background: headerBg }}
-                  >
+                  {popular && (
+                    <div className="absolute top-0 right-3 z-10">
+                      <span className="bg-gold text-[#141414] text-[8px] font-black px-2.5 py-0.5 rounded-b-md uppercase tracking-wide">Popular</span>
+                    </div>
+                  )}
+                  <div className="py-3 text-center" style={{ background: headerBg }}>
                     <span className="text-white font-bold text-xs tracking-wide">{name} {emoji}</span>
                   </div>
-                  <div className="flex-1 pt-3 pb-2 px-3 flex flex-col items-center">
-                    <div className="space-y-1 text-center text-[11px] w-full">
+                  <div className="flex-1 pt-3 pb-2 px-4 flex flex-col items-center">
+                    <div className="space-y-1.5 text-center text-[11px] w-full">
                       {features.map(({ label, bold }) => (
-                        <p key={label} className={bold ? "font-bold text-[var(--tx-1)]" : "text-[var(--tx-2)]"}>
-                          {label}
-                        </p>
+                        <p key={label} className={bold ? "font-bold text-[var(--tx-1)]" : "text-[var(--tx-2)]"}>{label}</p>
                       ))}
                     </div>
                   </div>
-                  <div className="px-3 pt-3 pb-3 flex flex-col items-center gap-2.5 border-t border-[var(--bd)] mt-2">
+                  <div className="px-4 pt-3 pb-4 flex flex-col items-center gap-2.5 border-t border-[var(--bd)] mt-2">
                     <p className="text-2xl font-light text-[var(--tx-1)] leading-none">{price}</p>
                     <Link
                       href={`/invite/demo?package=${name.toLowerCase()}`}
@@ -325,6 +325,43 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Desktop: 3-col grid */}
+          <div className="hidden lg:grid lg:grid-cols-3 gap-6 px-10 mb-8">
+            {PACKAGES.map(({ name, emoji, headerBg, price, popular, features }) => (
+              <div
+                key={name}
+                className="rounded-2xl overflow-hidden border border-[var(--bd)] bg-[var(--pg-alt)] flex flex-col relative"
+              >
+                {popular && (
+                  <div className="absolute top-0 right-5 z-10">
+                    <span className="bg-gold text-[#141414] text-[10px] font-black px-3 py-1 rounded-b-lg uppercase tracking-wide">Popular</span>
+                  </div>
+                )}
+                <div className="py-6 text-center" style={{ background: headerBg }}>
+                  <span className="text-white font-bold text-lg tracking-wide">{name} {emoji}</span>
+                </div>
+                <div className="flex-1 pt-6 pb-3 px-7 flex flex-col items-center">
+                  <div className="space-y-2.5 text-center text-sm w-full">
+                    {features.map(({ label, bold }) => (
+                      <p key={label} className={bold ? "font-bold text-[var(--tx-1)]" : "text-[var(--tx-2)]"}>{label}</p>
+                    ))}
+                  </div>
+                </div>
+                <div className="px-7 pt-4 pb-7 flex flex-col items-center gap-4 border-t border-[var(--bd)] mt-3">
+                  <p className="text-5xl font-light text-[var(--tx-1)] leading-none">{price}</p>
+                  <Link
+                    href={`/invite/demo?package=${name.toLowerCase()}`}
+                    className="w-full flex items-center justify-center gap-2 text-white text-sm font-bold tracking-wide px-4 py-3.5 rounded-xl transition-all hover:opacity-90 active:scale-95"
+                    style={{ background: headerBg }}
+                  >
+                    <Eye className="w-4 h-4 opacity-90" />
+                    {h.packagesViewDemo}
+                  </Link>
+                </div>
+              </div>
+            ))}
           </div>
 
           <div className="px-5 lg:px-10">

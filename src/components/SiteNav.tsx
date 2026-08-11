@@ -15,7 +15,7 @@ interface SiteNavProps {
 export function SiteNav({ actions }: SiteNavProps) {
   return (
     <nav className="sticky top-0 z-40 bg-[var(--pg-nav)] backdrop-blur-md border-b border-[var(--bd)]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-12">
+      <div className="flex items-center justify-between px-5 lg:px-10 h-14">
         {/* Logo → home */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <Image src="/icon.png" alt="ekadku" width={20} height={20} className="rounded-sm" />

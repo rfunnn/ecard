@@ -3,8 +3,8 @@
 import { usePathname } from "next/navigation"
 import { SiteNav } from "@/components/SiteNav"
 
-// Pages that manage their own navigation (invite viewer, builder, admin, homepage)
-const EXCLUDED = ["/", "/invite", "/builder", "/admin", "/login", "/register"]
+// Pages that manage their own navigation (invite viewer, builder, admin, homepage, partner portal)
+const EXCLUDED = ["/", "/invite", "/builder", "/admin", "/login", "/register", "/partner/dashboard", "/partner/billing", "/partner/panduan"]
 
 export function ConditionalSiteNav() {
   const path = usePathname()

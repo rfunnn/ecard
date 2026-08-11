@@ -1,7 +1,9 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { useT } from "@/lib/i18n"
+import UserMenu from "@/components/UserMenu"
 import {
   Globe, CreditCard, FileText, BadgeCheck, LayoutDashboard,
   Users, ChevronRight, MessageCircleQuestion,
@@ -46,9 +48,30 @@ export function PanduanClient({ partnerRate, partnerSlug, isPartner, baseDomain 
 
   return (
     <div className="min-h-screen bg-[var(--pg)]">
-      <header className="sticky top-0 z-20 bg-[var(--pg-alt)] border-b border-[var(--bd)]">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 flex items-center justify-center h-14">
-          <span className="text-xs text-[var(--tx-3)] font-medium uppercase tracking-wide">{p.pageTitle}</span>
+      <header className="sticky top-0 z-40 bg-[var(--pg-nav)] backdrop-blur-md border-b border-[var(--bd)]">
+        <div className="flex items-center justify-between px-5 lg:px-10 h-14">
+          <Link href="/" className="flex items-center gap-2 shrink-0">
+            <Image src="/icon.png" alt="ekadku" width={20} height={20} className="rounded-sm" />
+            <span className="font-playfair text-[16px] tracking-wide leading-none select-none">
+              <span className="text-[var(--tx-1)]">e</span>
+              <span className="text-gold">kad</span>
+              <span className="text-[var(--tx-1)]">ku</span>
+              <span className="text-gold/50 text-[10px] font-sans tracking-normal align-baseline">.com</span>
+            </span>
+          </Link>
+          <div className="flex items-center gap-3">
+            {isPartner && (
+              <Link href="/partner/dashboard" className="text-xs text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors hidden sm:block">
+                {p.navDashboard}
+              </Link>
+            )}
+            {!isPartner && (
+              <Link href="/partner/register" className="text-xs font-semibold text-gold hover:opacity-80 transition-opacity hidden sm:block">
+                {p.navRegister}
+              </Link>
+            )}
+            <UserMenu />
+          </div>
         </div>
       </header>
 

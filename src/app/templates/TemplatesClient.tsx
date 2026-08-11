@@ -438,7 +438,7 @@ export function TemplatesClient() {
 
       {/* ── Sub-nav: page title + mobile filter ── */}
       <div className="bg-[var(--pg-nav)] border-b border-[var(--bd)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-10">
+        <div className="px-5 lg:px-10 flex items-center justify-between h-10">
           <h1 className="font-playfair text-[15px] text-[var(--tx-1)]">{tl.pageTitle}</h1>
           <button
             onClick={() => setMobileFilter(true)}
@@ -471,7 +471,7 @@ export function TemplatesClient() {
         </div>
       </div>
 
-      <div className="flex flex-1 max-w-7xl mx-auto w-full">
+      <div className="flex flex-1 w-full">
 
         {/* ── Desktop sidebar ── */}
         <aside className="hidden lg:block w-52 xl:w-60 shrink-0 bg-[var(--pg-alt)] border-r border-[var(--bd)] min-h-full">
@@ -479,7 +479,7 @@ export function TemplatesClient() {
         </aside>
 
         {/* ── Main content ── */}
-        <div className="flex-1 min-w-0 px-4 sm:px-6 py-4 space-y-4">
+        <div className="flex-1 min-w-0 px-4 sm:px-6 lg:px-8 py-4 space-y-4">
 
           {/* Name preview input */}
           <div className="rounded-xl border border-[var(--bd)] bg-[var(--pg-alt)] px-3 py-3">

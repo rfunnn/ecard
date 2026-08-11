@@ -1,8 +1,10 @@
 import { redirect } from "next/navigation"
 import { getServerSession } from "next-auth"
 import Link from "next/link"
+import Image from "next/image"
 import { authOptions } from "@/lib/auth-options"
 import { prisma } from "@/lib/prisma"
+import UserMenu from "@/components/UserMenu"
 
 export const dynamic = "force-dynamic"
 
@@ -84,17 +86,25 @@ export default async function PartnerBillingPage() {
 
   return (
     <div className="min-h-screen bg-[var(--pg)]">
-      <header className="sticky top-0 z-20 bg-[var(--pg-alt)] border-b border-[var(--bd)]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
-          <Link href="/" className="text-sm font-bold text-gold">ekadku.com</Link>
-          <span className="text-xs text-[var(--tx-3)] font-medium uppercase tracking-wide">Bil & Invois</span>
+      <header className="sticky top-0 z-40 bg-[var(--pg-nav)] backdrop-blur-md border-b border-[var(--bd)]">
+        <div className="flex items-center justify-between px-5 lg:px-10 h-14">
+          <Link href="/" className="flex items-center gap-2 shrink-0">
+            <Image src="/icon.png" alt="ekadku" width={20} height={20} className="rounded-sm" />
+            <span className="font-playfair text-[16px] tracking-wide leading-none select-none">
+              <span className="text-[var(--tx-1)]">e</span>
+              <span className="text-gold">kad</span>
+              <span className="text-[var(--tx-1)]">ku</span>
+              <span className="text-gold/50 text-[10px] font-sans tracking-normal align-baseline">.com</span>
+            </span>
+          </Link>
           <div className="flex items-center gap-3">
-            <Link href="/partner/panduan" className="text-xs text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors">
+            <Link href="/partner/panduan" className="text-xs text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors hidden sm:block">
               Panduan
             </Link>
-            <Link href="/partner/dashboard" className="text-xs text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors">
+            <Link href="/partner/dashboard" className="text-xs text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors hidden sm:block">
               Dashboard
             </Link>
+            <UserMenu />
           </div>
         </div>
       </header>
