@@ -31,7 +31,7 @@ export default function PartnerRegisterPage() {
   const [form, setForm] = useState({
     companyName: "", contactPerson: "", phone: "", email: "",
     businessType: "", registrationNumber: "",
-    website: "", instagram: "", facebook: "",
+    website: "https://", instagram: "@", facebook: "",
   })
   const [logo, setLogo]               = useState("")
   const [logoPreview, setLogoPreview] = useState("")
@@ -97,6 +97,8 @@ export default function PartnerRegisterPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
+          website:   form.website  === "https://" ? "" : form.website,
+          instagram: form.instagram === "@"        ? "" : form.instagram,
           logo: logo || undefined,
           ...(password ? { name: form.contactPerson, password } : {}),
         }),
