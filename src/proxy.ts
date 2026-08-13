@@ -37,7 +37,8 @@ export async function proxy(req: NextRequest) {
     // because NextAuth's signIn() uses fetch from the subdomain origin.
     // Redirecting the /login page itself means the full OAuth flow stays on
     // ekadku.com with no cross-origin requests at all.
-    if (pathname === "/login" || pathname.startsWith("/login?")) {
+    if (pathname === "/login" || pathname.startsWith("/login?") ||
+        pathname === "/register" || pathname.startsWith("/register?")) {
       const url = req.nextUrl.clone()
       url.hostname = BASE_DOMAIN
       url.port = ""
