@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Building2, Globe, AtSign, ChevronLeft, Loader2, Upload, X, Link2, Facebook } from "lucide-react"
+import { Building2, Globe, AtSign, ChevronLeft, Loader2, Upload, X, Link2 } from "lucide-react"
 import { useT } from "@/lib/i18n"
 
 const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN ?? "ekadku.com"
@@ -302,7 +302,7 @@ export default function PartnerRegisterPage() {
                 <label className={labelCls}>{r.labelFacebook}</label>
                 <div className="flex items-stretch rounded-xl border border-blue-500/50 overflow-hidden focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500/20 transition-colors">
                   <div className="flex items-center px-3 bg-blue-600/10 border-r border-blue-500/30 shrink-0">
-                    <Facebook className="w-3.5 h-3.5 text-blue-500" />
+                    <span className="text-blue-500 font-bold text-sm leading-none">f</span>
                   </div>
                   <input
                     className="flex-1 bg-[var(--pg)] px-3 py-2.5 text-sm text-[var(--tx-1)] placeholder-[var(--tx-3)] focus:outline-none min-w-0"
