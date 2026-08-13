@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
-import { AtSign, Globe, MapPin, ArrowRight, Sparkles, Link2 } from "lucide-react"
+import { AtSign, Globe, MapPin, ArrowRight, Sparkles, Link2, Gift, Star, Zap } from "lucide-react"
 
 const BUSINESS_TYPE_LABELS: Record<string, string> = {
   BUSINESS_CARD:  "Business Card",
@@ -10,6 +10,30 @@ const BUSINESS_TYPE_LABELS: Record<string, string> = {
   VENDOR:         "Vendor",
   OTHERS:         "Others",
 }
+
+const PACKAGES = [
+  {
+    name: "Basic",
+    price: "RM30",
+    icon: Star,
+    features: ["Kad digital interaktif", "RSVP online", "Peta lokasi", "Sah 6 bulan"],
+    highlight: false,
+  },
+  {
+    name: "Pro",
+    price: "RM40",
+    icon: Zap,
+    features: ["Semua ciri Basic", "Galeri foto", "Senarai hadiah", "Muzik latar"],
+    highlight: false,
+  },
+  {
+    name: "Premium",
+    price: "Percuma*",
+    icon: Gift,
+    features: ["Semua ciri Pro", "Video penutup", "Rekabentuk eksklusif", "Analitik pelawat"],
+    highlight: true,
+  },
+]
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -73,9 +97,14 @@ export default async function StorefrontPage({ params }: Props) {
             )}
             <span className="font-bold text-sm text-[var(--tx-1)]">{partner.companyName}</span>
           </div>
-          <Link href="/" className="text-xs text-[var(--tx-3)] hover:text-[var(--tx-1)] transition-colors">
-            ekadku.com
-          </Link>
+          <div className="flex items-center gap-4">
+            <a href="#packages" className="text-xs text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors hidden sm:block">
+              Pakej
+            </a>
+            <Link href="/login" className="text-xs text-[var(--tx-2)] hover:text-[var(--tx-1)] transition-colors hidden sm:block">
+              Log Masuk
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -98,9 +127,15 @@ export default async function StorefrontPage({ params }: Props) {
             {businessTypeLabel}
           </p>
           <h1 className="text-3xl lg:text-4xl font-bold text-[var(--tx-1)] mb-3">{partner.companyName}</h1>
-          <p className="text-base text-[var(--tx-2)] mb-10 leading-relaxed">
+          <p className="text-base text-[var(--tx-2)] mb-4 leading-relaxed">
             Kad Jemputan Digital — buat, kongsi dan pantau jemputan anda dengan mudah.
           </p>
+
+          {/* Free card callout */}
+          <div className="inline-flex items-center gap-2 bg-gold/10 border border-gold/30 rounded-full px-4 py-2 mb-8">
+            <Gift className="w-3.5 h-3.5 text-gold" />
+            <span className="text-xs font-semibold text-gold">1 kad Premium PERCUMA untuk pelanggan baru</span>
+          </div>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
@@ -111,53 +146,112 @@ export default async function StorefrontPage({ params }: Props) {
               <Sparkles className="w-4 h-4" />
               Buat Jemputan Anda
             </Link>
-            <Link
-              href="/#packages"
+            <a
+              href="#packages"
               className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full text-sm font-semibold border border-[var(--bd)] hover:border-gold/40 text-[var(--tx-1)] transition-all"
             >
               Lihat Pakej <ArrowRight className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Packages */}
+      <section id="packages" className="py-12 px-4 border-t border-[var(--bd)]">
+        <div className="max-w-4xl mx-auto">
+          <p className="text-[11px] tracking-[0.3em] uppercase font-bold text-[var(--tx-3)] text-center mb-2">Pakej</p>
+          <h2 className="text-2xl font-bold text-[var(--tx-1)] text-center mb-8">Pilih Pakej Anda</h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {PACKAGES.map((pkg) => {
+              const Icon = pkg.icon
+              return (
+                <div
+                  key={pkg.name}
+                  className={`rounded-2xl p-6 border ${
+                    pkg.highlight
+                      ? "border-gold bg-gold/5 relative overflow-hidden"
+                      : "border-[var(--bd)] bg-[var(--pg-alt)]"
+                  }`}
+                >
+                  {pkg.highlight && (
+                    <div className="absolute top-3 right-3 bg-gold text-[#141414] text-[10px] font-bold px-2 py-0.5 rounded-full">
+                      PERCUMA
+                    </div>
+                  )}
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-4 ${pkg.highlight ? "bg-gold/20" : "bg-[var(--sf)]"}`}>
+                    <Icon className={`w-4.5 h-4.5 ${pkg.highlight ? "text-gold" : "text-[var(--tx-2)]"}`} />
+                  </div>
+                  <p className="font-bold text-[var(--tx-1)] mb-1">{pkg.name}</p>
+                  <p className={`text-xl font-black mb-4 ${pkg.highlight ? "text-gold" : "text-[var(--tx-1)]"}`}>{pkg.price}</p>
+                  <ul className="space-y-2">
+                    {pkg.features.map((f) => (
+                      <li key={f} className="flex items-start gap-2 text-xs text-[var(--tx-2)]">
+                        <span className={`mt-0.5 shrink-0 ${pkg.highlight ? "text-gold" : "text-[var(--tx-3)]"}`}>✓</span>
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )
+            })}
+          </div>
+
+          <p className="text-[11px] text-[var(--tx-3)] text-center mt-4">
+            * 1 kad Premium percuma untuk setiap pelanggan baru melalui {partner.companyName}
+          </p>
+
+          <div className="mt-8 text-center">
+            <Link
+              href="/templates"
+              className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full font-bold text-[15px] transition-all active:scale-95"
+              style={{ background: "#FFCC00", color: "#141414" }}
+            >
+              <Sparkles className="w-4 h-4" />
+              Mula Buat Kad
             </Link>
           </div>
         </div>
       </section>
 
       {/* Info */}
-      <section className="py-8 px-4 border-t border-[var(--bd)]">
-        <div className="max-w-xl mx-auto space-y-3">
-          {partner.address && (
-            <div className="flex items-start gap-3 text-sm text-[var(--tx-2)]">
-              <MapPin className="w-4 h-4 mt-0.5 text-[var(--tx-3)] shrink-0" />
-              <span>{partner.address}</span>
-            </div>
-          )}
-          {partner.website && (
-            <div className="flex items-center gap-3 text-sm">
-              <Globe className="w-4 h-4 text-[var(--tx-3)] shrink-0" />
-              <a href={partner.website} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline truncate">
-                {partner.website.replace(/^https?:\/\//, "")}
-              </a>
-            </div>
-          )}
-          {partner.instagram && (
-            <div className="flex items-center gap-3 text-sm">
-              <AtSign className="w-4 h-4 text-[var(--tx-3)] shrink-0" />
-              <a href={`https://instagram.com/${partner.instagram.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer"
-                className="text-blue-500 hover:underline">
-                {partner.instagram.startsWith("@") ? partner.instagram : `@${partner.instagram}`}
-              </a>
-            </div>
-          )}
-          {partner.facebook && (
-            <div className="flex items-center gap-3 text-sm">
-              <Link2 className="w-4 h-4 text-[var(--tx-3)] shrink-0" />
-              <a href={partner.facebook.startsWith("http") ? partner.facebook : `https://${partner.facebook}`}
-                target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline truncate">
-                {partner.facebook.replace(/^https?:\/\//, "")}
-              </a>
-            </div>
-          )}
-        </div>
-      </section>
+      {(partner.address || partner.website || partner.instagram || partner.facebook) && (
+        <section className="py-8 px-4 border-t border-[var(--bd)]">
+          <div className="max-w-xl mx-auto space-y-3">
+            {partner.address && (
+              <div className="flex items-start gap-3 text-sm text-[var(--tx-2)]">
+                <MapPin className="w-4 h-4 mt-0.5 text-[var(--tx-3)] shrink-0" />
+                <span>{partner.address}</span>
+              </div>
+            )}
+            {partner.website && (
+              <div className="flex items-center gap-3 text-sm">
+                <Globe className="w-4 h-4 text-[var(--tx-3)] shrink-0" />
+                <a href={partner.website} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline truncate">
+                  {partner.website.replace(/^https?:\/\//, "")}
+                </a>
+              </div>
+            )}
+            {partner.instagram && (
+              <div className="flex items-center gap-3 text-sm">
+                <AtSign className="w-4 h-4 text-[var(--tx-3)] shrink-0" />
+                <a href={`https://instagram.com/${partner.instagram.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                  {partner.instagram.startsWith("@") ? partner.instagram : `@${partner.instagram}`}
+                </a>
+              </div>
+            )}
+            {partner.facebook && (
+              <div className="flex items-center gap-3 text-sm">
+                <Link2 className="w-4 h-4 text-[var(--tx-3)] shrink-0" />
+                <a href={partner.facebook.startsWith("http") ? partner.facebook : `https://${partner.facebook}`}
+                  target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline truncate">
+                  {partner.facebook.replace(/^https?:\/\//, "")}
+                </a>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Footer */}
       <footer className="border-t border-[var(--bd)] py-4 px-4 text-center">
