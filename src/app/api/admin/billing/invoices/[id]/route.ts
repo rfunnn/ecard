@@ -39,7 +39,7 @@ export async function PATCH(req: NextRequest, { params }: Context) {
     if (status === "PAID" && existing.status !== "PAID") {
       data.paidAt = new Date()
     }
-    if (status === "ISSUED" && !data.issuedAt) {
+    if (status === "ISSUED" && !existing.issuedAt) {
       data.issuedAt = new Date()
     }
 
