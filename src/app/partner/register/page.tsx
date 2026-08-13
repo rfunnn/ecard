@@ -32,7 +32,7 @@ export default function PartnerRegisterPage() {
 
   const [form, setForm] = useState({
     companyName: "", contactPerson: "", phone: "", email: "",
-    businessType: "", registrationNumber: "",
+    businessType: "",
     website: "https://", instagram: "@", facebook: "facebook.com/",
   })
   const [logo, setLogo]               = useState("")
@@ -90,6 +90,11 @@ export default function PartnerRegisterPage() {
 
     if (!form.businessType) {
       setError(r.errorBusinessType)
+      return
+    }
+
+    if (!logo) {
+      setError("Logo syarikat diperlukan.")
       return
     }
 
@@ -200,11 +205,6 @@ export default function PartnerRegisterPage() {
                 <p className="text-[11px] text-[var(--tx-3)] mt-1.5">E-mel akaun anda. Log masuk dengan akaun lain untuk menukar.</p>
               </div>
 
-              <div>
-                <label className={labelCls}>{r.labelRegNo}</label>
-                <input className={inputCls} placeholder={r.placeholderRegNo} value={form.registrationNumber}
-                  onChange={(e) => set("registrationNumber", e.target.value)} />
-              </div>
             </div>
 
             {/* Business Type */}
@@ -239,7 +239,7 @@ export default function PartnerRegisterPage() {
 
             {/* Logo */}
             <div>
-              <label className={labelCls}>{r.labelLogo}</label>
+              <label className={labelCls}>{r.labelLogo} *</label>
               {logoPreview ? (
                 <div className="flex items-center gap-3">
                   <img src={logoPreview} alt="Logo" className="w-16 h-16 rounded-xl object-cover border border-[var(--bd)]" />
