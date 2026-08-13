@@ -68,6 +68,7 @@ export default async function PartnerDashboardPage() {
     totalCards: number
     publishedCards: number
     freeQuotaUsed: boolean
+    registeredViaPartner: boolean
     firstCardAt: Date | null
   }
   let clients: ClientRow[] = []
@@ -86,11 +87,17 @@ export default async function PartnerDashboardPage() {
       }),
       prisma.partnerInvoice.count({ where: { partnerId: partner.id } }),
       prisma.user.findMany({
-        where: { cards: { some: { partnerId: partner.id } } },
+        where: {
+          OR: [
+            { partnerOriginId: partner.id },
+            { cards: { some: { partnerId: partner.id } } },
+          ],
+        },
         select: {
           id: true,
           name: true,
           email: true,
+          partnerOriginId: true,
           cards: {
             where: { partnerId: partner.id },
             select: { isPublished: true, createdAt: true },
@@ -115,6 +122,7 @@ export default async function PartnerDashboardPage() {
       totalCards: u.cards.length,
       publishedCards: u.cards.filter((c) => c.isPublished).length,
       freeQuotaUsed: quotaUserIds.has(u.id),
+      registeredViaPartner: u.partnerOriginId === partner.id,
       firstCardAt: u.cards[0]?.createdAt ?? null,
     }))
 
@@ -268,6 +276,7 @@ export default async function PartnerDashboardPage() {
                       <thead className="border-b border-[var(--bd)]">
                         <tr>
                           <th className="px-4 py-3 text-left text-[11px] font-semibold text-[var(--tx-3)] uppercase tracking-wide">Pelanggan</th>
+                          <th className="px-4 py-3 text-left text-[11px] font-semibold text-[var(--tx-3)] uppercase tracking-wide">Daftar</th>
                           <th className="px-4 py-3 text-left text-[11px] font-semibold text-[var(--tx-3)] uppercase tracking-wide">Kad</th>
                           <th className="px-4 py-3 text-left text-[11px] font-semibold text-[var(--tx-3)] uppercase tracking-wide">Diterbit</th>
                           <th className="px-4 py-3 text-left text-[11px] font-semibold text-[var(--tx-3)] uppercase tracking-wide">Percuma</th>
@@ -280,6 +289,13 @@ export default async function PartnerDashboardPage() {
                             <td className="px-4 py-3">
                               <p className="text-xs font-medium text-[var(--tx-1)]">{c.name ?? "—"}</p>
                               <p className="text-[11px] text-[var(--tx-3)]">{c.email}</p>
+                            </td>
+                            <td className="px-4 py-3">
+                              {c.registeredViaPartner ? (
+                                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-green-50 text-green-700">Partner</span>
+                              ) : (
+                                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-[var(--tx-3)]">Lain</span>
+                              )}
                             </td>
                             <td className="px-4 py-3 text-xs text-[var(--tx-2)]">{c.totalCards}</td>
                             <td className="px-4 py-3 text-xs text-[var(--tx-2)]">{c.publishedCards}</td>

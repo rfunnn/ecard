@@ -7,16 +7,18 @@ datasource db {
 }
 
 model User {
-  id            String                @id @default(cuid())
-  email         String                @unique
-  name          String?
-  image         String?
-  passwordHash  String?
-  createdAt     DateTime              @default(now())
-  cards         InvitationCard[]
-  likes         UserLike[]
-  orders        Order[]
-  partnerQuotas PartnerClientQuota[]
+  id              String                @id @default(cuid())
+  email           String                @unique
+  name            String?
+  image           String?
+  passwordHash    String?
+  createdAt       DateTime              @default(now())
+  partnerOriginId String?
+  partnerOrigin   Partner?              @relation("PartnerOriginUsers", fields: [partnerOriginId], references: [id])
+  cards           InvitationCard[]
+  likes           UserLike[]
+  orders          Order[]
+  partnerQuotas   PartnerClientQuota[]
 }
 
 model UserLike {
@@ -349,6 +351,7 @@ model Partner {
   usages             PartnerUsage[]
   invoices           PartnerInvoice[]
   clientQuotas       PartnerClientQuota[]
+  originUsers        User[]               @relation("PartnerOriginUsers")
 
   @@index([status])
 }

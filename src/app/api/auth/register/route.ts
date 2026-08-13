@@ -29,11 +29,23 @@ export async function POST(req: NextRequest) {
 
     const passwordHash = await bcrypt.hash(data.password, 12)
 
+    // Resolve partner attribution from subdomain cookie set by proxy
+    let partnerOriginId: string | undefined
+    const partnerSlug = req.cookies.get("ekadku_partner")?.value
+    if (partnerSlug) {
+      const partner = await prisma.partner.findUnique({
+        where: { slug: partnerSlug, status: "ACTIVE" },
+        select: { id: true },
+      })
+      if (partner) partnerOriginId = partner.id
+    }
+
     const user = await prisma.user.create({
       data: {
         name:  data.name.trim(),
         email: data.email.toLowerCase().trim(),
         passwordHash,
+        ...(partnerOriginId ? { partnerOriginId } : {}),
       },
       select: { id: true, email: true, name: true },
     })

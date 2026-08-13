@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
       sortOrder: p.sortOrder ?? i,
     }))
 
-    // Resolve partner attribution from the cookie set by subdomain middleware
+    // Resolve partner attribution: cookie takes priority, fall back to user's registered origin
     let partnerId: string | undefined
     try {
       const cookieStore = await cookies()
@@ -119,6 +119,13 @@ export async function POST(req: NextRequest) {
           select: { id: true },
         })
         if (partner) partnerId = partner.id
+      }
+      if (!partnerId && session?.user?.id) {
+        const user = await prisma.user.findUnique({
+          where: { id: session.user.id },
+          select: { partnerOriginId: true },
+        })
+        if (user?.partnerOriginId) partnerId = user.partnerOriginId
       }
     } catch { /* non-fatal — proceed without attribution */ }
 

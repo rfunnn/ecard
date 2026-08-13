@@ -804,6 +804,12 @@ function DashboardInner() {
     if (status === "unauthenticated") router.push("/login?callbackUrl=/dashboard")
   }, [status, router])
 
+  // Stamp partnerOriginId on the user if they arrived via a partner subdomain
+  useEffect(() => {
+    if (status !== "authenticated") return
+    fetch("/api/partner/set-origin", { method: "POST" }).catch(() => {})
+  }, [status])
+
   const loadCards = useCallback(async () => {
     setCardsLoading(true)
     const res = await fetch("/api/user/cards")
