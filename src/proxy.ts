@@ -32,14 +32,17 @@ export async function proxy(req: NextRequest) {
 
   // ── Partner subdomain handling ────────────────────────────
   if (partnerSlug) {
-    // Google OAuth sign-in must happen on the main domain so the CSRF state
-    // cookie is set there — matching where the callback will land.
-    if (pathname.startsWith("/api/auth/signin/")) {
+    // The login page (and thus Google OAuth) must happen on the main domain.
+    // Redirecting /api/auth/signin/ would cause a cross-origin fetch CORS error
+    // because NextAuth's signIn() uses fetch from the subdomain origin.
+    // Redirecting the /login page itself means the full OAuth flow stays on
+    // ekadku.com with no cross-origin requests at all.
+    if (pathname === "/login" || pathname.startsWith("/login?")) {
       const url = req.nextUrl.clone()
       url.hostname = BASE_DOMAIN
       url.port = ""
       url.protocol = "https:"
-      return NextResponse.redirect(url.toString(), 307)
+      return NextResponse.redirect(url.toString(), 302)
     }
 
     // For non-API, non-Next.js-internal paths: set attribution cookie and
@@ -99,8 +102,6 @@ export async function proxy(req: NextRequest) {
 
 export const config = {
   matcher: [
-    // Include api/auth/signin so we can redirect it to the main domain from
-    // partner subdomains. Exclude the callback and other internal paths.
-    "/((?!api/auth/callback|api/auth/session|api/auth/providers|api/auth/csrf|_next/static|_next/image|favicon\\.ico).*)",
+    "/((?!api/auth|_next/static|_next/image|favicon\\.ico).*)",
   ],
 }
