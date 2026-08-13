@@ -9,38 +9,47 @@ const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? "")
 
 const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN ?? "ekadku.com"
 
+function detectPartnerSlug(host: string): string | null {
+  if (
+    host !== BASE_DOMAIN &&
+    host !== `www.${BASE_DOMAIN}` &&
+    host.endsWith(`.${BASE_DOMAIN}`)
+  ) {
+    return host.slice(0, -(BASE_DOMAIN.length + 1))
+  }
+  if (host !== "localhost" && host.endsWith(".localhost")) {
+    return host.slice(0, -(".localhost".length))
+  }
+  return null
+}
+
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
   const hostname = req.headers.get("host") ?? ""
   const host = hostname.split(":")[0]
 
-  // ── Partner subdomain detection ───────────────────────────
-  // Skip for API routes and Next.js internals
-  if (!pathname.startsWith("/api/") && !pathname.startsWith("/_next")) {
-    let partnerSlug: string | null = null
+  const partnerSlug = detectPartnerSlug(host)
 
-    if (
-      host !== BASE_DOMAIN &&
-      host !== `www.${BASE_DOMAIN}` &&
-      host.endsWith(`.${BASE_DOMAIN}`)
-    ) {
-      partnerSlug = host.slice(0, -(BASE_DOMAIN.length + 1))
+  // ── Partner subdomain handling ────────────────────────────
+  if (partnerSlug) {
+    // Google OAuth sign-in must happen on the main domain so the CSRF state
+    // cookie is set there — matching where the callback will land.
+    if (pathname.startsWith("/api/auth/signin/")) {
+      const url = req.nextUrl.clone()
+      url.hostname = BASE_DOMAIN
+      url.port = ""
+      url.protocol = "https:"
+      return NextResponse.redirect(url.toString(), 307)
     }
 
-    if (!partnerSlug && host !== "localhost" && host.endsWith(".localhost")) {
-      partnerSlug = host.slice(0, -(".localhost".length))
-    }
-
-    if (partnerSlug) {
-      // Only rewrite the root path to the storefront — all other paths
-      // (templates, builder, dashboard, login, etc.) are served normally
+    // For non-API, non-Next.js-internal paths: set attribution cookie and
+    // optionally rewrite root to the partner storefront.
+    if (!pathname.startsWith("/api/") && !pathname.startsWith("/_next")) {
       const isRoot = pathname === "/" || pathname === ""
       const response = isRoot
         ? NextResponse.rewrite(new URL(`/storefront/${partnerSlug}`, req.url))
         : NextResponse.next()
 
-      // Use a root-domain cookie so attribution persists when the client
-      // navigates to the main domain (e.g. ekadku.com/templates)
       const cookieDomain = host.endsWith(".localhost") ? undefined : `.${BASE_DOMAIN}`
       response.cookies.set("ekadku_partner", partnerSlug, {
         ...(cookieDomain ? { domain: cookieDomain } : {}),
@@ -90,6 +99,8 @@ export async function proxy(req: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api/auth|_next/static|_next/image|favicon\\.ico).*)",
+    // Include api/auth/signin so we can redirect it to the main domain from
+    // partner subdomains. Exclude the callback and other internal paths.
+    "/((?!api/auth/callback|api/auth/session|api/auth/providers|api/auth/csrf|_next/static|_next/image|favicon\\.ico).*)",
   ],
 }
