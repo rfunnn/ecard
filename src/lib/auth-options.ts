@@ -57,7 +57,40 @@ const ADMIN_EMAILS = (process.env.ADMIN_EMAILS ?? "")
   .map((e) => e.trim().toLowerCase())
   .filter(Boolean)
 
+const secure = process.env.NODE_ENV === "production"
+const baseDomain = process.env.NEXT_PUBLIC_BASE_DOMAIN
+// Scope cookies to the root domain so OAuth CSRF tokens and sessions are
+// shared between the main domain and all partner subdomains.
+const cookieDomain = baseDomain && baseDomain !== "localhost" ? `.${baseDomain}` : undefined
+const domainOpts = cookieDomain ? { domain: cookieDomain } : {}
+
 export const authOptions: NextAuthOptions = {
+  cookies: {
+    sessionToken: {
+      name: secure ? `__Secure-next-auth.session-token` : `next-auth.session-token`,
+      options: { httpOnly: true, sameSite: "lax" as const, path: "/", secure, ...domainOpts },
+    },
+    callbackUrl: {
+      name: `next-auth.callback-url`,
+      options: { sameSite: "lax" as const, path: "/", secure, ...domainOpts },
+    },
+    csrfToken: {
+      name: `next-auth.csrf-token`,
+      options: { httpOnly: true, sameSite: "lax" as const, path: "/", ...domainOpts },
+    },
+    pkceCodeVerifier: {
+      name: `next-auth.pkce.code_verifier`,
+      options: { httpOnly: true, sameSite: "lax" as const, path: "/", maxAge: 900, ...domainOpts },
+    },
+    state: {
+      name: `next-auth.state`,
+      options: { httpOnly: true, sameSite: "lax" as const, path: "/", maxAge: 900, ...domainOpts },
+    },
+    nonce: {
+      name: `next-auth.nonce`,
+      options: { httpOnly: true, sameSite: "lax" as const, path: "/", ...domainOpts },
+    },
+  },
   providers: [
     ...googleProvider,
     CredentialsProvider({
