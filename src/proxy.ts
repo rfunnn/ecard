@@ -32,10 +32,18 @@ export async function proxy(req: NextRequest) {
     }
 
     if (partnerSlug) {
-      const url = req.nextUrl.clone()
-      url.pathname = `/storefront/${partnerSlug}`
-      const response = NextResponse.rewrite(url)
+      // Only rewrite the root path to the storefront — all other paths
+      // (templates, builder, dashboard, login, etc.) are served normally
+      const isRoot = pathname === "/" || pathname === ""
+      const response = isRoot
+        ? NextResponse.rewrite(new URL(`/storefront/${partnerSlug}`, req.url))
+        : NextResponse.next()
+
+      // Use a root-domain cookie so attribution persists when the client
+      // navigates to the main domain (e.g. ekadku.com/templates)
+      const cookieDomain = host.endsWith(".localhost") ? undefined : `.${BASE_DOMAIN}`
       response.cookies.set("ekadku_partner", partnerSlug, {
+        ...(cookieDomain ? { domain: cookieDomain } : {}),
         maxAge: 60 * 60 * 24 * 30,
         httpOnly: true,
         sameSite: "lax",

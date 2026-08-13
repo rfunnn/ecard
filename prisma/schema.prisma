@@ -7,15 +7,16 @@ datasource db {
 }
 
 model User {
-  id           String           @id @default(cuid())
-  email        String           @unique
-  name         String?
-  image        String?
-  passwordHash String?
-  createdAt    DateTime         @default(now())
-  cards        InvitationCard[]
-  likes        UserLike[]
-  orders       Order[]
+  id            String                @id @default(cuid())
+  email         String                @unique
+  name          String?
+  image         String?
+  passwordHash  String?
+  createdAt     DateTime              @default(now())
+  cards         InvitationCard[]
+  likes         UserLike[]
+  orders        Order[]
+  partnerQuotas PartnerClientQuota[]
 }
 
 model UserLike {
@@ -58,6 +59,7 @@ model InvitationCard {
   templateId     String
   partnerId      String?
   usage          PartnerUsage?
+  partnerQuota   PartnerClientQuota?
 
   title          String         @default("")
   groomName      String?
@@ -346,6 +348,7 @@ model Partner {
   orders             Order[]
   usages             PartnerUsage[]
   invoices           PartnerInvoice[]
+  clientQuotas       PartnerClientQuota[]
 
   @@index([status])
 }
@@ -401,4 +404,20 @@ model PartnerInvoiceItem {
   usage     PartnerUsage   @relation(fields: [usageId], references: [id])
 
   @@index([invoiceId])
+}
+
+// One free Premium card per client per partner
+model PartnerClientQuota {
+  id        String         @id @default(cuid())
+  partnerId String
+  userId    String
+  cardId    String         @unique
+  usedAt    DateTime       @default(now())
+
+  partner   Partner        @relation(fields: [partnerId], references: [id])
+  user      User           @relation(fields: [userId], references: [id])
+  card      InvitationCard @relation(fields: [cardId], references: [id])
+
+  @@unique([partnerId, userId])
+  @@index([partnerId])
 }

@@ -34,6 +34,8 @@ type Card = {
   createdAt: string
   eventDate: string | null
   wizardConfig: WizardConfig | null
+  partnerId: string | null
+  partnerFreeEligible: boolean
   template: { name: string; nameMs: string; category: string; image1Url: string | null; image2Url: string | null } | null
   theme: { primaryColor: string; bgColor: string; bodyColor: string | null } | null
 }
@@ -401,13 +403,37 @@ function ShareModal({ card, onClose }: { card: Card; onClose: () => void }) {
 
 function CardRow({ card, onRemove, onDuplicated }: { card: Card; onRemove: (slug: string) => void; onDuplicated: () => void }) {
   const { dashboard: d } = useT()
-  const [menuOpen,      setMenuOpen]      = useState(false)
+  const [menuOpen,        setMenuOpen]        = useState(false)
   const [showPrintPreview, setShowPrintPreview] = useState(false)
-  const [duplicating,   setDuplicating]   = useState(false)
-  const [showShare,     setShowShare]     = useState(false)
-  const [suffix,        setSuffix]        = useState("")
+  const [duplicating,     setDuplicating]     = useState(false)
+  const [showShare,       setShowShare]       = useState(false)
+  const [suffix,          setSuffix]          = useState("")
+  const [publishingFree,  setPublishingFree]  = useState(false)
   const { toast } = useToast()
   const router = useRouter()
+
+  async function handlePublishFree() {
+    if (publishingFree) return
+    setPublishingFree(true)
+    try {
+      const res = await fetch("/api/partner/publish-free", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cardSlug: card.slug }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        toast((data as { error?: string }).error ?? "Gagal terbit", "error")
+        return
+      }
+      toast("Kad berjaya diterbitkan secara percuma!", "success")
+      onDuplicated() // reload cards list
+    } catch {
+      toast("Gagal terbit percuma", "error")
+    } finally {
+      setPublishingFree(false)
+    }
+  }
 
   useEffect(() => {
     try { setSuffix(localStorage.getItem(`invite-suffix-${card.slug}`) ?? "") } catch { /* ignore */ }
@@ -530,7 +556,22 @@ function CardRow({ card, onRemove, onDuplicated }: { card: Card; onRemove: (slug
           </button>
         </div>
 
-        {!card.isPublished && (
+        {!card.isPublished && card.partnerFreeEligible && (
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={handlePublishFree}
+              disabled={publishingFree}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold bg-gold text-[#141414] px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity disabled:opacity-50"
+            >
+              {publishingFree ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Gift className="w-3.5 h-3.5" />}
+              Terbit Percuma (Premium)
+            </button>
+            <Link href={`/checkout?slug=${card.slug}`} className="inline-flex items-center gap-1.5 text-xs text-[var(--tx-3)] hover:text-[var(--tx-1)] transition-colors">
+              atau bayar
+            </Link>
+          </div>
+        )}
+        {!card.isPublished && !card.partnerFreeEligible && (
           <Link href={`/checkout?slug=${card.slug}`} className="inline-flex items-center gap-1.5 text-xs font-semibold border border-[var(--tx-1)] text-[var(--tx-1)] px-4 py-1.5 rounded-full hover:bg-[var(--tx-1)] hover:text-[var(--pg)] transition-colors">
             {d.payNow}
           </Link>

@@ -61,8 +61,19 @@ export default async function PartnerDashboardPage() {
     invoiceCount: 0,
   }
 
+  type ClientRow = {
+    id: string
+    name: string | null
+    email: string
+    totalCards: number
+    publishedCards: number
+    freeQuotaUsed: boolean
+    firstCardAt: Date | null
+  }
+  let clients: ClientRow[] = []
+
   if (partner.status === "ACTIVE") {
-    const [totalCards, uniqueCustomers, usages, invoiceCount] = await Promise.all([
+    const [totalCards, uniqueCustomers, usages, invoiceCount, clientData, quotaData] = await Promise.all([
       prisma.invitationCard.count({ where: { partnerId: partner.id } }),
       prisma.invitationCard.findMany({
         where: { partnerId: partner.id },
@@ -74,7 +85,38 @@ export default async function PartnerDashboardPage() {
         select: { amount: true, status: true },
       }),
       prisma.partnerInvoice.count({ where: { partnerId: partner.id } }),
+      prisma.user.findMany({
+        where: { cards: { some: { partnerId: partner.id } } },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          cards: {
+            where: { partnerId: partner.id },
+            select: { isPublished: true, createdAt: true },
+            orderBy: { createdAt: "asc" },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+        take: 100,
+      }),
+      prisma.partnerClientQuota.findMany({
+        where: { partnerId: partner.id },
+        select: { userId: true },
+      }),
     ])
+
+    const quotaUserIds = new Set(quotaData.map((q) => q.userId))
+
+    clients = clientData.map((u) => ({
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      totalCards: u.cards.length,
+      publishedCards: u.cards.filter((c) => c.isPublished).length,
+      freeQuotaUsed: quotaUserIds.has(u.id),
+      firstCardAt: u.cards[0]?.createdAt ?? null,
+    }))
 
     stats = {
       totalCards,
@@ -209,6 +251,56 @@ export default async function PartnerDashboardPage() {
               partnerUrl={partnerUrl}
               partnerRate={partner.partnerRate}
             />
+
+            {/* Clients list */}
+            <section>
+              <h2 className="text-sm font-semibold text-[var(--tx-1)] mb-3">
+                Senarai Pelanggan ({clients.length})
+              </h2>
+              {clients.length === 0 ? (
+                <div className="bg-[var(--pg-alt)] border border-[var(--bd)] rounded-xl px-5 py-8 text-center text-sm text-[var(--tx-3)]">
+                  Belum ada pelanggan. Kongsikan URL partner anda untuk mula.
+                </div>
+              ) : (
+                <div className="bg-[var(--pg-alt)] border border-[var(--bd)] rounded-xl overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead className="border-b border-[var(--bd)]">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-[11px] font-semibold text-[var(--tx-3)] uppercase tracking-wide">Pelanggan</th>
+                          <th className="px-4 py-3 text-left text-[11px] font-semibold text-[var(--tx-3)] uppercase tracking-wide">Kad</th>
+                          <th className="px-4 py-3 text-left text-[11px] font-semibold text-[var(--tx-3)] uppercase tracking-wide">Diterbit</th>
+                          <th className="px-4 py-3 text-left text-[11px] font-semibold text-[var(--tx-3)] uppercase tracking-wide">Percuma</th>
+                          <th className="px-4 py-3 text-left text-[11px] font-semibold text-[var(--tx-3)] uppercase tracking-wide">Tarikh</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[var(--bd)]">
+                        {clients.map((c) => (
+                          <tr key={c.id}>
+                            <td className="px-4 py-3">
+                              <p className="text-xs font-medium text-[var(--tx-1)]">{c.name ?? "—"}</p>
+                              <p className="text-[11px] text-[var(--tx-3)]">{c.email}</p>
+                            </td>
+                            <td className="px-4 py-3 text-xs text-[var(--tx-2)]">{c.totalCards}</td>
+                            <td className="px-4 py-3 text-xs text-[var(--tx-2)]">{c.publishedCards}</td>
+                            <td className="px-4 py-3">
+                              {c.freeQuotaUsed ? (
+                                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-green-50 text-green-700">Digunakan</span>
+                              ) : (
+                                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">Tersedia</span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3 text-xs text-[var(--tx-3)]">
+                              {c.firstCardAt ? c.firstCardAt.toLocaleDateString("ms-MY", { day: "numeric", month: "short", year: "numeric" }) : "—"}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </section>
           </>
         )}
       </main>
