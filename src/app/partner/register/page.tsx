@@ -1,9 +1,10 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
+import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Building2, Globe, AtSign, ChevronLeft, Loader2, Upload, X, Link2, KeyRound, Eye, EyeOff } from "lucide-react"
+import { Building2, Globe, AtSign, ChevronLeft, Loader2, Upload, X, Link2 } from "lucide-react"
 import { useT } from "@/lib/i18n"
 
 const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN ?? "ekadku.com"
@@ -23,6 +24,7 @@ const inputCls = "w-full border border-[var(--bd)] bg-[var(--pg)] rounded-xl px-
 const labelCls = "block text-[12px] font-semibold text-[var(--tx-2)] mb-1.5 uppercase tracking-wide"
 
 export default function PartnerRegisterPage() {
+  const { data: session, status } = useSession()
   const router = useRouter()
   const fileRef = useRef<HTMLInputElement>(null)
   const t = useT()
@@ -38,9 +40,20 @@ export default function PartnerRegisterPage() {
   const [uploading, setUploading]     = useState(false)
   const [error, setError]             = useState("")
   const [loading, setLoading]         = useState(false)
-  const [password, setPassword]           = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [showPassword, setShowPassword]   = useState(false)
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login?callbackUrl=/partner/register")
+    }
+  }, [status, router])
+
+  // Pre-fill email from session
+  useEffect(() => {
+    if (session?.user?.email) {
+      setForm((f) => ({ ...f, email: session.user!.email! }))
+    }
+  }, [session])
 
   function set(field: string, value: string) {
     setForm((p) => ({ ...p, [field]: value }))
@@ -80,16 +93,6 @@ export default function PartnerRegisterPage() {
       return
     }
 
-    if (password && password !== confirmPassword) {
-      setError("Kata laluan tidak sepadan.")
-      return
-    }
-
-    if (password && password.length < 8) {
-      setError("Kata laluan mestilah sekurang-kurangnya 8 aksara.")
-      return
-    }
-
     setLoading(true)
     try {
       const res = await fetch("/api/partner/register", {
@@ -97,15 +100,13 @@ export default function PartnerRegisterPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
-          website:   form.website  === "https://" ? "" : form.website,
-          instagram: form.instagram === "@"        ? "" : form.instagram,
+          website:   form.website   === "https://" ? "" : form.website,
+          instagram: form.instagram === "@"         ? "" : form.instagram,
           logo: logo || undefined,
-          ...(password ? { name: form.contactPerson, password } : {}),
         }),
       })
       const data = await res.json() as {
         partner?: { slug: string; companyName: string; businessType: string }
-        accountCreated?: boolean
         error?: string
       }
 
@@ -116,13 +117,22 @@ export default function PartnerRegisterPage() {
 
       const p = data.partner!
       router.push(
-        `/partner/success?slug=${encodeURIComponent(p.slug)}&name=${encodeURIComponent(p.companyName)}&type=${encodeURIComponent(p.businessType)}&accountCreated=${data.accountCreated ? "1" : "0"}`
+        `/partner/success?slug=${encodeURIComponent(p.slug)}&name=${encodeURIComponent(p.companyName)}&type=${encodeURIComponent(p.businessType)}`
       )
     } catch {
       setError(r.errorNetwork)
     } finally {
       setLoading(false)
     }
+  }
+
+  // Show spinner while session loads or redirecting
+  if (status === "loading" || status === "unauthenticated") {
+    return (
+      <div className="min-h-screen bg-[var(--pg)] flex items-center justify-center">
+        <Loader2 className="w-6 h-6 animate-spin text-[var(--tx-3)]" />
+      </div>
+    )
   }
 
   return (
@@ -180,8 +190,13 @@ export default function PartnerRegisterPage() {
 
               <div className="sm:col-span-2">
                 <label className={labelCls}>{r.labelEmail} *</label>
-                <input className={inputCls} type="email" placeholder={r.placeholderEmail} value={form.email}
-                  onChange={(e) => set("email", e.target.value)} required />
+                <input
+                  className={`${inputCls} opacity-70 cursor-not-allowed`}
+                  type="email"
+                  value={form.email}
+                  readOnly
+                />
+                <p className="text-[11px] text-[var(--tx-3)] mt-1.5">E-mel akaun anda. Log masuk dengan akaun lain untuk menukar.</p>
               </div>
 
               <div>
@@ -247,7 +262,7 @@ export default function PartnerRegisterPage() {
             </div>
           </div>
 
-          {/* Online Presence */}
+          {/* Social Media */}
           <div className="bg-[var(--pg-alt)] border border-[var(--bd)] rounded-2xl p-6 space-y-4">
             <h2 className="font-semibold text-[var(--tx-1)] flex items-center gap-2 text-sm">
               <Globe className="w-4 h-4 text-gold" />
@@ -271,56 +286,6 @@ export default function PartnerRegisterPage() {
                   onChange={(e) => set("facebook", e.target.value)} />
               </div>
             </div>
-          </div>
-
-          {/* Account credentials */}
-          <div className="bg-[var(--pg-alt)] border border-[var(--bd)] rounded-2xl p-6 space-y-4">
-            <h2 className="font-semibold text-[var(--tx-1)] flex items-center gap-2 text-sm">
-              <KeyRound className="w-4 h-4 text-gold" />
-              Akaun Dashboard
-            </h2>
-            <p className="text-xs text-[var(--tx-3)] leading-relaxed">
-              Buat kata laluan untuk log masuk ke dashboard partner anda. Gunakan e-mel yang sama seperti di atas.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className={labelCls}>Kata Laluan</label>
-                <div className="relative">
-                  <input
-                    className={inputCls}
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Min. 8 aksara"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    autoComplete="new-password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((p) => !p)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--tx-3)] hover:text-[var(--tx-1)]"
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-              <div>
-                <label className={labelCls}>Sahkan Kata Laluan</label>
-                <input
-                  className={`${inputCls} ${confirmPassword && confirmPassword !== password ? "border-red-400 focus:border-red-400 focus:ring-red-100" : ""}`}
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Ulangi kata laluan"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  autoComplete="new-password"
-                />
-                {confirmPassword && confirmPassword !== password && (
-                  <p className="text-[11px] text-red-500 mt-1">Kata laluan tidak sepadan</p>
-                )}
-              </div>
-            </div>
-            <p className="text-[11px] text-[var(--tx-3)]">
-              Mahu guna Google? Tinggalkan kosong, daftar akaun Google dengan e-mel yang sama selepas penghantaran.
-            </p>
           </div>
 
           {form.companyName && (

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
-import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
 import { generatePartnerSlug, RESERVED_PARTNER_SLUGS } from "@/lib/slug"
 import { sendPartnerRegistrationEmail } from "@/lib/email"
@@ -20,9 +19,6 @@ const schema = z.object({
   instagram:          z.string().max(60).optional(),
   facebook:           z.string().max(80).optional(),
   logo:               z.string().url().optional().or(z.literal("")),
-  // Account creation fields (optional — partner may already have an account)
-  name:               z.string().min(2).max(80).optional(),
-  password:           z.string().min(8).max(100).optional(),
 })
 
 async function findUniqueSlug(base: string): Promise<string> {
@@ -81,31 +77,6 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    // Create a User account for the partner so they can log in to the dashboard.
-    // Skip silently if a User with this email already exists (they can log in with
-    // their existing account) or if no password was provided.
-    let accountCreated = false
-    if (data.name && data.password) {
-      const existingUser = await prisma.user.findUnique({
-        where: { email: emailLower },
-        select: { id: true },
-      })
-      if (!existingUser) {
-        const passwordHash = await bcrypt.hash(data.password, 12)
-        await prisma.user.create({
-          data: {
-            name:         data.name.trim(),
-            email:        emailLower,
-            passwordHash,
-          },
-        })
-        accountCreated = true
-      } else {
-        // Account exists — partner can log in with their existing credentials
-        accountCreated = false
-      }
-    }
-
     const baseDomain = process.env.NEXT_PUBLIC_BASE_DOMAIN ?? "ekadku.com"
     sendPartnerRegistrationEmail({
       companyName:   partner.companyName,
@@ -116,7 +87,7 @@ export async function POST(req: NextRequest) {
       baseDomain,
     }).catch((err) => console.error("[email] Partner registration email failed:", err))
 
-    return NextResponse.json({ partner, accountCreated }, { status: 201 })
+    return NextResponse.json({ partner }, { status: 201 })
   } catch (err) {
     if (err instanceof z.ZodError) {
       return NextResponse.json({ error: err.issues[0]?.message ?? "Input tidak sah" }, { status: 400 })

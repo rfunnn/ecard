@@ -10,17 +10,16 @@ const BUSINESS_TYPE_LABELS: Record<string, string> = {
 }
 
 interface Props {
-  searchParams: Promise<{ slug?: string; name?: string; type?: string; accountCreated?: string }>
+  searchParams: Promise<{ slug?: string; name?: string; type?: string }>
 }
 
 export default async function PartnerSuccessPage({ searchParams }: Props) {
-  const { slug, name, type, accountCreated } = await searchParams
+  const { slug, name, type } = await searchParams
 
   const baseDomain = process.env.NEXT_PUBLIC_BASE_DOMAIN ?? "ekadku.com"
-  const partnerUrl     = slug ? `${slug}.${baseDomain}` : null
-  const companyName    = name ? decodeURIComponent(name) : "Syarikat Anda"
-  const businessType   = type ? BUSINESS_TYPE_LABELS[type] ?? type : "—"
-  const hasAccount     = accountCreated === "1"
+  const partnerUrl   = slug ? `${slug}.${baseDomain}` : null
+  const companyName  = name ? decodeURIComponent(name) : "Syarikat Anda"
+  const businessType = type ? BUSINESS_TYPE_LABELS[type] ?? type : "—"
 
   return (
     <div className="min-h-screen bg-[var(--pg)] flex items-center justify-center px-4 py-12">
@@ -63,22 +62,12 @@ export default async function PartnerSuccessPage({ searchParams }: Props) {
           </p>
         </div>
 
-        {/* Account info */}
-        {hasAccount ? (
-          <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3 mb-6 text-left">
-            <p className="text-sm font-medium text-green-800 mb-0.5">Akaun berjaya dibuat</p>
-            <p className="text-xs text-green-700 leading-relaxed">
-              Log masuk dengan e-mel dan kata laluan yang anda tetapkan untuk mengakses dashboard partner.
-            </p>
-          </div>
-        ) : (
-          <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 mb-6 text-left">
-            <p className="text-sm font-medium text-blue-800 mb-0.5">Langkah seterusnya</p>
-            <p className="text-xs text-blue-700 leading-relaxed">
-              Log masuk atau daftar akaun menggunakan e-mel partner anda untuk mengakses dashboard setelah diluluskan.
-            </p>
-          </div>
-        )}
+        <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 mb-6 text-left">
+          <p className="text-sm font-medium text-blue-800 mb-0.5">Akses dashboard</p>
+          <p className="text-xs text-blue-700 leading-relaxed">
+            Log masuk dengan akaun anda untuk mengakses dashboard partner setelah permohonan diluluskan.
+          </p>
+        </div>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
