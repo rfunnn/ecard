@@ -3,6 +3,7 @@ import { createHash } from "crypto"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma"
 import { rateLimit, rateLimitKey } from "@/lib/rate-limit"
+import { publishWish } from "@/lib/rsvp-events"
 
 function hashIp(raw: string | null): string | undefined {
   if (!raw) return undefined
@@ -74,6 +75,16 @@ export async function POST(
     const rsvp = await prisma.rSVP.create({
       data: { cardId: card.id, ...data },
     })
+
+    // Push new wish to all SSE subscribers viewing this card
+    if (rsvp.message?.trim()) {
+      publishWish(card.id, {
+        id:        rsvp.id,
+        guestName: rsvp.guestName,
+        message:   rsvp.message,
+        createdAt: rsvp.createdAt.toISOString(),
+      })
+    }
 
     await prisma.cardAnalytic.create({
       data: {

@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Building2, Globe, AtSign, ChevronLeft, Loader2, Upload, X, Link2 } from "lucide-react"
+import { Building2, Globe, AtSign, ChevronLeft, Loader2, Upload, X, Link2, Facebook } from "lucide-react"
 import { useT } from "@/lib/i18n"
 
 const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN ?? "ekadku.com"
@@ -33,7 +33,7 @@ export default function PartnerRegisterPage() {
   const [form, setForm] = useState({
     companyName: "", contactPerson: "", phone: "", email: "",
     businessType: "", registrationNumber: "",
-    website: "https://", instagram: "@", facebook: "",
+    website: "https://", instagram: "@", facebook: "facebook.com/",
   })
   const [logo, setLogo]               = useState("")
   const [logoPreview, setLogoPreview] = useState("")
@@ -100,8 +100,9 @@ export default function PartnerRegisterPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
-          website:   form.website   === "https://" ? "" : form.website,
-          instagram: form.instagram === "@"         ? "" : form.instagram,
+          website:   form.website   === "https://"      ? "" : form.website,
+          instagram: form.instagram === "@"             ? "" : form.instagram,
+          facebook:  form.facebook  === "facebook.com/" ? "" : form.facebook,
           logo: logo || undefined,
         }),
       })
@@ -270,20 +271,44 @@ export default function PartnerRegisterPage() {
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Website */}
               <div>
-                <label className={labelCls}><Globe className="w-3 h-3 inline mr-1" />{r.labelWebsite}</label>
-                <input className={inputCls} type="url" placeholder="https://syarikat.com" value={form.website}
-                  onChange={(e) => set("website", e.target.value)} />
+                <label className={labelCls}>{r.labelWebsite}</label>
+                <div className="flex items-stretch rounded-xl border border-sky-400/50 overflow-hidden focus-within:border-sky-400 focus-within:ring-1 focus-within:ring-sky-400/20 transition-colors">
+                  <div className="flex items-center px-3 bg-sky-500/10 border-r border-sky-400/30 shrink-0">
+                    <Globe className="w-3.5 h-3.5 text-sky-400" />
+                  </div>
+                  <input
+                    className="flex-1 bg-[var(--pg)] px-3 py-2.5 text-sm text-[var(--tx-1)] placeholder-[var(--tx-3)] focus:outline-none min-w-0"
+                    type="url" placeholder="https://syarikat.com" value={form.website}
+                    onChange={(e) => set("website", e.target.value)} />
+                </div>
               </div>
+              {/* Instagram */}
               <div>
-                <label className={labelCls}><AtSign className="w-3 h-3 inline mr-1" />{r.labelInstagram}</label>
-                <input className={inputCls} placeholder="@namahandleanda" value={form.instagram}
-                  onChange={(e) => set("instagram", e.target.value)} />
+                <label className={labelCls}>{r.labelInstagram}</label>
+                <div className="flex items-stretch rounded-xl border border-pink-400/50 overflow-hidden focus-within:border-pink-400 focus-within:ring-1 focus-within:ring-pink-400/20 transition-colors">
+                  <div className="flex items-center px-3 bg-pink-500/10 border-r border-pink-400/30 shrink-0">
+                    <AtSign className="w-3.5 h-3.5 text-pink-400" />
+                  </div>
+                  <input
+                    className="flex-1 bg-[var(--pg)] px-3 py-2.5 text-sm text-[var(--tx-1)] placeholder-[var(--tx-3)] focus:outline-none min-w-0"
+                    placeholder="@namahandleanda" value={form.instagram}
+                    onChange={(e) => set("instagram", e.target.value)} />
+                </div>
               </div>
+              {/* Facebook */}
               <div>
-                <label className={labelCls}><Globe className="w-3 h-3 inline mr-1" />{r.labelFacebook}</label>
-                <input className={inputCls} placeholder="facebook.com/namasyarikat" value={form.facebook}
-                  onChange={(e) => set("facebook", e.target.value)} />
+                <label className={labelCls}>{r.labelFacebook}</label>
+                <div className="flex items-stretch rounded-xl border border-blue-500/50 overflow-hidden focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500/20 transition-colors">
+                  <div className="flex items-center px-3 bg-blue-600/10 border-r border-blue-500/30 shrink-0">
+                    <Facebook className="w-3.5 h-3.5 text-blue-500" />
+                  </div>
+                  <input
+                    className="flex-1 bg-[var(--pg)] px-3 py-2.5 text-sm text-[var(--tx-1)] placeholder-[var(--tx-3)] focus:outline-none min-w-0"
+                    placeholder="facebook.com/namasyarikat" value={form.facebook}
+                    onChange={(e) => set("facebook", e.target.value)} />
+                </div>
               </div>
             </div>
           </div>

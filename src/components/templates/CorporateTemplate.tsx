@@ -10,7 +10,7 @@ import { wizardFont, calendarUrl, parseProgramText, useCountdown, multiLine } fr
 import { PhotoGallery } from "./PhotoGallery"
 import { WeatherForecast, parseVenueCoords } from "@/components/invite/WeatherForecast"
 
-interface WishEntry { guestName: string; message: string }
+interface WishEntry { id: string; guestName: string; message: string }
 
 function CorporateRule({ color }: { color: string }) {
   return (
@@ -52,14 +52,34 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
   const [attendingCount, setAttendingCount] = useState(0)
   useEffect(() => {
     if ((!seg.attendance && !seg.wishes) || !card.isPublished || !card.slug) return
+
     fetch(`/api/rsvp/${card.slug}`)
       .then((r) => r.json())
       .then((d) => {
-        setWishes((d.rsvps ?? []).filter((r: { message?: string }) => r.message?.trim()))
+        setWishes(
+          (d.rsvps ?? [])
+            .filter((r: { message?: string }) => r.message?.trim())
+            .map((r: { id: string; guestName: string; message: string }) => ({
+              id: r.id, guestName: r.guestName, message: r.message,
+            }))
+        )
         const attending = (d.counts ?? []).find((c: { attendance: string }) => c.attendance === "ATTENDING")
         setAttendingCount(attending?._sum?.guestCount ?? 0)
       })
       .catch(() => {})
+
+    const es = new EventSource(`/api/rsvp/${card.slug}/stream`)
+    es.onmessage = (event) => {
+      try {
+        const wish = JSON.parse(event.data) as WishEntry
+        if (!wish.message?.trim()) return
+        setWishes((prev) => {
+          if (prev.some((w) => w.id === wish.id)) return prev
+          return [wish, ...prev]
+        })
+      } catch {}
+    }
+    return () => es.close()
   }, [card.slug, card.isPublished, seg.attendance, seg.wishes])
 
   const venueName  = cfg?.venueLine    || card.venueName   || ""
@@ -419,7 +439,7 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
           <div className="max-h-[35vh] overflow-y-auto max-w-sm pr-1">
             <div className="space-y-5">
               {wishes.map((w, i) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+                <motion.div key={w.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
                   className="p-4 rounded-lg"
                   style={{ background: `${primaryColor}06`, border: `1px solid ${primaryColor}10` }}>
                   <p className={`${orgFont} text-sm font-medium mb-1`} style={{ color: displayColor }}>{w.guestName}</p>

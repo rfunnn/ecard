@@ -12,7 +12,7 @@ import { wizardFont, calendarUrl, parseProgramText, useCountdown, multiLine } fr
 import { PhotoGallery } from "./PhotoGallery"
 import { WeatherForecast, parseVenueCoords } from "@/components/invite/WeatherForecast"
 
-interface WishEntry { guestName: string; message: string }
+interface WishEntry { id: string; guestName: string; message: string }
 
 // â”€â”€â”€ component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -100,14 +100,36 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
   const [attendingCount, setAttendingCount] = useState(0)
   useEffect(() => {
     if ((!seg.attendance && !seg.wishes) || !card.isPublished || !card.slug) return
+
+    // Initial load
     fetch(`/api/rsvp/${card.slug}`)
       .then((r) => r.json())
       .then((d) => {
-        setWishes((d.rsvps ?? []).filter((r: { message?: string }) => r.message?.trim()))
+        setWishes(
+          (d.rsvps ?? [])
+            .filter((r: { message?: string }) => r.message?.trim())
+            .map((r: { id: string; guestName: string; message: string }) => ({
+              id: r.id, guestName: r.guestName, message: r.message,
+            }))
+        )
         const attending = (d.counts ?? []).find((c: { attendance: string }) => c.attendance === "ATTENDING")
         setAttendingCount(attending?._sum?.guestCount ?? 0)
       })
       .catch(() => {})
+
+    // Real-time: SSE stream pushes new wishes as they arrive
+    const es = new EventSource(`/api/rsvp/${card.slug}/stream`)
+    es.onmessage = (event) => {
+      try {
+        const wish = JSON.parse(event.data) as WishEntry
+        if (!wish.message?.trim()) return
+        setWishes((prev) => {
+          if (prev.some((w) => w.id === wish.id)) return prev
+          return [wish, ...prev]
+        })
+      } catch {}
+    }
+    return () => es.close()
   }, [card.slug, card.isPublished, seg.attendance, seg.wishes])
 
   // venue / navigation
@@ -603,7 +625,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
             <div className="space-y-5">
               {wishes.map((w, i) => (
                 <motion.div
-                  key={i}
+                  key={w.id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
