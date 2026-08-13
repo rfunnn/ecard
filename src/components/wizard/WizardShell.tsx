@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import Link from "next/link"
 import { useSearchParams, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronLeft, ChevronRight, Save, Eye, X, ShoppingBag, ExternalLink, CheckCircle, AlertCircle } from "lucide-react"
+import { ChevronLeft, ChevronRight, Save, Eye, X, LayoutDashboard, ExternalLink, CheckCircle, AlertCircle } from "lucide-react"
 import { useWizardStore, TOTAL_PAGES } from "@/store/wizardStore"
 import { useLanguageStore } from "@/store/languageStore"
 import type { TemplateInfo } from "@/store/wizardStore"
@@ -13,7 +13,6 @@ import type { WizardConfig } from "@/types/config"
 import { TemplateRenderer } from "@/components/templates/TemplateRenderer"
 import type { InvitationCardData, GiftItem, PhotoItem } from "@/types/invitation"
 import { addToCart } from "@/lib/cart"
-import { CartDrawer } from "@/components/CartDrawer"
 import { EffectAnimation } from "@/components/invite/EffectAnimation"
 import { OpeningGate } from "@/components/invite/OpeningGate"
 import { ActionBar } from "@/components/invite/ActionBar"
@@ -226,7 +225,6 @@ export function WizardShell({ initialCard, guest = false, authoring }: Props) {
   const isMs = lang === "ms"
   const pageNames = isMs ? PAGE_NAMES_MS : PAGE_NAMES_EN
 
-  const [cartOpen, setCartOpen] = useState(false)
   const [previewOpen, setPreviewOpen] = useState(false)
   const [toast, setToast] = useState<{ type: "success" | "error"; msg: string } | null>(null)
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
@@ -453,15 +451,14 @@ export function WizardShell({ initialCard, guest = false, authoring }: Props) {
                   {isMs ? "Lihat Kad" : "View Card"}
                 </Link>
               )}
-              {!authoring && !guest && !initialCard.isPublished && (
-                <button
-                  type="button"
-                  onClick={() => setCartOpen(true)}
+              {!authoring && !guest && (
+                <Link
+                  href="/dashboard"
                   className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-800 transition-colors px-2 py-1 rounded-md hover:bg-gray-100"
                 >
-                  <ShoppingBag className="w-3.5 h-3.5" />
+                  <LayoutDashboard className="w-3.5 h-3.5" />
                   {isMs ? "Kad Saya" : "My Cards"}
-                </button>
+                </Link>
               )}
             </div>
           </div>
@@ -773,7 +770,6 @@ export function WizardShell({ initialCard, guest = false, authoring }: Props) {
         )}
       </AnimatePresence>
 
-      <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
     </div>
   )
 }

@@ -79,7 +79,7 @@ export default async function PartnerDetailPage({ params }: Context) {
   const now = new Date()
   const defaultPeriod = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
 
-  const [usages, invoices, uniqueCustomers] = await Promise.all([
+  const [usages, invoices, uniqueCustomers, clientData, quotaData] = await Promise.all([
     prisma.partnerUsage.findMany({
       where: { partnerId: id },
       orderBy: { createdAt: "desc" },
@@ -117,7 +117,46 @@ export default async function PartnerDetailPage({ params }: Context) {
       select: { userId: true },
       distinct: ["userId"],
     }),
+    prisma.user.findMany({
+      where: {
+        OR: [
+          { partnerOriginId: id },
+          { cards: { some: { partnerId: id } } },
+        ],
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        partnerOriginId: true,
+        createdAt: true,
+        cards: {
+          where: { partnerId: id },
+          select: { isPublished: true, createdAt: true },
+          orderBy: { createdAt: "asc" },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 200,
+    }),
+    prisma.partnerClientQuota.findMany({
+      where: { partnerId: id },
+      select: { userId: true },
+    }),
   ])
+
+  const quotaUserIds = new Set(quotaData.map((q) => q.userId))
+  const clients = clientData.map((u) => ({
+    id:                   u.id,
+    name:                 u.name,
+    email:                u.email,
+    registeredViaPartner: u.partnerOriginId === id,
+    totalCards:           u.cards.length,
+    publishedCards:       u.cards.filter((c) => c.isPublished).length,
+    freeQuotaUsed:        quotaUserIds.has(u.id),
+    joinedAt:             u.createdAt,
+    firstCardAt:          u.cards[0]?.createdAt ?? null,
+  }))
 
   const unbilledUsage = usages.filter((u) => u.status === "UNBILLED")
   const unbilledTotal = unbilledUsage.reduce((s, u) => s + u.amount, 0)
@@ -297,6 +336,62 @@ export default async function PartnerDetailPage({ params }: Context) {
                           <FileText className="w-3 h-3" /> Cetak
                         </Link>
                       </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* Clients */}
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="px-5 py-4 border-b border-gray-100">
+          <h2 className="font-semibold text-gray-900">
+            Pelanggan <span className="text-sm font-normal text-gray-400">({clients.length} pengguna)</span>
+          </h2>
+        </div>
+        {clients.length === 0 ? (
+          <div className="px-5 py-10 text-center text-sm text-gray-400">Belum ada pelanggan</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Pengguna</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Daftar Via</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Kad</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Diterbit</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Kuota Percuma</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Tarikh Daftar</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {clients.map((c) => (
+                  <tr key={c.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-3">
+                      <p className="text-xs font-medium text-gray-900">{c.name ?? "—"}</p>
+                      <p className="text-[11px] text-gray-400">{c.email}</p>
+                    </td>
+                    <td className="px-4 py-3">
+                      {c.registeredViaPartner ? (
+                        <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700">Partner</span>
+                      ) : (
+                        <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">Lain</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-xs text-gray-700">{c.totalCards}</td>
+                    <td className="px-4 py-3 text-xs text-gray-700">{c.publishedCards}</td>
+                    <td className="px-4 py-3">
+                      {c.freeQuotaUsed ? (
+                        <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-green-50 text-green-700">Digunakan</span>
+                      ) : (
+                        <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">Tersedia</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-xs text-gray-400">
+                      {c.joinedAt.toLocaleDateString("ms-MY", { day: "numeric", month: "short", year: "numeric" })}
                     </td>
                   </tr>
                 ))}

@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { CheckCircle2, Clock } from "lucide-react"
+import { CheckCircle2, Clock, LogIn } from "lucide-react"
 
 const BUSINESS_TYPE_LABELS: Record<string, string> = {
   BUSINESS_CARD:  "Business Card",
@@ -10,16 +10,17 @@ const BUSINESS_TYPE_LABELS: Record<string, string> = {
 }
 
 interface Props {
-  searchParams: Promise<{ slug?: string; name?: string; type?: string }>
+  searchParams: Promise<{ slug?: string; name?: string; type?: string; accountCreated?: string }>
 }
 
 export default async function PartnerSuccessPage({ searchParams }: Props) {
-  const { slug, name, type } = await searchParams
+  const { slug, name, type, accountCreated } = await searchParams
 
   const baseDomain = process.env.NEXT_PUBLIC_BASE_DOMAIN ?? "ekadku.com"
-  const partnerUrl = slug ? `${slug}.${baseDomain}` : null
-  const companyName = name ? decodeURIComponent(name) : "Syarikat Anda"
-  const businessType = type ? BUSINESS_TYPE_LABELS[type] ?? type : "—"
+  const partnerUrl     = slug ? `${slug}.${baseDomain}` : null
+  const companyName    = name ? decodeURIComponent(name) : "Syarikat Anda"
+  const businessType   = type ? BUSINESS_TYPE_LABELS[type] ?? type : "—"
+  const hasAccount     = accountCreated === "1"
 
   return (
     <div className="min-h-screen bg-[var(--pg)] flex items-center justify-center px-4 py-12">
@@ -56,19 +57,37 @@ export default async function PartnerSuccessPage({ searchParams }: Props) {
           </div>
         </div>
 
-        <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-8 text-left">
+        <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-6 text-left">
           <p className="text-sm text-amber-800 leading-relaxed">
             Permohonan anda sedang disemak oleh pihak Ekadku. Anda akan dihubungi melalui e-mel setelah akaun partner anda diluluskan.
           </p>
         </div>
 
+        {/* Account info */}
+        {hasAccount ? (
+          <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3 mb-6 text-left">
+            <p className="text-sm font-medium text-green-800 mb-0.5">Akaun berjaya dibuat</p>
+            <p className="text-xs text-green-700 leading-relaxed">
+              Log masuk dengan e-mel dan kata laluan yang anda tetapkan untuk mengakses dashboard partner.
+            </p>
+          </div>
+        ) : (
+          <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 mb-6 text-left">
+            <p className="text-sm font-medium text-blue-800 mb-0.5">Langkah seterusnya</p>
+            <p className="text-xs text-blue-700 leading-relaxed">
+              Log masuk atau daftar akaun menggunakan e-mel partner anda untuk mengakses dashboard setelah diluluskan.
+            </p>
+          </div>
+        )}
+
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
-            href="/partner/dashboard"
+            href="/login?callbackUrl=/partner/dashboard"
             className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all active:scale-95"
             style={{ background: "#FFCC00", color: "#141414" }}
           >
-            Semak Status Partner
+            <LogIn className="w-4 h-4" />
+            Log Masuk Sekarang
           </Link>
           <Link
             href="/"
