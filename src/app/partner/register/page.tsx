@@ -30,7 +30,7 @@ export default function PartnerRegisterPage() {
 
   const [form, setForm] = useState({
     companyName: "", contactPerson: "", phone: "", email: "",
-    businessType: "", registrationNumber: "", address: "",
+    businessType: "", registrationNumber: "",
     website: "", instagram: "", facebook: "",
   })
   const [logo, setLogo]               = useState("")
@@ -253,11 +253,6 @@ export default function PartnerRegisterPage() {
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="sm:col-span-2">
-                <label className={labelCls}>{r.labelAddress}</label>
-                <textarea className={`${inputCls} resize-none`} rows={2} placeholder={r.placeholderAddress}
-                  value={form.address} onChange={(e) => set("address", e.target.value)} />
-              </div>
               <div>
                 <label className={labelCls}><Globe className="w-3 h-3 inline mr-1" />{r.labelWebsite}</label>
                 <input className={inputCls} type="url" placeholder="https://syarikat.com" value={form.website}
