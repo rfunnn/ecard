@@ -25,7 +25,7 @@ import "./globals.css"
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair", display: "swap" })
 const lato = Lato({ subsets: ["latin"], weight: ["300", "400", "700"], variable: "--font-lato", display: "swap" })
 const greatVibes = Great_Vibes({ subsets: ["latin"], weight: "400", variable: "--font-great-vibes", display: "swap" })
-const cormorant = Cormorant_Garamond({ subsets: ["latin"], weight: ["300", "400", "500", "600"], variable: "--font-cormorant", display: "swap" })
+const cormorant = Cormorant_Garamond({ subsets: ["latin"], weight: "400", variable: "--font-cormorant", display: "swap" })
 const cinzel = Cinzel({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-cinzel", display: "swap" })
 const dancing = Dancing_Script({ subsets: ["latin"], variable: "--font-dancing", display: "swap" })
 const montserrat = Montserrat({ subsets: ["latin"], weight: ["300", "400", "500", "600"], variable: "--font-montserrat", display: "swap" })
