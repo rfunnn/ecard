@@ -50,7 +50,10 @@ export const metadata: Metadata = {
   creator: "ekadku.com",
   alternates: { canonical: "https://ekadku.com" },
   icons: {
-    icon: [{ url: "/icon.png", type: "image/png", sizes: "1024x1024" }],
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "1024x1024" },
+    ],
     shortcut: "/favicon.ico",
     apple: [{ url: "/icon.png", type: "image/png", sizes: "1024x1024" }],
   },
@@ -61,14 +64,12 @@ export const metadata: Metadata = {
     siteName: "ekadku.com",
     locale: "ms_MY",
     type: "website",
-    images: [{ url: "/og-image.png", width: 1950, height: 1024, alt: "ekadku.com — Kad Jemputan Digital" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "ekadku.com — Kad Jemputan Digital",
     description: "Cipta kad jemputan digital yang cantik. Perkahwinan, hari jadi, korporat. Mulai RM30.",
     site: "@ekadku",
-    images: ["/og-image.png"],
   },
   verification: {
     google: "FsMFuM2EhLes5nhV5dR9Yc7yJJJ7UHctT_3ZOkExniI",
