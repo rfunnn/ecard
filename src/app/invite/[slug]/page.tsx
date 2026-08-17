@@ -228,7 +228,7 @@ export default async function InvitePage({ params, searchParams }: Props) {
       addOnCustomDesign: false,
       addOnCoverVideo: false,
       designCode: "",
-      openingStyle: "Tingkap A",
+      openingStyle: "Tingkap B",
       openingStyleColor: "#f2f2f2",
       effectAnimation: "Bunga 1",
       effectColor: "#C0C0C0",
@@ -314,7 +314,7 @@ export default async function InvitePage({ params, searchParams }: Props) {
 
       // Music & scroll
       youtubeUrl: "https://www.youtube.com/watch?v=Tf_zS_ES_7k",
-      musicStartTime: "00:01",
+      musicStartTime: "00:00",
       showMusicPlayer: true,
       autoplayMusic: true,
       scrollDelay: 3.5,

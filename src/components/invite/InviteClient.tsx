@@ -49,7 +49,7 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
 
   const wCfg            = card.wizardConfig as WizardConfig | undefined
   const musicStartSeconds = (() => {
-    const t = wCfg?.musicStartTime ?? "00:01"
+    const t = wCfg?.musicStartTime ?? "00:00"
     const [m, s] = t.split(":").map(Number)
     return (m || 0) * 60 + (s || 0)
   })()

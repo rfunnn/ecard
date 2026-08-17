@@ -50,6 +50,11 @@ export const metadata: Metadata = {
   creator: "ekadku.com",
   alternates: { canonical: "https://ekadku.com" },
   icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "1024x1024" },
+    ],
+    shortcut: "/favicon.ico",
     apple: [{ url: "/icon.png", type: "image/png", sizes: "1024x1024" }],
   },
   openGraph: {
