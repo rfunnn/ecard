@@ -49,14 +49,6 @@ export const metadata: Metadata = {
   authors: [{ name: "ekadku.com", url: "https://ekadku.com" }],
   creator: "ekadku.com",
   alternates: { canonical: "https://ekadku.com" },
-  icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon.png", type: "image/png", sizes: "1024x1024" },
-    ],
-    shortcut: "/favicon.ico",
-    apple: [{ url: "/icon.png", type: "image/png", sizes: "1024x1024" }],
-  },
   openGraph: {
     title: "ekadku.com — Kad Jemputan Digital",
     description: "Cipta kad jemputan digital yang cantik dan mudah dikongsi. Perkahwinan, hari jadi, korporat dan lebih lagi. Mulai RM30 sahaja.",
