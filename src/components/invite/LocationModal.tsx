@@ -3,6 +3,7 @@
 import type { InvitationCardData } from "@/types/invitation"
 import type { WizardConfig } from "@/types/config"
 import { InviteBottomSheet } from "./InviteBottomSheet"
+import { multiLine } from "@/components/templates/templateUtils"
 
 interface LocationModalProps {
   isOpen: boolean
@@ -82,9 +83,9 @@ export function LocationModal({ isOpen, onClose, card, onAnalytic, contained }: 
         )}
 
         {card.venueAddress && (
-          <p className="text-center text-xs leading-relaxed mb-5" style={{ color: `${primaryColor}bb` }}>
-            {card.venueAddress}
-          </p>
+          <div className="text-center text-xs leading-relaxed mb-5" style={{ color: `${primaryColor}bb` }}>
+            {multiLine(card.venueAddress)}
+          </div>
         )}
 
         <div className={`flex gap-3 ${hasMaps && hasWaze ? "" : "justify-center"}`}>

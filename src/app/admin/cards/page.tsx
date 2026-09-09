@@ -2,6 +2,7 @@ import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { ChevronLeft, ChevronRight, CreditCard } from "lucide-react"
 import { PublishFreeButton } from "@/components/admin/PublishFreeButton"
+import { EnableScrollButton } from "@/components/admin/EnableScrollButton"
 
 const PER_PAGE = 30
 
@@ -170,7 +171,10 @@ export default async function AdminCardsPage({ searchParams }: Props) {
                       </p>
                     </td>
                     <td className="px-4 py-3 text-right">
-                      {!card.isPublished && <PublishFreeButton slug={card.slug} />}
+                      <div className="flex items-center justify-end gap-2">
+                        {card.isPublished && <EnableScrollButton slug={card.slug} />}
+                        {!card.isPublished && <PublishFreeButton slug={card.slug} />}
+                      </div>
                     </td>
                   </tr>
                 )
