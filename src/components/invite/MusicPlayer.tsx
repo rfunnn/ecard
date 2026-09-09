@@ -56,14 +56,14 @@ export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange, startS
     }
     window.addEventListener("message", handleMessage)
     // Fallback in case postMessage events don't arrive (cross-origin timing)
-    const fallback = setTimeout(() => setPlayerReady(true), 2000)
+    const fallback = setTimeout(() => setPlayerReady(true), 1000)
     return () => {
       window.removeEventListener("message", handleMessage)
       clearTimeout(fallback)
     }
   }, [])
 
-  // Catch ANY first user gesture on the page — including scroll on inner div containers
+  // Catch ANY first user gesture — fallback for browsers that block audio without gesture
   useEffect(() => {
     const handle = () => {
       if (interactedRef.current) return
@@ -72,7 +72,6 @@ export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange, startS
     }
     document.addEventListener("click", handle)
     document.addEventListener("touchstart", handle, { passive: true })
-    // capture:true catches scroll events that fire on inner scrollable divs (not just document)
     document.addEventListener("scroll", handle, { capture: true, passive: true })
     window.addEventListener("wheel", handle, { passive: true })
     return () => {
@@ -83,10 +82,22 @@ export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange, startS
     }
   }, [])
 
-  // Unmute as soon as both the player is loaded AND the user has gestured
+  // Unmute as soon as player is ready.
+  // If the page already has user activation (SPA nav click, gate tap, etc.) we unmute
+  // immediately. On a fresh external link open with no prior gesture the browser will
+  // silently block the unMute — the interacted fallback below handles that case.
   useEffect(() => {
-    if (playerReady && interacted) unmute()
-  }, [playerReady, interacted, unmute])
+    if (!playerReady) return
+    const ua = typeof navigator !== "undefined" && "userActivation" in navigator
+      ? (navigator.userActivation as { hasBeenActive?: boolean })
+      : null
+    if (ua?.hasBeenActive ?? true) unmute()
+  }, [playerReady, unmute])
+
+  // Fallback: unmute on first user gesture (mobile browsers that block without gesture)
+  useEffect(() => {
+    if (interacted && playerReady) unmute()
+  }, [interacted, playerReady, unmute])
 
   const handleToggle = useCallback(() => {
     if (isMuted) {
