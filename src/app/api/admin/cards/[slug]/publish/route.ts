@@ -50,15 +50,22 @@ export async function POST(
   const cardNum = (agg._max.cardNum ?? 0) + 1
 
   const currentConfig = (card.wizardConfig ?? {}) as Record<string, unknown>
-  await prisma.invitationCard.update({
-    where: { id: card.id },
-    data: {
-      isPublished: true,
-      expiresAt,
-      cardNum,
-      wizardConfig: { ...currentConfig, packageType: PACKAGE_LABELS[tier] },
-    },
-  })
+  await prisma.$transaction([
+    prisma.invitationCard.update({
+      where: { id: card.id },
+      data: {
+        isPublished: true,
+        expiresAt,
+        cardNum,
+        wizardConfig: { ...currentConfig, packageType: PACKAGE_LABELS[tier] },
+      },
+    }),
+    prisma.scrollConfig.upsert({
+      where: { cardId: card.id },
+      create: { cardId: card.id, autoScroll: true },
+      update: { autoScroll: true },
+    }),
+  ])
 
   return NextResponse.json({ ok: true })
 }

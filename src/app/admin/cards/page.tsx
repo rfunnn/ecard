@@ -26,6 +26,7 @@ export default async function AdminCardsPage({ searchParams }: Props) {
       select: {
         id: true,
         slug: true,
+        cardNum: true,
         title: true,
         groomName: true,
         brideName: true,
@@ -118,11 +119,11 @@ export default async function AdminCardsPage({ searchParams }: Props) {
                   <tr key={card.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3">
                       <Link
-                        href={`/kad/${card.slug}`}
+                        href={`/${card.cardNum ?? card.slug}`}
                         target="_blank"
                         className="font-mono text-xs text-amber-600 hover:text-amber-700 hover:underline"
                       >
-                        {card.slug}
+                        {card.cardNum ? `#${card.cardNum}` : card.slug}
                       </Link>
                       <p className="text-xs text-gray-700 mt-0.5 truncate max-w-[160px]">
                         {card.title}

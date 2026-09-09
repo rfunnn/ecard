@@ -229,19 +229,7 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
             {/* ── Template content — overlaid on image1 (page 1), then on image2 (page 2+) ── */}
             <div className="relative z-10">
               {!gateOpen && (
-                <>
-                  <TemplateRenderer card={card} onRsvpOpen={() => { fireAnalytic("RSVP_OPEN"); setRsvpOpen(true) }} revealed={true} scrollContainerRef={scrollRef} />
-
-                  {hasMusicPlayer && (
-                    <MusicPlayer
-                      media={card.media}
-                      onAnalytic={fireAnalytic}
-                      toggleRef={musicToggleRef}
-                      startSeconds={musicStartSeconds}
-                      onMuteChange={setIsMusicMuted}
-                    />
-                  )}
-                </>
+                <TemplateRenderer card={card} onRsvpOpen={() => { fireAnalytic("RSVP_OPEN"); setRsvpOpen(true) }} revealed={true} scrollContainerRef={scrollRef} />
               )}
             </div>
           </div>
@@ -266,6 +254,17 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
           />
         </div>
       </div>
+
+      {/* ── Music player — always mounted so it preloads during gate and catches gate-dismiss tap ── */}
+      {hasMusicPlayer && (
+        <MusicPlayer
+          media={card.media}
+          onAnalytic={fireAnalytic}
+          toggleRef={musicToggleRef}
+          startSeconds={musicStartSeconds}
+          onMuteChange={setIsMusicMuted}
+        />
+      )}
 
       {/* ── Opening gate — shown on top of card until user taps ── */}
       {gateOpen && (
