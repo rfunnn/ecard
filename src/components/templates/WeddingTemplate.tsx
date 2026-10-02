@@ -472,7 +472,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
             {parseProgramText(cfg.eventProgram).map((item, i) => (
               <div
                 key={i}
-                className="flex justify-between items-center gap-3 px-4 py-3 rounded-sm"
+                className="flex justify-between items-start gap-3 px-4 py-3 rounded-sm"
                 style={{ border: `1px solid ${bodyColor}60`, backgroundColor: `${bodyColor}18` }}
               >
                 <span
@@ -482,7 +482,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
                   {item.label}
                 </span>
                 <span
-                  className={`${bodyFont} opacity-90 text-right shrink-0`}
+                  className={`${bodyFont} opacity-90 text-right min-w-0 break-words`}
                   style={{ color: bodyColor, fontSize: `${Math.max(bodySize - 1, 12)}px` }}
                 >
                   {item.time}

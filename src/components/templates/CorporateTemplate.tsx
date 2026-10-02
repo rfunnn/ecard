@@ -328,10 +328,10 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
           </p>
           <div className="space-y-3 max-w-sm">
             {parseProgramText(cfg.eventProgram).map((item, i) => (
-              <div key={i} className="flex justify-between items-baseline gap-3 border-b pb-3"
+              <div key={i} className="flex justify-between items-start gap-3 border-b pb-3"
                 style={{ borderColor: `${primaryColor}10` }}>
                 <span className={`${bodyFont} font-medium min-w-0 break-words`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>{item.label}</span>
-                <span className={`${headFont} text-xs opacity-85 shrink-0`} style={{ color: bodyColor }}>{item.time}</span>
+                <span className={`${headFont} text-xs opacity-85 text-right min-w-0 break-words`} style={{ color: bodyColor }}>{item.time}</span>
               </div>
             ))}
           </div>
