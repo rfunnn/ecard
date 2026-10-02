@@ -169,9 +169,9 @@ export function Page11_Photos() {
                       role="button"
                       aria-label={isMs ? "Padam foto" : "Delete photo"}
                       onClick={(e) => { e.stopPropagation(); handleDelete(item.id) }}
-                      className="flex items-center gap-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full px-3 py-1.5 text-xs font-semibold shadow-md active:scale-95 transition"
+                      className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white rounded-full px-4 py-2.5 text-sm font-semibold shadow-md active:scale-95 transition"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-5 h-5" />
                       {isMs ? "Padam" : "Delete"}
                     </span>
                   </div>
