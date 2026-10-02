@@ -325,7 +325,7 @@ export function BirthdayTemplate({ card, onRsvpOpen, previewPage: p, revealed = 
           <div className="space-y-4 max-w-xs mx-auto">
             {parseProgramText(cfg.eventProgram).map((item, i) => (
               <div key={i} className="flex justify-between items-baseline gap-3">
-                <span className={`${bodyFont} font-medium`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>{item.label}</span>
+                <span className={`${bodyFont} font-medium min-w-0 break-words`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>{item.label}</span>
                 <span className={`${bodyFont} opacity-85 text-right shrink-0`} style={{ color: bodyColor, fontSize: `${Math.max(bodySize - 1, 12)}px` }}>{item.time}</span>
               </div>
             ))}

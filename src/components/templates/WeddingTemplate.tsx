@@ -476,7 +476,7 @@ export function WeddingTemplate({ card, onRsvpOpen, previewPage: p, revealed = t
                 style={{ border: `1px solid ${bodyColor}60`, backgroundColor: `${bodyColor}18` }}
               >
                 <span
-                  className={`${bodyFont} font-medium`}
+                  className={`${bodyFont} font-medium min-w-0 break-words`}
                   style={{ color: bodyColor, fontSize: `${bodySize}px` }}
                 >
                   {item.label}

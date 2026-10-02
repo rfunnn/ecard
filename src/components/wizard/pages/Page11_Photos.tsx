@@ -156,7 +156,8 @@ export function Page11_Photos() {
               )}
               <button
                 onClick={() => handleDelete(item.id)}
-                className="absolute top-1 right-1 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                aria-label={isMs ? "Padam foto" : "Delete photo"}
+                className="absolute top-1 right-1 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center shadow-sm opacity-80 hover:opacity-100 active:scale-95 transition"
               >
                 <Trash2 className="w-3 h-3" />
               </button>

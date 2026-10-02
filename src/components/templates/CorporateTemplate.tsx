@@ -330,7 +330,7 @@ export function CorporateTemplate({ card, onRsvpOpen, previewPage: p, revealed =
             {parseProgramText(cfg.eventProgram).map((item, i) => (
               <div key={i} className="flex justify-between items-baseline gap-3 border-b pb-3"
                 style={{ borderColor: `${primaryColor}10` }}>
-                <span className={`${bodyFont} font-medium`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>{item.label}</span>
+                <span className={`${bodyFont} font-medium min-w-0 break-words`} style={{ color: bodyColor, fontSize: `${bodySize}px` }}>{item.label}</span>
                 <span className={`${headFont} text-xs opacity-85 shrink-0`} style={{ color: bodyColor }}>{item.time}</span>
               </div>
             ))}
