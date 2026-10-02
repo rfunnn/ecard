@@ -155,11 +155,12 @@ export function Page11_Photos() {
                 </div>
               )}
               <button
+                type="button"
                 onClick={() => handleDelete(item.id)}
                 aria-label={isMs ? "Padam foto" : "Delete photo"}
-                className="absolute top-1 right-1 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center shadow-sm opacity-80 hover:opacity-100 active:scale-95 transition"
+                className="absolute top-1.5 right-1.5 z-10 w-7 h-7 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-md ring-2 ring-white active:scale-95 transition"
               >
-                <Trash2 className="w-3 h-3" />
+                <Trash2 className="w-3.5 h-3.5" />
               </button>
             </div>
           ))}
