@@ -28,6 +28,7 @@ export function Page11_Photos() {
   const [caption, setCaption]         = useState("")
   const [preview, setPreview]         = useState<string | null>(null)
   const [pendingFile, setPendingFile] = useState<File | null>(null)
+  const [selectedId, setSelectedId]   = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement | undefined>(undefined)
 
   useEffect(() => {
@@ -104,6 +105,7 @@ export function Page11_Photos() {
   }
 
   async function handleDelete(id: string) {
+    setSelectedId(null)
     removePhotoItem(id)
     if (authoringMode || !cardSlug) return
     await fetch(`/api/photos/${cardSlug}`, {
@@ -146,24 +148,37 @@ export function Page11_Photos() {
         </div>
       ) : photoItems.length > 0 ? (
         <div className="grid grid-cols-3 gap-2">
-          {photoItems.map((item) => (
-            <div key={item.id} className="relative group rounded-lg overflow-hidden aspect-square bg-gray-100">
-              <img src={item.imageUrl} alt={item.caption ?? ""} className="w-full h-full object-cover" />
-              {item.caption && (
-                <div className="absolute bottom-0 inset-x-0 bg-black/50 px-1.5 py-1">
-                  <p className="text-[9px] text-white truncate">{item.caption}</p>
-                </div>
-              )}
+          {photoItems.map((item) => {
+            const selected = selectedId === item.id
+            return (
               <button
                 type="button"
-                onClick={() => handleDelete(item.id)}
-                aria-label={isMs ? "Padam foto" : "Delete photo"}
-                className="absolute top-1.5 right-1.5 z-10 w-7 h-7 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-md ring-2 ring-white active:scale-95 transition"
+                key={item.id}
+                onClick={() => setSelectedId(selected ? null : item.id)}
+                className={`relative block w-full rounded-lg overflow-hidden aspect-square bg-gray-100 transition ${selected ? "ring-2 ring-red-500" : ""}`}
               >
-                <Trash2 className="w-3.5 h-3.5" />
+                <img src={item.imageUrl} alt={item.caption ?? ""} className="w-full h-full object-cover" />
+                {item.caption && !selected && (
+                  <div className="absolute bottom-0 inset-x-0 bg-black/50 px-1.5 py-1">
+                    <p className="text-[9px] text-white truncate">{item.caption}</p>
+                  </div>
+                )}
+                {selected && (
+                  <div className="absolute inset-0 bg-black/55 flex items-center justify-center">
+                    <span
+                      role="button"
+                      aria-label={isMs ? "Padam foto" : "Delete photo"}
+                      onClick={(e) => { e.stopPropagation(); handleDelete(item.id) }}
+                      className="flex items-center gap-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full px-3 py-1.5 text-xs font-semibold shadow-md active:scale-95 transition"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      {isMs ? "Padam" : "Delete"}
+                    </span>
+                  </div>
+                )}
               </button>
-            </div>
-          ))}
+            )
+          })}
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-10 text-center border-2 border-dashed border-gray-200 rounded-xl">
