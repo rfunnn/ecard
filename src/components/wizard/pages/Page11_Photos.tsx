@@ -151,11 +151,10 @@ export function Page11_Photos() {
           {photoItems.map((item) => {
             const selected = selectedId === item.id
             return (
-              <button
-                type="button"
+              <div
                 key={item.id}
                 onClick={() => setSelectedId(selected ? null : item.id)}
-                className={`relative block w-full rounded-lg overflow-hidden aspect-square bg-gray-100 transition ${selected ? "ring-2 ring-red-500" : ""}`}
+                className={`relative block w-full rounded-lg overflow-hidden aspect-square bg-gray-100 cursor-pointer transition ${selected ? "ring-2 ring-red-500" : ""}`}
               >
                 <img src={item.imageUrl} alt={item.caption ?? ""} className="w-full h-full object-cover" />
                 {item.caption && !selected && (
@@ -165,18 +164,18 @@ export function Page11_Photos() {
                 )}
                 {selected && (
                   <div className="absolute inset-0 bg-black/55 flex items-center justify-center">
-                    <span
-                      role="button"
+                    <button
+                      type="button"
                       aria-label={isMs ? "Padam foto" : "Delete photo"}
                       onClick={(e) => { e.stopPropagation(); handleDelete(item.id) }}
                       className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white rounded-full px-4 py-2.5 text-sm font-semibold shadow-md active:scale-95 transition"
                     >
                       <Trash2 className="w-5 h-5" />
                       {isMs ? "Padam" : "Delete"}
-                    </span>
+                    </button>
                   </div>
                 )}
-              </button>
+              </div>
             )
           })}
         </div>
