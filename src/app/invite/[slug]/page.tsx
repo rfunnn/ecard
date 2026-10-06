@@ -20,30 +20,35 @@ import type { InvitationCardData } from "@/types/invitation"
 import { DEFAULT_THEME, DEFAULT_MEDIA, DEFAULT_SCROLL } from "@/types/invitation"
 import type { WizardConfig } from "@/types/config"
 
-const getCachedCard = unstable_cache(
-  async (slug: string) => prisma.invitationCard.findUnique({
-    where: { slug },
-    include: {
-      template: { select: { slug: true, name: true, category: true, image1Url: true, image2Url: true } },
-      theme: true,
-      media: true,
-      scrollConfig: true,
-      giftItems:  { orderBy: { sortOrder: "asc" } },
-      photoItems: { orderBy: { sortOrder: "asc" } },
-    },
-  }),
-  ["invite-card"],
-  { revalidate: 60 }
-)
+// Cached per-slug so a save can bust exactly one card. The cache is tagged
+// `invite-card:<slug>`; the card PATCH handler calls revalidateTag on that tag
+// so edits show up immediately instead of waiting out the 60s revalidate window.
+const getCachedCard = (slug: string) =>
+  unstable_cache(
+    async () => prisma.invitationCard.findUnique({
+      where: { slug },
+      include: {
+        template: { select: { slug: true, name: true, category: true, image1Url: true, image2Url: true } },
+        theme: true,
+        media: true,
+        scrollConfig: true,
+        giftItems:  { orderBy: { sortOrder: "asc" } },
+        photoItems: { orderBy: { sortOrder: "asc" } },
+      },
+    }),
+    ["invite-card", slug],
+    { revalidate: 60, tags: [`invite-card:${slug}`] }
+  )()
 
-const getCachedCardMeta = unstable_cache(
-  async (slug: string) => prisma.invitationCard.findUnique({
-    where: { slug },
-    select: { title: true, description: true, isPublished: true, expiresAt: true },
-  }),
-  ["invite-card-meta"],
-  { revalidate: 60 }
-)
+const getCachedCardMeta = (slug: string) =>
+  unstable_cache(
+    async () => prisma.invitationCard.findUnique({
+      where: { slug },
+      select: { title: true, description: true, isPublished: true, expiresAt: true },
+    }),
+    ["invite-card-meta", slug],
+    { revalidate: 60, tags: [`invite-card:${slug}`] }
+  )()
 
 interface Props {
   params: Promise<{ slug: string }>

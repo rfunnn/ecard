@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { revalidateTag } from "next/cache"
 import { z } from "zod"
 import bcrypt from "bcryptjs"
 import { Prisma } from "@prisma/client"
@@ -191,6 +192,10 @@ export async function PATCH(
         scrollConfig: true,
       },
     })
+
+    // Bust the cached /invite/[slug] view so edits show up immediately
+    // instead of waiting out its 60s revalidate window.
+    revalidateTag(`invite-card:${slug}`)
 
     return NextResponse.json({ card })
   } catch (err) {
