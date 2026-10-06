@@ -502,23 +502,28 @@ export function WizardShell({ initialCard, guest = false, authoring }: Props) {
               ))}
             </select>
 
-            {/* Next / Save */}
-            {isLastPage ? (
-              <button
-                type="button"
-                onClick={save}
-                disabled={isSaving}
-                className="px-5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-md disabled:opacity-60 transition-colors"
-              >
-                {isSaving ? "..." : authoring ? (isMs ? "SIMPAN" : "SAVE") : guest ? (isMs ? "DAFTAR" : "SIGN UP") : "SAVE"}
-              </button>
-            ) : (
+            {/* Next arrow (not on last page) */}
+            {!isLastPage && (
               <button
                 type="button"
                 onClick={nextPage}
                 className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-gray-50"
               >
                 <ChevronRight className="w-5 h-5" />
+              </button>
+            )}
+
+            {/* Last-page primary CTA — only for guest (sign up) and authoring (save
+                template). The normal card-edit "SAVE" is dropped here because the
+                always-visible save icon below already saves. */}
+            {isLastPage && (guest || authoring) && (
+              <button
+                type="button"
+                onClick={save}
+                disabled={isSaving}
+                className="px-5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-md disabled:opacity-60 transition-colors"
+              >
+                {isSaving ? "..." : authoring ? (isMs ? "SIMPAN" : "SAVE") : (isMs ? "DAFTAR" : "SIGN UP")}
               </button>
             )}
 
