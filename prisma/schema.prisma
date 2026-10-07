@@ -66,14 +66,14 @@ model InvitationCard {
   title          String         @default("")
   groomName      String?
   brideName      String?
-  subtitle       String?
+  subtitle       String?        @db.Text
   eventDate      DateTime?
   eventTime      String?
-  venueName      String?
-  venueAddress   String?
-  venueMapUrl    String?
-  description    String?
-  footerNote     String?
+  venueName      String?        @db.Text
+  venueAddress   String?        @db.Text
+  venueMapUrl    String?        @db.Text
+  description    String?        @db.Text
+  footerNote     String?        @db.Text
 
   whatsappNumber String?
   contactName    String?
