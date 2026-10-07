@@ -172,6 +172,7 @@ export function SimpleRichText({ value, onChange, placeholder, rows = 4 }: Props
         {/* Font size */}
         <select
           className="text-xs border border-gray-200 rounded px-1 py-0.5 text-gray-600 ml-1 bg-white"
+          onMouseDown={saveSelectionNow}
           onChange={(e) => { applySpanStyle("fontSize", e.target.value); e.target.value = "" }}
         >
           <option value="">px</option>
