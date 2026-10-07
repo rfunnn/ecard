@@ -60,6 +60,9 @@ export function SimpleRichText({ value, onChange, placeholder, rows = 4 }: Props
   const [fontPickerOpen, setFontPickerOpen] = useState(false)
   const fontPickerRef  = useRef<HTMLDivElement>(null)
 
+  const [sizePickerOpen, setSizePickerOpen] = useState(false)
+  const sizePickerRef  = useRef<HTMLDivElement>(null)
+
   // Initialise innerHTML once on mount.
   useEffect(() => {
     if (editorRef.current) {
@@ -85,6 +88,15 @@ export function SimpleRichText({ value, onChange, placeholder, rows = 4 }: Props
     document.addEventListener("mousedown", handler)
     return () => document.removeEventListener("mousedown", handler)
   }, [fontPickerOpen])
+
+  useEffect(() => {
+    if (!sizePickerOpen) return
+    const handler = (e: MouseEvent) => {
+      if (!sizePickerRef.current?.contains(e.target as Node)) setSizePickerOpen(false)
+    }
+    document.addEventListener("mousedown", handler)
+    return () => document.removeEventListener("mousedown", handler)
+  }, [sizePickerOpen])
 
   function emit() {
     if (!editorRef.current) return
@@ -124,12 +136,18 @@ export function SimpleRichText({ value, onChange, placeholder, rows = 4 }: Props
     const ed = editorRef.current
     if (!ed) return
 
-    const range = savedRangeRef.current
-    if (!range || range.collapsed) return
-
     ed.focus()
     const sel = window.getSelection()
     if (!sel) return
+
+    // With an active selection, style just that text. With no (or a collapsed)
+    // selection, apply to the whole editor content so users don't have to
+    // highlight everything first.
+    let range = savedRangeRef.current
+    if (!range || range.collapsed) {
+      range = document.createRange()
+      range.selectNodeContents(ed)
+    }
     sel.removeAllRanges()
     sel.addRange(range)
 
@@ -137,12 +155,23 @@ export function SimpleRichText({ value, onChange, placeholder, rows = 4 }: Props
     if (cssProp === "fontSize") span.style.fontSize = val + "px"
     else span.style.fontFamily = val
 
+    // Always wrap via extractContents: it handles multi-node selections
+    // (e.g. whole-content spanning text + <br>) that surroundContents rejects
+    // with an InvalidStateError.
     try {
-      range.surroundContents(span)
-    } catch {
       const frag = range.extractContents()
+      // Drop any pre-existing value for this property inside the selection so
+      // the new wrapper actually takes effect — otherwise a nested inner style
+      // (from an earlier change) would win and nothing would appear to change.
+      frag.querySelectorAll<HTMLElement>("*").forEach((el) => {
+        if (cssProp === "fontSize") el.style.fontSize = ""
+        else el.style.fontFamily = ""
+      })
       span.appendChild(frag)
       range.insertNode(span)
+    } catch {
+      savedRangeRef.current = null
+      return
     }
 
     sel.removeAllRanges()
@@ -169,17 +198,42 @@ export function SimpleRichText({ value, onChange, placeholder, rows = 4 }: Props
           </button>
         ))}
 
-        {/* Font size */}
-        <select
-          className="text-xs border border-gray-200 rounded px-1 py-0.5 text-gray-600 ml-1 bg-white"
-          onMouseDown={saveSelectionNow}
-          onChange={(e) => { applySpanStyle("fontSize", e.target.value); e.target.value = "" }}
-        >
-          <option value="">px</option>
-          {[10, 12, 14, 16, 18, 20, 24, 28, 32, 36].map((s) => (
-            <option key={s} value={s}>{s}px</option>
-          ))}
-        </select>
+        {/* Font size — custom dropdown so mousedown can preventDefault and keep
+            the editor focused (a native <select> blurs the editor, losing the
+            text selection the size must be applied to). */}
+        <div className="relative ml-1" ref={sizePickerRef}>
+          <button
+            type="button"
+            onMouseDown={(e) => {
+              e.preventDefault()
+              saveSelectionNow()
+              setSizePickerOpen((o) => !o)
+            }}
+            className="flex items-center gap-1 text-xs border border-gray-200 rounded px-2 h-[22px] text-gray-600 bg-white hover:border-gray-400 transition-colors"
+          >
+            px
+            <ChevronDown className={`w-3 h-3 transition-transform ${sizePickerOpen ? "rotate-180" : ""}`} />
+          </button>
+
+          {sizePickerOpen && (
+            <div className="absolute left-0 top-full mt-0.5 z-50 bg-white border border-gray-200 rounded-lg shadow-lg w-20 max-h-56 overflow-y-auto">
+              {[10, 12, 14, 16, 18, 20, 24, 28, 32, 36].map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onMouseDown={(e) => {
+                    e.preventDefault()
+                    applySpanStyle("fontSize", String(s))
+                    setSizePickerOpen(false)
+                  }}
+                  className="w-full text-left px-3 py-2 hover:bg-amber-50 text-sm text-gray-800"
+                >
+                  {s}px
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Custom font family picker */}
         <div className="relative ml-1" ref={fontPickerRef}>
