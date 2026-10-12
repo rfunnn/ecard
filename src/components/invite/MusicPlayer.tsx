@@ -15,12 +15,13 @@ interface MusicPlayerProps {
 export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange, startSeconds = 0 }: MusicPlayerProps) {
   const [isMuted, setIsMuted] = useState(true)
   const [playerReady, setPlayerReady] = useState(false)
-  const [interacted, setInteracted] = useState(false)
   const [mounted, setMounted] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement | undefined>(undefined)
   const analyticFiredRef = useRef(false)
-  const interactedRef = useRef(false)
   const retryTimersRef = useRef<ReturnType<typeof setTimeout>[]>([])
+  // Mirror of isMuted for event handlers; and whether the user explicitly muted.
+  const mutedRef = useRef(true)
+  const userMutedRef = useRef(false)
   // Reflects the LAST unmute/mute the user (or auto-logic) intended. Used so that
   // player state events we receive while muted don't get misread as a user action.
   const wantAudioRef = useRef(false)
@@ -78,10 +79,13 @@ export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange, startS
 
   const mute = useCallback(() => {
     wantAudioRef.current = false
+    userMutedRef.current = true
     clearRetries()
     sendCommand("mute")
     setIsMuted(true)
   }, [sendCommand, clearRetries])
+
+  useEffect(() => { mutedRef.current = isMuted }, [isMuted])
 
   // Detect YouTube iframe API ready/state events and reconcile our icon with the
   // player's REAL mute state, so the toolbar never claims audio is playing when the
@@ -125,24 +129,32 @@ export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange, startS
 
   useEffect(() => () => clearRetries(), [clearRetries])
 
-  // Catch ANY first user gesture — fallback for browsers that block audio without gesture
+  // Auto-unmute on genuine user gestures. Browsers block audible playback until the
+  // user interacts, so when there is no opening gate to tap (openingStyle "Tiada")
+  // this is what starts the music. We deliberately do NOT listen to "scroll": the
+  // card's auto-scroll fires programmatic scroll events that are not real user
+  // gestures and would waste the unmute attempt before the user ever touches the
+  // screen. We retry on each gesture until audio is actually playing, but stop once
+  // the user has explicitly muted.
   useEffect(() => {
+    if (!playerReady) return
     const handle = () => {
-      if (interactedRef.current) return
-      interactedRef.current = true
-      setInteracted(true)
+      if (userMutedRef.current) return  // respect an explicit mute
+      if (!mutedRef.current) return     // already playing
+      unmute()
     }
-    document.addEventListener("click", handle)
-    document.addEventListener("touchstart", handle, { passive: true })
-    document.addEventListener("scroll", handle, { capture: true, passive: true })
-    window.addEventListener("wheel", handle, { passive: true })
+    const opts: AddEventListenerOptions = { passive: true }
+    window.addEventListener("pointerdown", handle, opts)
+    window.addEventListener("touchstart", handle, opts)
+    window.addEventListener("wheel", handle, opts)
+    window.addEventListener("keydown", handle, opts)
     return () => {
-      document.removeEventListener("click", handle)
-      document.removeEventListener("touchstart", handle)
-      document.removeEventListener("scroll", handle, { capture: true })
+      window.removeEventListener("pointerdown", handle)
+      window.removeEventListener("touchstart", handle)
       window.removeEventListener("wheel", handle)
+      window.removeEventListener("keydown", handle)
     }
-  }, [])
+  }, [playerReady, unmute])
 
   // Unmute as soon as player is ready.
   // If the page already has user activation (SPA nav click, gate tap, etc.) we unmute
@@ -157,15 +169,9 @@ export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange, startS
     if (ua?.hasBeenActive ?? true) unmute()
   }, [playerReady, unmute])
 
-  // Fallback: unmute on first user gesture (mobile browsers that block without gesture)
-  useEffect(() => {
-    if (interacted && playerReady) unmute()
-  }, [interacted, playerReady, unmute])
-
   const handleToggle = useCallback(() => {
     if (isMuted) {
-      interactedRef.current = true
-      setInteracted(true)
+      userMutedRef.current = false
       unmute()
     } else {
       mute()
