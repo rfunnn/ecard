@@ -29,6 +29,10 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
   const [isMusicMuted, setIsMusicMuted] = useState(true)
   const [rsvpOpen, setRsvpOpen] = useState(false)
   const hasMusicPlayer = !!(card.media?.audioEnabled && card.media?.youtubeVideoId)
+  // The back button is for in-app contexts only: the modal preview (onClose), the
+  // template demo (demoBadge), or an unpublished creator preview. A guest opening a
+  // shared published link has nowhere sensible to go "back" to, so hide it there.
+  const showBackButton = !!onClose || !!demoBadge || !card.isPublished
 
   const fireAnalytic = useCallback(async (event: string) => {
     if (demoBadge) return
@@ -122,25 +126,27 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
       />
 
       {/* ── Back button ── */}
-      <button
-        onClick={() => {
-          if (onClose) { onClose(); return }
-          if (window.history.length > 1) {
-            router.back()
-          } else {
-            router.push("/templates")
-          }
-        }}
-        className="fixed top-4 left-4 z-50 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs backdrop-blur-sm transition-all hover:opacity-80"
-        style={{
-          background: `${card.theme.bgColor}cc`,
-          color: card.theme.primaryColor,
-          border: `1px solid ${card.theme.primaryColor}25`,
-        }}
-      >
-        <ChevronLeft className="w-3.5 h-3.5" />
-        Kembali
-      </button>
+      {showBackButton && (
+        <button
+          onClick={() => {
+            if (onClose) { onClose(); return }
+            if (window.history.length > 1) {
+              router.back()
+            } else {
+              router.push("/templates")
+            }
+          }}
+          className="fixed top-4 left-4 z-50 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs backdrop-blur-sm transition-all hover:opacity-80"
+          style={{
+            background: `${card.theme.bgColor}cc`,
+            color: card.theme.primaryColor,
+            border: `1px solid ${card.theme.primaryColor}25`,
+          }}
+        >
+          <ChevronLeft className="w-3.5 h-3.5" />
+          Kembali
+        </button>
+      )}
 
       {/* ── Demo package badge ── */}
       {demoBadge && (
