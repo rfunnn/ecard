@@ -20,6 +20,10 @@ export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange, startS
   const iframeRef = useRef<HTMLIFrameElement | undefined>(undefined)
   const analyticFiredRef = useRef(false)
   const interactedRef = useRef(false)
+  const retryTimersRef = useRef<ReturnType<typeof setTimeout>[]>([])
+  // Reflects the LAST unmute/mute the user (or auto-logic) intended. Used so that
+  // player state events we receive while muted don't get misread as a user action.
+  const wantAudioRef = useRef(false)
 
   const { youtubeVideoId, audioEnabled, volume, loopAudio } = media
 
@@ -34,24 +38,70 @@ export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange, startS
     )
   }, [])
 
+  // Ask YouTube to start streaming state events (infoDelivery) back to us. Without
+  // this handshake the embed is silent about its real mute/playing state, so we can
+  // never tell whether an unMute command actually took effect.
+  const startListening = useCallback(() => {
+    iframeRef.current?.contentWindow?.postMessage(
+      JSON.stringify({ event: "listening", id: "ekad-music", channel: "widget" }),
+      "*"
+    )
+  }, [])
+
+  const clearRetries = useCallback(() => {
+    retryTimersRef.current.forEach(clearTimeout)
+    retryTimersRef.current = []
+  }, [])
+
+  // Unmute is best-effort: the iframe may not have finished initialising when the
+  // command is first posted (YouTube silently drops commands sent too early), so we
+  // re-send play + unmute + setVolume on a short retry schedule. We also explicitly
+  // playVideo because autoplay can be blocked outright (not merely muted), in which
+  // case unmuting a still-paused video produces no sound.
   const unmute = useCallback(() => {
-    sendCommand("unMute")
-    sendCommand("setVolume", [Math.round((volume ?? 0.5) * 100)])
+    const vol = Math.round((volume ?? 0.5) * 100)
+    const push = () => {
+      sendCommand("playVideo")
+      sendCommand("unMute")
+      sendCommand("setVolume", [vol])
+    }
+    wantAudioRef.current = true
+    clearRetries()
+    push()
+    retryTimersRef.current = [250, 600, 1200, 2000].map((ms) => setTimeout(push, ms))
     setIsMuted(false)
     if (!analyticFiredRef.current) {
       analyticFiredRef.current = true
       onAnalytic?.("MUSIC_PLAY")
     }
-  }, [sendCommand, volume, onAnalytic])
+  }, [sendCommand, volume, onAnalytic, clearRetries])
 
-  // Detect YouTube iframe API ready event
+  const mute = useCallback(() => {
+    wantAudioRef.current = false
+    clearRetries()
+    sendCommand("mute")
+    setIsMuted(true)
+  }, [sendCommand, clearRetries])
+
+  // Detect YouTube iframe API ready/state events and reconcile our icon with the
+  // player's REAL mute state, so the toolbar never claims audio is playing when the
+  // browser has actually blocked or muted it.
   useEffect(() => {
     const handleMessage = (e: MessageEvent) => {
       try {
         const data = typeof e.data === "string" ? JSON.parse(e.data) : e.data
         if (data?.event === "onReady") setPlayerReady(true)
-        // playerState 1 = playing (video has started even if muted)
-        if (data?.info?.playerState === 1) setPlayerReady(true)
+        const info = data?.info
+        if (info) {
+          // playerState 1 = playing (video has started even if muted)
+          if (info.playerState === 1) setPlayerReady(true)
+          // Reconcile icon with the player's actual mute state. Only trust it once
+          // we've asked for audio — before that the player is legitimately muted.
+          if (typeof info.muted === "boolean" && wantAudioRef.current) {
+            const reallyMuted = info.muted || info.volume === 0
+            setIsMuted(reallyMuted)
+          }
+        }
       } catch {}
     }
     window.addEventListener("message", handleMessage)
@@ -62,6 +112,18 @@ export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange, startS
       clearTimeout(fallback)
     }
   }, [])
+
+  // Keep nudging the listening handshake until the player reports ready, so the
+  // reconciliation above actually receives events.
+  useEffect(() => {
+    if (!mounted) return
+    startListening()
+    if (playerReady) return
+    const id = setInterval(startListening, 400)
+    return () => clearInterval(id)
+  }, [mounted, playerReady, startListening])
+
+  useEffect(() => () => clearRetries(), [clearRetries])
 
   // Catch ANY first user gesture — fallback for browsers that block audio without gesture
   useEffect(() => {
@@ -85,7 +147,8 @@ export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange, startS
   // Unmute as soon as player is ready.
   // If the page already has user activation (SPA nav click, gate tap, etc.) we unmute
   // immediately. On a fresh external link open with no prior gesture the browser will
-  // silently block the unMute — the interacted fallback below handles that case.
+  // silently block the unMute — the interacted fallback below handles that case, and
+  // the infoDelivery reconciliation keeps the icon honest until then.
   useEffect(() => {
     if (!playerReady) return
     const ua = typeof navigator !== "undefined" && "userActivation" in navigator
@@ -105,10 +168,9 @@ export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange, startS
       setInteracted(true)
       unmute()
     } else {
-      sendCommand("mute")
-      setIsMuted(true)
+      mute()
     }
-  }, [isMuted, unmute, sendCommand])
+  }, [isMuted, unmute, mute])
 
   useEffect(() => {
     if (toggleRef) toggleRef.current = handleToggle
@@ -128,6 +190,7 @@ export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange, startS
       ref={(el) => { if (el) iframeRef.current = el }}
       src={embedUrl}
       allow="autoplay"
+      onLoad={startListening}
       className="absolute w-0 h-0 opacity-0 pointer-events-none"
       aria-hidden="true"
     />
