@@ -26,7 +26,7 @@ export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange, startS
   // player state events we receive while muted don't get misread as a user action.
   const wantAudioRef = useRef(false)
 
-  const { youtubeVideoId, audioEnabled, volume, loopAudio } = media
+  const { youtubeVideoId, audioEnabled, volume, loopAudio, autoplay } = media
 
   useEffect(() => { setMounted(true) }, [])
 
@@ -135,9 +135,10 @@ export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange, startS
   // card's auto-scroll fires programmatic scroll events that are not real user
   // gestures and would waste the unmute attempt before the user ever touches the
   // screen. We retry on each gesture until audio is actually playing, but stop once
-  // the user has explicitly muted.
+  // the user has explicitly muted. Skipped entirely when autoplay is disabled — then
+  // the guest must tap the play button.
   useEffect(() => {
-    if (!playerReady) return
+    if (!playerReady || !autoplay) return
     const handle = () => {
       if (userMutedRef.current) return  // respect an explicit mute
       if (!mutedRef.current) return     // already playing
@@ -154,20 +155,20 @@ export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange, startS
       window.removeEventListener("wheel", handle)
       window.removeEventListener("keydown", handle)
     }
-  }, [playerReady, unmute])
+  }, [playerReady, autoplay, unmute])
 
-  // Unmute as soon as player is ready.
+  // Unmute as soon as player is ready (only when autoplay is enabled).
   // If the page already has user activation (SPA nav click, gate tap, etc.) we unmute
   // immediately. On a fresh external link open with no prior gesture the browser will
-  // silently block the unMute — the interacted fallback below handles that case, and
+  // silently block the unMute — the gesture listener above handles that case, and
   // the infoDelivery reconciliation keeps the icon honest until then.
   useEffect(() => {
-    if (!playerReady) return
+    if (!playerReady || !autoplay) return
     const ua = typeof navigator !== "undefined" && "userActivation" in navigator
       ? (navigator.userActivation as { hasBeenActive?: boolean })
       : null
     if (ua?.hasBeenActive ?? true) unmute()
-  }, [playerReady, unmute])
+  }, [playerReady, autoplay, unmute])
 
   const handleToggle = useCallback(() => {
     if (isMuted) {
