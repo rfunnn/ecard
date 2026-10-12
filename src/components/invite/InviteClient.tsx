@@ -27,6 +27,7 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
   const isPausedRef = useRef<boolean>(false)
   const musicToggleRef = useRef<(() => void) | undefined>(undefined)
   const [isMusicMuted, setIsMusicMuted] = useState(true)
+  const [musicEngaged, setMusicEngaged] = useState(false)
   const [rsvpOpen, setRsvpOpen] = useState(false)
   const hasMusicPlayer = !!(card.media?.audioEnabled && card.media?.youtubeVideoId)
   // The back button is for in-app contexts only: the modal preview (onClose), the
@@ -51,6 +52,12 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
     fireAnalytic("VIEW")
   }, [fireAnalytic])
 
+  // Once audio has started by any route (overlay, play button, gate), retire the
+  // tap-to-start catcher so a later tap can't toggle the music back off.
+  useEffect(() => {
+    if (!isMusicMuted) setMusicEngaged(true)
+  }, [isMusicMuted])
+
   const wCfg            = card.wizardConfig as WizardConfig | undefined
   const musicStartSeconds = (() => {
     const t = wCfg?.musicStartTime ?? "00:00"
@@ -65,6 +72,15 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
   const effectSizeScale = (wCfg?.effectSize ?? 100) / 100
   const openingStyle    = wCfg?.openingStyle      ?? "Tiada"
   const openingStyleColor = wCfg?.openingStyleColor ?? "#1a1a1a"
+
+  // Invisible tap-to-start: on gateless ("Tiada") cards the browser still blocks audio
+  // until the first user gesture, so a transparent catcher starts the music on the
+  // guest's first tap anywhere. Only while autoplay is on and audio hasn't begun.
+  const startMusic = useCallback(() => {
+    setMusicEngaged(true)
+    musicToggleRef.current?.()
+  }, [])
+  const showTapToStart = hasMusicPlayer && autoplayMusic && openingStyle === "Tiada" && !musicEngaged
 
   const [gateOpen, setGateOpen] = useState(() => openingStyle !== "Tiada")
 
@@ -263,6 +279,17 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
           />
         </div>
       </div>
+
+      {/* ── Invisible tap-to-start catcher (gateless cards) — the first tap anywhere
+            starts the music, then it disappears. Sits below the action bar/modals
+            (z-50) so those stay directly tappable. ── */}
+      {showTapToStart && (
+        <div
+          className="fixed inset-0 z-40"
+          onPointerDown={startMusic}
+          aria-hidden="true"
+        />
+      )}
 
       {/* ── Music player — always mounted so it preloads during gate and catches gate-dismiss tap ── */}
       {hasMusicPlayer && (
