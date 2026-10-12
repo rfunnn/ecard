@@ -57,6 +57,9 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
     const [m, s] = t.split(":").map(Number)
     return (m || 0) * 60 + (s || 0)
   })()
+  // The builder toggle lives in wizardConfig.autoplayMusic (defaults ON). media.autoplay
+  // only mirrors it and may be stale (DB default is false), so prefer the config value.
+  const autoplayMusic   = wCfg?.autoplayMusic ?? card.media?.autoplay ?? true
   const effectAnimation = wCfg?.effectAnimation   ?? "Tiada"
   const effectColor     = wCfg?.effectColor       ?? "#ffffff"
   const effectSizeScale = (wCfg?.effectSize ?? 100) / 100
@@ -268,6 +271,7 @@ export function InviteClient({ card, onClose, demoBadge }: InviteClientProps) {
           onAnalytic={fireAnalytic}
           toggleRef={musicToggleRef}
           startSeconds={musicStartSeconds}
+          autoplay={autoplayMusic}
           onMuteChange={setIsMusicMuted}
         />
       )}

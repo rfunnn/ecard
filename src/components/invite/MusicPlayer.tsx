@@ -10,9 +10,12 @@ interface MusicPlayerProps {
   toggleRef?: React.MutableRefObject<(() => void) | undefined>
   onMuteChange?: (muted: boolean) => void
   startSeconds?: number
+  /** Overrides media.autoplay. The builder's wizardConfig.autoplayMusic is the
+   *  authoritative setting; media.autoplay is only a (sometimes stale) mirror. */
+  autoplay?: boolean
 }
 
-export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange, startSeconds = 0 }: MusicPlayerProps) {
+export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange, startSeconds = 0, autoplay: autoplayProp }: MusicPlayerProps) {
   const [isMuted, setIsMuted] = useState(true)
   const [playerReady, setPlayerReady] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -26,7 +29,8 @@ export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange, startS
   // player state events we receive while muted don't get misread as a user action.
   const wantAudioRef = useRef(false)
 
-  const { youtubeVideoId, audioEnabled, volume, loopAudio, autoplay } = media
+  const { youtubeVideoId, audioEnabled, volume, loopAudio } = media
+  const autoplay = autoplayProp ?? media.autoplay
 
   useEffect(() => { setMounted(true) }, [])
 
@@ -144,16 +148,19 @@ export function MusicPlayer({ media, onAnalytic, toggleRef, onMuteChange, startS
       if (!mutedRef.current) return     // already playing
       unmute()
     }
-    const opts: AddEventListenerOptions = { passive: true }
-    window.addEventListener("pointerdown", handle, opts)
-    window.addEventListener("touchstart", handle, opts)
-    window.addEventListener("wheel", handle, opts)
-    window.addEventListener("keydown", handle, opts)
+    // Capture phase so nothing downstream can stopPropagation our way out of the
+    // first gesture; document + window to catch events regardless of target.
+    const opts: AddEventListenerOptions = { passive: true, capture: true }
+    const events = ["pointerdown", "touchstart", "click", "wheel", "keydown"]
+    events.forEach((ev) => {
+      document.addEventListener(ev, handle, opts)
+      window.addEventListener(ev, handle, opts)
+    })
     return () => {
-      window.removeEventListener("pointerdown", handle)
-      window.removeEventListener("touchstart", handle)
-      window.removeEventListener("wheel", handle)
-      window.removeEventListener("keydown", handle)
+      events.forEach((ev) => {
+        document.removeEventListener(ev, handle, opts)
+        window.removeEventListener(ev, handle, opts)
+      })
     }
   }, [playerReady, autoplay, unmute])
 
