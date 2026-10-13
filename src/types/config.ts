@@ -283,7 +283,6 @@ export function getPackageCapabilities(packageType: string): PackageCapabilities
 export const OPENING_STYLES = [
   "Tingkap A", "Tingkap B", "Tingkap C",
   "Sampul A", "Menaik",
-  "Tiada",
 ]
 
 export const EFFECT_ANIMATIONS = [
