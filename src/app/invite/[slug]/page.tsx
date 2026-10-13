@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { unstable_cache } from "next/cache"
 import { prisma } from "@/lib/prisma"
+import { toPlainText } from "@/lib/plainText"
 
 function ExpiredPage() {
   return (
@@ -89,7 +90,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const shouldIndex = card.isPublished && !isExpired
 
     const title = card.title || "Kad Jemputan Digital"
-    const description = card.description ?? "Anda dijemput! Buka pautan ini untuk melihat kad jemputan."
+    const description = toPlainText(card.description, "Anda dijemput! Buka pautan ini untuk melihat kad jemputan.")
 
     const ogImage = `https://ekadku.com/api/og/${slug}`
     return {
